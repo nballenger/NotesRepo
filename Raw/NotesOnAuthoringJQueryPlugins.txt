@@ -1,0 +1,228 @@
+Notes on jQuery Plugins/Authoring
+    from: http://docs.jquery.com/Plugins/Authoring
+    
+Getting Started
+    * Start by adding a new function property to the jQuery.fn object, where the name 
+        of the property is the name of your plugin:
+        
+        jQuery.fn.myPlugin = function() {
+            // your plugin code here
+        };
+        
+    * Best practice is to pass jQuery to an immediately invoked function expression to
+        map it to the $, so it can't be overwritten by another library in the scope
+        of its execution:
+        
+        (function( $ ) {
+            $.fn.myPlugin = function() {
+                // your plugin code here
+            };
+        })(jQuery);
+        
+    * Within that closure, we can use $ in place of jQuery all we want.
+    
+Context
+    * In the immediate scope of the plugin function, 'this' refers to the jQuery object
+    * It is therefore not necessary to do $(this), because 'this' is already a jquery obj
+    * $(this) would be the same as $($('#element')):
+    
+        (function( $ ) {
+            $.fn.myPlugin = function() {                
+                this.fadeIn('normal', function() {
+                    // 'this' is a DOM element
+                });
+            };
+        })(jQuery);
+        
+        $('#element').myPlugin();
+        
+The Basics
+    * A plugin that actually does something:
+    
+        (function ( $ ) {
+            $.fn.maxHeight = function() {
+                var max = 0;
+                
+                this.each(function() {
+                    max = Math.max( max, $(this).height() );
+                });
+                
+                return max;
+            };
+        })(jQuery);
+        
+        var tallest = $('div').maxHeight(); // returns the height of the tallest div
+        
+Maintaining Chainability
+    * Make sure your plugin returns 'this':
+    
+        (function ( $ ) {
+            $.fn.lockDimensions = function( type ) {
+                return this.each(function() {
+                    var $this = $(this);
+                    
+                    if ( !type || type == 'width' ) {
+                        $this.width( $this.width() );
+                    }
+                    
+                    if ( !type || type == 'height' ) {
+                        $this.height( $this.height() );
+                    }  
+                });
+            };
+        })(jQuery);
+        
+        $('div').lockDimensions('width').css('color', 'red');
+        
+Defaults and Options
+    * You want to be able to call your function with an object literal of options:
+    
+        (function ( $ ) {
+            $.fn.tooltip = function( options ) {
+                // Create some defaults, extending them with any options provided
+                var settings = $.extend( {
+                    'location': 'top',
+                    'background-color': 'blue'
+                }, options);
+                
+                return this.each(function() {
+                    // plugin code here
+                });
+            };
+        })(jQuery);
+        
+Namespacing
+    * Assures that your plugin will have a very low chance of being overwritten by other code
+    * Keeps better track of methods, events, and data
+    
+    Plugin Methods:
+        * DO NOT claim more than one namespace in the jQuery.fn object, clutters the namespace
+        * Collect all your plugin methods in an object literal, and call them by passing
+            the string name of the method to the plugin:
+            
+            (function ( $ ) {
+                var methods = {
+                    init: function (options) {
+                        // THIS
+                    },
+                    show: function ( ) {
+                        // IS
+                    },
+                    hide: function ( ) {
+                        // GOOD
+                    },
+                    update: function( content ) {
+                        // !!
+                    }
+                };
+                
+                $.fn.tooltip = function (method) {
+                    // Method calling logic
+                    if ( methods[method] ) {
+                        return methods[ method ].apply(this, Array.prototype.slice.call( arguments, 1));
+                    }
+                    else if (typeof method === 'object' || ! method ) {
+                        return methods.init.apply(this, arguments);
+                    }
+                    else {
+                        $.error('Method ' + method + ' does not exist on jQuery.tooltip');
+                    }
+                };
+            })(jQuery);
+            
+        * Lets you encapsulate all your methods in the plugin's parent closure and call
+            them by first passing the string name of the metod, then any additional params
+        
+    Events
+        * The bind method lets you namespace bound events
+        * If your plugin binds an event, it's a good idea to namespace it
+        * If you need to unbind it later, you can do so without unbinding any other bindings
+            on the same type of event
+        * You can namespace events by appending ".<namespace>" to the type of event you're binding
+        
+            (function ( $ ) {
+                var methods = {
+                    init: function ( options ) {
+                        return this.each(function() {
+                            $(window).bind('resize.tooltip', methods.reposition);
+                        });
+                    },
+                    destroy: function( ) {
+                        return this.each(function() {
+                            $(window.unbind('.tooltip'));
+                        });
+                    },
+                    reposition: function( ) {
+                        // ...
+                    },
+                    show: function( ) {
+                        // ...
+                    },
+                    hide: function( ) {
+                        // ...
+                    },
+                    update: function( content ) {
+                        // ...
+                    }                    
+                };
+            })(jQuery);
+            
+    Data
+        * If you need to maintain state or see if your plugin has already been initialized
+            on a given element, you can use jQuery's data method to track variables on a
+            per-element basis.
+        * Use an object literal to house all your variables, and access that object by a
+            single data namespace.
+            
+            (function ( $ ) {
+                var methods = {
+                    init: function ( options ) {
+                        return this.each(function() {
+                            var $this = $(this),
+                                data = $this.data('tooltip'),
+                                tooltip = $('<div />', {
+                                    text: $this.attr('title')
+                                });
+                                
+                            // if the plugin hasn't been initialized yet
+                            if ( ! data ) {
+                                /*
+                                    do more setup stuff here
+                                */
+                                
+                                $(this).data('tooltip', {
+                                    target: $this,
+                                    tooltip: tooltip
+                                });
+                            }
+                        });
+                    },
+                    destroy: function ( ) {
+                        return this.each(function() {
+                            var $this = $(this),
+                                data = $this.data('tooltip');
+                                
+                            // Namespacing FTW
+                            $(window).unbind('.tooltip');
+                            data.tooltip.remove();
+                            $this.removeData('tooltip');
+                        });                    
+                    },
+                    // additional methods
+                };
+                
+                $.fn.tooltip = function ( method ) {
+                    // return method and this
+                };
+            })(jQuery);
+            
+Summary and Best Practices
+    * Always wrap your plugin in a closure:
+    
+        (functions ( $ ) { /* plugin goes here */ })(jQuery);
+    
+    * Don't redundantly wrap the 'this' keyword in the immediate scope of the plugin's function
+    * Unless you're returning an intrinsic value, return 'this' for chainability
+    * Pass your plugin settings in an object literal than can be extended over the defaults
+    * Don't clutter the jQuery.fn object with more than one namespace per plugin
+    * Always namespace your methods, events, and data.

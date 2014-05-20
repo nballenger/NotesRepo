@@ -1,0 +1,98 @@
+Notes on High Performance JavaScript
+
+Chapter 5: Strings and Regular Expressions
+
+5.1 String Concatenation
+    * Can be surprisingly performance intensive.
+    * There are multiple methods for merging strings:
+    
+        Method              Example
+        The + operator      str = "a" + "b" + "c";                            
+        The += operator     str = "a";
+                            str += "b";
+                            str += "c";
+        array.join()        str = ["a", "b", "c"].join("");
+        string.concat()     str = "a"; str = str.concat("b","c");
+        
+    * All are fast for casual use.
+    
+    5.1.1 Plus (+) and Plus-Equals (+=) Operators
+        * Simplest method of concatenation, all modern browsers except IE7 optimize it well
+        * Example of a common way to assign a concatenated string:
+        
+            str += "one" + "two";
+            
+        * That involves four steps (approximation of how browsers do it):
+            1.  A temporary string is created in memory.
+            2.  The concatenated value "onetwo" is assigned to the temporary string.
+            3.  The temporary string is concatenated with the current value of str.
+            4.  The result is assigned to str.
+            
+        * This code avoids steps 1 and 2 (the temp string) by directly appending to str:
+            
+            str += "one"; str += "two";
+            
+        * Runs 10%-40% faster in most browsers.
+        * Equivalent performance from:
+        
+            str = str + "one" + "two";
+            
+        * Only works because concatenation is entirely on the right of str--this would not
+            have the same optimization (you'd get the temp string back):
+            
+            str = "one" + str + "two";
+            
+        * These techniques don't apply to IE, and can make things slower in IE7 and lower.
+        * IE7 and lower do concatenation where each pair of concatenated strings must
+            always be copied to a new memory location. BAD.
+            
+            
+        5.1.1.1 Firefox and compile-time folding
+            * When all strings concatenated in an assignment are compile-time constants,
+                FF merges them at compile time:
+                
+                function foldingDemo() {
+                    var str = "compile" + "time" + "folding";
+                    str += "this" + "works" + "too";
+                    str = str + "but" + "not" + "this";
+                }
+                
+    5.1.2 Array Joining
+        * Array.prototype.join merges all elements of an array and accepts a separator
+        * Slower than other methods in most browsers
+        * Only efficient way to concatenate lots of strings in IE7 and earlier.
+        * Where += is quadratic time in IE7, array.join is linear time.
+        
+    5.1.3 String.prototype.concat
+        * Accepts any number of arguments, appends all to the string the method is called on
+        * Most flexible way to concatenate strings
+        * Somewhat slower than + and +=, can be substantially slower in IE, Opera, and Chrome
+        * Suffers from same problems as + and += in IE7 and earlier.
+        
+5.2 Regular Expression Optimization
+    * Different browsers have different regex engines--optimizing for one can kill 
+        performance in another.
+    
+    5.2.1 How Regular Expressions Work
+        * Steps:
+            1.  Compilation: Created using a regex literal or RegExp constructor, the browser
+                checks your pattern for errors and then converts it into a native code routine
+                that is used to actually perform matches. If you assign your regex to a variable,
+                you can avoid performing this step more than once for a given pattern.
+            2.  Setting the starting position: When it's put to use, the first step is to 
+                determine the position within the target string where the search should start.
+                Initially it's the start of the string or the position specified by the
+                regex's lastIndex property, but when returning here from step 4 (failed match),
+                the position is one character after where the last attempt started.
+            3.  Matching each regex token: Once it knows where to start, it steps through the
+                text and the regex pattern. When a token fails to match, the regex tries to
+                backtrack to a prior point in the match attempt and follow other possible paths.
+            4.  Success or failure: if a complete match is found, success is declared. If all 
+                possible paths through the regex have been attempted but a match was not
+                found, the engine goes back to step 2 to try again at the next character.
+                Once the cycle has been run for every character and no matches are found, 
+                overall failure is declared.
+                
+    5.2.2 Understanding Backtracking
+        * Computationally expensive--understanding how to minimize its use is important.
+        

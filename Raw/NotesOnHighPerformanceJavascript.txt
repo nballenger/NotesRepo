@@ -1,0 +1,287 @@
+Notes on High Performance Javascript
+
+Chapter 4: Algorithms and Flow Control
+
+4.1 Loops
+    4.1.1 Types of Loops
+        * Standard for loop, syntax like C:
+
+            for (var i=0; i < 10; i++) {
+                // loop body
+            }
+
+        * Four parts: initialization, pretest condition, post-execute, and body
+        * When encountered:
+            - Initialization code runs
+            - Pretest condition runs
+            - If pretest is true, loop body runs
+            - After body runs, post-execute code runs
+
+        * Putting a var statement in the init part of a for loop creates a function-level
+            variable, not a loop-level one. JS only has fn scope, so creating a var in the
+            body of the loop will put it into the external scope
+
+        * While loops are simple pretest loops, made of pretest condition and body:
+
+            var i = 0;
+            while (i < 10) {
+                // loop body
+                i++;
+            }
+
+        * Pretest is evaluated, then (if true) body evaluates
+
+        * do-while loop is the only post-test loop in JS, has body and post-test:
+
+            var i = 0;
+            do {
+                // loop body
+            } while (i++ < 10);
+
+        * Always executes at least once
+
+        * for-in loop enumerates the named properties of an object:
+
+            for (var prop in object) {
+                // loop body
+            }
+
+        * Each time through, the prop variable is filled with the name of another
+            property (a string) that exists on the object until all properties have been returned
+        * Returned properties are both those that exist on the object instance and those
+            inherited through its prototype chain
+
+    4.1.2 Loop Performance
+        * Only one loop type is significantly slower than the others: for-in
+        * Each iteration of for-in does a property lookup on the instance or a prototype
+        * Much more overhead per iteration, so it's slower than other loop types
+        * Unless you're iterating over an unknown number of properties, don't use it
+        * For a known set, use something like:
+
+            var props = ["prop1", "prop2"],
+                i = 0;
+
+            while (i < props.length) {
+                process(object[props[i++]]);
+            }
+
+        * All other loops have equivalent performance characteristics
+        * Factors contributing to loop performance are:
+            - Work done per iteration
+            - Number of iterations
+
+        4.1.2.1 Decreasing the Work Per Iteration
+            * Minimize the number of object member and array item lookups
+            * Change this:
+
+                // originals
+                for (var i = 0; i < items.length; i++) {
+                    process(items[i]);
+                }
+
+                var j = 0;
+                while (j < items.length) {
+                    process(items[j++]);
+                }
+
+                var k = 0;
+                do {
+                    process(items[k++]);
+                } while (k < items.length);
+
+            * To this:
+
+                // minimizing property lookups
+                for (var i = 0, len = items.length; i < len; i++) {
+                    process(items[i]);
+                }
+
+                var j = 0,
+                    count = items.length;
+                while (j < count) {
+                    process(items[j++]);
+                }
+
+                var k = 0,
+                    num = items.length;
+                do {
+                    process(items[k++]);
+                } while (k < num);
+
+            * Or this:
+
+                // minimizing property lookups and reversing
+                for (var i=items.length; i--; ) {
+                    process(items[i]);
+                }
+
+                var j = items.length;
+                while (j--) {
+                    process(items[j]);
+                }
+
+                var k = items.length-1;
+                do {
+                    process(items[k]);
+                } while (k--);
+
+            * Reversing and combining the test condition with the decrement reduces
+                the number of operations--can get 50% speed increase
+
+            * When the loop work is O(n), decrease the work--when it's >O(n), decrease iterations
+
+        4.1.2.2 Decreasing the Number of Iterations
+            * Best known approach to limiting iterations is "Duff's Device"
+            * DD is a technique of unrolling loop bodies so each iteration actually does the
+                job of many iterations.
+            * Typical implementation:
+
+                var iterations  = Math.floor(items.length / 8),
+                    startAt     = items.length % 8,
+                    i           = 0;
+
+                do {
+                    switch(startAt) {
+                        case 0: process(items[i++]);
+                        case 7: process(items[i++]);
+                        case 6: process(items[i++]);
+                        case 5: process(items[i++]);
+                        case 4: process(items[i++]);
+                        case 3: process(items[i++]);
+                        case 2: process(items[i++]);
+                        case 1: process(items[i++]);
+                    }
+                    startAt = 0;
+                } while (iterations--);
+
+            * Basic idea is that each trip through the loop is allowed a max of 8 calls to
+                process, and the number of iterations is determined by dividing total/8
+            * Slightly faster version, forgoes the switch (which uses a fallthrough, which is bad)
+
+                var iterations = items.length % 8,
+                    i          = items.length - 1;
+
+                while (iterations) {
+                    process(items[i--]);
+                    iterations--;
+                }
+
+                iterations = Math.floor(items.length / 8);
+
+                while (iterations) {
+                    process(items[i--]);
+                    process(items[i--]);
+                    process(items[i--]);
+                    process(items[i--]);
+                    process(items[i--]);
+                    process(items[i--]);
+                    process(items[i--]);
+                    process(items[i--]);
+                    iterations--;
+                }
+
+            * In cases where the loop iterations are less than 1000, improvement is meh
+            * At 500k, 70% faster this way
+
+    4.1.3 Function Based Iteration
+        * ECMA-262 v5 added array.forEach(), which takes a function as an arg:
+
+            items.forEach(function(value, index, array) {
+                process(value);
+            });
+
+        * Equivalents are found in jquery, yui, etc, as .each()
+        * Quite a bit slower because of more overhead--up to 8 times slower
+
+4.2 Conditionals
+    4.2.1 if-else versus switch
+        * Prevailing theory is to choose based on the number of conditions--the more conditions,
+            the more inclined you are to use switch instead of if-else for readability
+        * switch is faster in most cases when compared to if-else, but signficantly faster
+            only when the number of conditions is large
+    4.2.2 Optimizing if-else
+        * Goal is always to minimize the number of conditions to evaluate before choosing a path
+        * Put the most common conditions first
+        * If you have a large series of if else if statements, and they're linear, the max number
+            of comparisons to evaluate is O(n), but if you refactor into a tree like this, it drops:
+
+            if (value < 6) {
+                if (value < 3) {
+                    if (value == 0) {
+                        return result0;
+                    } else if (value == 1) {
+                        return result1;
+                    } else {
+                        return result2;
+                    }
+                } else {
+                    if (value == 3) {
+                        return result3;
+                    } else if (value == 4) {
+                        return result4;
+                    } else {
+                        return result5;
+                    }
+                }
+            } else {
+                if (value < 8) {
+                    if (value == 6) {
+                        return result6;
+                    }
+                }
+            }
+
+    4.2.3 Lookup Tables
+        * When there's a large number of discrete values to test for, use a lookup table
+        * Create them with arrays or regular objects
+        * Example:
+
+            var results = [result0, result1, result2, ... resultN];
+            return results[value];
+
+4.3 Recursion
+    * Easy to mess up, can hit browser call stack size limits
+
+    4.3.1 Call Stack Limits
+        * Every browser but IE has a static call stack limit
+        * Will dump errors like "Stack overflow at line x" or "Too much recursion"
+        * In FF, Safari, Chrome, and IE, the errors generated are JS errors, so you can do:
+
+            try {
+                recurse();
+            } catch(ex) {
+                alert("Too much recursion!");
+            }
+
+        * If unhandled, the errors will bubble up normally (except in IE)
+
+    4.3.2 Recursion Patterns
+        * If you hit the call stack limit, look for recursion in the code
+        * Two kinds to watch out for:
+
+            function recurse() {
+                recurse();
+            }
+
+            OR
+
+            function first() {
+                second();
+            }
+
+            function second() {
+                first();
+            }
+
+        * Second case is trickier to catch.
+        * Most recursion errors are an incorrect termination condition
+        * If the terminal condition is correct, consider iteration, memoization, or both.
+
+    4.3.3 Iteration
+        * Using optimized loops in place of recursion can give you lower overhead from loops vs fns
+
+    4.3.4 Memoization
+        * Cache previous expensive calculations
+
+
+Chapter 5: Strings and Regular Expressions

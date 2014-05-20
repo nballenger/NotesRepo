@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span2">Left Bar</div>
+                <div class="span10">
+<h1>C++ CHEATSHEET</h1>
+
+<div class="section">
+<h2>Compiler Declarations:</h2>
+</div>
+
+<div class="section">
+<h2>Using and Namespaces:</h2>
+<ul>
+    <li>Namespace declaration:
+<pre>namespace myglobals {
+    int cat;
+    string dog = "bow wow";
+}</pre>
+    </li>
+
+    <li>Fully qualified names are things like myglobals::cat</li>
+    <li>If you 'use' a namespace, you don't have to use fully qualified names:
+<pre>using std::string;
+using namespace myglobals;</pre>
+    </li>
+</ul>
+</div>
+
+<div class="section">    
+<h2>Scope rules:</h2>
+<ul>
+    <li>Local scope is block scope</li>
+    <li>Global scope is outside any block</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Constants and Typedef:</h2>
+<ul>
+    <li>Adding 'const' to a declaration makes an immutable variable</li>
+    <li>Adding 'typedef' to a declaration aliases a type name</li>
+    <li>Example:
+<pre>const double PI = 3.14159265;
+typedef char* BufferPtr;        // pointer to char
+typedef double Coordinate;      // Coordinate is a double</pre></li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Fundamental Types:</h2>
+<dl class="dl-horizontal">
+    <dt>bool</dt>
+    <dd>true|false</dd>
+    <dt>char</dt>
+    <dd>8 bit (implementation dependent)</dd>
+    <dt>short</dt>
+    <dd>at least 16 bits</dd>
+    <dt>int</dt>
+    <dd>at least 32 bits</dd>
+    <dt>long</dt>
+    <dd>at least 32 bits</dd>
+    <dt>enum</dt>
+    <dd>a set of discrete values, int associated</dd>
+    <dt>float</dt>
+    <dd>bit size not set, double by default</dd>
+    <dt>double</dt>
+    <dd>bit size not set</dd>
+</dl>
+</div>
+<div class="section">    
+<h2>Pointers and References</h2>
+<ul>
+    <li>Given a type T, the type T* denotes a pointer to a var of type T</li>
+    <li>&amp; is the address-of operator--if x is an int, &amp;x is x's mem addr<li>
+    <li>Dereferencing is done with *:
+        <dl>
+            <dt>if q is a pointer to an integer:</dt>    
+            <dd><code>int* q</code></dd>
+            <dt>and we then set q to &amp;x:</dt>            
+            <dd><code>q = &amp;x</code></dd>
+            <dt>we can access x's value with:</dt>       
+            <dd><code>*q</code></dd>
+        </dl>
+    </li>
+    <li>A pointer that points at nothing is a 'null' pointer</li>
+    <li>When declaring pointers, remember * binds to the variable:
+        <pre>int* x, y, z;  // same as int* x; int y; int z;</pre></li>
+        
+    <li>Given a type T, the notation T&amp; indicates a reference to
+        an object of type T</li>
+    <li>References cannot be NULL, must refer to a variable</li>
+    <li>Must be initialized on declaration</li>
+    <li>Access is treated like access to the underlying object
+<pre>string a = "A";
+string&amp; b = a;
+b = "c";            // a is now "c"</pre></li>
+</ul>        
+</div>
+
+<div class="section">        
+<h2>Arrays</h2>
+<ul>
+    <li>Given a type T and a constant N, a variable of type T[N] holds
+        an array of N elements, each of type T</li>
+    <li>Arrays are 0 indexed with integer values</li>
+    <li>The size of an array cannot be changed after definition</li>
+    <li>The [] operator does no run time checking for index out of bounds</li>
+    <li>Two dimensional arrays are an "array of arrays":    
+        <pre>int A[15][30]; // declares a 30 x 15 array of arrays</pre></li>
+    <li>The name of an array is a pointer to the first element in it</li>
+</ul>
+</div>
+
+<div class="section">    
+<h2>Strings</h2>
+<ul>
+    <li>String literals are a fixed length array of charters ending
+        with the null character, making them C-style strings</li>
+    <li>STL strings come from &lt;string&gt;</li>
+    STL strings can be input and output with &gt;&gt; and &lt;&lt;
+
+</div>
+<div class="section">    
+<h2>Structs</h2>
+<ul>
+    <li>An aggregation of unique elements</li>
+    <li>May be of different types</li>
+    <li>Defined with:
+<pre>struct StructName {
+    datatype    membername_A;
+    datatype    membername_B;
+}
+
+StructName structvar = { "A", "B" };
+structvar.membername_A = "C";</pre></li>
+</ul>
+</div>
+
+<div class="section">        
+<h2>Dynamic Memory and 'new'</h2>
+<ul>
+    <li>C++ runtime maintains a free store of memory</li>
+    <li>The 'new' operator allocates out of the free store</li>
+    <li>Used for creating new objects</li>
+    <li>Memory reclaimed by calling delete on the obj</li>
+    <li>Example:
+    
+<pre>T *t;
+t = new T;
+t->name = "Bob";
+t->bday = "2012-10-10";
+delete t;</pre></li>
+        
+    <li>Arrays can be allocated with 'new':
+    
+<pre>char* buffer = new char[500];
+buffer[3] = 'a';
+delete [] buffer;               // note [] for array delete</pre></li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Operators and Expressions:</h2>
+<dl class="dl-horizontal">
+<dt>Arithmetic:</dt><dd><code>+ - * / %</code></dd>
+<dt>Unary:</dt><dd><code>- +</code></dd>
+<dt>Pre/post increment:</dt><dd><code>++ --</code></dd>
+<dt>Relational:</dt><dd><code>< > <= >= == !=</code></dd>
+<dt>Logical:</dt><dd><code>! &amp;&amp; ||</code></dd>
+<dt>Bitwise:</dt><dd><code>~ &amp; ^ | &lt;&lt; &gt;&gt;</code></dd>
+<dt>Assignment:</dt><dd><code>= += -= *= /= %=</code></dd>
+<dt>Class scope resolution:</dt><dd><code>class_name::member</code></dd>
+<dt>Namespace resolution:</dt><dd><code>namespace::member</code></dd>
+<dt>Ternary:</dt><dd><code>bool ? if_true : if_false</code></dd>
+<dt>Stream input:</dt><dd><code>stream &gt;&gt; var</code></dd>
+<dt>Stream output:</dt><dd><code>stream &lt;&lt; exp</code></dd>
+</dl>
+</div>
+
+<div class="section">    
+<h2>Casting:</h2>
+<ul>
+    <li>C-Style casting: <code>(T)exp</code></li>
+    <li>C++ functional cast:<code>T(exp)</code></li>
+    <li>Cast ops that make the safety explicit:
+<pre>static_cast
+dynamic_cast
+const_cast
+reinterpret_cast</pre></li>
+        
+    <li>Syntax:<code>static_cast <desired_type> (expression)</code></li>
+</ul>
+</div>
+<div class="section">    
+<h2>Control Flow:</h2>
+
+<pre>if (condition)
+    true_statement
+else if (condition)
+    else if statement
+else
+    else statement</pre>
+        
+<pre>char command;
+cin &gt;&gt; command;
+switch (command) {
+    case 'I':
+        editInsert();
+        break;
+    case 'D':
+        editDelete();
+        break;
+    case 'R':
+        editReplace();
+        break;
+    default:
+        cout &lt;&lt; "Unrecognized command\n";
+        break;
+}</pre>
+        
+<pre>while (condition)
+    loop_body
+    
+do
+    loop_body
+while (condition)</pre>
+
+
+<pre>for (initialization; condition; increment)
+    loop_body
+    
+const int NUM_ELEMENTS = 100;
+double b[NUM_ELEMENTS];
+for (int i = 0; i < NUM_ELEMENTS; i++) {
+    if (b[i] > 0)
+        cout &lt;&lt; b[i] &lt;&lt; '\n';
+}</pre>
+    
+</div>
+<div class="section">
+<h2>Function Declaration and Definition</h2>
+
+<pre>bool evenSum(int a[], int n);       // declaration
+
+bool evenSum(int a[], int n) {      // definition
+    int sum = 0;
+    for (int i = 0; i < n; i++)
+        sum += a[i];
+    return (sum % 2) == 0;
+}</pre>
+    
+</div>
+<div class="section">    
+<h2>Passing Arguments</h2>
+<ul>
+    <li>By default, args are passed by value, not reference:
+    
+<pre>void f(int value, int&amp; ref) {
+    value++;                    // no effect on actual argument
+    ref++;                      // modifies actual argument
+    cout &lt;&lt; value &lt;&lt; endl;
+    cout &lt;&lt; ref &lt;&lt; endl;
+}</pre></li>
+    
+    <li>Passing a structure or class by value makes a (possibly large) copy</li>
+    <li>Passing an arg as a constant reference makes it immutable inside the fn:
+    
+<pre>void someFunction(const &amp;Passenger pass) {
+    pass.name = "new name";         // ILLEGAL--pass is declared const
+}</pre></li>
+        
+    <li>When an array is passed, it's converted to a pointer to its initial element</li>
+    <li>So T[] is converted to T*</li>
+</ul>
+</div>
+
+<div class="section">    
+<h2>Function Overloading</h2>
+
+<pre>void print (int x) { cout &lt;&lt; x; }
+
+void print (const Passenger&amp; pass) {
+    cout &lt;&lt; pass.name &lt;&lt; " " &lt;&lt; pass.mealPref;
+    if (pass.isFreqFlyer)
+        cout &lt;&lt; " " &lt;&lt; pass.freqFlyerNo;
+}</pre>
+    
+</div>
+<div class="section">
+<h2>Operator Overloading</h2>
+
+<pre>// Example of overloading the equality operator:            
+bool operator==(const Passenger&amp; x, const Passenger&amp; y) {
+    return x.name        == y.name
+        &amp;&amp; x.mealPref    == y.mealPref
+        &amp;&amp; x.isFreqFlyer == y.isFreqFlyer
+        &amp;&amp; x.freqFlyerNo == y.freqFlyerNo;
+}</pre>
+    
+</div>
+<div class="section">    
+<h2>Inline Functions</h2>
+<ul>
+    <li>Hint to the compiler to expand the function code in place 
+        rather than using call-return mechanism</li>
+        
+    <li>Example: <code>inline int min (int x, int y) { return (x < y ? x : y); }</code></li>
+</ul>
+</div>
+                </div><!-- /span10 -->
+            </div><!-- /row-fluid -->
+        </div><!-- /container-fluid -->
+    </body>
+</html>

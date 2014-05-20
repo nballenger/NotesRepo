@@ -1,0 +1,1454 @@
+Learn You Some Erlang for Great Good!
+By: Fred Hebert
+Publisher: No Starch Press
+Pub. Date: January 9, 2013
+Print ISBN-13: 978-1-59327-435-1
+
+Introduction
+
+So What's Erlang
+    * Functional programming language
+    * Modifying variables once assigned is not allowed, like in algebra.
+    * 'Referential transparency': always getting the same result for the
+      same parameter.
+    * Big emphasis on concurrency and high availability.
+    * Forces you to write code with processes that share no information unless
+      they explicitly pass messages to each other.
+    * General idea: let stuff crash instead of coding for every exception.
+
+Don't Drink Too Much Kool-Aid
+
+What You Need to Dive In
+
+Where to Get Help
+    * Various things are available with 'erl -man subject', like
+      'erl -man lists'.
+    * Also consult the official Erlang mailing list and #erlang on freenode.
+
+Chapter 1: Starting Out
+
+Using the Erlang Shell
+    * Executable is 'erl'
+    
+    Entering Shell Commands
+        * Line editor is based on a subset of Emacs.
+        
+    Exiting the Shell
+        * q() lets you quit
+        * ^G gives you the switch command, since Erlang is a bundle of shell
+          instances and you can switch between them to manage jobs.
+        * If the shell freezes, do this to interrupt the current job and rejoin:
+
+            ^G i <enter> c <enter>
+
+        * Sequences of expressions must be terminated by a period followed by
+          whitespace in order to be executed.
+
+Some Erlang Basics
+    Numbers
+        * Ops: + - * /
+        * Integer returning ops: div rem
+        * Base#value syntax: 2#101010.  8#0677.   16#AE.
+
+    Invariable Variables
+        * Variables start with an uppercase letter
+        * You can do multiple assignment: A = B = C = 1.
+        * Variables are immutable once bound.
+
+    Atoms
+        * Literals--constants whose only value is their own name.
+        * They can be single words or series of words in single quotes.
+        * They can contain underscores and @ signs
+        * Atoms are stored in the 'atom table' which is not garbage collected,
+          so don't generate them dynamically or you'll eventually crash things.
+
+    Boolean Algebra and Comparison Operators
+        * Ops: and or xor not andalso orelse
+        * Equality tests: =:= (equal)  =/= (not equal)  == (type safe) /=
+        * Comparison: < > >= =<
+        * You can compare anything with anything.
+        * number < atom < reference < fun < port < pid < tuple < list < bit string
+
+    Tuples
+        * Grouping a set number of terms.
+        * Appears in curly braces: { Element1, Element2, ..., ElementN }
+        * Way of accessing elements:
+
+            Point = {4,5}.
+            {X,Y} = Point.
+            X.      % returns 4
+
+        * A tuple with an atom followed by one element is a 'tagged tuple':
+
+            {point, {X,Y}}.
+
+    Lists
+        * Can contain any kind of data.
+        * Basic notation is [Element1, Element2, ..., ElementN]
+        * Examples:
+
+            [1,2,3,{numbers,[4,5,6]},5.34,atom].
+
+        * Lists and strings are the same thing, and lists that contain numbers
+          will print as strings if they do not contain any items which cannot
+          be a numeric representation of a character.
+        * Lists are combined with the ++ operator:
+
+            [1,2,3] ++ [4,5]
+
+        * Items are removed from a list with --:
+
+            [2,4,2] -- [2,4].    % returns [2]
+
+        * ++ and -- are right associative
+        * First element of a list is the 'head', the rest is the 'tail'
+        * hd(list) and tl(list) get them, respectively
+        * Shortcut for adding a new head to a list:
+
+            List = [2,3,4].
+            NewList = [1|List].   % NewList now = [1,2,3,4]
+
+        * Getting the head and tail off a list at the same time:
+
+            [Head|Tail] = NewList.
+
+        * The pipe is the 'cons' (constructor) operator.
+        * Any list can be built with just cons operators and values:
+
+            [1 | []]
+            [2 | [1 | []]].
+            [3 | [2 | [1 | []]]].
+
+        * So you can define lists recursively as a head preceding a tail, which
+          is itself a head followed by more heads.
+        * Technically [1|2] is an improper list, because a proper list ends
+          with an empty list as the last cell.
+
+    List Comprehensions
+        * Example of 'for all n values in [1,2,3,4], give me n*2':
+
+            [2*N || N <- [1,2,3,4]].
+
+        * Constraints imposed:
+
+            [X || X <- [1,2,3,4,5,6,7,8,9,10], X rem 2 =:= 0].
+
+        * Generic recipe:
+
+            NewList = [Expression || Pattern <- List, Condition1, ConditionN]
+
+        * Pattern <- List is a 'generator expression'
+        * In depth example:
+
+            RestaurantMenu = [
+                {steak, 5.99}, {beer, 3.99}, {poutine, 3.50},
+                {kitten, 20.99}, {water, 0.00}
+            ].
+
+            [{Item, Price*1.07} || 
+                {Item,Price} <- RestaurantMenu, 
+                Price >= 3, Price =< 10].
+
+        * You can have multiple generator expressions:
+
+            [X+Y || X <- [1,2], Y <- [3,4]].
+            % returns [4,5,5,6], because it runs X[0]+Y[0], X[0]+Y[1], etc.
+
+        * Further generic recipe:
+
+            NewList = [Expression || Generator1, Generator2, ..., GeneratorN,
+                Condition1, Condition2, ..., ConditionM]
+
+        * Combining generator expressions with pattern matching for filtering:
+
+            Weather = [
+                {toronto,rain}, {montreal,storms}, {london,fog},
+                {paris,sun}, {boston,fog}, {vancouver,snow}
+            ].
+
+            FoggyPlaces = [X || {X,fog} <- Weather].
+
+Working with Binary Data
+
+    Bit Syntax
+        * Binary data is put inside << >> and split into readable segments
+          separated by a comma.
+        * A segment is a sequence of bits of a binary (may or may not be on
+          a byte boundary).
+        * Example of storing a 24 bit color code:
+
+            Color = 16#F09A29.
+            Pixel = <<Color:24>>.
+
+        * That says, "Put the binary values of #F09A29 on 24 bits of space,
+          in the variable Pixel. 
+        * You can pattern match with binaries to unpack content:
+
+            Pixels = <<213,45,132,64,76,32,76,0,0,234,32,15>>.
+            <<Pix1:24,Pix2:24,Pix3:24,Pix4:24>> = Pixels.
+
+        * That declares there will be 4 pixels in binary, each with 24 bits
+        * You can further unpack:
+
+            <<R:8, G:8, B:8>> = <<Pix1:24>>.
+
+        * If you only want the first value to start with:
+
+            <<R:8, Rest/binary>> = Pixels.
+
+        * Stores the remainder into Rest var as binary data.
+        * Erlang has multiple ways to describe a binary segment:
+
+            Value
+            Value:Size
+            Value|TypeSpecifierList
+            Value:Size|TypeSpecifierList
+
+        * Size is in bits when no TypeSpecifierList is defined
+        * TypeSpecifierList represents one or more of these, hyphen separated:
+            - Type: integer, float, binary, bytes, bitstring, bits, utf8,
+                    utf16, utf32. integer is the default. bytes means binary,
+                    bits means bitstring.
+            - Signedness: signed, unsigned, default is unsigned--integer only
+            - Endianness: big, little, native, big is default
+            - Unit: written as unit:Integer--the size of each segment. Range
+                    is 1 to 256, defaults to 1 for integer, float, bitstring,
+                    defaults to 8 for binary. utf8, utf16, utf32 don't require
+                    you to define a unit size.
+        * Examples:
+
+            1> <<X1/unsigned>> = <<-44>>.
+            <<"Ô">>
+            2> X1.
+            212
+            3> <<X2/signed>> = <<-44>>.
+            <<"Ô">>
+            4> X2.
+            -44
+            5> <<N:8/unit:1>> = <<72>>.
+            <<"H">>
+            6> N.
+            72
+            7> <<N/integer>> = <<72>>.
+            <<"H">>
+            8> <<Y:4/little-unit:8>> = <<72,0,0,0>>.
+            <<72,0,0,0>>
+            9> Y.
+            72
+             
+    Bitwise Binary Operations
+        * You can do bit shifting with the operators:
+
+            bsl         bit shift left
+            bsr         bit shift right
+            band        binary and
+            bor         binary or
+            bxor        binary xor
+            bnot        binary not
+
+        * Example of parsing TCP segments:
+        
+            <<SourcePort:16, DestinationPort:16, AckNumber:32, 
+              DataOffset:4, _Reserved:4, Flags:8, WindowSize:16, 
+              CheckSum:16, UrgentPointer:16, Payload/binary>> = SomeBinary.
+
+        * Erlang isn't terribly efficient for number crunching stuff, in
+          comparison to something like C or C++.
+
+    Binary Strings
+        * Lists (and therefore strings) are like linked lists, whereas binary
+          strings are bolted on top of binary notation, and packed like an
+          array in C.
+        * Syntax is <<"this is a binary string!">>
+        * Loss of simplicity in pattern matching and manipulation, compared to
+          lists, so use them to store text that won't be manipulated a lot.
+
+    Binary Comprehensions
+        * Similar to list comprehensions:
+
+            << <<X>> || <<X>> <= <<1,2,3,4,5>>, X rem 2 == 0>>.
+            % returns <<2,4>>
+
+        * Binary generators use <= instead of <-, and << >> instead of []
+        * Getting RGB values with a comprehension:
+
+            Pixels = <<213,45,132,64,76,32,76,0,0,234,32,15>>.
+            RGB = [ {R,G,B} || <<R:8,G:8,B:8>> <= Pixels ].
+            % RGB is a list of 3-tuples with binary RGB values
+
+        * The elements of a binary resulting from a comprehension require a
+          clearly defined binary type if the generator returns binaries:
+
+            << <<Bin/binary>> | Bin <- [<<3,7,5,4,7>>] >>.
+            % returns <<3,7,5,4,7>>
+
+        * A binary comprehension with a binary generator:
+
+            << <<(X+1)/integer>> || <<X>> <= <<3,7,5,4,7>> >>.
+            % returns <<4,8,6,5,8>>
+
+Chapter 2: Modules
+
+What are Modules
+    * Functions grouped into a file, under a single name.
+    * All functions in Erlang must be defined in modules.
+    * The built in functions of the erlang module enter the interactive shell's
+      namespace on startup, but all other modules need to have their functions
+      called as name:function(args)
+
+Creating Modules
+    * You can declare two things in a module: functions and attributes.
+    * Attributes are metadata about the module, which give hints to the 
+      compiler about how to work, and lets people retrieve info from
+      compiled code without having to read the source.
+    * All attributes follow the form -Name(Attribute).
+    * The only required attribute is -module(name)., which is always the first
+      statement in a module file, and must be the same as the filename.
+    * Exporting is done with:
+
+        -export([Function1/Arity, Function2/Arity, ..., FunctionN/Arity]).
+
+    * The exported functions make up the module's interface.
+    * Syntax of functions is
+
+        Name(Args) -> Body.
+
+    * Name must be an atom, body is one or more comma separated expressions.
+    * There is no 'return' keyword. The last logical expression's return value
+      is what will be returned from the function.
+    * Comments start with %
+    * %%% for comments general to a module, %% for comments at the level of
+      a line, and % for end of line comments.
+    * Using -import() will let you bring functions from a module into the 
+      local namespace (for use within the module).
+
+Compiling Code
+    * To compile from the command line, use 'erlc filename.erl'
+    * From within the shell, use compile:file(filename) or c(filename)
+    * Change directory (cd(path)) and pwd() work in the shell
+
+    Compiler Options
+        * Most common flags:
+
+            -debug_info -- recommended to always turn it on
+            -{outdir, Dir} -- where the .beam files are created
+            -export_all -- makes compiler ignore -export lines
+            -{d,Macro} / {d,Macro,Value} -- sets an atom flag for the module
+
+        * You can define compile flags from within a module:
+
+            -compile([debug_info, export_all]).
+
+Defining Macros
+    * Similar to #define statements in C
+    * Mostly used for short functions and constants
+    * Expressions represented by text, replaced before compilation
+    * Something like ?HOUR being equal to 3600 seconds
+    * Definition as a module attribute:
+
+        -define(MACRO, some_value).
+
+    * You can then use that as ?MACRO inside any function in the module.
+    * Example:
+
+        -define(HOUR, 3600). % in seconds
+
+    * A function macro is similar:
+
+        -define(sub(X,Y), X-Y).
+        ?sub(23,47).  # would replace that with '23-47'
+
+    * Predefined macros:
+        
+        ?MODULE  -- current module name as an atom
+        ?FILE    -- current filename as a string
+        ?LINE    -- line number of where the macro is placed
+
+    * Conditional use of macros:
+
+        -ifdef(DEBUGMODE).
+        -define(DEBUG(S), io:format("dbg: "++S)).
+        -else.
+        -define(DEBUG(S), ok).
+        -endif.
+
+        ?DEBUG("message about where you are or what's happening").
+
+    * Defining tests to exist only if some test macro is defined:
+
+        -ifdef(TEST).
+        my_test_function() ->
+            run_some_tests().
+        -endif.
+
+    * Then you'd use compile flags to say:
+
+        c(Module, [{d, 'TEST'}, {d, 'DEBUGMODE'}]).
+
+More About Modules
+    
+    Metadata
+        * For any module, you can call modulename:module_info() to get a 
+          representation of the metadata for that file.
+        * You can call :module_info(section_name) to get specific subsets.
+
+    Circular Dependencies
+        * Avoid them.
+
+Chapter 3: Syntax in Functions
+    
+Pattern Matching
+    * A function to greet someone based on gender:
+
+        greet(male, Name) ->
+            io:format("Hello, Mr. ~s!", [Name]);
+        greet(female, Name) ->
+            io:format("Hello, Mrs. ~s!", [Name]);
+        greet(_, Name) ->
+            io:format("Hello, ~s!", [Name]);
+
+    * Signature is specific to the atom supplied, execution will fall through
+      to the function signature that fits.
+    * Each section of a function is a 'clause', separated by semicolons.
+
+    Fancier Patterns
+        * Pattern matching on lists:
+
+            -module(functions).
+            -compile(export_all).
+
+            head([H|_]) -> H.
+
+            second([_,X|_]) -> X.
+
+        * Could extend that indefinitely, but a recursive function is better.
+
+    Variables in a Bind
+        * Once a variable is bound, you can't change it, though you can unbind
+          it with f().
+        * A function that would tell you if two variables were the same:
+
+            same(X,X) -> true;  % first X is bound, second X is compared to it
+            same(_,_) -> false.
+
+        * If the first one matches its pattern because the comparison is valid,
+          it is the clause used--if it doesn't match, the fallthrough returns.
+        * A more complex example:
+
+            valid_time({Date - {Y,M,D}, Time = {H,Min,S}}) ->
+                io:format("Date tuple ~p says today is: ~p/~p/~p,~n", [Date,Y,M,D]),
+                io:format("Time tuple ~p indicates: ~p:~p:~p.~n", [Time,H,Min,S]);
+            valid_time(_) ->
+                io:format("Data is wrong.~n");
+
+Guards, Guards!
+    * Additional clauses in a function head that determine whether it runs, by
+      making pattern matching more expressive.
+    * Pattern matching can't do counting--it would end up looking like:
+
+        old_enough(0) -> false;
+        old_enough(1) -> false;
+        old_enough(2) -> false;
+        ...
+        old_enough(14) -> false;
+        old_enough(15) -> false;
+        old_enough(_) -> true.
+
+    * With guards:
+
+        old_enough(X) when X >= 16 -> true;
+        old_enough(_) -> false.
+
+    * Guards must evaluate to true to succeed.
+    * Multiple guard clauses can be comma separated, which will act like andalso
+      or semicolon separated, which acts like orelse.
+    * Note that , and ; in guards won't catch exceptions, while andalso and
+      orelse will--so part 1 of a guard could throw an error then part 2 would
+      still test, and if it passed, the condition would evaluate despite the
+      error being thrown during execution of condition 1.
+    * You can use comparisons, Boolean evaluation, math operations, and
+      functions about datatypes, like is_integer/1 or is_atom/1.
+    * Guards will not accept user defined functions, because they might
+      cause side effects (which would occur every time that function was 
+      evaluated).
+
+What the If?!
+    * The if clause acts like a guard and shares the guard syntax, but
+      outside a function clause's head. if clauses are called 'guard patterns'
+    * Example:
+    
+        -module(what_the_if).
+        -export([heh_fine/0]).
+
+        heh_fine() ->
+            if 1 =:= 1 ->
+                works
+            end,
+            if 1 =:= 2; 1 =:= 1 ->
+                works
+            end,
+            if 1 =:= 2, 1 =:= 1 ->
+                fails
+            end.
+
+    * That will compile and evaluate to:
+
+1> c(what_the_if).
+what_the_if.erl:11: Warning: no clause will ever match
+what_the_if.erl:11: Warning: the guard for this clause evaluates to 'false'
+{ok,what_the_if}
+2> what_the_if:heh_fine().
+** exception error: no true branch found when evaluating an if expression
+     in function  what_the_if:heh_fine/0 (what_the_if.erl, line 11)
+
+    * You must have a catchall branch that will always succeed, no matter what.
+    * Like so:
+
+        oh_god(N) ->
+            if N =:= 2 -> might_succeed;
+            true -> always_does %% Erlang equivalent of 'else'
+        end.
+
+In case ... of
+    * case ... of expressions is like the whole function head, where if is
+      like a guard.
+    * Example:
+
+        insert(X,[]) ->
+            [X];
+        insert(X, Set) ->
+            case lists:member(X,Set) of
+                true -> Set;
+                false -> [X|Set]
+            end.
+
+    * More complex example:
+
+        beach(Temperature) ->
+            case Temperature of
+                {celsius, N} when N >= 20, N =< 45 ->
+                    'favorable';
+                {kelvin, N} when N >= 293, N =< 318 ->
+                    'scientifically favorable';
+                {fahrenheit, N} when N >= 68, N =< 113 ->
+                    'favorable in the US';
+                _ ->
+                    'avoid beach'
+            end.
+
+    * Basically like a set of function heads with specific guards.
+
+Which Should We Use?
+    * Function calls and case statements are evaluated the same way at a lower
+      level, and there's no performance difference between the two.
+    * If you had more than one arg that needed to be evaluated, a case statement
+      would need to look something like
+
+        case {A,B} of
+            Pattern Guards -> ...
+        end.
+
+    * Which would be sort of odd, so maybe function calls would be better.
+    * Mostly it's personal preference.
+
+
+Chapter 4: Types (or Lack Thereof)
+    
+Dynamite-Strong Typing
+    * Erlang is dynamically typed, all errors are caught at runtime, and the
+      compiler won't catch things that might result in an error, like 5 + abc
+    * Erlang assumes that errors will happen, and includes features that
+      make those errors easier to handle smoothly and without unnecessary
+      downtime. 
+    * Erlang is strongly typed--you must explicitly convert between types.
+
+Type Conversions
+    * You can cast one type to another using built in functions.
+    * Entire list of conversions:
+
+        atom_to_binary/2            integer_to_list/1       list_to_integer/2
+        atom_to_list/1              integer_to_list/2       list_to_pid/1
+        binary_to_atom/2            iolist_to_atom/1        list_to_tuple/1
+        binary_to_existing_atom/2   iolist_to_binary/       pid_to_list/1
+        binary_to_list/1            list_to_atom/1          port_to_list/1
+        binary_to_term/1            list_to_binary/1        ref_to_list/1
+        binary_to_term/2            list_to_bitstring/1     term_to_binary/1
+        bitstring_to_list/1         list_to_existing_atom/1 term_to_binary/2
+        float_to_list/1             list_to_float/1         tuple_to_list/1
+        fun_to_list/1
+
+To Guard a Data Type
+    * How to write a guard that ensures that patterns match against data of
+      a specific type, like numbers, atoms, or binaries?
+    * Type test built in functions:
+
+        is_atom/1       is_function/1   is_port/1
+        is_binary/1     is_function/2   is_record/2
+        is_bitstring/1  is_integer/1    is_record/3
+        is_boolean/1    is_list/1       is_reference/1
+        is_builtin/3    is_number/1     is_tuple/1
+        is_float/1      is_pid/1
+
+    * Using them in guards:
+
+        my_function(Exp) ->
+            case type_of(Exp) of
+                binary -> Expression1;
+                list -> Expression2
+            end.
+
+        % equivalent to:
+
+        my_function(Exp) when is_binary(Exp) -> Expression1;
+        my_function(Exp) when is_list(Exp) -> Expression2.
+
+    * Additional built in functions allowed in guard expressions:
+
+        abs(Number), bit_size(Binary), byte_size(Binary), element(N, Tuple),
+        float(Term), hd(List), length(List), node(), node(Pid|Ref|Port),
+        round(Number), self(), tl(List), trunc(Number), tuple_size(Tuple)
+
+For Type Junkies
+    * There's options in chapter 30.
+
+
+Chapter 5: Hello Recursion!
+    * Functional languages mostly don't have loops, just recursion.
+
+How Recursion Works
+    * Expression of factorial in Erlang:
+
+        -module(recursive).
+        -export([fac/1]).
+
+        fac(N) when N == 0 -> 1;
+        fac(N) when N > 0 -> N*fac(N-1).
+
+        % alternately:
+
+        fac(0) -> 1;
+        fac(N) when N > 0 -> N * fac(N-1).
+
+    Length of a List
+        * Recursive function to count how many elements a list contains.
+        * Needs: a base case, self calling function, a list to test with
+        * Code:
+
+            len([]) -> 0;
+            len([_|T]) -> 1 + len(T).
+
+    Length of a Tail Recursion
+        * Tail recursion is bettah.
+        * Tail recursive version:
+
+            tail_fac(N) -> tail_fac(N,1).
+            tail_fac(0,Acc) -> Acc;
+            tail_fac(N,Acc) when N > 0 -> tail_fac(N-1,N*Acc).
+
+        * Tail recursive version of length:
+
+            tail_len(L) -> tail_len(L,0).
+            tail_len([],Acc) -> Acc;
+            tail_len([_|T],Acc) -> tail_len(T,Acc+1).
+
+More Recursive Functions
+    A Duplicate Function
+        * Duplicate Term N times. Plain recursive:
+
+            duplicate(0,_) ->
+                [];
+            duplicate(N,Term) when N > 0 ->
+                [Term|duplicate(N-1,Term)].
+
+        * Tail recursive:
+            
+            tail_duplicate(N,Term) ->
+                tail_duplicate(N,Term,[]).
+
+            tail_duplicate(0,_,List) ->
+                List;
+            tail_duplicate(N,Term,List) when N > 0 ->
+                tail_duplicate(N-1, Term, [Term|List]).
+
+    A Reverse Function
+        * Iterate by pattern matchin [H|T], and then putting H after the rest of the list
+        * Recursive but not tail recursive:
+
+            reverse([]) -> [];
+            reverse([H|T]) -> reverse(T) ++ [H].
+
+        * Tail recursive:
+
+            tail_reverse(L) -> tail_reverse(L,[]).
+
+            tail_reverse([],Acc) -> Acc;
+            tail_reverse([H|T],Acc) -> tail_reverse(T,[H|Acc]).
+
+    A Sublist Function
+        * Two base cases: empty list, 0 elements requested:
+
+            sublist(_,0) -> [];
+            sublist([],_) -> [];
+            sublist([H|T],N) when N > 0 -> [H|sublist(T,N-1)].
+
+        * Tail recursive version:
+
+            tail_sublist(L,N) -> reverse(tail_sublist(L, N, [])).
+
+            tail_sublist(_,0,SubList) -> SubList;
+            tail_sublist([], _, SubList) -> SubList;
+            tail_sublist([H|T], N, SubList) when N > 0 ->
+                tail_sublist(T, N-1, [H|SubList]).
+
+    A Zip Function
+        * Takes two lists of the same lengths, joins them as a list of tuples.
+
+            [a,b,c],[1,2,3] becomes [{a,1},{b,2},{c,3}]
+
+        * Base cases are zipping empty lists, and when one list runs dry.
+
+            lenient_zip([],_) -> [];
+            lenient_zip(_,[]) -> [];
+            lenient_zip([X|Xs],[Y|Ys]) -> [{X,Y}|lenient_zip(Xs,Ys)].
+
+        * Tail recursive version.
+
+            tail_zip(A,B) -> tail_reverse(tail_zip(A,B,[])).
+
+            tail_zip([],_,Zipped) -> Zipped;
+            tail_zip(_,[],Zipped) -> Zipped;
+            tail_zip([X|Xs],[Y|Ys],Zipped) -> tail_zip(Xs,Ys,[{X,Y}|Zipped]).
+
+        * Recursive quicksort in two functions:
+
+            quicksort([]) -> [];
+            quicksort([Pivot|Rest]) ->
+                {Smaller, Larger} = partition(Pivot,Rest,[],[]),
+                quicksort(Smaller) ++ [Pivot] ++ quicksort(Larger).
+                
+            partition(_,[],Smaller,Larger) -> {Smaller,Larger};
+            partition(Pivot,[H|T],Smaller,Larger) ->
+                if H =< Pivot -> partition(Pivot,T,[H|Smaller],Larger);
+                   H >  Pivot -> partition(Pivot,T,Smaller,[H|Larger])
+                end.
+
+More Than Lists
+    * Look at how to build binary trees and then read data from them.
+    * Trees are nodes all the way down, and nodes are tuples made of
+      key/value/childA/childB.
+    * Nodes may contain empty nodes.
+    * Tagged tuples for nodes:
+
+        {node, {Key, Value, Smaller, Larger}}   % with payload
+        {node, nil}                             % empty node
+
+    * Empty node is the base case--when we hit one in a traverse, we can add
+      a new key/value at that location.
+    * When the sought key is less than the current node, go into Smaller, when
+      it's larger, go into Larger. If equal, replace the value at the node.
+
+        -module(tree).
+        -export([empty/0, insert/3, lookup/2]).
+
+        empty() -> {node, 'nil'}.
+
+        insert(Key, Val, {node, 'nil'}) ->
+            {node, {Key, Val, {node, 'nil'}, {node, 'nil'}}};
+        insert(NewKey, NewVal, {node, {Key, Val, Smaller, Larger}}) when NewKey < Key ->
+            {node, {Key, Val, insert(NewKey, NewVal, Smaller), Larger}};
+        insert(NewKey, NewVal, {node, {Key, Val, Smaller, Larger}}) when NewKey > Key ->
+            {node, {Key, Val, Smaller, insert(NewKey, NewVal, Larger)}};
+        insert(Key, Val, {node, {Key, _, Smaller, Larger}}) ->
+            {node, {Key, Val, Smaller, Larger}}.
+
+    * Each insert returns an entirely new tree, but with the structures from the 
+      previous tree--only the traversed nodes require new data allocation.
+    * Use the gb_trees module when implementing trees in code.
+
+Thinking Recursively
+    * Find the base cases, write them down, make sure all other operations
+      converge towards one of the base cases.
+
+
+Chapter 6: Higher-Order Functions
+    * A function that can accept other functions as parameters is 'higher-order'.
+
+Let's Get Functional
+    * Example of something like lambda calculus (where everything is a function):
+
+        -module(hhfuns).
+        -compile(export_all).
+
+        one() -> 1.
+        two() -> 2.
+        
+        add(X,Y) -> X() + Y().
+
+    * Calling add/2:
+
+        hhfuns:add(fun hhfuns:one/0, fun hhfuns:two/0).
+
+    * If function names are written without a parameter list, they're treated as
+      atoms, and atoms can't be functions, so a call like add(one,two) would fail.
+    * The notation
+
+        fun Module:Function/Arity
+
+      tells the VM to use that specific function and bind it to a variable.
+
+    * Full program that abstracts into a list mapper:
+
+        -module(hhfuns).
+        -compile(export_all).
+
+        one() -> 1.
+        two() -> 2.
+
+        add(X,Y) -> X() + Y().
+
+        %% Example of named functions that inc/dec:
+        increment([]) -> [];
+        increment([H|T]) -> [H+1|increment(T)].
+
+        decrement([]) -> [];
+        decrement([H|T]) -> [H-1|decrement(T)].
+
+        %% Abstracting that into a map function:
+        map(_, []) -> [];
+        map(F, [H|T]) -> [F(H)|map(F,T)].
+
+        incr(X) -> X + 1.
+        decr(X) -> X - 1.
+
+Anonymous Functions
+    * You can declare an unnamed, inline function.
+    * They can do everything a normal function can except call themselves.
+    * They have the following syntax:
+
+        fun(Args1) ->
+            Expression1, Exp2, ..., ExpN;
+           (Args2) ->
+            Expression1, Exp2, ..., ExpN;
+           (Args3) ->
+            Expression1, Exp2, ..., ExpN
+        end
+
+    * Example of use:
+
+        Fn = fun() -> a end.
+        Fn().                   % outputs 'a'
+
+        hhfuns:map(fun(X) -> X + 1 end, L).
+        hhfuns:map(fun(X) -> X - 1 end, L).
+
+    More Anonymous Function Power
+        * Example:
+
+            PrepareAlarm = fun(Room) ->
+                io:format("Alarm set in ~s.~n", [Room]),
+                fun() -> io:format("Alarm tripped in ~s!~n", [Room]) end
+            end.
+
+            AlarmReady = PrepareAlarm("bathroom").
+            AlarmReady().       % outputs 'Alarm tripped in bathroom!'
+
+    Function Scope and Closures
+        * Function level scope. Yep.
+        * Example of closure:
+
+            a() ->
+                Secret = "pony",
+                fun() -> Secret end.
+
+            b(F) ->
+                "a/0's password is " ++ F().
+
+            hhfuns:b(hhfuns:a()).   % outputs the concatenated secret value
+
+        * A trap:
+
+            base() ->
+                A = 1,
+                (fun() -> A = 2 end)().  % declare and run immediately
+
+          The anonymous function inherits scope from base/0, which means the
+          comparison of A to 2 will fail, since A is already bound. However,
+          if you redeclare the variable A in the head of the anonymous function,
+          that works:
+
+            base() ->
+                A = 1,
+                (fun(A) -> A = 2 end)(2).
+
+          though this will generate a warning that A is 'shadowed' in the
+          anonymous function.
+
+Maps, Filters, Folds, and More
+    * map/2 is a recursive abstraction. There are a lot more things like that.
+
+    Filters
+        * Example of code that acts as individualized filters:
+
+            %% Only keep even numbers.
+            even(L) -> lists:reverse(even(L,[])).
+
+            even([],Acc) -> Acc;
+            even([H|T], Acc) when H rem 2 == 0 ->
+                even(T, [H|Acc]);
+            even([_|T], Acc) ->
+                even(T, Acc).
+
+            %% Only keep men older than 60.
+            old_men(L) -> lists:reverse(old_men(L,[])).
+
+            old_men([],Acc) -> Acc;
+            old_men([Person = {male,Age}|People], Acc) when Age > 60 ->
+                old_men(People, [Person|Acc]);
+            old_men([_|People], Acc) ->
+                old_men(People, Acc).
+    
+        * Abstracting that away:
+
+            filter(Pred, L) -> lists:reverse(filter(Pred, L, [])).
+
+            filter(_, [], Acc) -> Acc;
+            filter(Pred, [H|T], Acc) ->
+                case Pred(H) of
+                    true -> filter(Pred, T, [H|Acc]);
+                    false -> filter(Pred, T, Acc)
+                end.
+
+        * Usage:
+
+            9> Numbers = lists:seq(1,10).
+            [1,2,3,4,5,6,7,8,9,10]
+            10> hhfuns:filter(fun(X) -> X rem 2 == 0 end, Numbers).
+            [2,4,6,8,10]
+            11> People = [{male,45},{female,67},{male,66},
+                          {female,12},{unknown,174},{male,74}].
+            [{male,45},
+             {female,67},
+             {male,66},
+             {female,12},
+             {unknown,174},
+             {male,74}]
+            12> hhfuns:filter(fun({Gender,Age}) -> 
+                         Gender == male andalso Age > 60 end, People).
+            [{male,66},{male,74}]
+
+
+    Fold Everything
+        * A fold is an operation recursively applied to a list to reduce the
+          elements to a single value.
+        * Example:
+
+            %% Find the max of a list.
+            max([H|T]) -> max2(T,H).
+
+            max2([], Max) -> Max;
+            max2([H|T], Max) when H > Max -> max2(T,H);
+            max2([_|T], Max) -> max2(T, Max).
+
+            %% Find the minimum of a list.
+            min([H|T]) -> min2(T,H).
+
+            min2([], Min) -> Min;
+            min2([H|T], Min) when H < Min -> min2(T,H);
+            min2([_|T], Min) -> min2(T, Min).
+
+            %% Find the sum of all elements of a list.
+            sum(L) -> sum(L,0).
+
+            sum([], Sum) -> Sum;
+            sum([H|T], Sum) -> sum(T, H+Sum).
+
+        * Abstraction of folding:
+
+            fold(_, Start, []) -> Start;
+            fold(F, Start, [H|T]) -> fold(F, F(H,Start), T).
+
+        * Usage:
+
+            1> c(hhfuns).
+            {ok,hhfuns}
+            2> [H|T] = [1,7,3,5,9,0,2,3].
+            [1,7,3,5,9,0,2,3]
+            3> hhfuns:fold(fun(A,B) when A > B -> A; (_,B) -> B end, H, T).
+            9
+            4> hhfuns:fold(fun(A,B) when A < B -> A; (_,B) -> B end, H, T).
+            0
+            5> hhfuns:fold(fun(A,B) -> A + B end, 0, lists:seq(1,6)).
+            21
+
+        * Basically any function that reduces a list to one element can be
+          expressed as a fold.
+        * You can also represent an accumulator as a single element or variable,
+          and an accumulator can be a list. Consequently you can use a fold to
+          build a list. Therefore you can use a fold to impelement pretty much
+          any other recursive function on lists, even maps and filters:
+
+            reverse(L) -> 
+                fold(fun(X,Acc) -> [X|Acc] end, [], L).
+
+            map2(F,L) ->
+                reverse(fold(fun(X,Acc) -> [F(X)|Acc] end, [], L)).
+
+            filter2(Pred, L) ->
+                F = fun(X, Acc) ->
+                    case Pred(X) of
+                        true -> [X|Acc];
+                        false -> Acc
+                    end
+                end,
+                reverse(fold(F, [], L)).
+
+    More Abstractions
+        * You get a ton of these abstractions out of the Erlang standard library, 
+          like lists:map/2, lists:filter/2, lists:foldl/3, lists:foldr/3.
+        * Others include all/2 and any/2, which test all elements against a 
+          predicate and check to see if any meet the predicate.
+        * You also get dropwhile/2, which ignores elements of a list until it
+          finds one that fits a certain predicate.
+        * takewhile/2 will keep elements until there is one that doesn't meet
+          a predicate.
+        * partition/2 will take a list and return two lists, one with terms that
+          satisfy a given predicate, and one with terms that don't.
+        * Others: flatten/1, flatlength/1, flatmap/2, merge/1, nth/2, 
+          nthtail/2, split/2
+
+
+Chapter 7: Errors and Exceptions
+    * Two big language parts: functional and concurrent.
+    * Error handling capabilities are in the concurrent part.
+    * This chapter covers only the functional subset of the language.
+
+A Compilation of Errors
+
+    Compile-Time Errors
+        * Often syntax mistakes.
+        * Common compile time errors:
+            - Module name mismatch.
+            - Fail to export a function, misname a function in export.
+            - Wrong name or arity in the -export statement.
+            - Generic syntax errors.
+            - Bad arithmetic errors.
+            - Variable declared but never used.
+            - List/tuple/function is declared without being bound or returned.
+            - A function with multiple clauses has different arity between clauses.
+            - Use of a variable declared in a case branch outside the case.
+
+    No, YOUR Logic is Wrong!
+        * Tools for dealing with logical errors:
+            - test frameworks
+            - TypEr and Dialyzer tools
+            - debugger
+            - tracing module
+    
+    Runtime Errors
+        * Cause crashes.
+
+        Function Clause Errors
+            * When you fail all guard clauses of a function or all pattern matches.
+
+        Case Clause Errors
+            * Forgotten a specific case, sent the wrong data, left out a catchall.
+
+        If Clause Errors
+            * No if branch that evaluates true.
+
+        Bad Match Errors
+            * Whenever pattern matching fails.
+            * Probably an impossible pattern match, attempt to rebind a variable,
+              or any use of = where the sides don't balance or bind.
+
+        Bad Argument Errors
+            * Calling functions with incorrect arguments.
+
+        Undefined Function Errors
+            * Calling a function that doesn't exist.
+
+        Bad Arithmetic Errors
+            * Divide by zero, arithmetic between atoms and numbers.
+
+        Bad Function Errors
+            * Using variables as functions, when the variable's value is not a
+              function.
+
+        Bad Arity Errors
+            * Using higher order functions but passing them more or less args
+              than they require.
+
+        System Limit Errors
+            * Too many processes.
+            * Atoms that are too long.
+            * Too many arguments in a function.
+            * Too many atoms.
+            * Too many nodes connected.
+            * Lots more.
+
+Raising Exceptions
+    * Three kinds of exceptions: errors, exits, and throws.
+
+    Error Exceptions
+        * Calling erlang:error(Reason) will end the current process's execution
+          and include a stack trace of the last functions called with arguments
+          when you catch the exception.
+
+        When Not to Use Errors
+            * The tree module, when it can't find a key, shouldn't error out.
+            * Can return things like {ok, Value} or undefined.
+
+        Custom Errors
+            * You can define custom errors:
+
+                erlang:error(badarith).  % raises exception error: bad argument
+                erlang:error(custom_err). % raises 'custom_err'
+
+    Exit Exceptions
+        * Two kinds of exits:
+            - Internal exits are triggered by exit/1, and making the current
+              process stop its execution.
+            - External exits are triggered with exit/2 and have to do with
+              multiple processes in the concurrent aspect of Erlang.
+        * Internal exits are similar to errors.
+        * To know which to use, you have to understand Erlang processes:
+            - Processes can send each other messages.
+            - A process can listen for messages or wait for them.
+            - You can choose which messages to listen to.
+            - You can discard messages, ignore them, stop listening, etc.
+        * An exit signal communicates exceptions between processes.
+        * If you're communicating between processes, exit/1 won't ship them
+          all a stack trace in the event of a failure.
+
+    Throw Exceptions
+        * Class of exceptions the programmer can be expected to handle.
+        * They don't carry the intent of crashing the process, they're more of
+          a control flow structure.
+        * Syntax:
+
+            1> throw(permission_denied).
+            ** exception throw: permission_denied
+
+        * Takes an arg, can be arbitrary.
+        * Can also be for nonlocal returns when in deep recursion.
+        * The ssl module uses throw/1 to push {error, Reason} back to a top
+          level function, which then passes them to the user.
+        * Try to limit use of throws for nonlocal returns to a single module
+          in order to make debugging easier.
+
+Dealing with Exceptions
+    * Use a try...catch block:
+
+        try Expression of
+            SuccessfulPattern1 [Guards] ->
+                Expression1;
+            SuccessfulPattern2 [Guards] ->
+                Expression2
+        catch
+            TypeOfError:ExceptionPattern1 ->
+                Expression3;
+            TypeOfError:ExceptionPattern2 ->
+                Expression4
+        end.
+
+    * TypeOfError can be 'error', 'throw', or 'exit', for each exception type.
+    * 'throw' is the default value
+
+    Handling Different Types of Exceptions
+        * Example:
+
+            -module(exceptions).
+            -compile(export_all).
+
+            throws(F) ->
+                try F() of
+                    _ -> ok
+                catch
+                    Throw -> {throw, caught, Throw}
+                end.
+
+            errors(F) ->
+                try F() of
+                    _ -> ok
+                catch
+                    error:Error -> {error, caught, Error}
+                end.
+
+            exits(F) ->
+                try F() of
+                    _ -> ok
+                catch
+                    exit:Exit -> {exit, caught, Exit}
+                end.
+
+        * Usage:
+
+            1> c(exceptions).
+            {ok,exceptions}
+            2> exceptions:throws(fun() -> throw(thrown) end).
+            {throw,caught,thrown}
+            3> exceptions:throws(fun() -> erlang:error(pang) end).
+            ** exception error: pang
+                 in function  exceptions:throws/1 (exceptions.erl, line 5)
+            4> exceptions:errors(fun() -> erlang:error("DIE!") end).
+            {error,caught,"DIE!"}
+            5> exceptions:exits(fun() -> exit(goodbye) end).
+            {exit,caught,goodbye}
+
+       * Multiple types:
+
+            sword(1) -> throw(slice);
+            sword(2) -> erlang:error(cut_arm);
+            sword(3) -> exit(cut_leg);
+            sword(4) -> throw(punch);
+            sword(5) -> exit(cross_bridge).
+
+            black_knight(Attack) when is_function(Attack, 0) ->
+                try Atttack() of
+                    _ -> "None shall pass."
+                catch
+                    throw:slice -> "A scratch!";
+                    error:cut_arm -> "A flesh wound!";
+                    exit:cut_leg -> "Come on!";
+                    _:_ -> "Bah!"
+                end.
+
+    After the Catch
+        * Optional additional clause:
+
+            try Expression of
+                Pattern -> Expr1
+            catch
+                Type:Exception -> Expr2
+            after
+                Expr3
+            end
+
+    Trying Multiple Extensions
+        * You can have more than one expression between try and of:
+
+            whoa() ->
+                try
+                    talk(),
+                    _Knight = "None shall pass!",
+                    _Doubles = [N*2 || N <- lists:seq(1,100)],
+                    throw(up),
+                    _WillReturnThis = tequila
+                of
+                    tequila -> "Hey, this worked!"
+                catch
+                    Exception:Reason -> {caught, Exception, Reason}
+                end.
+
+        * You can't do tail recursion in the protected part of an exception, 
+          because the VM has to keep a reference there in case there's an
+          exception that happens.
+
+    Wait, There's More!
+        * The catch construct captures all types of exceptions on top of the
+          good results.
+        * Example:
+
+            1> catch throw(whoa).
+            whoa
+            2> catch exit(die).
+            {'EXIT',die}
+            3> catch 1/0.
+            {'EXIT',{badarith,[{erlang,'/',[1,0],[]},
+                               {erl_eval,do_apply,6,[{file,"erl_eval.erl"},{line,573}]},
+                               {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,357}]},
+                               {shell,exprs,7,[{file,"shell.erl"},{line,674}]},
+                               {shell,eval_exprs,7,[{file,"shell.erl"},{line,629}]},
+                               {shell,eval_loop,3,[{file,"shell.erl"},{line,614}]}]}}
+            4> catch 2+2.
+            4
+           
+        * Errors will show a stack trace.
+        * You can manually call a stack trace with erlang:get_stacktrace/0.
+
+Try a try in a Tree
+    * Value finding function that does a Eulerian traverse:
+
+        %% looks for a given Val in the tree
+        has_value(_, {node, 'nil'}) ->
+            false;
+        has_value(Val, {node, {_, Val, _, _}}) ->
+            true;
+        has_value(Val, {node, {_, _, Left, Right}}) ->
+            case has_value(Val, Left) of
+                true -> true;
+                false -> has_value(Val, Right)
+            end.
+
+    * Improved finding function that uses a throw to cut the return process to 1 step:
+
+        has_value(Val, Tree) ->
+            try has_value1(Val, Tree) of
+                false -> false
+            catch
+                true -> true
+            end.
+            
+        has_value1(_, {node, 'nil'}) ->
+            false;
+        has_value1(Val, {node, {_, Val, _, _}}) ->
+            throw(true);
+        has_value1(Val, {node, {_, _, Left, Right}}) ->
+            has_value1(Val, Left),
+            has_value1(Val, Right).
+
+
+Chapter 8: Functionally Solving Problems
+
+Reverse Polish Notation Calculator
+    * Prefix notation / Polish notation for arithmetic places the operator before
+      the operands, which means you don't have to understand operator precedence:
+
+        (2 + 2) / 5   becomes    (/ (+ 2 2) 5)
+
+    * If you stipulate that / and + always take two args, then
+
+        (/ (+ 2 2) 5)  becomes  / + 2 2 5
+
+    * Reverse Polish notation puts the operator after the operands. In RPN:
+
+        (2 + 2) / 5            becomes  2 2 + 5 /
+        9 * 5 + 7              becomes  9 5 * 7 +
+        10 * 2 * (3 + 4) / 2   becomes  10 2 * 3 4 + * 2 /
+
+    How RPN Calculators Work
+        * Simplest way to read RPN expressions is to treat them as a stack.
+        * For the expression 10 4 3 + 2 * -, you push 10 onto the stack, then
+          4, then 3. 
+          
+            stack = [3,4,10]
+          
+          Then you get to the +, which is an arity 2 function, so you
+          feed it two operands by taking 3 off the stack and 4 off the stack.
+
+            3+4=7
+
+          That gives you a return value of 7, which you push back onto the stack.
+
+            stack = [7,10]
+
+          The next term is 2, which you push to the stack:
+
+            stack = [2,7,10]
+
+          Next to parse is *, which is arity 2, so you take 2 and 7 off:
+
+            2*7 = 14
+
+          Add the result back to the stack:
+
+            stack = [14,10]
+
+          Last character to parse is -, which is also arity 2, so take from the stack:
+
+            10 - 14 = -4
+
+    Creating an RPN Calculator
+
+        -module(calc).
+        -compile(export_all).
+
+        rpn(L) when is_list(L) ->
+            [Res] = lists:foldl(fun rpn/2, [], string:tokens(L, " ")),
+            Res.
+
+        rpn("+", [N1,N2|S]) -> [N2+N1|S];
+        rpn("-", [N1,N2|S]) -> [N2-N1|S];
+        rpn("*", [N1,N2|S]) -> [N2*N1|S];
+        rpn("/", [N1,N2|S]) -> [N2/N1|S];
+        rpn("^", [N1,N2|S]) -> [math:pow(N2,N1)|S];
+        rpn("ln", [N|S])    -> [math:log(N)|S];
+        rpn("log10", [N|S]) -> [math:log10(N)|S];
+        rpn(X, Stack) -> [read(X)|Stack].
+
+        read(N) ->
+            case string:to_float(N) of
+                {error,no_float} -> list_to_integer(N);
+                {F,_} -> F
+            end.
+
+        rpn_test() ->
+            5 = rpn("2 3 +"),
+            87 = rpn("90 3 -"),
+            -4 = rpn("10 4 3 + 2 * -"),
+            -2.0 = rpn("10 4 3 + 2 * - 2 /"),
+            ok = try 
+                rpn("90 34 12 33 55 66 + * - + -")
+            catch
+                error:_ -> ok
+            end,
+            4037 = rpn("90 34 12 33 55 66 + * - + -"),
+            8.0 = rpn("2 3 ^"),
+            true = math:sqrt(2) == rpn("2 0.5 ^"),
+            true = math:log(2.7) == rpn("2.7 ln"),
+            true = math:log10(2.7) == rpn("2.7 log10"),
+            ok. 
+
+Heathrow to London
+    * Problem is the fastest route between points:
+
+             50      5         40     10
+        A +------+--------+--------+-----+
+                 |        |        |     |
+               30|      20|      25|    0| C
+                 |        |        |     |
+        B +------+--------+--------+-----+
+             10      90       2       8
+
+    Solving the Problem Recursively
+        * Base case for the recursive problem is a simple choice between A and B.
+        * On each step, we want to reduce the problem to choosing between A and
+          B for the next step.
+        * A hypothetical last iteration (base case):
+
+                  10
+            A +-------+
+                     0| C
+            B +-------+
+                  15
+
+        * Next to last iteration:
+
+                 A1       A2
+                  5       10
+           A  +-------+-------+
+                  X1 3|   X2 0|  C
+           B  +-------+-------+
+                  1       15
+                 B1       B2
+
+        * Want to converge toward base case. Need to reduce tuple {5,1,3} to a
+          strict choice between A and B.
+        * Costs in next to last iteration:
+
+                   To A1  To B1       
+            Via A   5     5+3
+            Via B  1+3     1
+
+        * So the lowest cost to reach point A1 is 4, and for B1 it's 1.
+        * The costs to reach A2/B2 are:
+
+                   To A2  To B2
+            Fr A1   10     3+15  
+            Fr B1  3+10    15
+
+        * So the lowest cost to reach A2 from points 1 is 10, and for B2 it's 15.
+        * Costs from the origin:
+
+                  To A2  To B2
+            Fr OA  4+10   4+18
+            Fr OB  1+13   1+15
+
+        * So the lowest cost from origin to end (at A2/B2) is 14:
+
+            [B X A X] = [1 3 10 0]
+
+    Writing the Code
+        * Encoding the routes in a file as tuples of 3:
+
+              

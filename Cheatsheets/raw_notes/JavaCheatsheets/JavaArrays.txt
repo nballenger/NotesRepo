@@ -1,0 +1,179 @@
+Java Arrays
+
+  datatype[] nameOfArray;                         // Declaration
+  nameOfArray = new datatype[length];             // Creation
+  datatype[] nameOfArray2 = new datatype[length]; // Combined
+
+  // Examples:
+
+  int[] myIntegers = new int[10];
+  double[] myDoubles = new double[20];
+  String[] myStrings = new String[10];
+
+  final int LENGTH = 10;
+  int[] numbers = new int[LENGTH];
+
+  // Array Literals
+  int[] numbers2 = {1, 2, 3, 4, 5};
+  String myStrings2 = {"ABC", "DEF", "GHI"};
+
+  // Iteration
+
+  int l = numbers2.length;
+  for (int i = 0; i < l; i++) {
+    System.out.println(numbers2[i]);
+  }
+
+  // Shallow copy / copy of reference:
+  int[] scores = {10, 9, 8, 7, 6};
+  int[] values = scores;
+  scores[0] = 11;
+  System.out.println(values[0]);    // prints 11
+
+  // Deep copy:
+  import java.util.Arrays;
+  double[] prices = Arrays.copyOf(values, values.length);
+
+  // Partially filled arrays with companion variable:
+  int currentSize = 0;
+  Scanner in = new Scanner(System.in);
+  while (in.hasNextDouble()) {
+    if (currentSize < values.length) {
+      values[currentSize] = in.nextDouble();
+      currentSize++;
+    }
+  }
+
+  // Enhanced for loop:
+  double[] values = {...};
+  double total = 0;
+  for (double element: values) {
+    total = total + element;
+  }
+
+  // Filling array:
+  for (int i = 0; i < values.length; i++) {
+    values[i] = i * i;
+  }
+
+  // Sum and average:
+  double total = 0;
+  for (double element: values) {
+    total += element;
+  }
+  double average = 0;
+  if (values.length > 0) { average = total / values.length; }
+
+  // Min/max:
+  double largest = values[0];
+  double smallest = values[0];
+  for (int i = 1; i < values.length; i++) {
+    if (values[i] > largest ) { largest  = values[i]; }
+    if (values[i] < smallest) { smallest = values[i]; }
+  }
+
+  // Display with separators:
+  for (int i = 0; i < values.length; i++) {
+    if (i > 0) { System.out.print(" | "); }
+    System.out.print(values[i]);
+  }
+
+  // Linear search:
+  int targetVal = 100;
+  int pos = 0;
+  boolean found = false;
+  while (pos < values.length && !found) {
+    if (values[pos] == targetVal) { found = true; }
+    else { pos++; }
+  }
+
+  // Removing an element
+  for (int i = pos + 1; i < currentSize; i++) {
+    values[i-1] = values[i];
+  }
+  currentSize--;
+
+  // Inserting an element
+  if (currentSize < values.length) {
+    currentSize++;
+    values[currentSize-1] = newElement;
+  }
+
+  if (currentSize < values.length) {
+    currentSize++;
+    for (int i = currentSize-1; i > pos; i--) {
+      values[i] = values[i-1];
+    }
+    values[pos] = newElement;
+  }
+
+  // Swapping elements
+  double temp = values[i];
+  values[i] = values[j];
+  values[j] = temp;
+
+
+  // Arrays as method arguments:
+
+  public static double sum(double[] values) {
+    double total = 0;
+    for (double element: values) { total += element; }
+    return total;
+  }
+
+  // Changing an array by reference
+  public static void multiply(double[] values, double factor) {
+    for (int i = 0; i < values.length; i++) {
+      values[i] = values[i] * factor;
+    }
+  }
+
+  // Returning an array:
+  public static int[] squares(int n) {
+    int[] result = new int[n];
+    for (int i = 0; i < n; i++) { result[i] = i*i; }
+    return result;
+  }
+
+  // Methods with a variable number of parameters:
+  public void sum(int[] values) {
+    int total = 0;
+    for (int i = 0; i < values.length; i++) { total += values[i]; }
+    return total;
+  }
+    
+
+  // 2D arrays
+  final int ROWS = 5;
+  final int COLS = 5;
+  int[][] table = new int[ROWS][COLS];
+
+  int[][] table2 = {
+    { 1, 0, 1 },
+    { 0, 0, 0 },
+    { 1, 1, 0 }
+  };
+
+  for (int i = 0; i < ROWS; i++) {
+    for (int j = 0; j < COLS; j++) {
+      System.out.print(table[i][j]);
+    }
+    System.out.println();
+  }
+
+
+  // ArrayList objects--can have variable length
+  ArrayList<String> friends = new ArrayList<String>();
+  friends.add("Cindy");
+  String name = friends.get(i);
+  friends.set(i, "Harry");
+  friends.add("Bob");
+  int curSize = friends.size();
+  friends.remove(curSize-1);
+
+  for (String name: friends) {
+    System.out.print(name);
+  }
+
+  // Copying an ArrayList:
+  ArrayList<String> newFriends = new ArrayList<String>(friends);

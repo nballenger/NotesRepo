@@ -1,0 +1,541 @@
+Getting Help
+
+    ?string                     get help on a specific topic
+    help.search('string')       
+    find('string')              tells you what package something is in
+    apropos('string')           names of all objects in the search list
+    example(function)           worked example of the function
+    demo(various)               demonstrations of r functions
+    
+Bringing in Libraries
+
+    library(spatial)            load the spatial library
+    library(help=spatial)       get info about a package
+    objects(grep("spatial",search()))   view the full list of library contents
+    install.packages("boot")    install boot package
+    
+Session and Environment
+
+    objects()                   list objects in the current session
+    search()                    packages and dataframes currently attached
+    rm(x)                       remove a variable
+    detach(frame)               detach a dataframe
+    rm(list=ls())               remove absolutely everything
+    
+Math Functions
+
+    log(x)                      log to base e of x
+    exp(x)                      antilog of x (e^x)
+    log(x,n)                    log to base n of x
+    log10(x)                    log to base 10 of x
+    sqrt(x)                     square root of x
+    factorial(x)
+    choose(n,x)                 binomial coefficients n!/(x! (n-x)!)
+    gamma(x)                    G(x), for real x(x-1)!, for integer x
+    lgamma(x)                   natural log of G(x)
+    floor(x)
+    ceiling(x)
+    trunc(x)                    closest integer to x between x and 0
+    round(x, digits=0)          
+    signif(x, digits=6)         give x to six digits in scientific notation
+    runif(n)                    generates n random numbers between 0 and 1,
+                                from a uniform distribution
+    cos(x)                      cosine of x in radians
+    sin(x)                      sine of x in radians
+    tan(x)
+    acos(x), asin(x), atan(x)
+    acosh(x), asinh(x), atanh(x)    inverse hyperbolic trig transformations
+    abs(x)
+
+Operators
+    
+    * - / *                     arithmetic
+    n^m                         power
+    n %/% m                     integer part of division
+    n %% m                      remainder of division
+    
+    > >= < <= == !=             relational
+    ! & |                       logical
+    ~                           model formulae ('is modeled as a function of')
+    <-  ->                      assignment
+    $                           list indexing (element name operator
+    :                           create a sequence        
+        
+Variables
+
+    - case sensitive
+    - must start with alphanumeric
+    - no spaces
+    - Assignment is:   varname <- value
+    
+Factors
+    
+    - Factors are categorical variables that have a fixed number of levels:
+    
+    gender <- factor(c("f","m","f","m","f"))        assignment
+    class(gender)                                   returns 'factor'
+    mode(gender)                                    returns 'numeric'
+    data <- read.table('filename', header=T)        loads dataframe
+    attach(data)
+    head(data)                                      prints head rows
+    
+    - For this data frame/head:
+    
+            Grow.rate   Water   Detergent   Daphnia
+        1   2.999       Tyne    BrandA      Clone1
+        2   2.988       Tyne    BrandA      Clone1
+        3   2.977       Tyne    BrandA      Clone1
+        4   2.966       Tyne    BrandA      Clone2
+        5   2.955       Tyne    BrandA      Clone2
+        6   2.944       Tyne    BrandA      Clone2
+    
+    is.factor(Water)                                returns TRUE
+    levels(Detergent)                               returns "BrandA" "BrandB",...
+    nlevels(Detergent)                              returns 4
+    length(levels(Detergent))                       returns 4
+    
+    - For a variable called 'treatment' with three factor levels, this will set
+      the display ordering of the levels.
+    
+    treatment <- factor(treatment, levels=c('nothing','single','double))
+    
+    - Factors may only be compared with == and !=.
+    
+    as.vector(unclass(Daphnia))                     converts levels to integers
+    
+Booleans
+    
+    TRUE
+    FALSE
+    T                           shortcut for TRUE, but NOT a reserved word
+    F                           shortcut for FALSE, but NOT a reserved word
+    
+Floating Point Equality
+
+    - Large floating point numbers may be "different" depending on the algorithm
+      used to compute them, given their data type truncation.
+    - all.equal allows for insignificant differences:
+    
+        x <- 0.3 - 0.2
+        y <- 0.1
+        x == y                  returns FALSE
+        identical(x,y)          returns FALSE
+        all.equal(x,y)          returns TRUE
+        
+    - Do not use all.equal in if tests, instead, do:
+    
+        if(isTRUE(all.equal(x,y)))
+        
+        
+Differences between objects with all.equal
+
+    a <- c("cat","dog","goldfish")
+    b <- factor(a)
+    
+    all.equal(a,b)
+        [1] "Modes: character, numeric"
+        [2] "Attributes: < target is NULL, current is list >"
+        [3] "target is character, current is factor"
+        
+Differences in vector magnitude with all.equal
+
+    n1 <- c(1,2,3)
+    n2 <- c(1,2,3,4)
+    all.equal(n1,n2)
+        [1] "Numeric: lengths(3,4) differ"
+        
+    n2 <- as.character(n2)
+    all.equal(n1,n2)
+        [1] "Modes: numeric, character"
+        [2] "Lengths: 3,4"
+        [3] "target is numeric, current is character"
+        
+Tri-valued logic with TRUE, FALSE, NA
+
+    Result of &:
+    
+                <NA>    FALSE   TRUE
+        <NA>      NA    FALSE     NA
+        FALSE  FALSE    FALSE  FALSE
+        TRUE      NA    FALSE   TRUE
+    
+    Result of |:
+    
+                <NA>    FALSE   TRUE
+        <NA>      NA       NA   TRUE
+        FALSE     NA    FALSE   TRUE
+        TRUE    TRUE     TRUE   TRUE
+        
+Logical Arithmetic
+
+    x <- 0:6                        x is a sequence from 0 to 6
+    x < 4
+        [1] TRUE TRUE TRUE TRUE FALSE FALSE FALSE
+    all(x>0)
+        [1] FALSE
+    sum(x<4)
+        [1] 4
+    (x<4)*runif(7)                  multiplies result of x<4 by random 7 vector
+    (treatment <- letters[1:5])
+    
+    - this will convert a five level factor to a three level factor by lumping
+      levels a and e into 1 and c and d into 3, with b set to 2
+      
+    (t2 <- factor(1+(treatment=='b')+2*(treatment=='c')+2*(treatment=='d')))
+        
+        
+Sequences
+    0:10                            zero through ten
+    15:5                            fifteen down to five
+    seq(0,1.5,0.1)                  0 to 1.5 stepping by 0.1
+    seq(6,4,-0.2)                   6 to 4 stepping by -0.2
+    
+    N <- c(55,76,92,103,84,88,121,91,65,77,99)      vector of pop sizes
+    seq(0.04,by=0.01,along=N)                       same size vector step by 0.01
+    seq(from=0.04,to=0.14,along=N)                  figures out step automatically
+    
+    sequence(c(4,3,4,4,4,5))                        subsequences of unequal size
+        [1] 1 2 3 4 1 2 3 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 5
+        
+    rep(9,5)                                        repeats 9, five times
+    rep(1:4,2)
+        [1] 1 2 3 4 1 2 3 4
+    rep(1:4, each=2)
+        [1] 1 1 2 2 3 3 4 4
+    rep(1:4, each=2, times=3)
+        [1] 1 1 2 2 3 3 4 4 1 1 2 2 3 3 4 4 1 1 2 2 3 3 4 4
+    rep(1:4,1:4)
+        [1] 1 2 2 3 3 3 4 4 4 4
+    rep(1:4,c(4,1,4,2))
+        [1] 1 1 1 1 2 3 3 3 3 4 4
+    rep(c('cat','dog','gerbil','goldfish','rat'), c(2,3,2,1,3))
+        [1] 'cat' 'cat' 'dog' 'dog' 'dog' 'gerbil' 'gerbil', 'goldfish'
+        [.] 'rat' 'rat' 'rat'
+        
+Generating Factor Levels
+
+    gl(up to, with repeats of, to total length)
+    
+    gl(4,3)
+        [1] 1 1 1 2 2 2 3 3 3 4 4 4
+        Levels: 1 2 3 4
+    
+    gl(4,3,24)
+        [1] 1 1 1 2 2 2 3 3 3 4 4 4
+        [13] 1 1 1 2 2 2 3 3 3 4 4 4
+        Levels: 1 2 3 4
+        
+    - Text for factor levels:
+    
+    Temp <- gl(2,2,24, labels=c('Low','High'))
+    Soft <- gl(3,8,24, labels=c('Hard','Medium','Soft'))
+    M.user <- gl(2,4,24, labels=c('N','Y'))
+    Brand <- gl(2,1,24, labels=c('X','M'))
+    data.frame(Temp,Soft,M.user,Brand)
+    
+    
+Membership and Coercion
+
+    - membership = class of an object in R
+    - coercion   = changing the class of an object
+    
+    lv <- c(T,F,T)
+    is.logical(lv)                          returns TRUE
+    levels(lv)                              returns NULL, not a factor
+    (fv <- as.factor(lv))                   coerces to two level factor
+    is.factor(fv)                           returns TRUE
+    
+    Data Type       Testing             Coercing
+    
+    Array           is.array            as.array
+    Character       is.character        as.character
+    Complex         is.complex          as.complex
+    Dataframe       is.data.frame       as.data.frame
+    Double          is.double           as.double
+    Factor          is.factor           as.factor
+    List            is.list             as.list
+    Logical         is.logical          as.logical
+    Matrix          is.matrix           as.matrix
+    Numeric         is.numeric          as.numeric
+    Raw             is.raw              as.raw
+    Time series     is.ts               as.ts
+    Vector          is.vector           as.vector
+    
+Missing values, Infinity, Non numbers
+
+    3/0
+        [1] Inf
+    -12/0
+        [1] -Inf
+    exp(-Inf)
+        [1] 0
+    0/Inf
+        [1] 0
+    (0:3)^Inf
+        [1] 0 1 Inf Inf
+    
+    0/0
+        [1] NaN
+    Inf-Inf
+        [1] NaN
+    Inf/Inf
+        [1] NaN
+        
+    is.finite(10)
+    is.infinite(10)
+    
+    is.na(x)
+    y[! is.na(y)]                       produces a vector with NA values stripped
+    
+    - Reducing rows containing missing values from a dataframe:
+    y1 <- c(1,2,3,NA)
+    y2 <- c(5,6,NA,8)
+    y3 <- c(9,NA,11,12)
+    y4 <- c(NA,14,15,16)
+    full.frame <- data.frame(y1,y2,y3,y4)
+    reduced.frame <- full.frame[!is.na(full.frame$y1),]
+    
+    - Calculating a mean while ignoring NA values:
+    mean(x,na.rm=TRUE)
+    
+    - Find the positions of NA values in a vector:
+    vmv <- c(1:6,NA,NA,9:12)
+    seq(along=vmv)[is.na(vmv)]
+        [1] 7 8
+        
+    - Change NA values to 0:
+    vmv[is.na(vmv)] <- 0
+    
+    - or
+    vmv <- c(1:6,NA,NA,9:12)
+    ifelse(is.na(vmv),0,vmv)
+    
+Vectors and Subscripts
+
+    - a vector is a variable with one or more values of the same type
+    - Easiest way to form is to concatenate values with c()
+     
+    peas <- c(4,7,6,5,6,7)
+    class(peas)
+       [1] "numeric"
+    length(peas)
+       [1] 6
+    mean(peas)
+       [1] 5.833333
+    max(peas)
+       [1] 7
+    min(peas)
+       [4]
+        
+    - take data from the keyboard:
+    peas <- scan()
+     
+    - using subscripts / indices to use some but not all contents of a vector
+    peas <- c(4,7,6,5,6,7)
+    peas[4]                         extracts 4th element of vector
+    pods <- c(2,3,6)
+    peas[pods]                      slices items 2,3,6 out
+    peas[-1]                        all but the first value
+    peas[-length(peas)]             all but the last value
+    peas[1:3]                       first through third elements
+    peas[seq(2,length(peas),2)]     even indexed values
+    peas[1:length(peas) %% 2 == 0]  even indexed values
+    
+    - Example of a function to trim largest 2 and smallest 2 values from vector
+    trim <- function(x) sort(x)[-c(1,2,length(x)-1,length(x))]
+    
+    - vectors can be logical, integer, real, complex, string, or raw
+    
+    - labeling the values in a vector with integers
+    (counts <- c(25,12,7,4,6,2,1,0,2))
+    names(counts) <- 0:8
+    
+    - removing the names:
+    as.vector(counts)
+    
+    - Using logical subscripts to do work:
+    x <- 0:10
+    sum(x)                      returns integer sum
+        [1] 55
+    sum(x<5)                    returns count
+        [1] 5
+    sum(x[x<5])                 integer sums subset of x
+        [1] 10          
+    sum(rev(sort(y))[1:3])      integer sum of three largest values in y
+    
+    - Finding the index of the max or min:
+    which.max(x)
+    which.min(x)
+    
+2.7 Vector functions
+
+    y <- c(8,3,5,7,6,6,8,9,2,3,9,4,10,4,11)
+    mean(y)
+    range(y)
+    fivenum(y)                  min, lower hinge, median, upper hinge, max
+    
+    counts <- rnbinom(10000,mu=0.92,size=1.1)
+    table(counts)
+        0   1   2   3   4   5   6   7   8   9   10  11  13
+      123  12  13  55  12  89  76  74  20  77   22  11   1
+      
+    max(x)
+    min(x)
+    sum(x)
+    mean(x)
+    median(x)
+    range(x)
+    var(x)
+    cor(x,y)
+    sort(x)
+    rank(x)
+    order(x)
+    quantile(x)
+    cumsum(x)                   vector with running total
+    cumprod(x)
+    cummax(x)                   vector of cumulative maxima
+    pmax(x,y,z)                 vector of length equal to longest of x,y,z,
+                                containing the max of x,y,z for the ith pos
+    pmin(x,y,z)
+    colMeans(x)                 column means of dataframe or matrix x
+    colSums(x)
+    rowMeans(x)
+    rowSums(x)
+    
+    
+    data<-read.table("myfile.txt",header=T)
+    attach(data)
+    names(data)
+        [1] "temperature" "lower" "rain" "month" "yr"
+    tapply(temperature,month,mean)  
+    
+    - tapply takes response variable, categorical explanatory variable, and 
+      the name of the function to apply, then gives the output of the function
+      on the response variable, grouped by the categorical explanatory var.
+      
+    - aggregate function allows summaries of four kinds:
+    
+        one to one      aggregate(y ~ x, mean)
+        one to many     aggregate(y ~ x + w, mean)
+        many to one     aggregate(cbind(y,z) ~ x, mean)
+        many to many    aggregate(cbind(y,z) ~ x + w, mean)
+    
+    - finding the addresses of values within vectors:
+    y <- c(8,3,5,7,6,6,8,9,2,3,9,4,10,4,11)
+    which(y>5)
+        [1] 1 4 5 6 7 8 11 13 15
+        
+    - finding a closest value in a vector:
+    xv <- rnorm(1000,100,10)
+    which(abs(xv-108)==min(abs(xv-108))
+    
+    - function to return closest value:
+    closest <- function(xv,sv) { xv[which(abs(xv-sv)==min(abs(xv-sv)))] }
+    
+    sort(x)                     returns a sorted vector--decoupled from frame
+    order(x)                    returns a vector of subscripts indicating the
+                                index order necessary to sort values of X
+    rank(x)                     index order, with multiples grouped/averaged
+    
+    unique(x)                   returns vector of unique values
+    duplicated(x)               returns boolean vector of whether or not each
+                                entry in x is a duplicate or not
+                                
+    rle(x)                      produces two vectors of run length encoding,
+                                lengths of runs, and values that ran
+    max(rle(x)[[1]])            position and value of longest run
+    
+    
+    - Set operations
+    setA <- c("a","b","c","d","e")
+    setB <- c("d","e","f","g")
+    
+    union(setA,setB)
+    intersect(setA,setB)
+    setdiff(setA,setB)
+    setequal(setA,setB)
+    setA %in% setB              gives a boolean vector matching left vector
+    setA[setA %in% setB]        another way of finding intersection
+    
+    
+2.8 Matrices and arrays
+    * Arrays are multidimensional objects
+    * Creating a 2x4x3 3d array of 24 numbers:
+    
+        y <- 1:24
+        dim(y) <- c(2,4,3)
+        
+    * Matrices are two dimensional arrays containing numbers
+    * Dataframes are two dimensional arrays contain a mix of numbers, text,
+      or logical variables in different columns.
+    * First subscript gives the row, second gives the column
+    * Accesses:
+    
+        x[2,3]              row two, col 3
+        x[,4]               all rows in col 4
+        x[2,]               all columns in row 2
+        
+    * Making a matrix:
+    
+        x <- matrix(c1,0,0,0,1,0,0,0,1),nrow=3)
+        class(x)
+            [1] "matrix"
+        attribute(x)
+            $dim
+            [1] 3 3
+        vector <- c(1,2,3,4,4,3,2,1)
+        V <- matrix(vector,byrow=T,nrow=2)
+        
+        dim(vector) <- c(4,2)           changes to matrix
+        is.matrix(vector)               returns TRUE
+        
+        (vector <- t(vector))           taking the transpose of vector
+        
+        x <- matrix(rpois(20,1.5),nrow=4)
+        
+        -- setting the rownames and colnames:
+        rownames(x) <- rownames(x,do.NULL=FALSE,prefix="Trial.")
+        drug.names <- c("aspirin","paracetamol","nurofen","hedex","placebo")
+        colnames(x) <- drug.names
+        
+        -- alternately, use dimnames:
+        dimnames(x) <- list(NULL,paste("drug.",1:5,sep=""))
+        
+    * Calculating on rows or columns
+    
+        mean(x[,5])
+        var(x[4,])
+        rowSums(x)
+        rowMeans(x)
+        colMeans(x)
+        apply(x,2,mean)                 taking the mean of columns (margin 2)
+        
+    * sum groups of rows within columns, by giving a grouping vector equal
+      in length to the number of rows in a matrix:
+      
+      group = c("A","B","B","A")
+      rowsum(x,group)                   groups rows 1,4 and 2,3
+      
+    * Adding rows and columns to a matrix, in this case adding a row at the 
+      bottom showing means, and a column at the right showing variances:
+      
+      x <- rbind(x,apply(x,2,mean))
+      x <- cbind(x,apply(x,1,var))
+      colnames(x) <- c(1:5,"variance")
+      rownames(x) <- c(1:4,"mean")
+      
+    * matrices with one row are coerced into vectors unless you specify
+      drop = FALSE:
+      
+      rowmatrix <- mat[2, , drop=FALSE]
+      colmatrix <- mat[, 2, drop=FALSE]
+      a <- b[1,1,1,drop=FALSE]
+      
+    * Using sweep() to sweep out array summaries from vectors, matrices, or
+      dataframes. Here expressing a matrix in terms of the departures of each
+      value from the column mean:
+      
+      matdata <- read.table("myfile.txt")
+      (cols <- apply(matdata,2,mean))
+      sweep(matdata,2,cols)                 margin=2 tells it to work on cols
+        

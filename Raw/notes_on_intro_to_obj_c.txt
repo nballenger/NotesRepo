@@ -1,0 +1,998 @@
+Learning Objective-C 2.0: A Hands-On Guide to Objective-C for Mac and iOS Developers
+
+Part 1: Introduction to Objective C
+
+Chapter 1: C, The Foundation of Objective C
+
+    Structure of a C Program:
+    
+    * All C programs have a main routine. Execution begins with the first line of code in main.
+    * Standard form of main():
+    
+        int main(int argc, const char * argv[]) {
+            return 0;
+        }
+    
+    * Leading 'int' indicates an integer return value to the OS
+    * name 'main' is required
+    * args are stored as strings in the array argv
+    * Simplified form of main with no argument processing:
+    
+        int main(void) { }
+    
+    * Statements terminate with a semi-colon
+    * Whitespace separates names and keywords
+    * Additional whitespace is ignored
+    * Statements can extend across multiple lines.
+    * Comment syntax:
+    
+        // Single line
+        /* Multi-line */
+        
+    * Var names are letters, numbers, and underscore
+    * First character must be underscore or letter
+    * Names are case sensitive
+    * No whitespace in names
+    * C programmers tend to use underscore separated names
+    * Obj-C programmers tend to use camelcase
+    * Plain C files have a .c extension
+    * Code using Obj-C objects goes in a .m extension file
+    * Header files contain definitions shared by multiple .m and .c files, and have a .h extension.
+    
+    Variables:
+    
+    * Variable declarations are of the type:
+        
+        variabletype name;
+        variabletype name1, name2, name3;
+        
+    * Integer types: char, short, int, long, long long
+    * Floating-point types: float, double, long double
+    * Truth values: false is 0, or evaluating to 0
+    * Variables can be initialized on declaration
+    * Pointers are variables whose value is a memory address
+    * Pointers are declared by prepending an asterisk to the name:
+    
+        int *pointerVar; // declares a pointer to an int in memory
+        
+    * Unary (address of) operator used to get the address of a variable so it can be stored in a pointer:
+    
+        int a = 9;
+        int *b;
+        b = &a;
+        
+    * Variables declared as a pointer to void is 'generic'
+    * Generic pointers can point to any variable type's address
+    * To obtain the value a generic pointer references, you have to cast it to a pointer of a known type:
+    
+        int a = 9;
+        int b;
+        void *genericPointer;
+        genericPointer = &a;
+        b = *((int*) genericPointer) ; // b is now 9
+        
+    * Arrays are declared by adding the number of elements in the array, in brackets, to the declaration:
+    
+        int a[100];
+        
+    * Element access is of type 'a[n]' where n is the index
+    * Access to arrays is not bounds checked, and can clobber other memory if you use an out of bounds index
+    * Name of an array is a pointer to the beginning of the array
+    * Multidimensional arrays are declared like:
+    
+        int b[4][10];
+        
+    * Using pointer notation, these are equivalent, because the storage is linear in memory:
+    
+        b[i][j]
+        *(b + i*10 + j)
+        
+    * A string is a one dimensional array of char bytes, terminated by a zero byte. Constant strings in C are coded by placing the characters inside double quotes.
+    * You must account for the zero byte when assigning to a string:
+    
+        char aString[6] = "Hello";
+        
+    * Variables of type char* can be initialized with a constant string, but cannot be modified:
+    
+        char *aString = "Hello";
+        aString = "World";
+        aString[4] = 'q'; // causes a crash
+        
+    * A structure groups a collection of related variables:
+    
+        struct dailyTemperatures {
+            float high;
+            float low;
+            int   year;
+            int   dayOfYear;
+        };
+        
+    * You can type variables to the structure:
+    
+        struct dailyTemperatures today;
+        struct dailyTemperatures *todayPtr;
+        
+    * Members are accessed with dot syntax, members from a pointer are access with pointer operator ->:
+    
+        todayPtr = &today;
+        today.high = 68.0;
+        todayPtr->high = 68.0; // equivalent to preceeding stmt
+        
+    * Structures can have other structures as members
+    * typedef lets you create aliases for variable types:
+    
+        typedef float Temperature;
+        Temperature high, low;
+        
+    * enum lets you define a set of integer constants:
+    
+        // Below gives oboe 0, flute 1, clarinet 2, bassoon 3
+        enum woodwind { oboe, flute, clarinet, bassoon };
+        // Setting to declared values (clarinet is 151):
+        enum woodwind { oboe=100, flute=150, clarinet, bassoon=200 };
+        
+    Operators:
+    
+    * Binary operators: + - * /
+    * Remainder: %
+    * Increment and decrement: ++ --
+    * unary minus to invert a value: -
+    * Comparison operators: >, <, >=, <=, ==, !=
+    * Logical operators: &&, ||
+    * Expressions are evaluated LTR, stopping when total truth value can be deduced--rightmost parts may or may not evaluate.
+    * Logical negation: !
+    * Assignment operators: =, +=, -=, *=, /=
+    * Conversion on assignment is usually okay in short to long, but the other way screws stuff up.
+    * Casting will convert values explicitly.
+    
+    Expressions and Statements:
+    
+    * Expressions are constants, evaluable operations, or compound operations.
+    * Statements are terminated expressions
+    * Compound statements are grouped in brace delineated blocks
+    
+    Program Flow:
+    
+    * Flow ops:
+    
+    *   if (expression)
+            statement1
+        else
+            statement2
+            
+    *   if (expression1)
+            statement1
+        else if (expression2)
+            statement2
+        else if (expressionN)
+            statementN
+        else
+            statement
+            
+    *   expression1 ? expression2 : expression3;
+    
+    *   while (expression) { code block }
+    
+    *   do statement while (expression);
+    
+    *   for (expression1; expression2; expression3) { code block }
+    
+    *   int j;
+        for (j=0; j < 100; j++) {
+            ...
+            if (someConditionMet)
+                break;
+            else
+                continue;            
+        }
+        
+    *   switch (integer_expression) {
+            case value1:
+                statement;
+                break;
+            case value2:
+                statement;
+                break;
+            default:
+                statement;
+                break;
+        }
+        
+    *   goto label;
+    
+    * Functions have the following form:
+    
+        returnType functionName (arg1Type arg1, ..., argNType argN)
+        {
+            statements
+        }
+        
+    * Functions are call-by-value. They cannot change the value of any of the variables in the calling context. You must pass a pointer to a variable and use that to change its value:
+    
+        void salesTax(float purchasePrice, float taxRate, float *carSalesTax)
+        {
+            *carSalesTax = purchasePrice * taxRate;
+            return;
+        }
+        
+    * Functions must be declared before they are used, though a function definition is also a declaration.
+    
+    Preprocessor:
+    
+    * Lines that start with a # are preprocessor directives
+    * They let you import files, define constants, conditionally compile code
+    * You include files like this:
+    
+        #include "HeaderFile.h"
+    
+    * Inclusions insert the text of that file into the file being compiled, at the point of the #include directive.
+    * In Obj-C, #import supercedes #include, and prevents the file being imported more than once.
+    * #define does textual replacement, like:
+    
+        #define MAX_VOLUME 11
+        #define kMaximumVolume 11 // apple naming convention
+        
+    * Conditional compilation is done with:
+    
+        #if condition
+            statements
+        #else
+            otherStatements
+        #endif
+        
+    printf:
+    
+    * I/O isn't part of C--it all happens through the standard I/O library.
+    * Use it with:
+    
+        #include <stdio.h>
+        
+    * Lets you use multiple things, including:
+    
+        printf(formatString, arg1, arg2, arg3);
+        
+    * Compile C programs with:
+    
+        gcc -o MyCProgram MyCProgram.c
+        
+    * To have gcc add debugging info to a compiled program:
+    
+        gcc -g -o MyCProgram MyCProgram.c
+    
+    * To evaluate that using the GNU debugger:
+    
+        gdb MyCProgram
+        
+Chapter 2: More About C Variables
+    
+    Memory Layout of an Objective-C Program
+    
+    * Virtual address space of a running Obj-C program:
+    
+         +---------------------------+
+         |                           |
+         |  Stack (grows downward)   |
+         |                           |
+         +---------------------------+ <----+ Stack pointer
+         |                           |
+         |                           |
+         |                           |
+         +---------------------------+
+         |                           |
+         |       Heap                |
+         |                           |
+         +---------------------------+
+         |     Data Segment          |
+         |                           |
+         |     Text Segment          |
+         +---------------------------+
+
+    * From low to high virtual address:
+        * Text segment contains executable code and readonly data
+        * Data segment contains read-write data including globals
+        * heap contains blocks of memory that can be dispensed to the program on request. System may expand the heap upward.
+        * Stack is used for calling functions. When you call one, the system constructs a stack frame for the called function. Stack frame is a region of memory built on the lowest address of the stack. Stack pointer moves downward to lowest address. When the function returns, the stack pointer is restored to previous value, control returns to the calling function.
+        * After a function returns, the contents of its stack frame is no longer valid.
+        
+    Automatic Variables:
+    
+    * Variables declared in a function or subroutine are local or "automatic" variables.
+    * Automatic variables are created on the stack. They're only valid within the body of the block they were created in.
+    * Automatic variables are not initialized by the system. Until you assign a value, they contain whatever is in their memory space from the last time it was used.
+    * Do not assign the address of a local variable to a pointer outside the scope of that variable--it'll point to junk data as soon as the function exits.
+    
+    External Variables:
+    
+    * Variables declared in a source file outside of the main() function or any subroutine are 'external'.
+    * Compiler assigns external variables memory locations in the data segment of the virtual address space. They do not go out of scope, and their value only changes when you assign to them.
+    * Compiler initializes external variables to 0 if you don't explicitly assign them a value on initialization
+    * Unless you declare an external variable static, it is potentially visible to any function in any source file.
+    
+    Declaration Keywords:
+    
+    * Several keywords that modify declarations:
+        * auto -- tells the compiler it's an automatic variable
+        * extern -- tells the compiler you're referencing an external variable declared in a different file, so it won't assign memory for that variable.
+        * static -- inside a function, creates a variable similar to an external variable. Things to know:
+            * compiler creates storage for a function static variable in the data segment
+            * initializes to 0 unless explicitly initialized
+            * value persists between calls to that function
+            * references to a function static variable in multiple calls to the function refer to the same memory location
+        * When static is used with external variables, it limits the visibility of the variable to the file it's declared in.
+        * register -- hint to the compiler that this variable is heavily referenced.
+        * const -- tells the compiler the variable should be considered a constant, so it will flag attempts to change its value
+        * volatile -- declares that a variable's contents may be changed by something other than the program's main thread.
+        
+    Scope
+    
+    * Scoping rules are block level, sub blocks have their own scope.
+    
+    Dynamic Allocation
+    
+    * Dynamic allocation allows you to request more memory at runtime, from the Heap
+    * Dynamic allocation happens via malloc and free
+    * malloc(n) requests n bytes of memory, returns a pointer to the requested amount
+    * To calculate the needed number of bytes, use sizeof():
+    
+        numBytesNeeded = imageHeight * imageWidth * sizeof(unsigned char);
+        unsigned char* pixels = (unsigned char*) malloc(numBytesNeeded);
+        
+    * Return it with free():
+    
+        free(pixels);
+        pixels = NULL;
+        
+    * If you allocate memory, you must free it.
+    
+Chapter 3: An Introduction to Object-Oriented Programming
+
+    An Introduction to Objective-C:
+    
+    * An Obj-C class definition comes in two parts: interface and implementation.
+    * Interface declares instance variables and methods
+    * Implementation contains the code that implements the class's methods
+    * Interface goes in a header file named after the class
+    * Implementation goes in a file with a .m extension, also named for the class.
+    * Generalized interface section:
+    
+        @interface : className superclassName
+        {
+            Instance variable declarations
+        }
+        
+        Method declarations
+        
+        @end
+        
+    * Obj-C words that begin with an @ are compiler directives
+    * Form of a method declaration is:
+    
+        -(return type) method_name:(argument_type) argument;
+        +(return type) class_method_name:(argument_type) argument;
+    
+    * Leading dash is an instance method, leading plus is a class method
+    * A full interface and implementation:
+    
+        @interface Accumulator: NSObject
+        {
+            int total;
+        }
+        
+        -(void) addToTotal:(int) amount;
+        -(int) total;
+        -(void) zeroTotal;
+        @end
+        
+        @implementation Accumulator
+        -(void) addToTotal:(int) amount
+        {
+            total = total + amount;
+        }
+        
+        -(int) total
+        {
+            return total;
+        }
+        
+        -(void) zeroTotal
+        {
+            total = 0;
+        }
+        @end
+        
+    * Other than root classes, every object type inherits from some other class, mostly NSObject
+    * NSObject.alloc() is the class factory method, responsible for allocating memory for object instances and the instance methods needed to interact with the Obj-C memory management system.
+    * Obj-C objects are created on the heap, so when you create an instance what you actually get is a pointer to some bytes on the heap.
+    * Instantiation:
+    
+        Accumulator *anAccumulator; // must be a pointer
+        
+    * Obj-C uses messaging instead of function calls. This is the form of a message expression:
+    
+        [receiver message]
+        
+    * Specific example:
+    
+        [anAccumulator addToTotal: 137];
+        
+    * Each class is represented by a class object that can execute methods on behalf of the class
+    * Obj-C uses reference counting for memory management. Each object has a retain count, and you should balance the retain count to 0 for each instantiated object before exiting.
+    
+    Objective-C Additions
+    
+    * Requires a runtime. The runtime is a dynamic link library of C functions provided on all systems that support Obj-C. Sets up and operates the Obj-C messaging system.
+    * Message expressions are most important addition to C
+    * Compiler directives start with @
+    * Literal strings are constants that hold the text of a string. Obj-C uses constant instances of NSString. You create a literal NSString by prepending an @ to a string:
+    
+        "I'm hungry."  // Literal C string
+        @"I'm hungry." // Literal NSString
+    
+    * Objective-C has keywords, like:
+        * id -- a datatype that holds a pointer to an object. A variable of type id can hold a pointer to any Obj-C object, independent of class.
+        * nil -- defined constant that is a "pointer to no object"
+        * BOOL -- boolean datatype, with constants YES and NO. It's a typedef for unsigned char.
+        * SEL -- type that holds a representation of an Obj-C method name. Short for selector. Used in preference to a string pointer with the literal method name.
+        * IMP -- pointer to a function taking the arguments id, SEL, and possibly other args, and returning id.
+        * Class -- type that holds a reference to an Obj-C class. Base class for class objects.
+        
+    * Cocoa Numeric Types:
+        * NSInteger
+        * NSUInteger
+        * CGFloat
+        * NSLog
+        
+Chapter 4: Your First Objective-C Program
+
+Part II: Language Basics
+
+Chapter 5: Messaging
+
+    Methods:
+    
+    * Differences between methods and C functions:
+        * Methods are executed on behalf of a particular instance of the class that defines them. The method receives a pointer to the object instance in the 'self' variable.
+        * Methods can directly access the object's instance variables without declaring them
+        * Syntax for naming the method and its arguments is different from a function.
+    * Simple method:
+    
+        @interface Shape : Graphic
+        {
+            NSColor *outlineColor;
+            NSColor *fillColor;
+            // other instance variables
+        }
+        
+        .. // method declarations
+        @end
+        
+    * Methods with arguments--colon is part of the method name
+    * When a method has multiple arguments, the arguments are interspersed with parts of the method name:
+    
+        -(void) setOutlineColor: (NSColor*) outlineColor
+                      fillColor: (NSColor*) fillColor;
+                      
+    * which makes the actual method name
+    
+        setOutlineColor:fillColor:
+        
+    * Method with a variable number of arguments:
+    
+        -(void) methodWithVarNumArgs: (id) arg1, ...;
+    
+    Messaging:
+    
+    * In Obj-C you send a message to a receiver (object) and that object executes the method named in your message.
+    * Obj-C allows polymorphism, so a generic standin for an object can take messages, and multiple different object types can all have methods with the same name (but different implementations)
+    
+    Messaging Details:
+    
+    * Any message argument can be replaced by a message expression that returns the appropriate type
+    * Nested messages:
+    
+        [shape2 setFillColor: [shape1 fillColor]];
+        [[displayList lastObject] draw];
+        
+    * Sending a message to a nil receiver has no effect.
+    * To invoke an object's methods from within another method of the same object, use the self variable:
+    
+        -(void) someMethod
+        {
+            [self someOtherMethod];
+        }
+        
+    * To invoke a parent's method, use the super variable:
+    
+        -(void) draw
+        {
+            [super draw];
+            // extend the parent method
+        }
+        
+    * Difference between self and super: self is a legitimate pointer variable, super is not. Self points to a location in memory, super in an indication to the runtime to use self as the receiver, but to use the implementation of the method from the object's superclass.
+    * The method name can be called the "selector" or "method selector".  Selectors are just names, without type information.
+    * A method's SEL is a pointer to a unique structure that holds the string name of the method.
+    * Compiler directive @selector() turns a method name into a SEL:
+    
+        SEL aSelector = @selector(someMessageName);
+        SEL aSelWithArgs = @selector(someMessageName:with:);
+        
+    * NSObject has a performSelector() method that can be passed a selector
+    * All methods that have the same name should take the same argument types and give the same return values.
+    
+    Under the Hood:
+    
+    * When a message expression is evaluated, the runtime looks at the receiver and determines the receiver's class. It then looks at the class information for that class to find the method that corresponds to the method name in the message.  Then it executes the method.
+    
+    * Details:
+        * All obj-c objects know their class, and their superclass
+        * The compiler converts methods into compiled C functions, and adds two extra args, self and _cmd, to the argument list.
+        * Each obj-c class has a table that connects a method's selector to a pointer to the function that implements the method. Given a selector, the runtime can use the table to find a pointer to the matching function.
+        
+    Message Forwarding:
+    
+    * If a message gets to the top of the object hierarchy without finding a method implementation, you'll end up with a program crash.
+    * You can override the forwardInvocation method of NSObject if you want to control how messages are forwarded, possibly passing a message without a method to a different object than the hierarchy would indicate.
+    
+    Efficiency
+    
+    * NSObject's methodForSelector: method will get you a pointer to the underlying C function for a method, so that you can avoid the time to dispatch the message. Mostly not necessary.
+    
+    Introspection and Other Runtime Fun
+    
+    * You can find out an object's class and superclass using the methods class and superclass:
+    
+        Class objectsClass;
+        Class objectsSuperClass;
+        id anObject;
+        
+        objectsClass = [anObject class];
+        objectsSuperClass = [anObject superclass];
+        
+    * You can check for responsiveness to a message:
+    
+        if ([anObject respondsToSelector: optionalSelector] )
+        {
+            [anObject optionalMethod];
+        }
+        
+Chapter 6: Classes and Objects
+
+    Defining a Class:
+    
+    * Compiler needs two sets of information for a class: blueprint for constructing instances (interface) and the code implementing its methods (implementation)
+    * Both go in separate files, named after the class.
+    * If you use a class type in a declaration, you must first inform the compiler it's a class with the @class directive:
+    
+        #import <Foundation/Foundation.h>
+
+        @class Band;
+        @class Guitar;
+        
+        @interface RockStar : NSObject
+        {
+            NSString *name;
+            Band *band;
+            Guitar *guitar;
+        }
+    
+        -(void) sing;
+        -(void) playGuitar;
+        -(void) destroyHotelRoom:(float) damageLevel;
+        @end
+        
+    Subclassing a Class:
+    
+    * Subclass can extend or modify an existing class in one or more of three ways:
+        * Can add instance variables to those in the superclass
+        * Can add methods to those in the superclass
+        * Can override methods of the superclass
+    * The class hierarchy proceeds from the root class to the specific class implementation
+    * Abstract classes are those that must be subclassed to be useful
+    
+    Creating Objects:
+    
+    * Two steps to Obj-C object creation: allocation and initialization
+    * Allocation obtains memory from the heap
+    * Initialization fills in any instance variables requiring initial values, acquires resources the object needs, and returns a pointer to the finished object.
+    * Allocation is handled by an inherited NSObject class method, alloc
+    * alloc does the following:
+        * allocates memory for the new object and returns a pointer to it
+        * fills in the object's isa instance variable
+        * zeros out the rest of the object's memory
+        * sets the object's retain count to 1
+    * It's common to override NSObject's init method
+    * init methods return an id type:
+    
+        -(id) init
+        {
+            if (self = [super init] )
+            {
+                // class specific initializations
+            }
+            return self;
+        }
+        
+    * Every class must have a designated initializer method, which will completely initialize an instance of the class (init by default)
+    * All other initializers must eventually invoke the designated initializer
+    * The designated initializer must invoke the superclass's designated initializer, and must be the only method to do so
+    * If your class's designated initializer has a different name than the one from its superclass, you must override any init... methods in ancestor classes and invoke your class's designated initializer from the overrides.
+    
+    Destroying Objects:
+    
+    * Obj-C has a garbage collector that works off the retain count
+    * release will set a retain count to zero, which will call dealloc
+    * dealloc should send a release message to any objects the disappearing object has created or retained, and invoke the superclass's dealloc
+    
+    Copying Objects:
+    
+    * Classes that allow copying adopt the NSCopying protocol
+    * To copy objects of a class you define, you must define copyWithZone:
+    * A shallow copy is one where any instance variables that hold pointers use the same pointers in the copy; a deep copy is one where you create new allocations and copy the objects the pointers refer to as well
+    * 
+    
+Chapter 8: Frameworks
+    What is a framework:
+
+    * Frameworks are the equivalent of class libraries in other languages
+    * Frameworks are a type of bundle, which are directory hierarchies with specified layouts that group dynamic libraries, header files, and resources
+    * Name of a framework bundle is always frameworkName.framework
+    * To use a framework, you import the header files for any framework defined classes or functions you want to use.
+    * To compile from the command line, you have to pass gcc a -framework flag with the name of the framework
+    
+    Cocoa Frameworks:
+    
+    * Umbrella framework of the three primary frameworks used in building Cocoa apps:
+        * Foundation -- basic objects
+        * AppKit -- OS X GUI classes
+        * Core Data -- manages collections of persistent objects
+    * Importing cocoa will import all three frameworks
+    
+    AppKit:
+    
+    * Some AppKit classes essential to GUI apps:
+        * NSApplication -- central class for a cocoa gui application, every app must contain a single instance. Customization happens by creating a separate object and assigning it as NSApplication's delegate
+        * NSWindow -- represents a window on screen
+        * NSView -- represents a region of a window
+        * NSEvent -- carries info about the user's interactions with an app
+        * NSButton, NSSlider, NSMenu, NSSegmentedControl, NSColorWell -- controls
+        * NSDocument -- principal class for building apps where the user can open more than one set of data at a time
+        
+    Core Foundation:
+    
+    * Low level C framework that partially parallels the Obj-C Foundation framework. Defines basic data types, sometimes necessary to use its types if you use other low level C frameworks like Core Graphics
+    
+    Core Graphics:
+    
+    * low level API for Quartz 2D graphics; object oriented but written in C
+    * Device independent imaging model
+    * Mostly wrapped in things in Obj-C objects via AppKit, though not all of it
+    
+    Core Animation:
+    
+    * Obj-C framework that takes effort out of doing animations
+    
+    Other Apple-Supplied Frameworks:
+    
+    * WebKit -- web content and browser features
+    * ImageIO -- C framework for reading and writing image file formats
+    * Core Image -- Obj-C framework for doing fast image processing on the GPU
+    * Core Audio -- C framework for audio processing
+    * OpenGL -- C framework for 3D graphics
+    * OpenAL -- C framework for doing audio
+    
+    Third Party Frameworks:
+    
+    * Using third party frameworks means you have to put them into your app, so they'll be available at run time on the user's computer.
+    
+Chapter 9: Common Foundation Classes
+
+Chapter 10: Control Structures in Objective-C
+
+    * Message expressions that return a BOOL value can be used in an if statement
+
+    if statements:
+    
+    *   if ( [object message] )
+        {
+            ...
+        }
+        
+    for statements and implicit loops:
+    
+    *   NSArray *displayList = ...
+        NSUInteger j;
+        NSUInteger numToDraw = [displayList count];
+        for (j=0; j < numToDraw; j++)
+        {
+            [[displayList objectAtIndex: j] draw];
+        }
+        
+    * You can use an implicit loop with:
+    
+        NSArray *displayList = [displayList makeObjectsPerformSelector: @selector( draw )];
+        
+    while Statements and NSEnumerator:
+    
+    * You can use while with an NSEnumerator object to iterate over a collection
+    * takes objects and hands them out one by one with the nextObject method
+    * NSEnumerator is an abstract class with no public interfaces, so you have to obtain an enumerator object from the collection class it enumerates:
+    
+        NSMutableArray *displayList = ... // array of graphics objs
+        GraphicObject *graphicObject;
+        
+        NSEnumerator *myEnumerator = [displayList objectEnumerator];
+        
+        while (graphicObject = [myEnumerator nextObject] )
+        {
+            [graphicObject draw];
+        }
+        
+    * It is not safe to modify a mutable collection that is being enumerated.
+    
+    Fast Enumeration:
+    
+    * You can use for...in to enumerate over collections.
+    * Basic form of that:
+    
+        for (type loopVariable in expression)
+        {
+            statements
+        }
+    
+    * expression there must evaluate to an object that conforms to the NSFastEnumeration protocol
+    
+    An Example Using Fast Enumeration:
+    
+    * This is the 'myls' program, that mimics 'ls'
+    
+    Exceptions:
+    
+    * Obj-C has the compiler directives @try, @catch and @finally for exception handling:
+    
+        id hamburger = @"hamburger";
+        
+        @try
+            {
+                hamburger = [hamburger addCheese];
+            }
+        @catch( NSException *exc )
+            {
+                NSLog(@"Exception: %@ : %@", [exc name], [exc reason] );
+            }
+        @finally
+            {
+                NSLog(@"This block is always executed.");
+            }
+            
+    * Throwing your own exception:
+    
+        -(void) addOnion
+        {
+            if ( [pantry numOnions] <= 0 )
+            {
+                NSException* exception = [NSException exceptionWithName:@"OutOfOnionException" reason:@"PantryEmpty" userInfo:nil];
+                @throw exception;
+            }
+            else
+            {
+                ... // add the onion
+            }
+        }
+        
+    * Multiple catch blocks:
+    
+        @try { ... }
+        @catch (NSString* myString) { // process string obj exceptions }
+        @catch (NSException *myException) { // process NSException obj exceptions
+        @finally { ... }
+        
+    * You have to enable exceptions in Xcode or via the fobjc-exceptions flag to gcc
+    * Exceptions aren't actually used that often in Obj-C
+    * Checks with respondsToSelector tend to work better than @try blocks
+    
+Chapter 11: Categories, Extensions and Security
+
+    Categories:
+    
+    * Let you add methods to an existing class without subclassing it, and without requiring access to the class's source code
+    * Adding a CamelCase category method for NSString:
+    
+        #import <Foundation/Foundation.h>
+        @interface NSString (CamelCase)
+        -(NSString*) camelCaseString;
+        @end
+        
+    * Files for a category are named ClassName+CategoryName
+    
+        #import "NSString+CamelCase.h"
+        @implementation NSString (CamelCase)
+        -(NSString*) camelCaseString
+        {
+            NSString* capitalizedString = [self capitalizedString];
+            NSArray* components = [capitalizedString componentsSeparatedByCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
+            NSString* output = @"";
+            
+            for (NSString* word in components)
+            {
+                output = [output stringByAppendingString: word];
+            }
+            return output;
+        }
+        @end
+    
+    Extensions:
+    
+    * Let you declare methods out of public view by adding an interface section in the class's implementation file--they extend the interface declaration into the .m file
+    * Example below creates a getter and a hidden setter for the instance variable readOnlyBool:
+    
+        @interface ClassWithExtension : NSObject
+        {
+            BOOL readOnlyBool;
+        }
+        -(BOOL) readOnlyBool;
+        @end
+        
+        
+        #import "ClassWithExtension.h"
+        @interface ClassWithExtension ()
+        -(void) setReadOnlyBool: (BOOL) newValue;
+        @end
+        @implementation ClassWithExtension
+        -(BOOL) readOnlyBool
+        {
+            return readOnlyBool;
+        }
+        -(void) setReadOnlyBool: (BOOL) newValue
+        {
+            readOnlyBool = newValue;
+        }
+        -(id) init
+        {
+            if (self = [super init])
+            {
+                [self setReadOnlyBool: YES];
+            }
+            return self;
+        }
+        @end
+        
+    Instance Variable Scope (Access Control):
+    
+    * Three directives to control access to an object's instance variables:
+        * @private -- only accessible in methods of the class that declared it
+        * @protected -- accessible in methods of the class and its descendants
+        * @public -- accessible anywhere, even in code outside the class
+    * Example:
+    
+        @interface DinnerDish : NSObject
+        {
+            Chef* chef;
+            @private
+            Recipe* recipe;   // private
+            int     calories; // private
+            @protected
+            BOOL lowFat;      // protected
+            BOOL spicy;       // protected
+            @public
+            NSString* description; // public
+        }
+        @end
+        
+    Access Control for Methods:
+    
+    * Obj-C doesn't have private/protected/public distinctions for methods
+    
+    Namespaces:
+    
+    * No namespaces in Obj-C--most frameworks deal with it by prepending some letters to their class names
+    
+    Security:
+    
+    * Category methods can circumvent @private/@protected directives by defining a setter (or whatever) that has the same level of access as the base class methods.
+    * Sensitive code is better written in straight C, which can't be accessed by things like otool and class-dump
+    
+    Calling C Functions from Objective-C:
+    
+    * Some things are just better as procedural code
+    
+Chapter 12: Properties
+
+    * Accessor methods are tedious to code
+    * @property gives a shorthand way to declare accessor methods
+    * @synthesize causes the compiler to write the designated accessor methods for you
+    * Don't access instance variables from outside the object
+    
+    Declaring and Implementing Accessors:
+    
+    * Generic getter:
+    
+        -(ObjType*) propname
+        {
+            return propname;
+        }
+        
+    * Generic setter:
+    
+        -(void) setPropname: (ObjType*) newPropname
+        {
+            [newPropname retain];
+            [propname release];
+            propname = newPropname;
+        }
+        
+    * Setter using copy:
+    
+        -(void) setName:(NSString*) newName
+        {
+            NSString *tmp = name;
+            name = [newName copyWithZone: nil];
+            [tmp release];
+        }
+        
+    Accessors Using Properties:
+    
+    * Example Employee.h file:
+    
+        #import <Foundation/Foundation.h>
+        
+        @interface Employee : NSObject
+        {
+            int employeeNumber;
+            NSString *name;
+            Employee *supervisor;
+            int salary;
+        }
+        
+        @property (nonatomic, readonly) int employeeNumber;
+        @property (nonatomic, retain) NSString *name;
+        @property (nonatomic, retain) Employee *supervisor;
+        @property (nonatomic, assign) int salary;
+
+        @end
+        
+    * Employee.m:
+    
+        #import "Employee.h"
+        @implementation Employee
+        
+        @synthesize employeeNumber;
+        @synthesize name;
+        @synthesize supervisor;
+        @synthesize salary;
+        
+        @end
+        
+    * You can use different names for a property and the instance variable that represents it:
+    
+        interface:
+            Employee *boss; // instead of supervisor
+            ...
+            @property (nonatomic, retain) Employee *supervisor;
+        implementation:
+            @synthesize supervisor = boss;
+            
+    The @property Statement:
+        
+    * format of a property declaration is
+    
+        @property (attributeS) type name;
+        
+    * Property attributes:
+        * assign/retain/copy -- 
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

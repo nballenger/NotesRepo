@@ -1,0 +1,353 @@
+Cocoa Programming Notes
+
+++++ NUMBER OBJECTS ++++
+
+    NSNumber Creation and Retrieval Methods
+    
+    Creation and Init Class Method      Init Instance Method        Retrieval Instance Method
+    -----------------------------------------------------------------------------------------
+    numberWithChar:                     initWithChar:               charValue
+    numberWithUnsignedChar:             initWithUnsignedChar:       unsignedCharValue
+    numberWithShort:                    initWithShort:              shortValue
+    numberWithUnsignedShort:            initWithUnsignedShort:      unsignedShortValue
+    numberWithInteger:                  initWithInteger             integerValue
+    numberWithUnsignedInteger:          initWithUnsignedInteger:    unsignedIntegerValue
+    numberWithInt:                      initWithInt:                intValue
+    numberWithUnsignedInt:              initWithUnsignedInt:        unsignedIntValue
+    numberWithLong:                     initWithLong:               longValue
+    numberWithUnsignedLong:             initWithUnsignedLong:       unsignedLongValue
+    numberWithLongLong:                 initWithLongLong:           longlongValue
+    numberWithUnsignedLongLong:         initWithUnsignedLongLong    unsignedLongLongValue
+    numberWithFloat:                    initWithFloat:              floatValue
+    numberWithDouble:                   initWithDouble:             doubleValue
+    numberWithBool:                     initWithBool:               boolValue
+    
+    * Your retrieval method must match your storage.
+    * Comparisons:
+    
+        [intNumber isEqualToNumber: floatNumber] // boolean test for equality
+        [intNumber compare: myNumber] // returns one of NSOrderedAscending, NSOrderedSame, 
+                                      // or NSOrderedDescending
+    
+++++ STRING OBJECTS ++++
+
+    * Character string object @"foo" is made of char characters (and technically a NSConstantString)
+    * NSString objects are made of unichar multibyte characters
+    * Assignment to an NSString:
+    
+        NSString *str = @"foo";
+        
+    * NSString objects are immutable
+    * Common NSString methods:
+    
+    Method                                  Description
+    -----------------------------------------------------------------------------------------
+    +(id) stringWithContentsOfFile:         Creates a new string and sets it to the contents of
+     path encoding: enc error: err          a file at path, with encoding enc, or returns error err
+     
+    +(id) stringWithContentsOfURL:          Creates a new string and sets it to the contents of
+     url encoding: enc error: err           url using encoding enc, or returns error err
+     
+    +(id) string                            Creates a new empty string
+    +(id) stringWithString: nsstring        Creates a new string set to nsstring
+    -(id) initWithString: nsstring          Sets a newly allocated string to nsstring
+    -(id) initWithContentsOfFile:           Sets a string to the contents of file at path
+     path encoding: enc error: err
+     
+    -(id) initWithContentsOfURL:            Sets a string to the contents of url (NSURL *)
+     url encoding: enc error: err
+     
+    -(NSUInteger) length                    Returns the number of characters in the string
+    -(unichar) characterAtIndex: i          Returns the unicode character at index i
+    -(NSString *) substringFromIndex: i     Returns a substring from i to the end
+    -(NSString *) substringWithRange: range Returns a substring based on specified range
+    -(NSString *) substringToIndex: i       Returns a substring from [0] to [i]
+    -(NSComparator *)                       Compares two strings, ignoring case    
+     caseInsensitiveCompare: nsstring
+     
+    -(NSComparator *) compare: nsstring     Compares two strings
+    -(BOOL) hasPrefix: nsstring             Tests whether a string begins with nsstring
+    -(BOOL) hasSuffix: nsstring             Tests whether a string ends with nsstring
+    -(BOOL) isEqualToString: nsstring       Tests whether two strings are equal
+    -(NSString *) capitalizedString         Returns a string with first letter of each word capitalized
+    -(NSString *) lowercaseString           Returns all lowercase
+    -(NSString *) uppercaseString           Returns all uppercase
+    -(const char *) UTF8String              Returns a string converted to UTF-8
+    -(double) doubleValue                   Returns a string converted to a double
+    -(float) floatValue                     Returns a string converted to a float
+    -(NSInteger) integerValue               Returns a string converted to an NSInteger
+    -(int) intValue                         Returns a string converted to an int
+    +(id) stringWithCapacity: size          Creates a string initially containing size characters
+    -(id) initWithCapacity: size            Initializes a string with capacity of size characters
+    -(void) setString: nsstring             Sets a string to nsstring
+    -(void) appendString: nsstring          Appends nsstring to the end of the receiver
+    -(void) deleteCharactersInRange: range  Deletes characters in specified range
+    -(void) insertString: nsstring          Inserts nsstring into receiver at [i]
+     atIndex: i
+    
+    -(void) replaceCharactersInRange:       Replaces characters in range with nsstring
+     range withString: nsstring
+     
+    -(void) replaceOccurrencesOfString:     Replaces nsstring with nsstring2 within range
+     nsstring withString: nsstring2          
+     options: opts range: range
+     
+++++ ARRAY OBJECTS ++++
+
+    * NSArray objects are immutable
+    * NSMutableArray objects are mutable
+    
+    * Common NSArray methods:
+    
+    Method                                  Description
+    -----------------------------------------------------------------------------------------
+    +(id) arrayWithObjects: obj1, obj2...   Creates a new array with obj1, obj2, ... as elements
+    -(BOOL) containsObject: obj             Determines whether the array contains obj
+    -(NSUInteger) count                     Indicates the number of elements in the array
+    -(NSUInteger) indexOfObject: obj        Returns index of first element containing obj
+    -(id) objectAtIndex: i                  Indicates object stored at [i]
+    -(void) makeObjectsPerformSelector:     Sends the message indicated by selector to all elements
+     (SEL) selector
+     
+    -(NSArray *) sortedArrayUsingSelector:  Sorts the array according to the comparison method selector
+     (SEL) selector
+     
+    -(BOOL) writeToFile: path               Write the array to the file at path, creating a temp
+     atomically: (BOOL) flag                 file first if the flag is YES
+     
+    * Common NSMutableArray methods:     
+
+    Method                                  Description
+    -----------------------------------------------------------------------------------------
+    +(id) array                             Creates an empty array
+    +(id) arrayWithCapacity: size           Creates an empty array with specified size
+    -(id) initWithCapacity: size            Initializes a newly allocated array with size
+    -(void) addObject: obj                  Adds obj to the end of the array
+    -(void) insertObject: obj atIndex: i    Inserts obj at [i]
+    -(void) replaceObjectAtIndex: i         Replaces [i] with obj
+     withObject: obj
+    -(void) removeObject: obj               Removes all occurrences of obj from array
+    -(void) sortUsingSelector:              Sorts the array according to the comparison method selector
+     (SEL) selector
+     
+++++ DICTIONARY OBJECTS ++++
+
+    * Collection of key object pairs
+    * keys can be any type, but are typically strings
+    * values can be any type, cannot be nil
+    * Can be mutable or immutable
+    * Common NSDictionary Methods:
+    
+    Method                                  Description
+    -----------------------------------------------------------------------------------------
+    +(id) dictionaryWithObjectsAndKeys:     Creates a dictionary with key obj pairs
+     obj1, key1, obj2, key2,...
+     
+    -(id) initWithObjectsAndKeys:           Initializes a new dictionary with key obj pairs
+     obj1, key1, obj2, key2,...
+     
+    -(unsigned int) count                   Returns the number of entries
+    -(NSEnumerator *) keyEnumerator         Returns an enumerator obj for all keys
+    -(NSArray *)                            Returns an array of sorted keys
+     keysSortedByValueUsingSelector: 
+     (SEL) selector
+    
+    -(NSEnumerator *) objectEnumerator      Returns an enumerator for all values
+    -(id) objectForKey: key                 Returns the object for the specified key
+    
+    * Common NSMutableDictionary Methods:
+    
+    Method                                  Description
+    -----------------------------------------------------------------------------------------
+    +(id) dictionaryWithCapacity: size      Creates a mutable dict with an initial size
+    -(id) initWithCapacity: size            Initializes a new dict with an initial size
+    -(void) removeAllObjects                removes all entries
+    -(void) removeObjectForKey: key         Removes the entry for the specified key
+    -(void) setObject: obj forKey: key      Adds obj to the dict under key, replace if dupe
+    
+++++ SET OBJECTS ++++
+
+    * Collection of unique objects
+    * Can be mutable or immutable
+    
+    * Common NSSet methods:
+    
+    Method                                  Description
+    -----------------------------------------------------------------------------------------
+    +(id) setWithObjects: obj1, obj2, ...   Creates a new set from a list of objects
+    -(id) initWithObjects: obj1, obj2, ...  Initializes a new set from a list of objects
+    -(NSUInteger) count                     Returns the number of items in the set
+    -(BOOL) containsObject: obj             Determines whether the set contains obj
+    -(BOOL) member: obj                     Determines if obj is in set, using isEqual:
+    -(NSEnumerator *) objectEnumerator      Returns an enumerator for the set's contents
+    -(BOOL) isSubsetOfSet: nsset            Determines whether every member is contained in nsset
+    -(BOOL) intersectsSet: nsset            Determines whether at least one member is in nsset
+    -(BOOL) isEqualToSet: nsset             Determines if two sets are equal
+    
+    * Common NSMutableSet methods:
+    
+    Method                                  Description
+    -----------------------------------------------------------------------------------------
+    -(id) setWithCapacity: size             Creates a new set with an initial capacity of size
+    -(id) initWithCapacity: size            Sets the initial capacity to size
+    -(void) addObject: obj                  Adds obj to the set
+    -(void) removeObject: obj               Removes obj from the set
+    -(void) removeAllObjects                Removes all members of the set
+    -(void) unionSet: nsset                 Adds each member of nsset to receiver
+    -(void) minusSet: nsset                 Removes all members of nsset from receiver
+    -(void) intersectsSet: nsset            Removes all members from receiver not in nsset
+    
+++++ WORKING WITH FILES ++++
+
+    * Common NSFileManager file methods:
+    
+    Method                                  Description
+    -----------------------------------------------------------------------------------------
+    -(NSData *) contentsAtPath: path        Reads data from a file
+    -(BOOL) createFileAtPath: path          Writes to a file
+     contents: data attributes: attr    
+    -(BOOL) removeFileAtPath: path          Removes a file
+     handler: handler
+    -(BOOL) movePath: from toPath: to       Copies a file
+     handler: handler
+    -(BOOL) contentsEqualAtPath: path       Compares contents of two files
+    -(BOOL) fileExistsAtPath: path          Tests for file existence
+    -(BOOL) isReadableFileAtPath: path      Tests whether file exists and is readable
+    -(BOOL) isWritableFileAtPath: path      Tests whether file exists and is writable
+    -(NSDictionary *) fileAttributesAtPath: Gets attributes for file    
+     path traverseLink: (BOOL) flag
+    -(BOOL) changeFileAttributes: attr      Changes file attributes
+     atPath: path
+     
+    * Example code:
+    
+        NSFileManager *fm;
+        fm = [NSFileManager defaultManager];  // create an instance
+        [fm removeFileAtPath: @"todolist" handler: nil]; // remove a file
+        
+    * To read data into a temporary buffer, you can use an NSData object
+    * NSData can be mutable or immutable
+    
+++++ WORKING WITH DIRECTORIES ++++
+
+    * Common NSFileManager directory methods:
+
+    Method                                  Description
+    -----------------------------------------------------------------------------------------
+    -(NSString *) currentDirectoryPath      Gets the current directory
+    -(BOOL) changeCurrentDirectoryPath:     Changes the current directory
+     path
+    -(BOOL) copyPath: from toPath: to       Copies a directory structure
+     handler: handler
+    -(BOOL) createDirectoryAtPath: path     Creates a new directory
+     attributes: attr
+    -(BOOL) fileExistsAtPath: path          Tests whether the file is a directory
+     isDirectory: (BOOL *) flag
+    -(NSArray *) directoryContentsAtPath:   Lists the contents of the directory
+    -(NSDirectoryEnumerator *)              Enumerates the contents of the directory
+     enumeratorAtPath: path
+    -(BOOL) removeFileAtPath: path          Deletes an empty directory
+     handler: handler
+    -(BOOL) movePath: from toPath: to       Renames or moves a directory
+     handler: handler
+     
+++++ WORKING WITH PATHS ++++
+
+    * #import <Foundation/NSPathUtilities.h>
+    * Contains extensions to NSString to make manipulating pathnames easier
+    * Makes your program more filesystem independent
+    
+    * Common Path Utility methods:
+
+    Method                                  Description
+    -----------------------------------------------------------------------------------------
+    +(NSString *) pathWithComponents: comps Constructs a valid path from elements in comps
+    -(NSArray *) pathComponents             Deconstructs a path into its components
+    -(NSString *) lastPathComponent         Extracts the last component in a path
+    -(NSString *) pathExtension             Extracts the extension from the last component
+    -(NSString *)                           Adds path to the end of an existing path
+     stringByAppendingPathComponent: path
+    -(NSString *)                           Adds the extension to the end of the last comp
+     stringByAppendingPathExtension: ext    
+    -(NSString *)                           Removes the last path component
+     stringByDeletingLastPathComponent
+    -(NSString *)                           Removes the extension from the last path comp
+     stringByDeletingLastPathExtension
+    -(NSString *)                           Expands any tildes in the path to user's home dir
+     stringByExpandingTildeInPath
+    -(NSString *)                           Attempts to resolve symbolic links in the path
+     stringByResolvingSymlinksInPath
+    -(NSString *)                           Standardizes a path by attempting to resolve ~,..,symlinks
+     stringByStandardizingPath
+     
+    * Common Path Utility functions:
+    
+    Function                                Description
+    -----------------------------------------------------------------------------------------
+    NSString *NSUserName (void)             Returns the current user's login name
+    NSString *NSFullUserName (void)         Returns the current user's full username
+    NSString *NSHomeDirectory (void)        Returns the path to the current user's home dir
+    NSString *NSHomeDirectoryForUser        Returns the home directory for user
+     (NSString *user)
+    NSString *NSTemporaryDirectory          Returns the path to a directory that can hold temp files
+    
+++++ PROCESS INFORMATION ++++
+
+    * The NSProcessInfo class has methods to set and retrieve info about the current process
+    
+    * Common Methods for NSProcessInfo:
+    
+    Method                                  Description
+    -----------------------------------------------------------------------------------------
+    +(NSProcessInfo *) processInfo          Returns information about the current process
+    -(NSArray *) arguments                  Returns the args to the current process as array of NSStrings
+    -(NSDictionary *) environment           Returns a dict of environment variables
+    -(int) processIdentifier                Returns the pid
+    -(NSString *) processName               Returns the name of the current process
+    -(NSString *) globallyUniqueString      Returns a unique string, for things like temp filenames
+    -(NSString *) hostName                  Returns the name of the host system
+    -(NSUInteger) operatingSystem           Returns a number indicating the operating system
+    -(NSString *) operatingSystemName       Returns the name of the operating system
+    -(NSString *)                           Returns the current version of the os
+     operatingSystemVersionString
+    -(void) setProcessName:                 Sets the name of the current process
+     (NSString *) name
+     
+++++ BASIC FILE OPERATIONS ++++
+
+    * Methods in NSFileHandle let you work with files--open/close and IO ops
+    * Common methods for NSFileHandle
+    
+    Method                                  Description
+    -----------------------------------------------------------------------------------------
+    +(NSFileHandle *)                       Opens a file for reading
+     fileHandleForReadingAtPath: path
+    +(NSFileHandle *)                       Opens a file for writing
+     fileHandleForWritingAtPath: path
+    +(NSFileHandle *)                       Opens a file for reading and writing
+     fileHandleForUpdatingAtPath: path      
+    -(NSData *) availableData               Returns data available for reading from a device or channel
+    -(NSData *) readDataToEndOfFile         Reads the remaining data up to EOF (UINT_MAX bytes max)
+    -(NSData *) readDataOfLength:           Reads a specified number of bytes
+     (NSUInteger) bytes
+    -(void) writeData: data                 Writes data to the file
+    -(unsigned long long) offsetInFile      Obtains the current file offset
+    -(void) seekToFileOffset: offset        Sets the current file offset
+    -(unsigned long long) seekToEndOfFile   Puts offset at EOF
+    -(void) truncateFileAtOffset: offset    Sets file size to offset bytes (padding if needed)
+    -(void) closeFile                       Closes the file
+    
+++++ MEMORY MANAGEMENT ++++
+
+    * When an autorelease pool is set up, Foundation automatically adds some of your objects to it
+    * A pool can be released with [pool drain] at the end of execution
+    * You can have more than one autorelease pool, and they can be nested
+    * Code that generates a lot of temporary objects may require multiple autorelease pools
+    * The pool doesn't contain the objects, just references to the objects
+    * To send an object to a pool, send it an autorelease message: [myObj autorelease]
+    * Every object has a reference count
+    * An object's reference count can be incremented with [myObj retain]
+    * And decremented with [myObj release]
+    * When the reference count is 0, the object's memory should release
+    * You can get an object's reference count with [myObj referenceCount]
+    * If you bring the reference count to 0 for an object in the autorelease pool before the pool drains, you may get a segfault when the pool does drain, because it will contain a reference to an invalid object.

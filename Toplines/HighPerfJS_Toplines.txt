@@ -1,0 +1,172 @@
+Toplines from High Performance Javascript, by Nicholas C. Zakas
+O'Reilly Media, Inc, Published 2010-03-23, Print ISBN: 978-0-596-80279-0
+
+Chapter 1: Loading and Execution
+    1.1 Script Positioning
+    1.2 Grouping Scripts
+    1.3 Nonblocking Scripts
+    
+Chapter 2: Data Access
+    2.1 Managing Scope
+    2.2 Object Members
+    
+Chapter 3: DOM Scripting
+    3.1 DOM in the Browser World
+    3.2 DOM Access and Modification
+    3.3 Repaints and Reflows
+    3.4 Event Delegation
+
+Chapter 4: Algorithms and Flow Control
+4.1 Loops
+    * Putting a var statement in the initialization condition of a for loop creates a function-level variable, not a loop-level one. Since JavaScript ONLY has function level scope, creating a var in a loop body is the same as creating it in the parent context.
+
+    * Use for-in loops ONLY when looping an unknown number of object properties. They have more overhead than other loop types due to having to do numerous object member lookups.
+
+    * Factors contributing to loop performance are:
+        - The amount of work done per iteration
+        - The number of iterations performed
+
+    * To decrease work per iteration:
+        - Minimize the use of object / prototype lookups--if possible, have one lookup before the loop body, either in a prior statement or the initialization condition, rather than an object lookup each time through the loop. Example:
+
+            // BAD: one object member lookup per iteration:
+            for (var i = 0; i < items.length; i++) {
+                process(items[i]);
+            }
+
+            // Better: Single object lookup:
+            for (var i = 0, len = items.length; i < len; i++) {
+                process(items[i]);
+            }
+
+            // Best: Minimize property lookup + reversal:
+            for (var i = items.length; i--; ) {
+                process(items[i]);
+            }
+
+    * To decrease the number of iterations:
+        * Use a JS version of Duff's Device, which unrolls loop bodies so each iteration does the work of multiple iterations:
+
+            var iterations = items.length % 8,
+                i          = items.length - 1;
+
+            while (iterations) {
+                process(items[i--]);
+                iterations--;
+            }
+
+            iterations = Math.floor(items.length / 8);
+
+            while (iterations) {
+                process(items[i--]);
+                process(items[i--]);
+                process(items[i--]);
+                process(items[i--]);
+                process(items[i--]);
+                process(items[i--]);
+                process(items[i--]);
+                process(items[i--]);
+                iterations--;
+            }
+
+    * For loops with more than 1k iterations, gives improvement, at 500k it's 70% faster
+
+
+4.2 Conditionals
+    * If you have two or three conditions, use if-else, for more use switch
+    * switch is faster when the number of conditions is large
+    * To optimize if-else loops, you want to minimize the number of evaluations done to reach the target condition
+    * You can do that by having your conditions evaluate in order of most to least common
+    * Additionally by turning a linear if-else series into a tree structure:
+
+        if (value < 6) {
+            if (value < 3) {
+                if (value == 0) {
+                    return result0;
+                } else if (value == 1) {
+                    return result1;
+                } else {
+                    return result2;
+                }
+            } else {
+                if (value == 3) {
+                    return result3;
+                } else if (value == 4) {
+                    return result4;
+                } else {
+                    return result5;
+                }
+            }
+        } else {
+            if (value < 8) {
+                if (value == 6) {
+                    return result6;
+                }
+            }
+        }
+
+    * When you have a large number of discrete values to test for, consider using a lookup table
+    * Lookup tables can be objects or arrays.
+
+4.3 Recursion
+    * Easy to hit browser call stack limits, which are hugely variable across browsers
+    * In FF, Safari, Chrome, and IE, call stack limit errors are JS errors, so you can do:
+
+        try {
+            recurse();
+        } catch(ex) {
+            alert("Too much recursion!");
+        }
+
+    * If you hit a call stack limit, look for recursion in the code
+    * Most recursion errors stem from an incorrect termination condition
+    * If the termination condition is correct, switch to iteration, memoization, or both.
+
+
+Chapter 5: Strings and Regular Expressions
+    5.1 String Concatenation
+    5.2 Regular Expression Optimization
+    5.3 String Trimming
+    
+Chapter 6: Responsive Interfaces
+    6.1 The Browser UI Thread
+    6.2 Yielding with Timers
+    6.3 Web Workers
+
+Chapter 7: Ajax
+    7.1 Data Transmission
+    7.2 Data Formats
+    7.3 Ajax Performance Guidelines
+
+Chapter 8: Programming Practices
+    8.1 Avoid Double Evaluation
+    8.2 Use Object/Array Literals
+    8.3 Don't Repeat Work
+    8.4 Use the Fast Parts
+
+Chapter 9: Building and Deploying High-Performance JavaScript Applications
+    9.1 Apache Ant
+    9.2 Combining JavaScript Files
+    9.3 Preprocessing JavaScript Files
+    9.4 JavaScript Minification
+    9.5 Buildtime Versus Runtime Build Processes
+    9.6 JavaScript Compression
+    9.7 Caching JavaScript Files
+    9.8 Working Around Caching Issues
+    9.9 Using a Content Delivery Network
+    9.10 Deploying JavaScript Resources
+    9.11 Agile JavaScript Build Process
+
+Chapter 10: Tools
+    10.1 JavaScript Profiling
+    10.2 YUI Profiler
+    10.3 Anonymous Functions
+    10.4 Firebug
+    10.5 IE Development Tools
+    10.6 Safari Web Inspector
+    10.7 Chrome Developer Tools
+    10.8 Script Blocking
+    10.9 Page Speed
+    10.10 Fiddler
+    10.11 YSlow
+    10.12 dynaTrace Ajax edition

@@ -1,0 +1,1467 @@
+Notes on Javascript Patterns
+
+Chapter 1: Introduction
+1.1 Patterns
+    * a "theme of recurring events or objects"
+    * solution to a common problem
+    * framed as an abstraction or template
+    * js design patterns are different, because it's weakly typed
+1.2 Javascript: Concepts
+    1.2.1 Object-Oriented
+        * Everything except 5 primitive types are objects
+        * non-obj primitives are number, string, boolean, null, undefined
+        * number, string and boolean values are easily converted to objs
+        * An 'object' is a collection of named properties, a list of
+            key-value pairs. some properties can be functions (methods)
+        * Two main types of objects:
+            - Native: described in the ECMAScript standard
+            - Host: defined by the host environment
+    1.2.2 No Classes
+        * In js you create a blank object and add members to it
+        * objects are composed of primitives, functions, other objects
+    1.2.3 Prototypes
+        * prototype is an object, and every function has a prototype property
+            that points to a new blank object
+    1.2.4 Environment
+        * js programs must run in an environment
+1.3 ECMAScript 5
+    * Version 3 was intro'd in 1999, is mostly what's used now
+    * 5 was approved in 2009
+    * adds 'strict mode', which removes some language features
+    * Once per scope, you can use: "use strict";
+    * ES5 is transitional to a period when strict mode is the only mode
+1.4 JSLint
+    * code quality tool that warns about potential problems
+1.5 The Console
+    * Part of the environment, present in most browsers
+    * Firebug has a nice console UI
+    * WebKit has Web Inspector
+    * console object lets you write to the console
+    * console.log() prints the parameters passed to it
+    * console.dir() enumerates the object passted to it and prints properties
+    
+Chapter 2: Essentials
+2.1 Writing Maintainable Code
+    * Maintainable code:
+        - is readable
+        - is consistent
+        - is predictable
+        - looks as if it was written by the same person
+        - is documented
+2.2 Minimizing Globals
+    * global variables are those declared outside of any function, or
+        those used without first being declared
+    * There's a global object in every js environment
+    * All global variables are properties of the global object
+    2.2.1 the Problem with Globals
+        * They're shared among all code in the application
+        * They live in the global namespace
+        * Can collide easily with third party code
+        * Very easy to create an implied global
+    2.2.2 Side Effects when Forgetting var
+        * Globals created with var cannot be deleted
+        * Implied globals created without var can be deleted
+        * therefore implied globals aren't really variables (they're props)
+    2.2.3 Access to the Global Object
+        * If you need to access the global object (the window object in 
+            browsers), you can do this from any level of scope:
+            
+            var global = (function () {
+                return this;
+            }());
+        
+        * This always gets you the global object, because inside functions
+            that were invoked as functions (not as constructors with new),
+            'this' should always point to the global object.
+    2.2.4 Single var Pattern
+        * Using a single 'var' statement at the top of your functions
+        * Provides a single place for declarations
+        * Prevents logical errors
+        * minimizes globals
+        * Multiple assignments/declarations can be comma separated
+    2.2.5 Hoisting: A Problem with Scattered vars
+        * js considers that a variable declared in the same scope as it's used
+            in is "declared", even if the declaration comes after the use
+2.3 for Loops
+    * If you use HTMLCollection objects, like document.images, document.forms,
+        you're accessing a live query against the DOM, which is expensive
+    * Better to cache the length of the array or collection:
+    
+        for (var i = 0, max = myarray.length; i < max; i++) {
+            // do something with myarray[i]
+        }
+        
+2.4 for-in Loops
+    * used to iterate over nonarray objects
+    * when iterating over object properties, use hasOwnProperty() to filter
+        out properties that come down the prototype chain:
+    
+        // This doesn't show you "clone()", which is inherited
+        var man = { hands: 2, legs: 2, heads: 1 };
+        for (var i in man) {
+            if (man.hasOwnProperty(i)) {
+                console.log(i, ":", man[i]);
+            }
+        }
+        
+    * You can call hasOwnProperty() off of Object.prototype in case it's
+        been redefined by the object in question:
+        
+        for (var i in man) {
+            if (Object.prototype.hasOwnProperty.call(man, i)) {
+                console.log(i, ":", man[i]);
+            }
+        }
+        
+        OR
+        
+        var i, hasOwn = Object.prototype.hasOwnProperty;
+        for (i in man) {
+            if (hasOwn.call(man, i)) {
+                console.log(i, ":", man[i]);
+            }
+        }
+
+2.5 (Not) Augmenting Built-in Prototypes
+    * It's tempting to augment Object(), Array() or Function(), but it's bad
+    * Exceptions are ok when:
+        - Future ESCMScript versions will implement as a built-in
+        - You check to make sure your custom thing doesn't exist already
+        - You clearly document your change and communicate it to others
+    * Here's the pattern:
+    
+        if (typeof Object.prototype.myMethod !== "function") {
+            Object.prototype.myMethod = function () {
+                // implementation...
+            };
+        }
+        
+2.6 Switch Pattern
+    * Improve your switches with this pattern:
+    
+        var inspect_me = 0, result = '';
+        
+        switch (inspect_me) {
+        case 0:
+            result = "zero";
+            break;
+        case 1:
+            result = "one";
+            break;
+        default:
+            result = "unknown";
+        }
+
+    * This:
+        - aligns 'case' with 'switch'
+        - indents each case's code
+        - ends cases with a clear 'break'
+        - avoids fall-throughs
+        - ends the switch with a default case
+        
+2.7 Avoiding Implied Typecasting
+    * js implicitly types variables when you compare them
+    * always use the === and !== operators that check values and type
+    2.7.1 Avoiding eval()
+        * Don't use it: bad security, probably not necessary
+        * don't pass strings as function names to things like setTimeout()
+        * don't use 'new Function()' except carefully instead of eval()
+        
+2.8 Number Conversions with parseInt()
+    * You can accidentally read "09" (a date part) as an octal number
+    * Therefore always use the second, radix parameter to parseInt:
+    
+        var month = "06",
+            year = "09";
+        month = parseInt(month, 10);
+        year = parseInt(year, 10);
+        
+2.9 Coding Conventions
+    2.9.1 Indentation
+        * use four spaces
+        * anything within curly braces
+    2.9.2 Curly Braces
+        * always use, even when optional
+    2.9.3 Opening Brace Location
+        * always use curly braces, and always put the opening one on the same 
+            line as the previous statement, to avoid js adding one for you
+    2.9.4 White Space
+        * After semicolons in a for loop declaration
+        * Initializing multiple variables in a for loop
+        * After commas between array items
+        * After commas and colons in object properties
+        * Delimiting function arguments
+        * Before curly braces in function declarations
+        * After 'function' in anonymous function expressions
+        * Between operators and their operands
+        
+2.10 Naming Conventions
+    2.10.1 Capitalizing Constructors
+        * constructor functions should have an uppercase first letter
+    2.10.2 Separating Words
+        * use camel case
+    2.10.3 Other Naming Patterns
+        * all caps for constants
+        * all caps for globals
+        * underscores first for private members
+        * one underscore for _protected, two for __private
+        
+2.11 Writing Comments
+    * All functions, arguments and return values
+    * Any unusual techniques
+    
+2.12 Writing API Docs
+    * Learn and use something like JSDoc or YUIDoc
+    
+2.13 Writing to be Read
+    * Write like somebody's going to read it
+    
+2.14 Peer Reviews
+    * They're good
+    
+2.15 Minify...In Production
+    * Helps page performance, but leave it to the minifier
+    
+2.16 Run JSLint
+    * It's good
+    
+
+Chapter 3: Literals and Constructors
+* In general literals are preferable to using constructor functions
+3.1 Object Literal
+    * User defined objects are mutable at any time
+    * Object literal notation is good for on-demand object creation:
+    
+        var dog = {};
+        dog.name = "Benji";
+        dog.getName = function () {
+            return dog.name;
+        };
+        
+    * You can always:
+        - Change values of properties and methods
+        - Remove properties and methods with 'delete'
+        - Add more properties and methods
+    3.1.1 The Object Literal Syntax
+        * Rules are:
+            - wrap the object in curly braces
+            - comma delimit the properties and methods (no trailing comma)
+            - separate property names and values with a colon
+            - when you assign the object to a variable, semi-colon after }
+    3.1.2 Objects from a Constructor
+        * Use a literal instead:
+        
+            var car = {goes: "far"}; // this
+            var car = new Object(); // not this
+            car.goes = "far";
+            
+    3.1.3 Object Constructor Catch
+        * the Object() constructor may decide to delegate to a different constructor, depending on the value you pass into it
+        
+3.2 Custom Constructor Functions
+    * Example:
+    
+        var Person = function (name) {
+            this.name = name;
+            this.say = function() {
+                return "I am " + this.name;
+            };
+        };
+    
+        var adam = new Person("Adam");
+        adam.say(); // "I am Adam"
+        
+    * When you create a new object from this with new, the following happens:
+        - an empty object is created and reference by 'this'
+        - that object inherits the prototype of the function
+        - properties and methods are added to 'this'
+        - the object reference by 'this' is returned
+    * For methods that are the same for all instances, you should add
+        them to the prototype of Person instead:
+        
+        Person.prototype.say = function () {
+            return "I am " + this.name;
+        };
+        
+    * Reusable members (like methods) should go to the prototype
+    * The empty object inherits from Person's prototype, like this:
+    
+        var this = Object.create(Person.prototype);
+        
+    3.2.1 Constructor's Return Values
+        * By default a constructor will return what's referenced by 'this'
+        * You can return another object if your last line is a return
+        
+3.3 Patterns for Enforcing 'new'
+    * If you forget 'new' when referencing a constructor, 'this' inside the 
+        constructor will reference the global variable
+    3.3.1 Naming Convention
+        * having clearly marked constructor names can help
+    3.3.2 Using 'that'
+        * instead of adding members to 'this', add to 'that' and return 'that'
+        
+            function Waffle() {
+                var that = {};
+                that.tastes = "yummy";
+                return that;
+            }
+        
+        * That's a problem though because it loses the link to its prototype
+    3.3.3 Self-Invoking Constructor
+        * Have your constructor check to whether 'this' is an instance of
+            itself:
+            
+            function Waffle() {
+                if (!(this instanceof Waffle)) {
+                    return new Waffle();
+                }
+                this.tastes = "yummy";
+            }
+            Waffle.prototype.wantAnother = true;
+            
+        * Or compare with arguments.callee instead of hardcoding the
+            constructor name (not allowed in strict mode):
+            
+            if (!(this instanceof arguments.callee)) {
+                return new arguments.callee();
+            }
+            
+3.4 Array Literal
+    * Arrays are objects, but also have their own literal notation:
+    
+        var a = ["itsy", "bitsy", "spider"];
+        
+    3.4.1 Array Literal Syntax
+        * Comma delimited list of elements wrapped in square brackets
+    3.4.2 Array Constructor Curiousness
+        * 'new Array()' has a trap: if you pass a numeric first argument, it 
+            sets the length of the array instead of becoming the first item
+        * If you pass a float, it just straight up breaks
+    3.4.3 Check for Array-ness
+        * typeof when applied to an array returns 'object'
+        * in EMCAScript 5 you can use Array.isArray()
+        * Otherwise you can use something like:
+        
+            is (typeof Array.isArray === "undefined") {
+                Array.isArray = function (arg) {
+                    return Object.prototype.toString.call(arg) === "[object Array]";
+                };
+            }
+            
+3.5 JSON
+    * Same as object literal, but property names must be quoted
+    3.5.1 Working with JSON
+        * Don't use eval() to pull in JSON strings
+        * do use JSON.parse(), or the JSON.org library
+        * in YUI3, use YUI().use('json-parse', function (Y) { ... }
+        * in jQuery, use jQuery.parseJSON()
+        * to create JSON, use JSON.stringify()
+        
+3.6 Regular Expression Literal
+    * regexes in js are objects
+    * you should create them with the literal syntax:
+    
+        var re = /\\/gm; // this
+        var re = new RegExp("\\\\", "gm"); // not this
+        
+    3.6.1 Regular Expression Literal Syntax
+        * wrapped in forward slashes
+        * trailed by g for global, m for multiline, i for case insensitive
+        * You can use new RegExp() if the pattern is created at runtime
+        
+3.7 Primitive Wrappers
+    * number, string and boolean primitive types have primitive wrapper objects
+    * wrapper objects can be created with Number(), String() and Boolean()
+    * as soon as you invoke a wrapper method on a primitive, it is 
+        temporarily converted to the associated wrapper object type
+    * If you want to augment the value or have persistent state in a primitive,
+        you need it to be a wrapper object
+        
+3.8 Error Objects
+    * Error objects can be created by built in error constructors, like:
+        - Error()
+        - SyntaxError()
+        - TypeError()
+    * those are used with the 'throw' statement
+    * error objects have these properties:
+        - name: name of the constructor that created it
+        - message: string passed to the constructor at create
+    * additional properties (line numbers, etc) are actually browser extensions
+    * 'throw' works with any object, not just errors:
+    
+        try {
+            throw {
+                name: "MyErrorType", // custom error type
+                message: "oops",
+                extra: "This is embarrassing.",
+                remedy: genericErrorHandler // who should handle it
+            };
+        } catch (e) {
+            // inform the user
+            alert(e.message);
+            // gracefully handle it
+            e.remedy(); // calls genericErrorHandler()
+        }
+        
+        
+Chapter 4: Functions
+4.1 Background
+    * Two main features of functions in js that make them special:
+        - they're first class objects
+        - they provide scope
+    * Functions are objects that:
+        - can be created at runtime
+        - can be assigned to variables, have their references copied
+        - can be augmented, can be deleted
+        - can be passed as arguments to other functions
+        - can be returned by other functions
+        - can have their own properties and methods
+    * In js, blocks don't create scope, there's only function scope
+    4.1.1 Disambiguation of Terminology
+        * A named function is one like:
+        
+            var add = function add (a,b) { return a + b; }
+            
+        * An unnamed or anonymous one is:
+        
+            var add = function (a,b) { return a + b; }
+            
+        * Only difference is that the 'name' property of the function object
+            will be a blank string in the second example
+        * There are also function declarations:
+        
+            function add(a,b) {
+                return a + b;
+            }
+    
+    4.1.2 Declarations versus Expressions: Names and Hoisting
+        * Mostly you end up using expressions in practice
+        * declarations are only legal in the global scope or in the bodies
+            of other functions
+        * definitions of declarations cannot be assigned to variables
+        * definitions of declarations cannot be used as a parameter to a fn
+    4.1.3 Function's name Property
+        * in function declarations and named function expressions, 'name'
+            is defined--undef/blank in unnamed function expressions
+    4.1.4 Function Hoisting
+        * All declared variables are 'hoisted' to the top of their scope 
+        * That also applies to functions
+        * When using a function declaration, the definition gets hoisted
+            along with the declaration
+
+4.2 Callback Pattern
+    * a callback function is one passed to and executed by a second function
+    4.2.1 A Callback Example
+    4.2.2 Callbacks and Scope
+        * If a callback is an object method and uses 'this' to refer to
+            the object it belongs to, that can be a problem for scope
+        * To overcome that, you need to pass the method _and_ object
+            so you can call the fully qualified name of the method
+    4.2.3 Asynchronous Event Listeners
+        * Event listeners are all really callbacks
+    4.2.4 Timeouts
+        * window.setTimeout() and window.setInterval() accept callbacks
+    4.2.5 Callbacks in Libraries
+        * using them in libraries helps keep functioning generic
+        
+4.3 Returning Functions
+    * Since you can pass back functions, you can create closures
+    * Example:
+    
+        var setup = function() {
+            alert(1);
+            return function() {
+                alert(2);
+            };
+        };
+        
+        var my = setup(); // alerts 1
+        my();             // alerts 2
+        
+4.4 Self-Defining Functions
+    * You can overwrite a pointer to one function with a pointer to another
+    * You can do that reassignment inside the body of the first function
+    * Therefore functions can redefine themselves (their pointers)
+    * Example:
+    
+        var scareMe = function() {
+            alert("Boo!");
+            scareMe = function() {
+                alert("Double boo!");
+            };
+        };
+        scareMe(); // Boo!
+        scareMe(); // Double boo!
+        
+    * Useful when the function needs to do some prep work one time
+    * Properties assigned to the original function are lost on redefinition
+    
+4.5 Immediate Functions
+    * Syntax that lets you execute a function as soon as it's defined:
+    
+        (function () {
+            alert("watch out!");
+        }());
+        
+    4.5.1 Parameters of an Immediate Function
+        * Example:
+            
+            (function (who, when) {
+                console.log("I met " + who + " on " + when);
+            }("Joe Black", new Date()));
+            
+    4.5.2 Returned values from Immediate Functions
+        * Example:
+        
+            var result = (function () {
+                return 2+2;
+            }());
+            
+        * Using an immediate function to compute an object property:
+        
+            var o = {
+                message: (function() {
+                    var who = "me",
+                        what = "call";
+                    return what + " " + who;
+                }()),
+                getMsg: function() {
+                    return this.message;
+                }
+            };
+            o.getMsg(); // "call me"
+            o.message;  // "call me"
+            
+    4.5.3 Benefits and Usage
+        * All variables will be local and dereferenced at the end of the fn
+        * Used often for bookmarklets, since they run on any page and must
+            keep the global namespace clean / be unobtrusive
+        * Example of using it to encapsulate a module:
+        
+            // defined in module1.js
+            (function() {
+                // all the module 1 code
+            }());
+            
+4.6 Immediate Object Initialization
+    * uses an object with an init() method executed on create
+    * Example:
+    
+        ({
+            // here you can define setting values
+            // aka configuration constants
+            maxwidth: 600,
+            maxheight: 400,
+            
+            // and utility methods
+            gimmeMax: function () {
+                return this.maxwidth + "x" + this.maxheight;
+            },
+            
+            // initialize
+            init: function () {
+                console.log(this.gimmeMax());
+                // more init tasks
+            }
+        }).init();
+        
+    * Like using an object literal, wrapped in parens
+    * That instructs js to use the curly braces as an object literal, 
+        not as a code block
+    * after closing parenthesis, you immediately invoke init()
+    * May not work as well with js minifiers as code wrapped into a function
+    
+4.7 Init-time Branching
+    * also called load-time branching
+    * when you know a certain condition will persist unchanged throughout
+        the life of the program, it makes sense to test it only once
+    * feature / browser detection is a common example
+    * Example:
+    
+        var utils = {
+            addListener: null,
+            removeListener: null
+        };
+        
+        if (typeof window.addEventListener === 'function') {
+            utils.addListener = function (el, type, fn) {
+                el.addEventListener(type, fn, false);
+            };
+            utils.removeListener = function (el, type, fn) {
+                el.removeEventListener(type, fn, false);
+            };
+        } else if (typeof document.attachEvent === 'function') { // IE
+            utils.addListener = function (el, type, fn) {
+                el.attachEvent('on' + type, fn);
+            };
+            utils.removeListener = function (el, type, fn) {
+                el.detachEvent('on' + type, fn);
+            };
+        } else { // older browsers
+            utils.addListener = function (el, type, fn) {
+                el['on'+type] = fn;
+            };
+            utils.removeListener = function (el, type, fn) {
+                el['on'+type] = null;
+            };
+        }
+        
+4.8 Function Properties--A Memoization Pattern
+    * You can always add custom properties to your functions
+    * One use case is caching results (memoization)
+    * example:
+        
+        var myFunc = function (param) {
+            if (!myFunc.cache[param]) {
+                var result = {};
+                // ... expensive operation ...
+                myFunc.cache[param] = result;
+            }
+            return myFunc.cache[param];
+        };
+        myFunc.cache = {};
+        
+    * Multi-arg example with json string as cache key:
+    
+        [...]
+        var cachekey = JSON.stringify(Array.prototype.slice.call(arguments));
+        if (!myFunc.cache[cachekey]) {
+        [...]
+        
+4.9 Configuration Objects
+    * instead of individual args, pass an object into your function
+    
+4.10 Curry
+    4.10.1 Function Application
+        * In js you can 'apply' a function:
+        
+            Function.prototype.apply()
+            
+        * apply() takes two parameters: an object to bind to 'this' and
+            an array or arguments which becomes the 'arguments' object
+        * if the first parameter is null, 'this' points to the global object        
+        * When a function is a method of an object, the object is the first param
+        * Example:
+        
+            var alien = {
+                sayHi: function (who) {
+                    return "Hello" + (who ? ", " : "") + "!";
+                }
+            };
+            alien.sayHi('world');
+            sayHi.apply(alien, ["humans"]);
+            
+        * "Calling" or "invoking" a function is syntactic sugar over apply()
+    4.10.2 Partial Application
+        * When you supply arguments incrementally, that's partial application
+        * You don't get a result, but you get another function
+        * Example:
+        
+            var add = function (x,y) {
+                return x + y;
+            };
+            // full application
+            add.apply(null, [5,4]);
+            
+            // partial application
+            var newadd = add.partialApply(null, [5]);
+            // applying an argument to the new function
+            newadd.apply(null, [4]);
+        
+        * Making a function handle partial application is 'currying'
+    4.10.3 Currying
+        * named after mathematician Haskell Curry
+        * involves the transformation of a function
+        * Example of modifying add() to handle partial application:
+        
+            // a curried add()
+            // accepts partial list of arguments
+            function add(x,y) {
+                var oldx = x, oldy = y;
+                if (typeof oldy === "undefined") { // partial
+                    return function (newy) {
+                        return oldx + newy;
+                    };
+                }
+                // full application
+                return x + y;
+            }
+            
+            var add2000 = add(2000);
+            add2000(10); // 2010
+            
+        * Example of a general purpose currying function:
+        
+            function generalCurry(fn) {
+                var slice = Array.prototype.slice,
+                    stored_args = slice.call(arguments, 1);
+                return function () {
+                    var new_args = slice.call(arguments),
+                        args = stored_args.concat(new_args);
+                    return fn.apply(null, args);
+                };
+            }
+    4.10.4 When to Use Currying
+        * If you call the same function with _mostly_ the same parameters
+        
+    
+Chapter 5: Object Creation Patterns
+5.1 Namespace Pattern
+    * js has no built in namespaces
+    * you create one global object for your application or library
+    * add all functionality to that object
+    * Make all functions and variables properties of the global object
+    5.1.1 General Purpose Namespace Function
+        * Rather than do lots of checks for namespace collisions, you can
+            define a generic namespace() function to act as a wrapper
+        
+            var MYAPP = MYAPP || {};
+            
+            MYAPP.namespace = function (ns_string) {
+                var parts = ns_string.split('.'),
+                    parent = MYAPP,
+                    i;
+                // strip redundant leading global
+                if (parts[0] === "MYAPP") {
+                    parts = parts.slice(1);
+                }
+                for (i = 0; i < parts.length; i += 1) {
+                    // create a property if it doesn't exist
+                    if (typeof parent[parts[i]] === "undefined") {
+                        parent[parts[i]] = {};
+                    }
+                    parent = parent[parts[i]];
+                }
+                return parent;
+            };
+            
+5.2 Declaring Dependencies
+    * It's good to declare your dependencies early
+    * Example declaration of a dependency into a single local variable:
+    
+        var myFunction = function () {
+            // dependencies
+            var event = YAHOO.util.Event,
+                dom = YAHOO.util.Dom;
+                
+            // use event and dom variables
+            // for the rest of the function
+        };
+        
+    * Local variable access is faster than global, and with this pattern
+        the global lookup only happens once--subsequent access is local
+    
+5.3 Private Properties and Methods
+    * No existing syntax for protected members
+    * All object members are public
+    5.3.1 Private Members
+        * Can be implemented using a closure
+        * If the constructor uses a closure, variables in that scope are hidden
+        * Example:
+        
+            function Gadget() {
+                // private member
+                var name = 'iPod';
+                // public function
+                this.getName = function () {
+                    return name;
+                };
+            }
+            
+    5.3.2 Privileged Methods
+        * A name given to public methods that have access to private members
+    5.3.3 Privacy Failures
+        * Edge cases: earlier FF versions have a sneakaround in eval()
+        * When passing a private variable that's an object or array, it can
+            be changed by outside stuff because it's passed by reference
+        * Workaround is to create methods that pass only copies of info
+    5.3.4 Object Literals and Privacy
+        * If you use a closure and an immediate function to wrap an object
+            literal, you can create it as private:
+            
+            var myobj;
+            (function () {
+                // private members
+                var name = "my, oh my";
+                // public part
+                myobj = {
+                    // privileged method
+                    getName: function () {
+                        return name;
+                    }
+                };
+            }());
+            myobj.getName(); // "my, oh my"
+            
+    5.3.5 Prototypes and Privacy
+        * Any private members used with a constructor are recreated every
+            time the constructor is invoked to create a new object
+        * You can add common properties and methods to the prototype
+            property of the constructor, so the common parts are shared
+        * To implement, you use private properties inside constructors,
+            and private properties in object literals
+        * Example:
+        
+            function Gadget() {
+                // private member
+                var name = 'iPod';
+                // public function
+                this.getName = function () {
+                    return name;
+                };
+            }
+            
+            Gadget.prototype = (function () {
+                // private member
+                var browser = "Mobile Webkit";
+                // public prototype members
+                return {
+                    getBrowser: function () {
+                        return browser;
+                    }
+                };
+            }());
+            
+            var toy = new Gadget();
+            console.log(toy.getName()); // privileged 'own' method
+            console.log(toy.getBrowser()); // privileged prototype method
+    
+    5.3.6 Revealing Private Functions as Public Methods
+        * "Revelation pattern" is where you have private methods that are
+            also exposed as public methods
+        * Example:
+        
+            var myarray;
+            
+            (function () {
+                var astr = "[object Array]",
+                    toString = Object.prototype.toString;
+                
+                function isArray(a) {
+                    return toString.call(a) === astr;
+                }
+                
+                function indexOf(haystack, needle) {
+                    var i = 0,
+                        max = haystack.length;
+                    for (; i < max; i += 1;) {
+                        if (haystack[i] === needle) {
+                            return i;
+                        }
+                    }
+                    return -1;
+                }
+                
+                myarray = {
+                    isArray: isArray,
+                    indexOf: indexOf,
+                    inArray: indexOf
+                };
+            }());
+            
+        * Each of the public methods points to a private method
+        
+5.4 Module Pattern
+    * JS has no special syntax for packages
+    * Module pattern lets you create self-contained, decoupled code
+    * Combination of namespaces, immediate functions, private/privileged
+        members, and declaring dependencies
+    * First, declare a namespace
+    
+        MYAPP.namespace('MYAPP.utilities.array');
+        
+    * Define the module with an immediate function to return an object:
+    
+        MYAPP.utilities.array = (function () {
+            return {
+                // todo...
+            };
+        }());
+        
+    * Add methods to the public interface:
+    
+        MYAPP.utilities.array = (function () {
+            return {
+                inArray: function (needle, haystack) {
+                    // ...
+                },
+                isArray: function (a) {
+                    // ...
+                }
+            };
+        }());
+        
+    * Full pattern:
+    
+        MYAPP.namespace('MYAPP.utilities.array');
+        MYAPP.utilities.array = (function () {
+            // dependencies
+            var uobj = MYAPP.utilities.object,
+                ulang = MYAPP.utilities.lang,
+                
+            // private properties
+                array_string = "[object Array]",
+                ops = Object.prototype.toString;
+                
+            // private methods
+            // ...
+            
+            // end var
+            
+            // optionally one-time init procedures
+            // ...
+            
+            // public API
+            return {
+                inArray: function (needle, haystack) {
+                    for (var i = 0, max = haystack.length; i < max; i += 1) {
+                        if (haystack[i] === needle) {
+                            return true;
+                        }
+                    }
+                },
+                isArray: function (a) {
+                    return ops.call(a) === array_string;
+                }
+                // ... more methods and properties
+            };
+        }());
+        
+    5.4.1 Revealing Module Pattern
+        * Module pattern can optionally be organized to keep all methods private
+            and then expose those you choose at the end, while setting up a
+            public API
+        * Converting the above code to:
+        
+            MYAPP.utilities.array = (function () {
+                // private properties
+                var array_string = "[object Array]",
+                    ops = Object.prototype.toString,
+                // private methods
+                    inArray = function (haystack, needle) {
+                        for (var i = 0, max = haystack.length; i < max; i += 1) {
+                            if (haystack[i] === needle) {
+                                return i;
+                            }
+                        }
+                        return -1;
+                    },
+                    isArray = function (a) {
+                        return ops.call(a) === array_string;
+                    };
+                // end var
+                // revealing public API
+                return {
+                    isArray: isArray,
+                    indexOf: inArray
+                };
+            }());
+            
+    5.4.2 Modules that Create Constructors
+        * You can use the module pattern to create objects via constructors
+            if your immediate function returns a function instead of an object
+        * Example that creates a constructor function MYAPP.utilities.Array:
+        
+            MYAPP.namespace('MYAPP.utilities.Array');
+            MYAPP.utilities.Array = (function () {
+                // dependencies
+                var uobj = MYAPP.utilities.object,
+                    ulang = MYAPP.utilities.lang,
+                    // private properties and methods
+                    Constr;
+                    // end var
+                    
+                // optionally one-time init procedures
+                // ...
+                
+                // public API -- constructor
+                Constr = function (o) {
+                    this.elements = this.toArray(o);
+                };
+                // public API -- prototype
+                Constr.prototype = {
+                    constructor: MYAPP.utilities.Array,
+                    version: "2.0",
+                    toArray: function (obj) {
+                        for (var i - 0, a = [], len = obj.length; i < len; i += 1) {
+                            a[i] = obj[i];
+                        }
+                        return a;
+                    }
+                };
+                
+                // return the constructor
+                // to be assigned to the new namespace
+                return Constr;
+            }());
+            
+    5.4.3 Importing Globals into a Module
+        * You can pass arguments to the immediate function that wraps the module
+        * Usually these are references to global variables or the global object
+        * Importing them helps speed up symbol resolution because they become local
+        * Example:
+        
+            MYAPP.utilities.module = (function (app, global) {
+                // references to the global object
+                // and to the global app namespace object
+                // are now localized
+            }(MYAPP, this));
+            
+5.5 Sandbox Pattern
+    * Addresses the drawbacks of the namespacing pattern:
+        - removes reliance on a single global MYAPP type variable
+        - removes long, dotted names to type and resolve at runtime
+    5.5.1 A Global Constructor
+        * You have a single global object, like in the namespace pattern
+        * The global is a constructor, you create objects with it and pass
+            it a callback function which becomes the sandbox for your code
+        * Simple usage:
+        
+            new Sandbox(function (box) {
+                // code here
+            });
+            
+        * Usage with some modules (ajax and event) required:
+        
+            Sandbox(['ajax', 'event'], function (box) {
+                // console.log(box);
+            });
+            
+        * Usage with all modules (*):
+            
+            Sandbox('*', function (box) {
+                // console.log(box);
+            });
+            
+        * Multiple instances:
+        
+            Sandbox('dom', 'event', function (box) {
+                // work with dom and event
+                Sandbox('ajax', function (box) {
+                    // another sandboxed 'box' object
+                    // this 'box' is not the same as
+                    // the 'box' outside this function
+                    // ...
+                    // done with Ajax
+                });
+                // no trace of Ajax module here
+            });
+            
+    5.5.2 Adding Modules
+        * You can add a static property, 'modules' to the Sandbox() constructor
+        
+            Sandbox.modules = {};
+            Sandbox.modules.dom = function (box) {
+                box.getElement = function () {};
+                box.getStyle = function () {};
+                box.foo = "bar";
+            };
+            Sandbox.modules.event = function (box) {
+                // access to the Sandbox prototype if needed
+                // box.constructor.prototype.m = "mmm";
+                box.attachEvent = function () {};
+                box.detachEvent = function () {};
+            };
+            Sandbox.modules.ajax = function (box) {
+                box.makeRequest = function () {};
+                box.getRequest = function () {};
+            };
+            
+    5.5.3 Implementing the Constructor
+    
+        function Sandbox() {
+            // turning arguments into an array
+            var args = Array.prototype.slice.call(arguments),
+                // the last argument is the callback
+                callback = args.pop(),
+                // modules can be passed as an array or as individual parameters
+                modules = (args[0] && typeof args[0] === "string") ? args : args[0],
+                i;
+            
+            // make sure the function is called as a constructor
+            if (!(this instanceof Sandbox)) {
+                return new Sandbox(modules, callback);
+            }
+            
+            // add properties to 'this' as needed
+            this.a = 1;
+            this.b = 2;
+            
+            // now add modules to the core 'this' object
+            // no modules or '*' means all modules
+            if (!modules || modules === '*') {
+                modules = [];
+                for (i in Sandbox.modules) {
+                    if (Sandbox.modules.hasOwnProperty(i)) {
+                        modules.push(i);
+                    }
+                }
+            }
+            
+            // initialize the required modules
+            for (i = 0; i < modules.length; i += 1) {
+                Sandbox.modules[modules[i]](this);
+            }
+            // Call the callback
+            callback(this);
+        }
+        
+        // Any prototype properties as needed
+        Sandbox.prototype = {
+            name: "My Application",
+            version: "1.0",
+            getName: function () {
+                return this.name;
+            }
+        };
+        
+5.6 Static Members
+    * Static properties and methods are those that don't change from instance
+        to instance. Javascript has no syntax for static members.
+    5.6.1 Public Static Members
+        * A constructor Gadget with a static method isShiny():
+        
+            // constructor
+            var Gadget = function () {};
+            
+            // a static method
+            Gadget.isShiny = function () {
+                return "you bet";
+            };
+            
+            // a normal method added to the prototype
+            Gadget.prototype.setPrice = function (price) {
+                this.price = price;
+            };
+            
+        * Adding an instance method that points at a static method:
+        
+            Gadget.prototype.isShiny = Gadget.isShiny;
+            
+        * Will potentially trigger differently for static vs. instance usage
+        
+            Gadget.isShiny = function () {
+                var msg = "you bet";
+                if (this instanceof Gadget) {
+                    // only works if called non-statically
+                    msg += ", it costs $" + this.price + '!';
+                }
+                return msg
+            };
+            
+    5.6.2 Private Static Members
+        * Shared by all objects created with the constructor function
+        * not accessible outside the constructor
+        * Example with a private counter variable and a privileged method
+            to access it as an id:
+            
+            // constructor
+            var Gadget = (function () {
+                // static variable / property
+                var counter = 0,
+                    NewGadget;
+                    
+                // this will become the new
+                // constructor implementation
+                NewGadget = function () {
+                    counter += 1;
+                };
+                
+                // a privileged method
+                NewGadget.prototype.getLastId = function () {
+                    return counter;
+                };
+                
+                // overwrite the constructor
+                return NewGadget;
+            }()); // execute immediately
+            
+5.7 Object Constants
+    * There are no constants in JS
+    * Convention is to use all caps in naming constants
+    * If you need a truly immutable value you can create a private property
+        and make a getter but no setter
+    * General purpose constant object, with set(), isDefined() and get()
+    
+        var constant = (function () {
+            var constants = {},
+                ownProp = Object.prototype.hasOwnProperty,
+                allowed = {
+                    string: 1,
+                    number: 1,
+                    boolean: 1
+                },
+                prefix = (Math.random() + "_").slice(2);
+            return {
+                set: function (name, value) {
+                    if (this.isDefined(name)) {
+                        return false;
+                    }
+                    if (!ownProp.call(allowed, typeof value)) {
+                        return false;
+                    }
+                    constants[prefix + name] = value;
+                    return true;
+                },
+                isDefined: function (name) {
+                    return ownProp.call(constants, prefix + name);
+                },
+                get: function (name) {
+                    if (this.isDefined(name)) {
+                        return constants[prefix + name];
+                    }
+                    return null;
+                }
+            };
+        }());
+        
+5.8 Chaining Pattern
+    * Lets you call methods on an object one after another
+    * When methods have no meaningful return value, you can return 'this',
+        the instance of the object they're working on
+    * Consumers of the object can then call the next method chained to previous
+    
+        var obj = {
+            value: 1,
+            increment: function () {
+                this.value += 1;
+                return this;
+            },
+            add: function (v) {
+                this.value += v;
+                return this;
+            },
+            shout: function () {
+                alert(this.value);
+            }
+        };
+        
+        obj.increment().add(3).shout(); // 5
+        
+    5.8.1 Pros and Cons of the Chaining Pattern
+        * Harder to debug code
+        
+5.9 method() Method
+    * An attempt to make js more class-like
+    * Not actually recommended
+    * Adding methods to 'this' feels like classes, but is inefficient
+        because the methods are added every time the constructor runs
+    * Better practice is to add methods to teh prototype
+    * You can hide the prototype behind a method that'd work like:
+    
+        var Person = function (name) {
+            this.name = name;
+        }.
+            method('getName', function () {
+                return this.name;
+            }).
+            method('setName', function (name) {
+                this.name = name;
+                return this;
+            });
+            
+    * Which is implemented like:
+    
+        if (typeof Function.prototype.method !== "function") {
+            Function.prototype.method = function (name, implementation) {
+                this.prototype[name] = implementation;
+                return this;
+            };
+        }
+        
+
+Chapter 6: Code Reuse Patterns
+    * Overall advice from the Gang of Four book:
+        "Prefer object composition to class inheritance."
+6.1 Classical Versus Modern Inheritance Patterns
+    * Classical inheritance uses class definitions as blueprints
+    * In javascript, objects are key value pairs, no classes exist
+    * js has constructor functions that look like classical inheritance:
+    
+        var adam = new Person();
+        
+    * In fact Person is just a function, not a class at all
+    
+6.2 Expected Outcome when Using Classical Inheritance
+    * The goal is to have objects created by one contstructor, Child(), 
+        get properties that come from another constructor, Parent()
+    * Example:
+    
+        // the parent constructor
+        function Parent(name) {
+            this.name = name || 'Adam';
+        }
+        
+        // adding functionality to the prototype
+        Parent.prototype.say = function () {
+            return this.name;
+        };
+        
+        // empty child constructor
+        function Child(name) {}
+        
+        // inheritnace magic happens here
+        inherit(Child, Parent);
+        
+6.3 Classical Pattern #1: The Default Pattern
+    * Most common method is to create an object using Parent() and assign
+        that object to the Child()'s prototype:
+        
+            function inherit(C, P) {
+                C.prototype = new P();
+            }
+            
+    6.3.1 Following the Prototype Chain
+        * Basic runthrough of inheriting a method / properties
+    6.3.2 Drawbacks to Pattern # 1
+        * You inherit both own properties and prototype properties
+        * Doesn't let you pass parameters to the child constructor
+        
+6.4 Classical Pattern #2: Rent-a-Constructor
+    * Borrows the parent constructor, passing the child object to be
+        bound to 'this' and forwarding any arguments:
+        
+        function Child(a, c, b, d) {
+            Parent.apply(this, arguments);
+        }
+        
+    * You can only inherit properties added to 'this' inside the parent
+    * No prototypical inheritance
+    * The child gets copies of members rather than references
+    6.4.1 The Prototype Chain
+    
+6.5 Classical Pattern #3--Rent and Set Prototype
+    * Combination of 1 and 2--you borrow the constructor and set the
+        child's prototype to point to a new instance of the constructor
+        
+        function Child(a, c, b, d) {
+            Parent.apply(this, arguments);
+        }
+        Child.prototype = new Parent();
+        
+    * Resulting objects get copies of the parents own members, and references
+        to the parents prototype members
+    * The child can pass arguments to the parent constructor
+    * Code:
+    
+        // the parent constructor
+        function Parent(name) {
+            this.name = name || 'Adam';
+        }
+        
+        // adding functionality to the prototype
+        Parent.prototype.say = function () {
+            return this.name;
+        };
+        
+        // child constructor
+        function Child(name) {
+            Parent.apply(this, arguments);
+        }
+        Child.prototype = new Parent();
+        
+        var kid = new Child("Patrick");
+        kid.name; // "Patrick"
+        kid.say(); // "Patrick"
+        delete kid.name;
+        kid.say(); // "Adam"
+        
+6.6 Classical Pattern #4--Share the Prototype
+    * No call to a parent constructor, just setting to the parent's prototype:
+    
+        function inherit(C, P) {
+            C.prototype = P.prototype;
+        }
+        
+    * Problematic if some child down the chain changes the prototype
+    
+6.7 Classical Pattern #5--A Temporary Constructor
+    * Breaks the direct link between the parent and child prototypes
+    * Implementation with empty function F serving as a proxy between
+        child and parent:
+        
+        function inherit(C, P) {
+            var F = function () {};
+            F.prototype = P.prototype;
+            C.prototype = new F();
+        }
+        
+    * The child inherits properties of the prototype only
+    * Any members the parent constructor adds to 'this' are not inherited
+    6.7.1 Storing the Superclass
+        * You can add a reference to the original parent--like a superclass
+        * 'super' is a reserved word, so we use 'uber' here:
+        
+            function inherit(C, P) {
+                var F = function () {};
+                F.prototype = P.prototype;
+                C.prototype = new F();
+                C.uber = P.prototype;
+            }
+            
+    6.7.2 Resetting the Constructor Pointer
+        * Reset the pointer to the constructor function in case you need it
+        * Otherwise all children objects will report that Parent() was
+            their constructor
+        * You can reset the 'constructor' property directly:
+        
+            function inherit(C, P) {
+                var F = function () {};
+                F.prototype = P.prototype;
+                C.prototype = new F();
+                C.uber = P.prototype;
+                C.prototype.constructor = C;
+            }
+            
+        * Improved version that avoids creating the proxy constructor
+            multiple times--creates it once and changes it prototype:
+            
+            var inherit = (function () {
+                var F = function () {};
+                return function (C, P) {
+                    F.prototype = P.prototype;
+                    C.prototype = new F();
+                    C.uber = P.prototype;
+                    C.prototype.constructor = C;
+                }
+            }());
+            
+6.8 Klass
+    * Syntactic sugar for classical inheritance--avoid it b/c it's confusing
+    
+6.9 Prototypical Inheritance
+    * Objects inherit from other objects
+    * Basic example:
+    
+        // object to inherit from
+        var parent = {
+            name: "Papa"
+        };
+        
+        // the new object
+        var child = object(parent);
+        
+        // testing
+        alert(child.name); // "Papa"
+        
+    * 'object()' doesn't exist in js, and could be defined:
+    
+        function object(o) {
+            function F() {}
+            F.prototype = o;
+            return new F();
+        }
+
+TODO        
+
+Chapter 7: Design Patterns
+7.1 Singleton
+    * Have only one instance of a specific class
+    * The second time you use the same class to create an object, you
+        should get the same object from the first time
+    * In js, objects are never equal unless they are the same object, and
+        by default all newly created objects are singletons
+    
+        
+        
+            

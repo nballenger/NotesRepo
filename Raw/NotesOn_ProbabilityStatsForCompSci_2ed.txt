@@ -1,0 +1,198 @@
+Probability and Statistics for Computer Scientists, Second Edition
+By: Michael Baron
+Publisher: Chapman and Hall/CRC
+Pub. Date: August 05, 2013
+Print ISBN-13: 978-1-4398-7590-2
+Pages in Print Edition: 449
+
+Chapter 1: Introduction and Overview
+
+1.1 Making Decisions Under Uncertainty
+  - "uncertainty" -- condition when results, outcomes, nearest and remote future
+    are not completely determined; their development depends on a number of 
+    factors and on pure chance.
+
+1.2 Overview of this book
+  * overview of Probability
+  * random variables
+  * distributions, families of distributions
+  * monte carlo methods, simulation, generation of random variables
+  - "stochastic process" -- random variable that depends on time
+  - "queuing systems" -- systems of one or several servers performing tasks,
+    serving jobs or customers
+  * Statstical inference
+  * regression
+  * multivariate regression
+
+Part I: Probability and Random Variables
+
+Chapter 2: Probability
+
+2.1 Events and their probabilities
+  - "probability" (of an event) -- chance that event will occur
+  * can be seen as the proportion of times the event happens (relative frequency)
+
+  2.1.1 Outcomes, events, and the sample space
+    * DEFINITION 2.1: A collection of all elementary results, or "outcomes" of an
+      experiment, is called a "sample space."
+    * DEFINITION 2.2: Any set of outcomes is an "event." Thus, events are subsets
+      of the sample space.
+    * A sample space of N possible outcomes yields 2^N possible events.
+    * Notation:
+      - OMEGA   -- sample space
+      - NULLSET -- empty event
+      - P{E}    -- probability of event E
+
+  2.1.2 Set Operations
+    * Events are sets of outcomes.
+    * DEFINITION 2.3: A "union" of events A,B,C,... is an event consisting of all
+      the outcomes in these events. It occurs of any of A,B,C,... occurs, and 
+      therefore, corresponds to the word OR: A OR B OR C OR ...
+    * DEFINITION 2.4: An "intersection" of events A,B,C,... is an event consisting
+      of outcomes that are common in all three events. It occurs if each A,B,C,...
+      occurs, and therefore, corresponds to the word AND: A AND B AND C AND ...
+    * DEFINITION 2.5: A "complement" of an event A is an event that occurs every
+      time when A does not occur. It consists of outcomes excluded from A, and 
+      therefore, corresponds to the word NOT: NOT A.
+    * DEFINITION 2.6: A "difference" of events A and B consists of all outcomes in
+      A but excluded from B. It occurs when A occurs and B does not, and 
+      corresponds to BUT NOT: A BUT NOT B.
+    * Notation:
+      - UNION         -- union
+      - INTERSECTION  -- intersection
+      - !A or A^c     -- complement
+      - A\B           -- difference
+
+    * DEFINITION 2.7: Events A and B are "disjoint" if their intersection is empty,
+      A INTERSECTION B = NULLSET.
+
+
+
+Chapter 3: Discrete Random Variables and Their Distributions
+
+3.1 Distribution of a Random Variable
+  3.1.1 Main Concepts
+    * DEFINITION 3.1: A "random variable" is a function of an outcome,
+
+      X = f(&omega;)
+
+      In other words, it is a quantity that depends on chance.
+
+    * Domain of random var is &Omega;, range can be all real numbers, or only 
+      positive numbers, or integers, or interval (0,1), etc.
+    * When an experiment is done, outcome &omega; is known, and X(&omega;) is 
+      determinate.
+    * DEFINITION 3.2: Collection of all the probabilities related to X is the
+      "distribution" of X. The function
+
+        P(x) = P{X = x}
+
+      is the "probability mass function" or "pmf". The "cumulative distribution
+      function" or "cdf" is defined as:
+
+        F(x) = P{X <= x} = &Sigma; P(y)
+                          y <= x
+
+      the set of possible values of X is called the "support" of the distribution F.
+    * For each &omega;, variable X takes only one value x, so {X = x} events are
+      disjoint and exhaustive, and therefore:
+
+        &Sigma; P(x) = &Sigma; P{X = x} = 1
+        x              x
+
+    * F(x) is a non-decreasing function of x, always between 0 and 1, with
+
+        lim F(x) = 0    and     lim F(x) = 1
+        x desc to -inf          x asc to +inf
+
+    * Between any two subsequent values of X, F(x) is constant. It jumps by
+      P(x) at each possible x value of X.
+    * Since the probability of an event is to add probabilities of its outcomes, for
+      any set A:
+
+        P{X &Element; A} = &Sigma; P(x)
+                          x &Element; A
+
+    * When A is an interval, its probability can be computed directly from the
+      cdf F(x):
+
+        P{a < X <= b} = F(b) - F(a)
+
+  3.1.2 Types of random variables
+    * "discrete random variables" are those whose range is finite/countable, so
+      their values can be listed, or arranged in a sequence.
+    * "continuous random variables" assume an entire interval of values. This
+      can be a bounded interval (a,b), unbounded (a,+inf), (-inf,b), or inf/inf
+    * Intervals can't be counted, so all values of a random variable may not
+      be listed in this case.
+
+3.2 Distribution of a random vector
+  3.2.1 Joint distribution and marginal distributions
+    * DEFINITION 3.3: If X and Y are random variables, then the pair (X,Y) is
+      a "random vector." Its distribution is called the "joint distribution" of
+      X and Y. Individual distributions of X and Y are then called the
+      "marginal distributions."
+    * The "joint probability mass function" of X and Y is
+
+      P(x,y) = P{(X,Y) = (x,y)} = P{X = x AND Y = y}
+
+    * Since {(X,Y) = (x,y)} are exhaustive and mutually exclusive events for
+      different pairs (x,y), the sum of the probabilities of pairs (x,y) = 1
+    * Computing marginal probabilities from the joint distribution via the
+      addition rule:
+
+        P<sub>X</sub>(x) = P{X = x} = &Sigma; P<sub>(X,Y)</sub>(x,y)
+                                      y
+
+        P<sub>Y</sub>(y) = P{Y = y} = &Sigma; P<sub>(X,Y)</sub>(x,y)
+                                      x
+
+    * The joint distribution cannot be computed from marginal distributions because
+      they carry no information about interrelations between random variables.
+
+  3.2.2 Independence of random variables
+    * DEFINITION 3.4: Random variables X and Y are "independent" if
+
+        P<sub>(X,Y)</sub>(x,y) = P<sub>X</sub>(x) * P<sub>Y</sub>(y)
+
+      for all values of x and y. This means events {X = x} and {Y = y} are
+      independent for all x and y; in other words, variables X and Y take their
+      values independently of each other.
+
+    * To show independence of X and Y, we have to check wither the joint pmf factors
+      into the product of marginal pmfs for ALL pairs x and y. To prove dependence,
+      we only need to present one counterexample, a pair (x,y) with
+      P(x,y) != P<sub>X</sub>(x)</sub> * P<sub>Y</sub>(y)
+
+3.3 Expectation and Variance
+  * The distribution of a random variable or a random vector, the full collection of
+    related probabilities, contains the entire information about its behavior. This
+    can be summarized in a few vital characteristics describing the average value,
+    the most likely value of a random variable, its spread, variability, etc.
+  * Most common are expectation, variance, standard deviation, covariance, and
+    correlation. Additionally, mode, moments, quantiles, and interquatile range.
+
+  3.3.1 Expectation
+    * DEFINITION 3.5 "Expectation" or "expected value" of a random variable X is
+      its mean, the average value. A system X with P(0) = 0.5 and P(1) = 0.5 has 
+      E(X) = 0.5. A system Y with P(0) = 0.75 and P(1) = 0.25 has E(Y) = 0.25.
+
+  3.3.2 Expectation of a Function
+    * If we're interested in a variable Y that is a function of X, the expectation
+    of Y = g(X) is computed by:
+
+      E{g(X)} = &Sigma; g(x) * P(x)
+                x
+
+  3.3.3 Properties
+    * For any random variables X and Y and any non-random numbers a,b,c, we have:
+
+      E(aX + bY + c) = aE(X) + bE(Y) + c
+
+      E(X + Y)  = E(X) + E(Y)
+      E(aX)     = aE(X)
+      E(c)      = c
+
+    * For independent X and Y,
+
+      E(XY)     = E(X) * E(Y)

@@ -1,0 +1,265 @@
+Edit Commands:
+
+  Text Object                 Change        Delete        Copy
+  -------------------------------------------------------------------
+  One word                    cw            dw            yw
+  Two words, no punctuation   2cw or c2W    2dW or d2W    2yW or y2W
+  Three words back            3cb or c3b    3db or d3b    3yb or y3b
+  One Line                    cc            dd            yy or Y
+  To end of line              c$ or C       d$ or D       y$
+  To start of line            c0            d0            y0
+  Single character            r             x or X        yl or yh
+  Five characters             5s            5x            5yl
+
+Movement:
+
+  Movement                          Commands
+  ----------------------------------------------
+  left, down, up, right             h, j, k, l
+  to first char of next line        +
+  to first char of previous line    -
+  to end of word                    e or E
+  forward by word                   w or W
+  backward by word                  b or B
+  to end of line                    $
+  to beginning of line              0
+
+Other Operations:
+
+  Operations                        Commands
+  -------------------------------------------------
+  Place text from buffer            P or p
+  Start vi, open file if specified  vi file
+  Save edits, quit file             ZZ or :wq
+  No saving of edits, quit file     :q!
+
+Text Creation and Manipulation
+
+  Editing Action                            Command
+  ---------------------------------------------------
+  Insert text at current position           i
+  Insert text at beginning of line          I
+  Append text at current position           a
+  Append text at beginning of line          A
+  Open new line below cursor for new text   o
+  Open new line above cursor for new text   O
+  Delete line and substitute text           S
+  Overstrike existing characters            R
+  Join current and next line                J
+  Toggle case                               ~
+  Repeat last action                        .
+  Undo last change                          u
+  Restore line to original state            U
+
+
+Movement Commands:
+  
+  Movement                                                        Command
+  -----------------------------------------------------------------
+  Scroll forward one screen                                       ^F
+  Scroll backward one screen                                      ^B
+  Scroll forward half screen                                      ^D
+  Scroll backward half screen                                     ^U
+  Scroll forward one line                                         ^E
+  Scroll backward one line                                        ^Y
+  Move current line to top of screen and scroll                   z ENTER
+  Move current line to center of screen and scroll                z.
+  Move current line to bottom of screen and scroll                z-
+  Redraw the screen                                               ^L
+  Move to home--the top line of screen                            H
+  Move to middle line of screen                                   M
+  Move to bottom line of screen                                   L
+  Move to first character of next line                            ENTER
+  Move to first character of next line                            +
+  Move to first character of previous line                        -
+  Move to first nonblank character of current line                ^
+  Move to column n of current line                                n |
+  Move to end of word                                             e
+  Move to end of word (no punctuation)                            E
+  Move to beginning of current sentence                           (
+  Move to beginning of next sentence                              )
+  Move to beginning of current paragraph                          {
+  Move to beginning of next paragraph                             } 
+  Move to beginning of current section                            [[
+  Move to beginning of next section                               ]]
+  Search forward for pattern                                      /pattern
+  Search backward for pattern                                     ?pattern
+  Repeat last search                                              n
+  Repeat last search in opposite direction                        N
+  Repeat last search forward                                      /
+  Repeat last search backward                                     ?
+  Move to next occurrence of x in current line                    f x
+  Move to previous occurrence of x in current line                F x
+  Move to just before next occurrence of x in current line        t x
+  Move to just after previous occurrence of x in current line     T x
+  Repeat previous find command in same direction                  ;
+  Repeat previous find command in opposite direction              ,
+  Go to given line n                                              n G
+  Go to end of file                                               G
+  Return to previous mark or context                              ``
+  Return to beginning of line containing previous mark            ''
+  Show current line (not a movement command)                      ^G
+
+Command-line Options
+
+  Option              Meaning
+  -----------------------------------------------------------------------
+  +n file             Open file at line n
+  +file               Open file at last line
+  +/pattern file      Open file at first occurrence of pattern
+  -c command file     Run command after opening file, usually a line number or search
+  -R                  Operate in read-only mode
+  -r                  Recover files after a crash
+
+Buffer Names
+
+  Buffer name         Buffer Use
+  -----------------------------------------------------------------------
+  1-9                 Last nine deletions, from most to least recent
+  a-z                 Named buffers to use as needed. UC letters append to the buffer.
+
+Buffer and Marking Commands
+
+  Command             Meaning
+  -----------------------------------------------------------------------
+  "b command          Do command with buffer b
+  mx                  Mark current position with x
+  'x                  Move cursor to first character of line marked by x
+  `x                  Move cursor to character marked by x
+  ``                  Return to exact position of previous mark or context
+  ''                  Return to beginning of the line of previous mark or context
+
+ex Commands (invoke with Q)
+
+  Full Name   Abbr    Meaning
+  -------------------------------------
+  delete      d       delete lines
+  move        m       move lines
+  copy        co      copy lines
+              t       copy lines (synonym)
+
+Line addresses
+
+  Can be specified as:
+    - explicit line numbers
+
+        1,20d           delete lines 1 through 20
+        160,200m23      move lines 160 to 200 after line 23
+        23,29co100      copy lines 23,29 after line 100
+
+    - symbols relative to current position
+
+        $               end of file
+        .               current line
+        %               every line in the file
+        +               arithmetic plus
+        -               arithmetic minus
+
+        :.,.+10d        remove current line through current line plus 10
+
+    - search patterns as addresses
+
+Search Patterns
+
+  :/pattern/ex-command
+
+  :/pattern/d                             delete the next line containing pattern
+  :/pattern1/,/pattern2/d                 delete from pattern1 to pattern2
+  :/pattern/+d                            delete the line after the next line with pattern
+  :.,/pattern/m23                         move text from . through pattern to after 23
+
+  :100,+5                                 from 100 to current line plus 5
+  :100;+5                                 from 100 to 105
+
+  :g/pattern                              global search
+  :g!/pattern                             global inverse search
+
+  :60,124g/pattern/p                      finds all instances of pattern from 60-124
+
+Combining ex commands with pipe
+
+  :1,3d | s/thier/their/                  delete 1-3, make replacement on current line
+
+Saving and Exiting Files
+
+  :w                                      writes the buffer to file
+  :q                                      quits the editor
+  :wq                                     writes and quits, unconditional write
+  :x                                      writes and quits, conditional write
+  !                                       force the command
+  :w filename                             write buffer to filename
+  :address1,address2 w filename           write portion of file to filename
+  :1,10 w >>newfile                       append portion to filename
+
+Copying a file into another file
+  
+  :read filename                          place content of filename below current line
+  :address read filename                  place content of filename below addressed line
+
+Editing Multiple Files
+
+  vim a b c                               open a b and c in vim
+  :e  filename                            open a second file
+  :n                                      next file in args
+  :args                                   view file list supplied as args
+  %                                       alias for the current filename
+  #                                       alias for the alternate filename
+  ctrl-^                                  switch between % and #
+  :e!                                     discard all edits, return to last saved version
+
+Edits between files
+
+  "f4yy                                   Yank four lines into buffer f
+  :w                                      save the current file
+  :e otherfile                            edit otherfile
+  "fp                                     put the contents of buffer f
+  :ya                                     ex's 'yank' command
+  :pu                                     ex's 'put' command
+  :160,224ya a                            yank lines 160-224 into buffer a
+  :pu a                                   put the contents of buffer a
+
+Substitutions
+  
+  :s/old/new/                             change first 'old' to 'new' in current line
+  :s/old/new/g                            change all 'old' to 'new' in current line
+  :10,20s/old/new/g                       change all between 10 and 20
+  :%s/old/new/g                           change all, entire file
+
+  :1,100s/aaa/bbb/gc                      confirm changes
+
+Sequence to spot check and change every instance quickly:
+
+  /old                                    find 'old'
+  cwnew ESC                               change word to 'new'
+  n                                       repeat search
+  n                                       repeat search, skipping a change
+  .                                       repeat change
+
+Context-Sensitive Replacement
+
+  :g/pattern/s/old/new/g                  in all lines with pattern, switch old to new
+
+Setting vi/ex options
+
+  Anything in EXINIT will get run by vi on startup
+  Anything in .exrc files will get run on startup
+  EXINIT takes precedence
+
+Toggling Options
+
+  :set option                             turn on a toggle option
+  :set nooption                           turn off a toggle option
+  :set all                                display all available options
+  :set option?                            display current value of option
+  :set                                    display all values set in .exrc or current session
+  :set exrc                               allow vi to read local .exrc files
+  :so filename                            source an options file 
+
+Executing Unix Commands
+  
+  :!command                               execute command
+  :sh                                     create a shell, ctrl-d to exit it
+  :r !date                                read output of date to below current line
+  :r !sort somefile                       read in somefile after sorting it
+  :95,100!sort                            send 95-100 as STDIN to sort, replace w output
+  

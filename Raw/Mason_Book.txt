@@ -1,0 +1,735 @@
+Chapter 1: Introduction
+	Main Features of Mason
+		Components: Modular Design Elements
+			Basic unit of mason code is a component
+			can accpet input parameters and generate output text
+			may represent a single web page, a part of a web page, or a shared utility with no output
+			components can accept variables, which are then scoped to the component
+		Object style Component Inheritance
+			components can inherit behavior from other components, like classes and objects
+			Each component by default inherits from the autohandler
+		Intelligent Caching Mechanisms
+			many control parameters for page expiration: time, cookies, or based on a decision making agent
+			during execution, turns each component into perl source on disk, then compiles perl into bytecode
+			executes the bytecode to create component output
+			checks modification times, and invalidates the cache when changes are made
+		Integration with Apache and mod_perl
+
+Chapter 2: Components
+	Mason from 10,000 feet
+		Each request defined by an initial component path, and a set of args passed to the component
+		Requests are handled by the interpreter object
+		Interpreter asks Resolver to fetch requested component from filesystem
+		Then, Interpreter asks Compiler to create "compiled" version of component
+		Mason creates a request object, tells it to execute the component
+		Output of components sent to STDOUT
+	Core Concepts
+		A component always corresponds to a single file
+		Components usually are a combination of text and Mason-specific markup
+		Components are closely analogous to perl subroutines
+		The component root is a directory or list of directories on the filesystem under which
+			mason expects to find all of your components
+		Under Apache/mod_perl, Mason defaults to the document root of the webserver as component root
+	Basic Component Syntax
+		Tag						Name			Contains
+		<% ... %>				Substitution	Perl that is evaluated and sent as output
+		%...					Perl line		A single line of perl code
+		<%perl>...</%perl>		Perl block		Perl code
+		<& ... &>				Component call	a call to antoher component, possibly with args
+		<%init>...</%init>		init block		perl code that executes before the main body of the component
+		<%args>...</%args>		args block		A component's input argument declarations
+	Substitution Tags: <%...%>
+		Used to insert the results of a perl expression into text:
+			% $count = 10;
+			You have <% $count %> objects.
+		Complex expressions can be placed in a substitution tag
+			You have <% $count %> object<% $count != 1 ? 's': '' %>
+		Escaping substitutions
+			You can include a substitution escape clause, via the pipe:
+				<% $name | h %>
+			Which will protect against unsafe characters coming in through the substitution
+			Three flags:
+				h	prevents html like text or characters
+				u	URI escaping
+				n	no escaping
+	Embedded Perl: % lines and <%perl> blocks
+		Two ways to embed perl code into text with mason
+		Perl line:
+			% foreach my $person (@people) {
+				Name: <% $person->{name} %>
+				Age: <% $person->{age} %>
+			% }
+		Perl block:
+			<%perl>
+				my @words = $sentence =~ /\b(\S+)\b/g;
+				my @small_words = grep { length $_ <= 3 } @words;
+				my @big_words = grep { length $_ > 3 } @words;
+			</%perl>
+			There were <% scalar @words %> in the sentence.
+			The big words were:
+			% foreach my $word (@big_words) {
+				<% $word %>
+			% }
+			The small words were:
+			% foreach my $word (@small_words) {
+				<% $word %>
+			% }
+	Calling other components: <&...&> tags
+		Use to call other components by name:
+			<body>
+			<h1>Welcome:</h1>
+			<& menu &>
+			...
+			</body>
+		Other versions might be:
+			<& /path/to/menu &>
+			<& $component &>
+			<& menu, width=> 640, admin => 1 &>
+		Alternate syntax:
+			% $m->comp('menu', width=>640, admin => 1);
+			$m contains the current request object
+	Components called with content
+		You can pass a mason content block as part of a component call:
+			<%args>
+			$name
+			<%args>
+			<&| /i18n/itext, lang => $lang &>
+			%# The bits in here will be available from $m->content in the /i18/text
+				<en>Hello, <% $name %>.  These words are in English.</en>
+				<fr>Bonjour, <% $name %>, ces mots sont franE<#xC3>E<#xA7>ais.</fr>
+				<pig>Ellohay <% substr($name, 2) . substr($name,0,1).'ay' %>,
+				esethay ordsway areyay inyay igpay atinlay.</pig>
+			</&>
+	Other Named Blocks
+		If any of the blocks is followed immediately by a newline, it is discarded from output.
+		<%init> Blocks
+			Perl code inside an init block runs before all other code except for code in
+			<%once> or <%shared> blocks
+			Init code is run every time the component is called
+			Typically used for things like checking arguments, creating objs, getting db info
+			Example:
+				It is currently <% $temp %> degrees.
+				<%init>
+					my ($temp) = $dbh->selectrow_array("SELECT temp FROM weather");
+				</%init>
+		<%args> Blocks
+			args blocks are used to declare the names and datatypes that a component expects
+			Example:
+				<%args>
+					$color
+					$size => 20 # a default value
+					@items => (1,2,'something else')
+					%pairs => (key1 => 1, key2 => 'value')
+				</%args>
+			Any argument without a default value is a required argument
+			Calling a component without a value for one of its required args will call fatal exc
+			An argument's default value can refer to an earlier argument
+		<%filter> Blocks
+			Called after a component is finished running.
+			Given the entire output of the component in $_
+			Example: (will uppercase all output of component
+				<%filter>
+					s/(\w+)/\U$1/g
+				</%filter>
+		<%once> Blocks
+			Executed when the component is loaded into memory
+			Executed before all other blocks, including init
+			Useful for creating db handles, or creating large objects
+			example:
+				The universe is this big: <% $size %>
+				<%once>
+					my $size = calculate_size_of_universe();
+				</%once>
+		<%cleanup> Blocks
+			Executed right before the component exits (counterpart to init)
+			Useful for freeing resources.
+		<%text> Blocks
+			Output exactly as they are without parsing: example mason code.
+		<%doc> blocks
+			Currently not used, intended for documentation of components
+		<%flags> and <%attr> Blocks
+			used to declare one or more key/value pairs
+			looks like perl syntax, but isn't
+			no line ends with comma or semicolon
+			entire key/value pair must be on a single line
+			flags blocks may contain only official mason flags (inherit)
+			attr blocks may contain any keys that you want
+			contents accessed via the object's attr() method and providing the key
+			Example:
+				<%flags>
+					inherit => '/some/other/component'
+				</%flags>
+				<%attr>
+					color => "I'm so blue"
+					size => 'mucho grande'
+				</%attr>
+				My color: <% $m->base_comp->attr('color') %>
+		<%def> and <%method> Blocks
+			def contains a subcomponent, an embedded component called via normal call syntax
+			method also contains an embedded component, but one that may be inherited by 
+				a component's children
+			both require a name in the initial tag
+			Example (defines subcomponent ".make_a_link"):
+				<%def .make_a_link>
+					<a href="<% $url %><% $text %></a>
+					<%args>
+						$path
+						%query => ()
+						$text
+					</%args>
+					<%init>
+						my $url = ...
+					</%init>
+				</%def>
+			main difference between subcomponents and methods is that subs are visible only
+				within the component in which they are defined
+		<%shared> Blocks
+			contains perl code
+			executed once per request, before init
+			variables in this block are in scope in both the component and any subcomponents
+				or methods it may contain.
+	Escaping a Newline
+		To avoid newlines coming into rendered text, escape them with \
+		Example:
+			I am\
+			% if ($height < 5) {
+			not\
+			% } elsif ($height < 5.75) {
+			not very\
+			% } elsif ($height > 6.25) {
+			very\
+			% }
+			tall
+	Component Arguments
+		all named arguments are available in the component as lexically scoped variables
+		undef is a valid value for an argument--the lack of an argument will throw an exception
+	%ARGS
+		in addition to the named arguments in the <%args> block, each component has access
+			to a %ARGS hash, containing all the arguments it was passed
+	Argument Examples
+		Arguments via POST and GET are treated exactly the same way, if both are present
+			they are merged together before the component is called
+		Assuming the component being called has this args block:
+			<%args>
+				$colors
+				@colors
+				%colors
+			</%args>
+		First example: http query string:
+			/some/component?colors=blue
+		is equivalent to:
+			<& /some/component, colors => 'blue' &>
+		Both assignments are fatal, as they attempt to assign an odd number of items to a hash
+		Second example:
+			/some/component?colors=blue&colors=red&colors=green
+			<& /some/component, colors=>['blue','red','green'] &>
+		Again, both assignments are fatal, as they attempt to assign an odd number of items
+		Third Example:
+			/some/component?colors=blue&colors=cyan&colors=green&colors=mint
+			<& /some/component, colors=>['blue','cyan','green','mint'] &>
+		Succeeds, hash has ('blue'=>'cyan','green'=>'mint')
+		Fourth Example:
+			<& /some/component, colors=>{blue=>'cyan',green=>'mint'} &>
+		In this call, colors gets a reference to a hash, @colors gets four elements, and
+			the %colors hash gets the hash as structured
+	Arguments via Component Calls
+		arrays and hashes should be passed by reference
+		Example (a component with an args block like this):
+			<%args>
+				@elements
+				%lables
+			</%args>
+		should be called like this:
+			<& /display, elements => \@some_data, labels=> \%data_labels &>
+	Arguments via HTTP requests
+		try not to use hashes as an argument to something that may be called via HTTP
+	Component Return Values
+		Adding an explicit return statement to a component, and calling it via $m->comp()
+			will give the return value in place of the call
+		components can return a scalar or a list
+	Special Globals
+		$m	an HTML::Mason::Request object, with a number of methods
+		$r	if running under mod_perl, all components have access to the Apache request object
+	Sample Component
+		<table width="100%" cellspacing="0" cellpadding="5">
+			<tr>
+				<td class="heading"><h2 class="headline">What's New?</h2></tD>
+			</tr>
+			<tr>
+				<td>
+					<p>
+					The whole site, at this point.
+					</p>
+					<p>
+					<em>Last modified: <% $last_mod %></em>
+					</p>
+				</td>
+			</tr>
+		</table>
+		<%init>
+			my $comp_time = (stat $m->current_comp->source_file)[9];
+			my $last_mod = Time::Piece->strptime($comp_time,'%s')->strftime('%B%e, %Y%H:%M');
+		</%init>
+
+Chapter 3: Special Components: Dhandlers and Authandlers
+	Dhandlers
+		stands for "default handler"
+		If Mason is asked for a component, but it doesn't exist in the component tree,
+			mason will look for a component called dhandler and serve that instead
+		Searches for dhandler in apparent directory and all parent directories
+		Serves the first one it finds
+		makes the remainder of the component path available to the dhandler in $m->dhandler_arg
+	Finer control over Dhandlers
+		Any component (including dhandlers) can decline a to handle a request, which passes
+			the request further up the component tree
+		If a handler calls $m->decline, it passes control upwards
+		You can change the name used for dhandlers, by changing the value of the dhandler_name
+			Interpreter parameter
+	Dhandlers and Apache Configuration
+		Important to note which directives Apache has been given for what directories and files
+			are to be handled by Mason--otherwise you can serve a 404 instead of a dhandler
+	Authandlers
+		Each component can inherit a parent, with
+			<%flags>
+				inherit => 'parentcomponent.mas'
+			</%flags>
+		If no parent is specified, mason may assign a parent component, which is where autohandlers come in
+		Default parent for any regular component is a component named autohandler, in the same directory
+		If none exists, mason will look up the component tree
+		Default parent for an autohandler is an autohandler in a higher directory
+		Example:
+		/autohandler:
+			<html>
+			<head><title>Example.com</title></heaD>
+			<body>
+			% $m->call_next;
+			<br><a href="/">Home</a>
+			</body>
+			</html>
+		welcome.html
+			<p>Welcome to the site</p>
+		The $m->call_next element will cause welcome.html to be processed once it's been wrapped
+		The wrapper processes to that point then
+
+Chapter 4: APIs
+    Request Class and Object API
+        Request object represents the context of the current request process
+        mason request object is available as $m
+        Has only two class methods-- new() is not intended for external use
+        Second method, HTML::Mason::Request->instance() returns the current request object
+        inside components, this is $m
+    Constructor Parameters
+        you can set a number of parameters at instantiation of a request object:
+            autoflush, data_cache_defaults, dhandler_name, error_format, error_mode, max_recurse, out_method
+    Calling Other Components
+        one way is the component include tag, <& compname &>
+        comp(compname, arguments)
+            this is just like the <& compname, args &> syntax
+        scomp(compname, arguments)
+            returned component's output is a string, instead of going to out_method
+        content
+    Aborting the Flow of Execution
+        calling abort(optional argument) will immediately halt execution of current request
+        if an arg is given, it is available via aborted_value() after the request is aborted
+        example:
+            <%init>
+                use Apache::Constants;
+                $m->abort(FORBIDDEN) unless $r->connection->user;
+            </%init>
+        aborted() method returns boolean indicating whether abort() has been previously called during current request
+        aborted_value() returns option arg to abort()
+    The Wrapping Chain
+        call_next() calls next component in the wrapping chain
+        fetch_next() returns next component in the wrapping chain
+        fetch_next_all() returns an array of all the remaining components in the chain, in order of execution
+    Dhandler related methods
+        decline() indicates that current component does not wish to handle request--mason looks for a dhandler
+        dhandler_arg() returns remainder of component path after stripping off location of dhandler
+    Misc. Methods
+        file(filename) given a filename, mason will search for it and return its contents as a string
+        comp_exists() boolean test for existence of a component
+        print(output) takes a list of scalars and returns them as output
+            % $m->print($output);
+            <% $output |h%>
+        interp() returns interp object associated with current request
+        count() returns this request's number, which is unique for a given request and interpreter
+    Introspection
+        base_comp() returns the base component for the request
+        base component is the first one looked at when a component method is called in form <& SELF:method &>
+        base component is changed when you call another component during the context of that comp's execution:
+            $m->comp('/some/other/comp');
+        base component is reset to original after call is finished
+        request_args() returns args originally passed to component in list form (list context) or hash form (scalar context)
+        callers(stack level) returns the args passed to the component on a given part of the stack
+        request_comp() returns a component object representing the requested component
+        current_comp() returns the component object that is currently being executed
+        request_depth() tells you the depth of the current component, defined as num of comps in stack before current plus 1
+    Buffer-related Methods
+        autoflush(boolean) turns autoflushing on and off
+            when on, output is sent as soon as it is generated, otherwise buffered until all comps have run
+        flush_buffer() flushes any output that the top buffer on the stack contains, sending to next buffer below
+            example:
+                Processing your request...
+                % $m->flush_buffer;
+                <% very_slow_function() %>
+        clear_buffer() clears all buffered output in the buffer stack, useful for discarding output without sending
+    Caching
+        Mason caching is based on a wrapper around the Cache::Cache modules
+        cache(...) returns the Cache::Cache object associated with thhis component
+        Each comp has its own cache, and cannot access another component's cache
+        example:
+            <%init>
+                my $cache = $m->cache;
+                my $data;
+                unless ($data = $cache->get('complex_data')) {
+                    $data = complex_calculation();
+                    $cache->set('complex_data' => $data);
+                }
+            </%init>
+        to set an expiration date, pass that parameter, as in $m->cache->set("complex_data_$name" => $data, '3h');
+        to iterate through all the keys currently in the cache object, use the get_keys() method:
+            % foreach my $key ($m->cache->get_keys) {
+                <% $key %> = <% $m->cache->get($key) %>
+            % }
+        cache_self() used when a comp wants to cache its entire output and/or its returns value
+        cache_self() takes all the optional args that can be paaassed to cache() as well as two optional others:
+            key -- key used to identify cached edata, as would be given to the cache obj's get() and set()
+            expire_in -- an expiration time asss would be given to $cache->set(), default is to last until wiped out
+        idiom for using this method looks like:
+            <%init>
+                return if $m->cache_self;
+                ... # rest of init and output generation
+            </%init>
+        first time that code is called, it runs normally, stores to cache, every subsequent time returns cached version
+        generating input specific cached output can be done like
+            <%args>
+                $name
+            </%args>
+            <%init>
+                return if $m->cache_self( key => $name );
+                ... # rest of init and output generation
+            </%init>
+        for every different $name, the comp will rerun
+        to cache a return value:
+            <%init>
+                my @retval = $m->cache_self;
+                return @retval if pop @retval;
+            </%init>
+    Subrequests
+        subrequests are request objects that inherit all their settable properties from their parent
+        subrequests are different from components because they will, when called, execute autohandler and dhandler
+        make_subrequest(comp=>component, args=> [...],...)
+            this method creates a new subrequest object, which you can then execute via it's exec() method
+        subexec(comp,args)
+            this combines the make_subrequest() method and the exec() metho in one step
+        is_subrequest
+            returns a boolean value indicating whether the given object is a subrequest
+        parent_request
+           returns the parent request object for a subrequest
+    Methods Available Only When Using ApacheHandler
+        When using HTML::Mason::ApacheHandler, the Request object will contain several additional methods:
+            ah -- returns current HTML::Mason::ApacheHandler object for this request
+            apache_req -- returns current Apache object for the request, also available as $r
+    Methods Available When Using ApacheHandler or CGIHandler
+        cgi_object -- returns the CGI.pm object that was used to handle incoming parameters
+        redirect(url) -- generates proper HTTP redirect, which is then sent to the client
+    Getting In Close With Buffers
+        Request object maintains a buffer stack.  Output goes to top buffer on the stack, and is passed down.
+        You can create a custom buffer subclass, to do things--just make sure to remove any you add
+        buffer related methods:
+            top_buffer -- returns the current top-level buffer obj for the request
+            buffer_stack -- returns all the buffers on the stack, starting from top
+            push_buffer_stack(Buffer object) -- pushes a new buffer onto the top of the stack
+            pop_buffer_stack -- pops top buffer off stack and returns it
+    Component Object API
+        Three major categories:
+            HTML::Mason::Component::FileBased -- components generated from component source files
+            HTML::Mason::Component::Subcomponent -- subcomponents and methods
+            HTML::Mason::Interp->make_component() anonymous components
+        First methods are most likely:
+            attr(name) -- looks for the specified attribute in the comp and its parents, returning first val found
+            attr_if_exists(name) -- like attr() but returns undef if spec value does not exist
+            attr_exists(name) -- returns true if the spec attribute exists in comp or parents
+            call_method(name, args) -- calls spec method with given args
+            scall_method(name, args) -- analogous to scomp() method of Request object -- returns output as string
+            method_exists(name) -- returns true if spec method exists in comp or parent
+            comp_id -- returns a unique ID for this component
+            load_time -- returns Unix epoch time when obj was created
+            declared_args -- returns a hashref containing an entry for each arg in <%args>
+            dir_path -- returns component's notion of current directory, relative to component root
+            flag(name) -- returns value of spec flag
+            is_subcomp -- returns true if spec comp is a subcomponent or method
+            is_file_based -- returns true if given cccomp is file based
+            name -- returns name of the component
+            owner -- for subcomps and methods, returns the comp in which the comp was defined
+            parent -- returns the parent comp if exists
+            path -- returns the component path for file-based comps, path starting with comp root, not filesys root
+            subcomps -- with no args, returns hash ref containing all subcomps defined in the comp
+            methods -- operates like subcomps(), but for methods
+            title -- returns printable string identifying this component
+        File-based components only:
+            source_file -- returns full absolute path to the file containing original component source
+            source_dir -- returns full path to the source component's directory on filesystem
+            object_file -- returns object filename for the compoent if comp is file based, otherwise undef
+    Buffers
+        output -- for buffers storing output in a scalar, this method returns output stored so far
+        flush -- forces the buffer to pass its output on to its parents, if it has any
+        receive(output,...) -- used to pass output to buffer, takes an array of scalars
+        clear -- clears any stored output that the buffer may contain
+
+Chapter 5: Advanced Features
+    Subcomponents
+        It's possible to define multiple components in a single text file, using <%def> blocks
+        <%def> blocks define one component inside of another
+        embedded comps are called subcomponents, and is only visible to the comp in which it resides
+        may use any code available to other comps, with exception of <%def> block, and global blocks like <%once> and <%shared>
+        most useful when you have a piece of processing that is used only in specific situation and doesn't need extra file
+    Creating Components on the Fly
+        there may be times you want to use Mason for templating or data management, but don't want to create a full blown comp
+        you can use the make_component() method, which accepts a comp_file or comp_source parameter, returns comp obj
+        example:
+            # Creating a component from scratch
+            #!/usr/bin/perl -w
+            use strict;
+            use HTML::Mason;
+            my $source = <<'EOF';
+            <%args>
+                $planet
+            </%args>
+            Hello, <% $planet %>!
+            EOF
+            my $interp = HTML::Mason::Interp->new();
+            my $comp = $interp->make_component(comp_source => $source);
+            $interp->exec($comp, planet=> 'Neptune');
+    Sharing Data Among Component Sections
+        while the scope of most vars in mason is the entire component, things defined in the <%init> block are not available to subs
+        for these instances, mason provides the <%shared> and <%once> blocks
+        shared block runs before the main component or any of its methods or subs and may run initialization code
+        any vars created in shared blocks will be visible to entire main comp and any subs, including <%init>
+        <%once> is similar, but won't run every time comp is called
+    Methods and Attributes
+        Methods
+            A method is just like a subcomponent, but instead of defining it in a <%def> section, you use <%method>
+            example:
+                <%method .my_method>
+                    Any regular component sytax here
+                </%method>
+            invoking methods can happen in one of three ways:
+                # Fetch the bottommost child of the current component
+                my $self = $m->base_comp;
+                $self->call_method('.my_method');
+                # Shortcut for the above two lines
+                $m->comp('SELF:.my_method');
+                # Same thing, using <& &> syntax
+                <& SELF:.my_method &>
+        Using Methods for Titles and Headers
+            most common mason task is to generate pages where the title and headers are dynamic
+            each title and header can be specified using a method, and then an autohandler can generate common headers/footers
+            example autohandler:
+                <html>
+                    <head><title><& SELF:title &></title></head>
+                    <body>
+                    <h3><& SELF:header &></h3>
+                    % $m->call_next;
+                    </body>
+                    </html>
+                    <%method title>
+                    www.example.com
+                    </%method>
+                    <%method header>
+                    Welcome to Example.com
+                    </%method>
+                </html>
+            example html page:
+                <p>page content blah blah blah</p>
+                <%method title>
+                Fancy Page
+                </%method>
+                <%method header>
+                A Very Fancy Page
+                </%method>
+        Methods With Dynamic Content
+            methods are components, and can have dynamic content, but don't have scope access to <%init> blocks
+            you have to use a <%shared> block to get variables into a method from the outside
+            example:
+                <%method title>
+                Information about your <% $order_date %> order
+                </%method>
+                <%shared>
+                my $order_date = $session{user}->last_order_date;
+                </%shared>
+            Example for getting args into a method:
+                <%method title>
+                User page for <% $user->name %>
+                </%method>
+                ... display information about $user ...
+                <%shared>
+                my $user = MyApp::User->new(id => $m->request_args{id});
+                </%shared>
+        Attributes
+            If you want to use dynamic replacement for scalar values (instead of dynamic content), use component attributes
+            these don't require full component processing
+            example autohandler with attributes:
+                <html>
+                <head><title><% $m->base_comp->attr('title') %></title></head>
+                <body>
+                <h3><% $m->base_comp->attr('header') %></h3>
+                % $m->call_next;
+                </body>
+                </html>
+                <%attr>
+                title => 'FancyMasonSite.Example.com'
+                header => 'Welcome to FancyMasonSite'
+                </%attr>
+            example html page:
+                <p>this page isn't that fancy</p>
+                <%attr>
+                title => 'Fancy Page'
+                header => 'A very Fancy Page'
+                </%attr>
+        Top-Down versus Bottom-Up Inheritance
+            methods and attributes are searched for from the bottom-most child upwards
+            content is executed and served from the autohandler down the wrapping chain
+    Calling Components with Content Blocks
+        to, for instance, apply a filter to only the output of a component call, without including that filter in the comp
+        try using a component with content block, like this:
+            <html>
+            <head>
+            <title><& SELF:title &></title>
+            </head>
+            <body>
+            <&| .top_menu_filter &>
+              <& SELF:top_menu, %ARGS &>
+            </&>
+            % $m->call_next;
+            </body>
+            </html>
+        where .top_menu_filter looked like
+            <%def .top_menu_filter>
+            % my $text = $m->content;
+            % my $uri = $r->uri;
+            % $text =~ s,<a href="\Q$uri\E[^"]*">([^<]+)</a>,<b>$1</b>,;
+            <% $text %>
+            </%def>
+    Advanced Inheritance
+        Inheritance and Multiple Component Roots
+            You can tell mason to look for components in more than one location, like adding to @INC
+            example:
+                my $ah = HTML::Mason::ApacheHandler->new(
+                    comp_root => [
+                                    [main => '/usr/http/docs'],
+                                    [util => '/usr/http/mason-util'],
+                                 ]
+                );
+            or, in an apache config file:
+                PerlSetVar MasonCompRoot 'main => /usr/http/docs'
+                PerlAddVar MasonCompRoot 'util => /usr/http/mason-util'
+            Mason always searches for components based on their component paths, not their source file paths
+            You can have a component in one root inherit from a comp in another root
+            Mason will search all roots for a specified component
+            essentially, all roots are merged, with mason favoring (in a conflict) the earliest listed root
+
+Chapter 6: The Lexer, Compiler, Resolver, and Interpreter Objects
+    Each of these objects are created when the server starts up, and serve many mason requests
+    Resolver -- responsible for all interaction with the underlying component source storage mechanism
+                main job is to accept a component path as input, return various properties of the component
+    Lexer    -- responsible for actually processing the component source code and finding the Mason directives within it
+    Compiler -- Takes Lexer's output and generates a Mason component object suitable for interpretation at runtime
+    Interpreter -- ties the other three objects together, and is responsible for taking a comp path and generating output
+                   involves getting the comp from the resolver, compiling it, and caching compiled version
+
+    Relationship between the objects:
+
+         has a  ----- Interpreter ------- has a
+         |                                    |
+         Compiler                      Resolver
+         |                                    
+         has a                            
+         |
+         Lexer
+
+    Passing Parameters to Mason Classes
+        If a particular object contains another object, the containing object will accept constructor
+            parameters for the contained object -- Interpreter will accept parameters for the Compiler and Resolver
+        If an object creates multiple delayed instances of another class, it will accept the created class's parameters
+    The Lexer
+        This class is HTML::Mason::Lexer
+        Parses the text of mason components and passes off the sections it finds to the Compiler
+    The Compiler
+        Mason uses HTML::Mason::Compiler::ToObject to do compilation
+        parameters it will accept:
+            allow_globals -- setting allow_globals gives all components access to whatever you set it to:
+                             allow_globals => ['$dbh', '%session']
+            default_escape_flags -- allows you to set a global default for the escape flags in <%$substitution %> tags
+                                    setting default_escape_flags to 'h' makes all sub tags pass through HTML escaping
+            use_strict -- strict is enabled by default, but you can turn it off with this, which is a bad idea
+            in_package -- everything appearing in a <%perl> block must occur in a package, default is HTML::Mason::Commands
+                          you can use this to set a different package
+            comp_class -- change the default class that new components will belong to, HTML::Mason::Component is default
+            lexer -- allows you to specify a custom lexer class
+    Altering Every Component's Content
+        several access points let you step in and alter the text of each component as it gets processed
+            preprocess -- lets you specify a subroutine through which all comps should get processed before compiler gets them
+            postprocess_perl & postprocess_text -- lets you specify subs through which perl sections or text sections should pass
+            preamble -- allows you to include a string of perl code to prepend to everything sent to compiler
+            postamble -- allows you to append a string of perl code to everything sent to compiler
+    Compiler Methods
+        each compiler object may have the following methods called, which return the value of that property:
+            comp_class() , in_package() , preamble() , postamble() , use_strict() , 
+            allow_globals() , default_escape_flags() , preprocess() , postprocess_perl() , postprocess_text() , and lexer()
+    The Resolver
+        default resolver, HTML::Mason::Resolver::File, finds comps and their meta-info on disk
+        accepts only one parameter: comp_root, which is Mason's component root(s) on disk
+        you may call comp_root() method, which returns value of comp_root
+    The Interpreter
+        responsible for coordinating the Compiler and Resolver, and creating request objects
+        primary interface is through new() constructor
+        new() accepts lots of parameters, including anything Compiler or Resolver can accept:
+            autohandler_name -- lets you set the name of autohandler files
+            code_cache_max_size -- limit, in bytes, of in-memory cache for component code, default is 10M
+            data_dir -- specifies directory under which Mason stores its data, and cannot be changed after interp is created
+            ignore_warnings_expr -- forces mason to ignore warnings matching a regex, instead of treating as fatal errors
+            preloads -- takes a list of components to be preloaded when interpreter starts up
+            static_source -- passing this as true forces mason to compile comps only once, regardless of later changes
+            compiler -- lets you set the compiler that the interpreter will create to your own custom class
+    Request Parameters Passed to the Interpreter
+        You can pass the interpreter any parameter that the Request object can take, including:
+            autoflush , data_cache_defaults , dhandler , error_mode , error_format , and out_method
+
+ Chapter 7: Using Mason with mod_perl
+    mod_perl exists to embed a perl interpreter inside apache, so no external process has to get launched to run perl code
+    Configuring Mason
+        two ways to configure: adding directives to conf files, or writing custom code to bind mason and mod_perl
+        Configuration via httpd.conf
+            Simplest possible configuration:
+                SetHandler  perl-script
+                PerlHandler HTML::Mason::ApacheHandler
+            this config causes every file to be handled by Mason, first by setting the overall handler to mod_perl, then
+                by setting the perl handler to mason
+            narrowing things down a bit:
+                <Location /mason>
+                    PerlSetVar      MasonCompRoot   /path/to/doc/root/mason
+                    SetHandler      perl-script
+                    PerlHandler     HTML::Mason::ApacheHandler
+                </Location>
+            this sets only those files under the mason root to be handled by mason
+            setting only certain file types to be handled by mason:
+                AddType text/html .mhtml
+                <LocationMatch "\.mhtml$">
+                    SetHandler  perl-script
+                    PerlHandler HTML::Mason::ApacheHandler
+                </LocationMatch>
+            mason will set up a data directory by default as a dir called mason in the ServerRoot
+            You can easily override the mason defaults:
+                PerlSetVar  MasonCompRoot  /var/www/comps
+                PerlSetVar  MasonDataDir   /var/mason-data-dir
+            All of the interpreter, compiler, and lexer parameters can be set via PerlSetVar statements
+            You can also have multiple mason settings for different virtual hosts
+    Document Root Versus Component Root
+        remember that mason's component root is not automatically analogous to the server's doc root, which means
+            paths that look the same can actually refer to different files, if one request is a mason <& &> and the other is href
+
+    I'm skipping a bunch of stuff here that's only partially relevant to me now
+
+Chapter 8: Building a Mason Site
+    

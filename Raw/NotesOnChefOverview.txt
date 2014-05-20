@@ -1,0 +1,310 @@
+http://docs.opscode.com/chef_overview.html
+
+* Each definition (cookbooks and recipes, ruby code) describes how a specific part of your infrastructure should be built and managed. The chef-client then applies those definitions to servers and applications, as specified, resulting in a fully automated infrastructure.
+
+* Three main elements:
+    - Server
+        * acts as a hub, available to every node in the organization
+        * ensures the right cookbooks/recipes are available
+        * ensures the right policies are being applied
+        * ensures that the node object used in the previous chef-client run is
+          available to the current run
+        * ensures that all nodes to be maintained are registered and known
+    - Workstation
+        * Where cookbooks/recipes are authored
+        * where policy data is defined
+        * where data is sync'd with the chef-repo
+        * where data is uploaded to the server
+    - Nodes
+        * each node contains a chef-client that performs the tasks it requires
+
+Nodes
+    * A node is any physical, virtual, or cloud machine configured to be
+      maintained by a chef-client
+
+    Types of Nodes
+        Cloud
+            * Hosted in an external, cloud service
+            * Plugins are available for knife that support cloud services
+        Physical
+            * A server or virtual machine--any active device attached to
+              a network and capable of sending/receiving/forwarding information
+              over a communications channel.
+            * Can run a chef-client and let that client talk to a server.
+        Virtual
+            * Machine that runs virtually but otherwise behaves like a
+              physical machine.
+
+    Features of Nodes
+        chef-client
+            * agent running locally on all nodes registered with the server
+            * Performs all steps to bring node to expected state, including:
+                .. Registering and authenticating the node with the server
+                .. Building the node object
+                .. Synchronizing cookbooks
+                .. Compiling the resource collection by loading each of the
+                   required cookbooks, recipes, attributes, dependencies
+                .. Taking appropriate/required actions to configure the node
+                .. Looking for exceptions and notifications, handling as req'd
+            * RSA key pairs authenticate between client and server
+
+        ohai
+            * Tool to detect attributes on a node, then provide those to the
+              chef-client at the start of the chef-client run
+            * Required by chef-client, must be present
+            * Types of attributes ohai collects include:
+                .. Platform details
+                .. Networking usage
+                .. Memory usage
+                .. Processor usage
+                .. Kernel data
+                .. Host names
+                .. Fully qualified domain names
+                .. Other config details
+            * Attributes collected are used to make sure those attributes
+              remain unchanged after the chef-client is done configuring
+
+Workstations
+    * Computer configured to run knife
+    * Synchronizes with the chef-repo
+    * Interacts with a single server
+    * Location from which most users do their work, including:
+        .. Developing cookbooks and recipes
+        .. Keeping the chef-repo synchronized with version source control
+        .. Using knife to upload items from chef-repo to the server
+        .. Configuring policy, incl defining roles/environments
+        .. Ensuring (via policy) that critical data is stored in data bags
+        .. Interacting with nodes as required
+    
+    Features of Workstations
+        knife
+            * CLI tool to interface between a chef-repo and the server
+            * Helps manage:
+                .. Nodes
+                .. Cookbooks and recipes
+                .. Roles
+                .. Stores of JSON data (data bags), incl. encrypted data
+                .. Environments
+                .. Cloud resource, incl provisioning
+                .. Installation of chef-client on management workstations
+                .. Searching of indexed data on the server
+            * RSA key pairs authenticate knife to the server
+
+        chef-repo
+            * Stores data objects:
+                .. Cookbooks (recipes, versions, cookbook attributes, resources,
+                   providers, libraries, templates)
+                .. Roles
+                .. Data Bags
+                .. Environments
+                .. Config files for clients/workstations/servers
+            * Located on a workstation
+            * Should be sync'd with a VCS like git
+            * All data in the repo should be treated as source code
+            * knife uploads data to the server from chef-repo, and once it's
+              uploaded, that data is used by chef-client to manage all the
+              nodes that are registered with the server and to ensure that the
+              correct cookbooks, environments, roles, and other settings are
+              applied correctly.
+
+Server
+    * Acts as a hub for configuration data
+    * Stores cookbooks, policies, metadata describing registered nodes
+    * Nodes use the chef-client to ask the server for info
+    * chef-client then does as much as it can on the nodes themselves
+
+    Types of servers
+        Enterprise Chef
+            * Highly scalable version of the server
+            * Set up and managed from behind the firewall
+        Hosted Enterprise Chef
+            * Version hosted by Opscode
+            * Cloud-based, scalable, fully available
+            * Has resource based access control
+            * No setup/firewall work required
+        Open Source Chef
+            * Free version
+            * Each instance must be configured and managed locally
+            * Optional support from Opscode
+
+    * An API client is any machine that has permission to use the Chef Server 
+      API to talk with the server. Typically a node or a workstation, but can
+      be any machine configured to use the API.
+
+    Other things a server includes
+        search
+            * Indexes allow queries to be made for any type of data on the
+              server, incl. data bags, environments, nodes, roles.
+            * Query syntax exists for exact/wildcard/range/fuzzy
+            * Full text queries can be done from several locations, like:
+                .. inside a recipe
+                .. search subcommand in knife
+                .. search functionality in the management console
+                .. /search or /search/INDEX endpoints of the API
+            * Based on Solr, run from the server
+
+        manager
+            * Web interface that lets you manage:
+                .. Nodes
+                .. Cookbooks and recipes
+                .. Roles
+                .. Stores of JSON data
+                .. Environments
+                .. Searching indexed data
+                .. User accounts/user data
+
+Node Objects
+    * For chef-client, two important aspects of nodes are attributes / run-lists
+    * Attribute is a specific piece of data about the node
+    * Run list is an ordered list of recipes/roles that are run in exact order
+    * The node object consists of the run-list and node attributes
+    * Node object is a JSON file stored on the server
+    * chef-client gets a copy of the node object during each chef-client run
+    * chef-client updates the server's copy of the node object after each run
+
+    Features of node objects
+        attributes
+            * Used by the chef-client to understand:
+                .. Current state of the node
+                .. What the state of the node was after previous chef-client run
+                .. What the state of the node should be after this run
+            * Defined by:
+                .. State of the node itself
+                .. Cookbooks (in attribute files and/or recipes)
+                .. Roles
+                .. Environments
+            * During each run, chef-client builds attribute list using:
+                .. Data about the node from ohai
+                .. The node object saved to the server after the previous run
+                .. The rebuilt node object from the current run, after it is
+                   updated for changes to cookbooks, roles, and/or environments,
+                   and updated for any changes to the state of the node itself.
+            * After rebuild, all attributes are compared, and the node is 
+              updated based on attribute precedence.
+
+        run-list
+            * Ordered list of roles and/or recipes run in exact order
+            * Always specific to the node it runs on
+            * Items in a run list are maintained using knife
+            * Uploaded to the server and stored as part of the node object
+            * chef-client always configures a node in the order specified by
+              its run-list, and will never run the same recipe twice.
+
+Policy
+    * Map business and operational requirements to settings on the server
+    * Roles define server types, like "web server" or "database server"
+    * Environments define process, like "dev", "staging", "production"
+    * Sensitive data can be put in data bags, located in a secure sub area on
+      the server that can only be accessed by nodes that authenticate over SSL
+
+    Features of policy
+        roles
+            * Defines certain patterns and processes that exist across nodes
+            * Consists of zero or more attributes and a run list
+            * Can have zero or more roles assigned to it
+            * When a role is run against a node, the conf details of that node
+              are compared to the attributes of the role, and then the contents
+              of that role's run list are applied tothe node's conf details.
+            * When chef-client runs, it merges its attributes/run-lists with the
+              ones contained within each role.
+
+        data bags
+            * Global variable, stored as JSON, accessible from a server
+            * Indexed for searching
+            * Can be loaded by a recipe
+            * Can be accessed during search
+            * Contents may vary, but often include sensitive info
+
+        environs
+            * Maps an organization's real life workflow to what can be conf'd
+              and managed using the server.
+            * Every organization begins with a single environment, _default
+            * _default cannot be modified or deleted
+            * Additional environments can be created to reflect other workflows
+            * Generally an environment is also associated with one or more
+              cookbook versions.
+
+
+Cookbooks
+    * Fundamental unit of configuration and policy distribution
+    * Defines a scenario, such as everything needed to install/configure mysql
+    * Contains all components required to support that scenario, incl:
+        .. Attribute values set on nodes
+        .. Definitions allowing creation of reusable collections of resources
+        .. File distributions
+        .. Libraries that extend the chef-client and/or provide helpers to Ruby
+        .. Recipes that specify which resources to manage
+        .. The order in which resources will be applied
+        .. Custom resources/providers
+        .. Templates
+        .. Versions
+        .. Metadata about recipes (incl dependencies), version constraints,
+           support platforms, etc.
+    * chef-client uses Ruby as the language for creating cookbooks/recipes
+    * There is an extended domain specific language (DSL) for specific resources
+    * Many resources are available by default, but the DSL can be extended
+
+    Components of cookbooks
+        attributes
+            * Can be defined in a cookbook or recipe, used to override settings
+              on a node.
+            * When a cookbook is loaded by chef-client, its attributes are 
+              compared to those already on the node. When the cookbook attrs
+              take precedence over the defaults, chef-client will apply those
+              new settings and values during the chef-client run on the node.
+
+        recipes
+            * Most fundamental configuration element within the organization
+            * Recipes:
+                .. authored using Ruby
+                .. mostly a collection of resources in a Ruby syntax
+                .. must define everything req'd to configure part of the system
+                .. must be stored in a cookbook
+                .. may be included in a recipe
+                .. may use the results of a search query and read data bags
+                .. may have a dependency on one or more recipes
+                .. may be tagged for arbitrary groupings
+                .. must be added to a run-list before being used by chef-client
+                .. is always executed in the same order as listed in run-list
+
+        versions
+            * A cookbook version represents a specific set of functionality
+              that is different from the cookbook on which it is based.
+            * May exist for third party integration, bug fixes, improvements
+            * Versions can be defined using syntax and operators
+            * Can be associated with environments, cookbook metadata, or 
+              run-lists, and can be frozen to prevent updates.
+            * Handled like a cookbook with regard to how to repo sees it,
+              how versions are stored on the server, how they're pushed out
+              to nodes, and how versions are used by chef-client.
+
+    * chef-client runs recipes only when asked
+    * runs are idempotent--system state will be the same no matter how many
+      times you run a recipe
+    * When a recipe is run but nothing has changed in the system or recipe,
+      chef will not change anything on the node
+
+    Additional parts of cookbooks
+        * Resources and providers
+            .. a package, service, group of users, etc.
+            .. tells the chef-client which provider to use during a run for
+               various tasks like installing packages, running Ruby, etc.
+            .. resources are generic, while a provider knows what to do
+               with that process on specific machine types.
+            .. providers define the steps required to bring that piece of the
+               system into the desired state
+            .. default providers cover a lot of common scenarios
+        * File distributions
+            .. specific type of resource telling cookbook how to distribute 
+               files, incl by node, platform, or file version
+        * Definitions
+            .. used to create new resources by stringing together existing ones
+        * Libraries
+            .. lets you use arbitrary Ruby code in a cookbook
+        * Templates
+            .. file in markup language that uses Ruby to solve complex config
+               scenarios
+        * Configuration files
+            .. metadata file to ensure each cookbook is correctly deployed
+
+Conclusion

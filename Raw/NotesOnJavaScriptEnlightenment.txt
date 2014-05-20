@@ -1,0 +1,1351 @@
+Notes on JavaScript Enlightenment
+
+Chapter 1: JavaScript Objects
+
+Creating Objects
+    * Objects are containers for properties, which are key-value pairs
+    * In JS, methods are properties that contain a Function() object intended to operate
+        on the object the function is contained within.
+    * Majority of values (other than primitives like string literals, numbers, and booleans)
+        are objects in JavaScript
+    * Some constructors (Object, String, etc) are native--a custom constructor might look like:
+    
+        var Person = function(living, age, gender) {
+            this.living = living;
+            this.age = age;
+            this.gender = gender;
+            this.getGender = function() { return this.gender; }
+        };
+        
+        var x = new Person(true, 33, 'male');
+        
+    * Creating objects with Object() vs Person() only really has prototype implications--
+        otherwise the resulting object will be functionally the same.
+        
+JavaScript Constructors Construct and Return Object Instances
+    * A constructor is nothing more than a function, except when invoked with 'new'
+    * With 'new', the value of 'this' is set to the new object, and 'this' is returned by default
+        ( Explanation from elsewhere that I prefer:
+            1.  New, anonymous object is created, with its prototype set to the constructor's prototype
+            2.  'this' is set to point at the new, anonymous object
+            3.  The constructor function is run (you can use 'this' or not in the function body)
+            4.  'this' or the explicit return value of the constructor is returned )
+    * Objects created from constructors are 'instances' that are 'instantiated'
+    
+The JavaScript Native/Built-In Object Constructors
+    * The nine native object constructors of JavaScript:
+        Number()
+        String()
+        Boolean()
+        Object()
+        Array()
+        Function()
+        Date()
+        RegExp()
+        Error()
+    
+    * The Math object is a static object rather than a constructor function--really it's
+        an object namespace for math functions, not a prototype itself.
+        
+User-Defined/Non-Native Object Constructor Functions
+    * Multiple objects can be instantiated from a single constructor function
+    * Best practice is to make the first character of the constructor name uppercase
+    * If you call a constructor without 'new', 'this' refers to the global object
+    
+Instantiating Constructors Using the new Operator
+    * You can instantiate an object instance from any of the native constructor functions:
+    
+        var myNumber    = new Number(23),
+            myString    = new String('male'),
+            myBoolean   = new Boolean(false),
+            myObject    = new Object(),
+            myArray     = new Array('a','b'),
+            myFunction  = new Function('x','y', 'return x*y'),
+            myDate      = new Date(),
+            myRegExp    = new RegExp('\bt[a-z]+\b'),
+            myError     = new Error('Oh no!');
+            
+Creating Shorthand/Literal Values from Constructors
+    * In most cases, you can use a literal syntax for constructing new objects, with the
+        result being the same as using the 'new' operator
+    * Exceptions are Number(), String(), and Boolean()
+    * Examples of literal equivalents:
+    
+        var myNumberLiteral     = 23,       // primitive number, not an object
+            myStringLiteral     = 'male',   // primitive string, not an object
+            myBooleanLiteral    = false,    // primitive boolean, not an object
+            myObjectLiteral     = {},
+            myArrayLiteral      = ['a','b'],
+            myFunctionLiteral   = function(x,y) { return x*y },
+            myRegExpLiteral     = /\bt[a-z]+\b/;
+    
+    * For strings, numbers, and booleans, a complex object is not created until and unless
+        the value is treated as an object. If you attempt to use methods or properties of
+        the constructor, a wrapper object is created around the primitive value, and then
+        that wrapper is discarded after the method is called.
+        
+Primitive (aka Simple) Values
+    * Values like: 5, 'foo', true, false, null, undefined are primitive because they are
+        'irreducible'--they are not values that can be made up of other values.
+    * "Primitive values represent the lowest form (i.e. simplest) of datum/information
+        avaialbe in JavaScript."
+    
+The Primitive Values null, undefined, "string", 10, true, and false are Not Objects
+    * "null and undefined are such trivial values that they do not require a constructor function,
+        nor the use of the new operator to establish them as a JavaScript value."
+    * Primitive strings, numbers, and booleans are returned from constructor functions, but
+        are not themselves objects.
+    * Code demonstrating the difference between primitives and native JS objects:
+    
+        var primitiveString1  = 'foo',
+            primitiveString2  = String('foo'),
+            primitiveNumber1  = 10,
+            primitiveNumber2  = Number('10'),
+            primitiveBoolean1 = true,
+            primitiveBoolean2 = Boolean('true');
+            
+        console.log(typeof primitiveString1, typeof primitiveString2);
+            // logs 'string,string'
+        console.log(typeof primitiveNumber1, typeof primitiveNumber2);
+            // logs 'number,number'
+        console.log(typeof primitiveBoolean1, typeof primitiveBoolean2);
+            // logs 'boolean,boolean'
+            
+        var myNumber    = new Number(23),
+            myString    = new String('male'),
+            myBoolean   = new Boolean(false),
+            myObject    = new Object(),
+            myArray     = new Array('a','b'),
+            myFunction  = new Function('x','y', 'return x*y'),
+            myDate      = new Date(),
+            myRegExp    = new RegExp('\bt[a-z]+\b'),
+            myError     = new Error('Oh no!');
+        
+        // logs 'object object object object function object function object'
+        console.log(        
+            typeof myNumber,
+            typeof myString,
+            typeof myBoolean,
+            typeof myObject,
+            typeof myArray,
+            typeof myFunction,      // typeof returns 'function' for all function objs
+            typeof myDate,
+            typeof myRegExp,        // typeof returns 'function' for RegExp()
+            typeof myError
+        );
+        
+How Primitive Values are Stored/Copied in JavaScript
+    * 'primitive values are stored and manipulated at "face value." [...] 
+        if I store the string value "foo" in a variable called myString, the value "foo"
+        is literally stored in memory as such.'
+    * Primitive values are copied literally--if you change the original value, the copy
+        is unchanged:
+        
+        var myString     = 'foo',       // create a primitive string object
+            myStringCopy = myString,    // copy its value to a new variable
+            myString     = null;        // manipulate the value in myString
+        
+        // This will log 'null foo':
+        console.log(myString, myStringCopy);
+        
+    * Primitive values are stored and manipulated as values--referring to them transfers 
+        their value, in constrast to complex objects.
+        
+Primitive Values Are Equal By Value
+    * Contrast of comparing primitive numbers and a complex number object:
+    
+        var price1 = 10,
+            price2 = 10,
+            price3 = new Number('10'),
+            price4 = price3;
+            
+        console.log(price1 === price2);     // logs true
+        console.log(price1 === price3);     // logs false--1 is a primitive, 3 is an obj
+        console.log(price4 === price3);     // logs true--equal by reference, not value
+        
+        // update price4 to contain a primitive:
+        price4 = 10;
+        
+        console.log(price4 === price3);     // logs false--price4 is now primitive
+        
+    * Primitives, when compared, will check to see if the expressed values are equal
+    * When a string, number, or boolean is created with 'new', the value is no longer primitive
+    
+The String, Number, and Boolean Primitive Values Act Like Objects When Used Like Objects
+    * On calling a method or property, a primitive is briefly converted to an object, then
+        is set back to primitive when the wrapper object is discarded.
+        
+Complex (a.k.a. Composite) Values
+    * "The native object constructors Object(), Array(), Function(), Date(), Error(), and 
+        RegExp() are complex because they contain one or more primitive or complex values."
+    * "It could be said that complex objects have an unknown size in memory because complex
+        objects can contain any value and not a specific known value."
+        
+How Complex Values Are Stored/Copied in JavaScript
+    * Complex values are stored and manipulated by reference.
+    * A variable containing a complex object stores the value in memory at an address
+    * A reference to a complex object, you're using its name to retrieve the memory address
+    * Consequently, 'copying' an object is actually creating a new variable with the
+        same memory pointer--objects are not copied at all.
+    * When String(), Number(), and Boolean() objects are created with 'new', the values
+        continue to be stored/copied by value.
+
+Complex Objects Are Equal By Reference
+    * The comparison operators do not test for property values, just memory pointers:
+    
+        var objectA = {same: 'same'},
+            objectB = {same: 'same'},
+            objectC = {'a': 1},
+            objectB = objectC;
+            
+        console.log(objectA === objectB);   // false--different objects with same values
+        console.log(objectC === objectD);   // true--same memory address, so same object
+        
+Complex Objects Have Dynamic Properties
+    * A complex object can be referenced as many times as you want, and the references
+        will always refer to the same object, even as it changes.
+        
+The typeof Operator Used on Primitive and Complex Values
+    * Can be used to return the type of value you are dealing with, but its return values
+        may not exactly be consistent or logical:
+        
+        // primitives:
+        var myNull              = null,
+            myUndefined         = undefined,
+            primitiveString1    = 'string',
+            primitiveString2    = String('string'),
+            primitiveNumber1    = 10,
+            primitiveNumber2    = Number('10'),
+            primitiveBoolean1   = true,
+            primitiveBoolean2   = Boolean('true');
+            
+        console.log(typeof myNull);             // logs object <== NOTE
+        console.log(typeof myUndefined);        // logs undefined
+        console.log(typeof primitiveString1, primitiveString2);
+            // logs string string
+        console.log(typeof primitiveNumber1, primitiveNumber2;
+            // logs number number
+        console.log(typeof primitiveBoolean1, typeof primitiveBoolean2);
+            // logs boolean boolean
+            
+        // complex values:
+        var myNumber    = new Number(23),
+            myString    = new String('male'),
+            myBoolean   = new Boolean(false),
+            myObject    = new Object(),
+            myArray     = new Array('a','b'),
+            myFunction  = new Function('x','y', 'return x*y'),
+            myDate      = new Date(),
+            myRegExp    = new RegExp('\bt[a-z]+\b'),
+            myError     = new Error('Oh no!');
+
+        console.log(typeof myNumber);           // logs object
+        console.log(typeof myString);           // logs object
+        console.log(typeof myBoolean);          // logs object
+        console.log(typeof myObject);           // logs object
+        console.log(typeof myArray);            // logs object
+        console.log(typeof myFunction);         // logs function <== NOTE
+        console.log(typeof myDate);             // logs object
+        console.log(typeof myRegExp);           // logs function <== NOTE
+        console.log(typeof myError);            // logs object
+            
+Dynamic Properties Allow for Mutable Objects
+    * User defined objects, and most of the native objects, can be mutated--updated or
+        changed at any time.
+    * You can augment the basic behavior of the language by changing the native objects
+    * Don't do that though, it sucks.
+    * You can store properties on native constructors and add new methods to native objects
+        by making additions to their prototype objects.
+    * Example of mutating String() and String.prototype:
+    
+        // Augment the String constructor with augmentedProperties property:
+        String.augmentedProperties = [];
+        
+        if (!String.prototype.trimIT) {     // if the prototype has no trimIT, add it
+            String.prototype.trimIT = function() {
+                return this.replace(/^\s+|\s+$/g, '');
+            }
+            
+            // now add trimIT string to the augmentedProperties array
+            String.augmentedProperties.push('trimIT');
+        }
+        
+        var myString = '  trim me  ';
+        console.log(myString.trimIT());                 // logs 'trim me'
+        console.log(String.augmentedProperties.join()); // logs 'trimIT'
+        
+All Constructor Instances Have Constructor Properties that Point to Their Constructor Function
+    * All objects are instantiated with a 'constructor' property that points to the constructor
+        function that created the object:
+        
+        var foo = {};
+        console.log(foo.constructor === Object);    // logs true
+        console.log(foo.constructor);               // points to the Object() constructor function
+        
+    * Instances of the pre-configured objects built into JavaScript (Number, String, Boolean,
+        Object, Array, Function, Date, RegExp, Error) all have constructor properties that
+        point to the correct constructors, even when created with literal syntax rather than new:
+        
+        var myNumber  = new Number('23');               // constructor
+        var myNumberL = 23;                             // literal
+        console.log(myNumber.constructor  === Number);  // logs true
+        console.log(myNumberL.constructor === Number);  // logs true
+        
+    * Constructor property also works on user defined constructor functions:
+    
+        var CustomConstructor = function CustomConstructor() { return 'Wow!'; };
+        var instanceOfCustomObject = new CustomConstructor();
+        
+        // logs true:
+        console.log(instanceOfCustomObject.constructor === CustomConstructor);
+        
+        // returns a reference to CustomConstructor() function, 
+        // returns 'function() { return 'Wow!'; };'
+        console.log(instanceOfCustomObject.constructor);
+        
+    * NOTE: "If you would like the constructor property to log the actual name of the constructor
+        for user-defined function expressions, you have to give the constructor function expressions
+        an actual name (e.g. var Person = function Person(){};)."k
+        
+Verify that an Object Is an Instance of a Particular Constructor Function
+    * The 'instanceof' operator returns boolean for whether an object is an instance of
+        a particular constructor function:
+        
+        console.log(instanceOfCustomObject instanceof CustomConstructor);   // logs true
+        
+    * Note that instanceof will always return true if you ask if an object is an instance
+        of Object, since everything inherits from Object()
+    * Will return false when dealing with primitives that otherwise use object wrappers--
+        only really works with complex objects / instances created from constructor functions
+        that return objects.
+        
+An Instance Created From a Constructor Can Have Its Own Independent Properties (Instance Properties)
+    * Objects are mutable and can be augmented at any time:
+    
+        var myArray = new Array();
+        myArray.prop = 'test';
+        console.log(myArray.prop);  // logs 'test'
+        
+    * Note that besides their own properties, instances can have properties inherited from the
+        prototype chain, or properties added to the constructor after instantiation.
+        
+The Semantics of "JavaScript Objects" and "Object() Objects"
+    * The term "JavaScript objects" refers to the notion of objects in JavaScript
+    * "Object() objects" are a very specific type of value expressed in JavaScript
+    * The Object() constructor function produces an empty generic object, referred to
+        as an 'Object() object', just like Array() produces an 'Array() object'
+    * Any time 'JavaScript object' is used in this text, it refers to the general case.
+    
+
+Chapter 2: Working with Objects and Properties
+
+Complex Objects Can Contain Most of the JavaScript Values as Properties
+    * A complex object can hold any permitted JavaScript value
+    * Anything you can nominally express in JavaScript can be contained in an object
+    
+Encapsulating Complex Objects in a Programmatically Beneficial Way
+    * Object(), Array(), and Function() objects can contain other complex objects:
+    
+        var object1 = {
+            object1_1: {
+                object1_1_1: { foo: 'bar' },
+                object1_1_2: {}
+            },
+            object1_2: {
+                object1_2_1: {},
+                object1_2_2: {}
+            }
+        };
+
+        var myArray = [[[]]]; // empty array, nested three deep
+        
+        var myFunction = function() {
+            // empty
+            var myFunction = function() {
+                //empty
+                var myFunction = function() {
+                    // empty
+                };
+            };
+        };
+        
+Getting/Setting/Updating an Object's Properties Using Dot Notation or Bracket Notation
+    * Dot notation syntax:
+        
+        var x = new Object();
+        x.prop = value;
+        
+    * Bracket notation syntax:
+        
+        var x = new Object();
+        x['prop'] = value;
+        
+    * Bracket syntax is useful when you need to access a property name stored in a variable:
+    
+        var x = new Object();
+        x.foo = 'bar';
+        var y = 'foo';
+        console.log(x[y]);  // logs 'bar'
+        
+    * You can mix dot and bracket notation in a single object reference.
+    * Invoking a method is as simple as appending () to the object reference.
+    
+Deleting Object Properties
+    * The 'delete' operator can completely remove properties from an object:
+    
+        var x = {bar: 'bar'};
+        delete x.bar;
+        
+    * Will not delete properties found on the prototype chain.
+    * Only way to remove a property from an object--setting to undefined or null will only
+        change the value of the property.
+        
+How References to Object Properties Are Resolved
+    * Attempting to access a property not found in an object will involve the prototype chain.
+    * The resolution goes:
+        1.  The object itself
+        2.  The prototype of the constructor function that created the object
+        3.  The prototype of the constructor's constructor, repeatedly
+        
+    * Since all prototype properties are objects, the final link in the chain is Object.prototype
+    
+Using hasOwnProperty, Verify That an Object Property Is Not From the Prototype Chain
+    * hasOwnProperty() can check an object for a property not in the prototype chain
+    * Usage:
+    
+        var myObject = {foo: 'value'};
+        console.log(myObject.hasOwnProperty('foo'));        // true
+        console.log(myObject.hasOwnProperty('toString'));   // false
+        
+Checking If an Object Contains a Given Property Using the 'in' Operator
+    * Used to verify (true or false) if an object contains a given property, through the
+        prototype chain.
+    * Usage:
+    
+        var myObject = {foo: 'value'};
+        console.log('toString' in myObject);    // true
+        
+Enumerate (Loop Over) an Object's Properties using the for in Loop
+    * Usage:
+    
+        var x = {
+            a: 1,
+            b: 2
+        };
+        
+        for (var key in x) {
+            // avoid properties inherited from the prototype chain
+            if (x.hasOwnProperty(key)) {
+                console.log(key);
+            }
+        }
+        
+    * for in will enumerate over all attributes in the entire prototype chain
+    * You can put an if(hasOwnProperty(x)) inside the loop, to skip inherited props
+    * Only properties that are enumerable will show up in the for in loop--you can check
+        which properties with the propertyIsEnumerable() method
+        
+Host Objects versus Native Objects
+    * The browser environment typically contains 'host objects' that are not part of the
+        ECMAScript standard, but are available as objects during execution
+    * The window/head object and all its containing objects are host objects
+    * The DOM is a host object
+    
+Enhancing and Extending Objects with Underscore.js
+    * Underscore.js provides the following functionality when dealing with objects and arrays:
+        each(), map(), reduce(), reduceRight(), detect(), select(),
+        reject(), all(), any(), include(), invoke(), pluck(), max(),
+        min(), sortBy(), sortIndex(), toArray(), size()
+    * For just objects:
+        keys(), values(), functions(), extend(), clone(), tap(),
+        isEqual(), isEmpty(), isElement(), isArray(), isArguments,
+        isFunction(), isString(), isNumber, isBoolean, isDate, isRegExp,
+        isNaN, isNull, isUndefined
+        
+        
+Chapter 3: Object()
+
+Conceptual Overview of Using Object() Objects
+    * Object() constructor can be thought of as a template for empty objects without
+        predefined properties or methods (other than those from the prototype chain).
+
+Object() Parameters
+    * Takes one optional parameter, which is the value you would like to create.
+    * Default is to null or undefined
+    * Example:
+    
+        var x = new Object();
+        var y = new Object(undefined);
+        var z = new Object(null);
+        console.log(x,y,z);             // logs 'object object object'
+        
+        // Passing a defined value will create an object of the right type:
+        a = new Object(1);      // creates a Number object
+        
+Object() Properties and Methods
+    * Object() has the following properties: prototype
+    
+Object() Object Instance Properties and Methods
+    * Instance Properties:
+        constructor
+    * Instance Methods:
+        hasOwnProperty()
+        isPrototypeOf()
+        propertyIsEnumerable()
+        toLocaleString()
+        toString()
+        valueOf()
+        
+Creating Object() Objects Using "Object Literals"
+    * Using object literal syntax to create an object is a fast shorthand:
+    
+        var x = {
+            a: 1,
+            b: 2,
+            c: function() { return a; }
+        };
+        
+    * Property names may be specified as strings, but only HAVE TO be strings if:
+        - it's a reserved keyword
+        - contains spaces or special characters
+        - starts with a number
+        
+    * Note that the last property in an object MUST NOT have a trailing comma.
+    
+All Objects Inherit From Object.prototype
+    * Object.prototype is the last stop in the prototype chain
+    * You should not augment Object.prototype.
+    
+
+Chapter 4: Function()
+
+Conceptual Overview of Using Function() Objects
+    * "A function is a container of code that can be invoked using the parentheses operator."
+    * Two creation patterns, one with constructor, one literal:
+    
+        var addNumbersA = new Function('num1', 'num2', 'return num1 + num2;');
+        var addNumbersB = function(num1, num2) { return num1 + num2; };
+        
+    * Can return a value, construct an object, or run arbitrary code.
+    
+Function() Parameters
+    * Takes a variable number of params, but last one must be a string containing the
+        function statements.
+    * Using the Function() constructor shouldn't be done, because it parses the string
+        argument with eval(), which is too much overhead
+    * No closure is created when invoking the Function() constructor directly
+    
+Function() Properties and Methods
+    * Properties: prototype
+    
+Function() Object Instance Properties and Methods
+    * Instance Properties:
+        arguments
+        constructor
+        length
+    * Instance Methods:
+        apply()
+        call()
+        toString()
+        
+Functions Always Return a Value
+    * If no return value is specified, 'undefined' is returned
+    
+Functions Are First-Class Citizens (Not Just Syntax but Values)
+    * A function is an object, so can be stored in a variable, array, or object
+    * A function can also be passed to, and returned from, a function
+    * A function has properties.
+    * A function is an object, and thus a value--can be passed or augmented like any other
+        expression in JavaScript.
+        
+Passing Parameters to a Function
+    * Legal to omit parameters even if the function has been defined to accept these args
+    * Any missing params are set to undefined
+    * Passing unexpected params to the function will not cause an error, and they will be
+        available from the arguments object available to all functions
+        
+'this' and 'arguments' Values Available To All Functions
+    * Inside the scope/body of functions, 'this' and 'arguments' values are available
+    * arguments is an array-like object with all passed in parameters
+    * 'this' is a reference to the object that contains the function
+    * Functions that are properties of objects (methods) can use 'this' to refer to their
+        parent object
+    * Functions defined in the global scope will have 'this' set to the global object
+    
+The arguments.callee Property
+    * arguments.callee is a reference to the function currently executing
+    * Can be used to reference the function from within the scope of the function
+    * Example:
+    
+        var x = function y() {
+            console.log(arguments.callee);  // could be called recursively
+        }();
+        
+The Function Instance length Property and arguments.length
+    * arguments.length equals the number of parameters sent to the function on invocation
+    * Deprecated starting with JS 1.4, use the length property of the function object, via
+        arguments.callee.length
+        
+Redefining Function Parameters
+    * Example:
+    
+        var x = false;
+        var y = false;
+        
+        var myFunction = function(x,y) {
+            arguments[0] = true;
+            y = true;
+            console.log(arguments[0], y);   // logs true true
+        }
+        
+        myFunction();
+        
+Return a Function Before It Is Done (Cancel Function Execution)
+    * return at any point will cancel function execution
+    
+Defining a Function (Statement, Expression, or Constructor)
+    * Three ways of defining a function:
+    
+        // Constructor:
+        var addConstructor = new Function('x','y', 'return x+y');
+        
+        // Statement:
+        function addStatement(x,y) {
+            return x + y;
+        }
+        
+        // Expression
+        var addExpression = function(x,y) {
+            return x + y;
+        };
+        
+    * Sort of a fourth way: the named function expression:
+        
+        var addNamedExpression = function addNamedExpression(x,y) { return x+y; };
+        
+Invoking a Function [Function, Method, Constructor, or call() and apply()]
+    * Four patterns for function invocation: as function, as method, as constructor, 
+        using apply() or call()
+    * Examples:
+    
+        // as function:
+        var myFunction = function(){return 'foo';};
+        console.log(myFunction());
+        
+        // as method:
+        var myObject = {myFunction: function() { return 'bar'; }};
+        console.log(myObject.myFunction());
+        
+        // Constructor:
+        var ClassX = function() {
+            this.a = 1;
+            this.b = 2;
+            this.c = 3;
+            this.d = function() { return this.a; };
+        };
+        var objx = new ClassX();
+        
+        // apply() and call():
+        var greet = {
+            runGreet: function() {
+                console.log(this.name, arguments[0], arguments[1]);
+            }
+        };
+        
+        var alfred = {name: 'alfred'};
+        var betty  = {name: 'betty'};
+        
+        // Runs runGreet as if it were inside of the alfred object:
+        greet.runGreet.call(alfred, 'foo', 'bar');  // logs 'alfred foo bar'
+        
+        // Runs runGreet as if it were inside of the betty object:
+        greet.runGreet.apply(betty, ['foo', 'bar']);    // logs 'betty foo bar'
+        
+Anonymous Functions
+    * Anonymous functions are ones not given an identifier--mostly used for passing
+        functions as parameters to other functions:
+        
+        var sayHi = function(f) {
+            f();
+        };
+        
+        sayHi(function(){console.log('hi');});  // logs 'hi'
+        
+Self-Invoking Function Expression
+    * Any function except those created from the Function() constructor can be called 
+        immediately after being defined, with the parentheses operator:
+        
+        var sayWord = function() {console.log('Word!');}();
+        
+Self-Invoking Anonymous Function Statements
+    * Example:
+    
+        (function(msg) {
+            console.log(msg);
+        })('Hi');
+        
+    * There's other methods, but they're not as syntactically good
+    
+Functions Can Be Nested
+    * You can nest functions indefinitely:
+    
+        var foo = function() {
+            var bar = function() {
+                var goo = function() {
+                    console.log(this);  // logs reference to head window object
+                }();
+            }();
+        }();
+        
+    * Note that the value of 'this' for nested functions is the head object
+    
+Passing Functions to Functions and Returning Functions from Functions
+    * Functions that take or return other functions are sometimes called 'higher order functions'
+    * Example:
+    
+        var foo = function(f) {
+            return f;
+        };
+        
+        var bar = foo(function() { console.log('Hi'); } );
+        
+        bar();  // logs 'Hi'
+        
+Invoking Function Statements Before They Are Defined (Function Hoisting)
+    * Before the code runs, function statements are interpreted and added to the execution
+        stack / execution context.
+    * Functions defined as 'function expressions' are not hoisted, only 'function statements'
+        are hoisted.
+        
+A Function Can Call Itself (Recursion)
+    * Example:
+    
+        var countDownFrom = function countDownFrom(num) {   
+            console.log(num);
+            num--;
+            if (num < 0) { return false; }
+            countDownFrom(num);
+        }
+        
+        countDownFrom(5);
+        
+
+Chapter 5: The Head / Global Object
+
+Conceptual Overview of the Head Object
+    * All JS code has to be contained inside an object--the 'head' or 'global' object
+    * All implementations of JS must have a single head object
+    * The head object encapsulates user defined code, and houses JS native code
+    * Verification that values created in JS are placed in the head 'window' object:
+    
+        var myStringVar = 'myString';
+        var myFunctionVar = function() {};
+        myString = 'myString';
+        myFunction = function() {};
+        
+        console.log('myStringVar' in window);   // returns true
+        console.log('myFunctionVar' in window); // returns true
+        console.log('myString' in window);      // returns true
+        console.log('myFunction' in window);    // returns true
+        
+Global Functions Contained Within the Head Object
+    * Methods of the head object (window object in browser):
+        decodeURI()
+        decodeURIComponent()
+        encodeURI()
+        encodeURIComponent()
+        eval()
+        isFinite()
+        isNaN()
+        parseFloat()
+        parseInt()
+        
+The Head Object versus Global Properties and Global Variables
+    * "The head object is an object that contains all objects."
+    * 'global' properties or variables are those contained inside the head and not
+        specifically scoped to other objects
+    * globally scoped properties or variables are available anywhere in the execution context
+    
+Referring to the Head Object
+    * Typically two ways to reference the head object: reference the name given to the head
+        object (in a browser it's 'window'), or use the 'this' keyword in the global scope
+    * this always refers to the current object--in global scope that's the head object.
+    
+The Head Object is Implied and Typically Not Referenced Explicitly
+    * window.alert() and alert() are equivalent statements in a browser context
+    * Because the head object is the last stop in the scope chain, it's always implied
+    * Explicitly referencing the head object introduces more lookup overhead
+    
+
+Chapter 6: The this Keyword
+
+Conceptual Overview of this and How It Refers to Objects
+    * "'this' is available to the scope of its function, yet is a reference to the object 
+        of which that function is a property / method."
+    
+How is the Value of 'this' Determined?
+    * The value of 'this' is based on the context in which a function is called at runtime
+    * Demonstration of this changing based on calling context:
+    
+        var foo = 'foo';
+        var myObject = {foo: 'I am myObject.foo'};
+        
+        var sayFoo = function() {
+            console.log(this['foo']);
+        };
+        
+        myObject.sayFoo = sayFoo;
+        
+        myObject.sayFoo();  // logs 'I am myObject.foo'
+        sayFoo();           // logs 'foo', because it's called in global context
+        
+The 'this' Keyword Refers to the Head Object in Nested Functions
+    * In a function nested within another function, 'this' refers to the head object
+    * Will be fixed in ES5
+    * Problematic code:
+    
+        var foo = {
+            func1: function(bar) {
+                bar();              // the 'this' implicated here will be 
+                console.log(this);  // here 'this' refers to 'foo' object
+            }
+        }
+        
+        foo.func1(function(){console.log(this)});
+        
+Working Around the Nested Function Issue by Leveraging the Scope Chain
+    * You can use the scope chain to keep a reference to 'this' in the parent function
+    * Example:
+        
+        var myObject = {
+            myProperty: 'I can see the light',
+            myMethod: function() {
+                var that = this;                    // store a ref to this (i.e. MyObject) in myMethod's scope
+                var helperFunction function() {     // child function
+                    console.log(that.myProperty);   // logs I can see the light
+                    console.log(this);              // logs window object, if we don't use 'that'
+                }();
+            }
+        }
+        
+        myObject.myMethod();
+        
+Controlling the Value of this Using call() or apply()
+    * this is usually derived from context
+    * using apply() or call() will let you explicitly define what object 'this' points to
+    * Like saying, "Hey, call X function but tell the function to use Z object as 'this'"
+    * Example for call():
+    
+        var myObject = {};
+        var myFunction = function(param1, param2) {
+            // set via call() 'this' points to myObject when function is invoked
+            this.foo = param1;
+            this.bar = param2;
+            console.log(this);  // logs Object { foo = 'foo', bar = 'bar' }
+        };
+        
+        myFunction.call(myObject, 'foo', 'bar');    // invoke function, set this val to myObject
+        
+        console.log(myObject);                      // logs Object { foo = 'foo', bar = 'bar' }
+        
+    * Example for apply():
+    
+        var myObject = {};
+        var myFunction = function(param1, param2) {
+            // set via apply(), this points to myObject when function is invoked
+            this.foo = param1;
+            this.bar = param2;
+            console.log(this);      // logs Object {foo = 'foo', bar = 'bar'}
+        };
+        
+        myFunction.apply(myObject, ['foo', 'bar']);
+        
+        console.log(myObject);
+        
+Using the this Keyword Inside a User-Defined Constructor Function
+    * When a function is invoked with 'new', 'this' refers to the instance itself
+    * "In the constructor function, we can leverage the object via 'this' before the object
+        is actually created."
+    * Example of a Person constructor using this to reference an object being created:
+    
+        var Person = function(name) {
+            this.name = name || 'john doe';
+        }
+        
+        var cody = new Person('Cody');
+        
+        console.log(cody.name);
+        
+    * If that example _didn't_ use 'new', 'this' would refer to the head object
+    
+The 'this' Keyword Inside a Prototype Method Refers to a Constructor Instance
+    * "When used in functions added to a constructor's prototype property, 'this' refers to
+        the instance on which the method is invoked."
+    * Example of adding a method to a shared prototype:
+        
+        var Person = function(x) { 
+            if (x) { this.fullName = x; };
+        };
+        
+        Person.prototype.whatIsMyFullName = function() {
+            return this.fullName;   // 'this' refers to the instance created from Person()
+        }
+        
+        var cody = new Person('cody lindley');
+        var lisa = new Person('lisa lindley');
+        
+        // call the inherited method, which uses this to refer to the instance:
+        console.log(cody.whatIsMyFullName(), lisa.whatIsMyFullName());
+        
+        // Prototype chain is still in effect, so if the instance does not have a
+        // fullName property, it looks in the prototype chain. Below, we add a fullName
+        // property to both the Person prototype and the Object prototype.
+        
+        Object.prototype.fullName = 'John Doe';
+        var john = new Person();    // no arg is passed, so no fullName property
+        console.log(john.whatIsMyFullName());   // logs 'john doe'
+        
+Chapter 7: Scope and Closures
+
+Conceptual Overview of JavaScript Scope
+    * Three kinds of scope:
+        - global
+        - local or function
+        - eval
+    * Items defined with 'var' inside a function is locally scoped
+    * Items defined in the global scope with or without var are globally scoped
+    * Example of three different scope declarations of the same name:
+    
+        var foo = 0;                            // global scope
+        
+        var myFunction = function() {
+            var foo = 1;                        // local scope of myFunction
+            
+            var myNestedFunction = function() {
+                var foo = 2;                    // local scope of myNestedFunction
+            }();
+        }();
+    
+        eval('var foo = 3; console.log(foo);'); // eval() scope
+        
+    * "Functions that contain functions create stacked execution scopes. These stacks which
+        are chained together are often referred to as the scope chain."
+        
+JavaScript Does Not Have Block Scope
+    * No it does not. Not even a little.
+    
+Use var Inside Functions to Declare Variables and Avoid Scope Gotchas
+    * Always use var to declare variables inside a function.
+    
+The Scope Chain (Lexical Scoping)
+    * A lookup chain is followed when JS looks for the value associated with a variable
+    * Based on the hierarchy of object prototypes, terminating in Object.prototype
+    * Lookups will go all the way up the scope chain if necessary.
+    
+The Scope Chain Lookup Returns the First Found Value
+    * First matching named property gets returned.
+    
+Scope is Determined During Function Definition, not Invocation
+    * Lexical scoping: scope chain is set during definition
+    * This allows the creation of closures, because scope that is closed still exists
+        as long as it is referenced by something, somewhere.
+    * Closure example:
+    
+        var parentFunction = function() {
+            var foo = 'foo';
+            return function() {
+                console.log(foo);       // will log 'foo', even though foo goes out of scope
+            };
+        }
+        
+        var nestedFunction = parentFunction();
+        nestedFunction();               // accesses the variable inside parentFunction
+        
+Closures Are Caused by the Scope Chain
+    * Example of a function whose hidden value changes over multiple calls:
+    
+        var countUpFromZero = function() {
+            var count = 0;
+            return function() {
+                return ++count;
+            };
+        }();        // invoke immediately to return the nested function
+        
+        console.log(countUpFromZero()); // logs 1
+        console.log(countUpFromZero()); // logs 2
+        console.log(countUpFromZero()); // logs 3
+        
+
+Chapter 8: Function Prototype Property
+
+Conceptual Overview of the Prototype Chain
+    * 'prototype' property is an object JS creates for every instance of Function()
+    * It links instances created with 'new' back to the constructor that created them
+    * Lets instances inherit common methods and properties dynamically
+    
+Why Care About the prototype Property?
+    * Four Reasons:
+        1.  It's the mechanism that let the native constructor functions work
+        2.  You can copy the inheritance pattern it enables in your own constructors
+        3.  Even if you don't like it, it's how JS works.
+        4.  You're working in JS, so get comfortable with it.
+        
+Prototype is Standard on All Function() Instances
+    * All functions are created by the Function() constructor
+    * New functions are always given a prototype property, which is an empty object
+    
+The Default prototype Property Is an Object() Object
+    * prototype is just an empty Object() object added as a property to new Function() objs
+    * prototype can be set to any complex value--setting it to a simple value will be ignored
+    
+Instances Created From a Constructor Function are Linked to the Constructor's prototype Property
+    * The prototype chain links every instance to its constructor function's prototype property
+    * Any time an object is created from a constructor using 'new', a hidden link is added
+        between the object instance created and the prototype property of the constructor
+        used to create it.
+    * Inside the instance, the link is __proto__ (though only available in FF 2+, Safari,
+        Chrome, and Android)
+    * Example of adding a property to Array()'s prototype, and accessing from Array() instance
+        via the __proto__ property of that instance:
+        
+        // only works on browsers that support __proto__
+        Array.prototype.foo = 'foo';
+        var myArray = new Array();
+        
+        console.log(myArray.__proto__.foo); // logs foo, because myArray.__proto__ = Array.prototype
+        
+    * __proto__ is not a part of the ECMA standard
+    * More universal way to trace the link from an object to the prototype object it inherits,
+        via the 'constructor' property:
+        
+        Array.prototype.foo = 'foo';
+        
+        var myArray = new Array();
+        
+        console.log(myArray.constructor.prototype.foo);     // use the prototype of the constructor
+        console.log(myArray.foo);                           // use the prototype chain to find it
+        
+Last Stop in the prototype Chain is Object.prototype
+    * Yep.
+    * Be careful, anything you add to Object.prototype will show up in for..in loops
+    
+The prototype Chain Returns the First Property Match It Finds in the Chain
+    * Just like the scope chain.
+    
+Replacing the prototype Property with a New Object Removes the Default Constructor Property
+    * You can replace the prototype property of an object
+    * If you do, it eliminates the default constructor property from the premade prototype object
+    * Example of creating a constructor and manually assigning the prototype/constructor:
+    
+        var Foo = function Foo(){};
+        
+        Foo.prototype = {constructor: Foo};
+        
+        var FooInstance = new Foo();
+        
+        console.log(FooInstance.constructor === Foo);   // true
+        console.log(FooInstance.constructor);           // logs Foo()
+        
+Instances that Inherit Properties from the Prototype Will Always Get the Latest Values
+    * Instances will always get the latest value from the prototype, regardless of when
+        the instance was instantiated, changed, or appended.
+    * Adding a method to the prototype of a parent constructor makes it immediately
+        available to all children, even those instantiated before the method was added.
+        
+Replacing the prototype Property with a New Object Does Not Update Former Instances
+    * "Providing a new object as the prototype property does not update the connection
+        between instances already created and the new prototype. But remember, as I stated 
+        above, you can update or add to the originally created prototype object and those
+        values remain connected to the first instance(s)."
+    * Objects continue to reference the state of their prototype as it existed when they
+        were instantiated, BUT they will pick up new changes to that specific object.
+    * Once you create instances of an object, DO NOT attempt to replace its prototype.
+    
+User-Defined Constructors Can Leverage the Same Prototype Inheritance as Native Constructors
+    * A Person object that mimic's JavaScript's native inheritance practice:
+    
+        var Person = function() {};
+        
+        // all Person instances inherit legs, arms, and countLimbs properties
+        Person.prototype.legs = 2;
+        Person.prototype.arms = 2;
+        Person.prototype.countLimbs = function() { return this.legs + this.arms; };
+        
+        var x = new Person();
+        
+        console.log(x.countLimbs());    // logs 4
+        
+    * A Person which inherits default values if they aren't provided:
+    
+        var Person = function(arms, legs) {
+            // shadow prototype value
+            if (legs !== undefined) { this.legs = legs; }
+            if (arms !== undefined) { this.arms = arms; }
+        };
+        
+        Person.prototype.legs = 2;
+        Person.prototype.arms = 2;
+        Person.prototype.countLimbs = function() { return this.legs + this.arms; };
+        
+        var x = new Person(0, 0);
+        
+        console.log(x.countLimbs());    // logs 0
+        
+Creating Inheritance Chains (the Original Intention)
+    * Prototypal inheritance is supposed to give regular OOP inheritance patterns in JS
+    
+
+Chapter 9: Array()
+
+Conceptual Overview of Using Array() Objects
+    * Arrays are numerically indexed, ordered sets
+    * JS doesn't have real associative arrays, just objects mimicking that functionality
+    
+Array() Parameters
+    * You can pass the values of an instance to the constructor as a comma separated list
+    * If one parameter is sent to the Array() constructor, and it's an integer, it sets
+        the length of the array, and is NOT used as a value in the array.
+        
+Array() Properties and Methods
+    * Only has prototype as a built in to the Array() object itself
+    
+Array Object Instance Properties and Methods
+    * Instance Properties:
+        - constructor
+        - index
+        - input
+        - length
+    * Instance Methods:
+        - pop()
+        - push()
+        - reverse()
+        - shift()
+        - sort()
+        - splice()
+        - unshift()
+        - concat()
+        - join()
+        - slice()
+        
+Creating Arrays
+    * Can be created via 'new Array()', or using the literal syntax:
+    
+        var myArray1 = new Array(1,2,3);
+        var myArray2 = [1,2,3];
+        
+Adding and Updating Values in Arrays
+    * Arrays can be added to at any index at any time
+    * If you add to an index position with empty values below it, JS will fill in all lower
+        indices with undefined values
+    * Arrays can hold any legal javascript value
+    
+Length versus Index
+    * Index starts at 0, length is index + 1
+    
+Defining Arrays with a Predefined Length
+    * Pass an integer to the Array() constructor to get back a presized array
+    
+Setting Array Length can Add or Remove Values
+    * The length property can be used to get or set the length of an array
+    * Setting the length higher than the actual number of values extends and prefills with undef
+    * Setting it lower will remove items from the array until it matches
+    
+Arrays Containing Other Arrays (Multidimensional Arrays)
+    * Arrays within arrays are 'multidimensional'
+    * Access them with 'bracket chaining':
+    
+        var x = [[[['4th dimension']]]];
+        console.log(x[0][0][0][0]);
+        
+Looping Over an Array, Backwards and Forwards
+    * Fastest method is a while loop
+    
+
+Chapter 10: String()
+
+Conceptual Overview of Using the String() Object
+    * Creates string objects and primitives
+    
+String() Parameters
+    * Takes a value for the string being created
+    * Creates a primitive unless you call it with new, which you shouldn't, because 
+        typeof will report 'object' instead of 'string' for complex objects
+    
+String() Properties and Methods
+    * Properties: prototype
+    * Methods: fromCharCode()
+    
+String Object Instance Properties and Methods
+    * Instance Properties:
+        - constructor
+        - length
+    * Instance Methods:
+        - charAt()
+        - charCodeAt()
+        - concat()
+        - indexOf()
+        - lastIndexOf()
+        - localeCompare()
+        - match()
+        - quote()
+        - replace()
+        - search()
+        - slice()
+        - split()
+        - substr()
+        - substring()
+        - toLocaleLowerCase()
+        - toLocaleUpperCase()
+        - toLowerCase()
+        - toString()
+        - toUpperCase()
+        - valueOf()
+        
+Chapter 11: Number()
+
+Conceptual Overview of Using the Number() Object
+    * Used to create numeric objects and numeric primitives
+    
+Integers and Floating-Point Numbers
+    * Most common usage of numbers in JS is as primitives.
+    
+Number() Parameters
+    * One parameter: the numeric value being created
+    * Create primitives, not complex objects, for the same reason as with String()
+    
+Number() Properties
+    * Properties:
+        - MAX_VALUE
+        - MIN_VALUE
+        - NaN
+        - NEGATIVE_INFINITY
+        - POSITIVE_INFINITY
+        - prototype
+        
+Number Object Instance Properties and Methods
+    * Instance Properties
+        - constructor
+    * Instance Methods:
+        - toExponential()
+        - toFixed()
+        - toLocaleString()
+        - toPrecision()
+        - toString()
+        - valueOf()
+        
+Chapter 12: Boolean()
+
+Conceptual Overview of Using the Boolean() Object
+    * Creates boolean objects and primitives, which are true or false.
+    
+Boolean() Parameters
+    * One parameter, true or false
+    * Any valid JS value other than 0, -0, null, false, NaN, undefined, or '', will be true
+    
+Boolean() Properties and Methods
+    * Properties: prototype
+    
+Boolean Object Instance Properties and Methods
+    * Instance Properties:
+        - constructor
+    * Instance Methods:
+        - toSource()
+        - toString()
+        - valueOf()
+        
+Non-Primitive False Boolean Objects Convert to True
+    * A false boolean object created from the Boolean() constructor is an object, and
+        objects convert to true. Consequently even a false Boolean object is 'truthy'
+    * Example:
+    
+        var falseValue = new Boolean(false);
+        console.log(falseValue);
+        if (falseValue) {
+            console.log('falseValue is truthy');
+        }
+        
+Certain Things are false, but Everything Else is true
+    * False values in JS are:
+        0, -0, null, false, NaN, undefined, ''
+        
+Chapter 13: Working with Primitive String, Number, and Boolean Values
+
+Primitive/Literal Values Are Converted to Objects when Properties are Accessed
+    * Yep.
+    * When you access a property on a primitive number directly, you have to use two dots
+        or parens because the first dot would be considered a decimal:
+        
+            console.log( (1).toString() );
+            console.log( 1..toString() );
+            
+You Should Typically Use Primitive String, Number, and Boolean Values
+    * The accuracy of typeof is improved when using primitives
+    * They're easier to write and deal with
+    
+Chapter 14: Null
+
+Conceptual Overview of Using the null Value
+    * You can use null to explicitly indicate that an object property does not contain a value
+    * If a property is set up to contain a value but does not, you should use null
+    * Not to be confused with undefined, which is used to indicate something is missing
+    
+typeof Returns null Values as 'object'
+    * A variable set to null will get a typeof value of 'object'
+    * To test for null:
+    
+        var myObject = null;
+        console.log(myObject === null);
+        
+Chapter 15: Undefined
+
+Conceptual Overview of the undefined Value
+    * Used by JS in two slightly different ways:
+        - indicates that a declared variable has no assigned value
+        - indicates that an object property you're trying to access has not been named
+    * You should allow JS to use undefined, but should not use it yourself.
+    
+JavaScript ECMAScript 3 Edition (and Later) Declares the undefined Variable in the Global Scope
+    * There's a global variable 'undefined' in EMCAScript 3 and later.
+    * It's declared and not assigned, and therefore has a value of 'undefined.'
+    
+Chapter 16: Math Function
+    
+Conceptual Overview of the Built-In Math Object
+    * Has static properties and methods for mathematically dealing with numbers or providing
+        mathematical constants (e.g. Math.PI)
+    
+Math Properties and Methods
+    * Properties:
+        - E
+        - LN2
+        - LN10
+        - LOG2E
+        - LOG10E
+        - PI
+        - SQRT1_2
+        - SQRT2
+    * Methods:
+        - abs()
+        - acos()
+        - asin()
+        - atan()
+        - atan2()
+        - ceil()
+        - cos()
+        - exp()
+        - floor()
+        - log()
+        - max()
+        - min()
+        - pow()
+        - random()
+        - round()
+        - sin()
+        - sort()
+        - tan()
+        
+Math Is Not A Constructor Function
+    * Nope.
+    
+Math Has Constants You Cannot Augment/Mutate
+    * The all-caps properties of Math are constants and cannot be augmented / mutated.

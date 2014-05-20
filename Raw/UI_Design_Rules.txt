@@ -1,0 +1,117 @@
+Norman (1983A)
+
+Inferences from research
+    * Mode errors suggest the need for better feedback
+    * Description errors suggest the need for better system configuration
+    * Lack of consistency leads to errors
+    * Capture errors imply the need to avoid overlapping command sequences
+    * Activation issues suggest the importance of memory reminders
+    * People will make errors, so make the system insensitive to them
+
+Lessons
+    * Feedback: The state of the system should be clearly available to
+        the user, ideally in a form that is unambiguous and that makes
+        the set of options readily available so as to avoid mode errors.
+    * Similarity of response sequences: Different classes of actions should
+        have quite dissimilar command sequences (or menu patterns) so as
+        to avoid capture and description errors.
+    * Actions should be reversible: As much as possible and where both 
+        irreversible and of relatively high consequence, they should be
+        difficult to do, thereby preventing unintentional performance.
+    * Consistency of the system: The system should be consistent in its
+        structure and design of command so as to minimize memory problems
+        in retrieving the operations.
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Shneiderman (1987); Shneiderman and Plaisant (2009)
+    * Strive for consistency
+    * Cater to universal usability
+    * Offer informative feedback
+    * Design task flows to yield closure
+    * Prevent errors
+    * Permit easy reversal of actions
+    * Make users feel they are in control
+    * Minimize short-term memory load
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Nielsen and Molich (1990)
+    * Consistency and standards
+    * Visibility of system status
+    * Match between system and real world
+    * User control and freedom
+    * Error prevention
+    * Recognition rather than recall
+    * Flexibility and efficiency of use
+    * Aesthetic and minimalist design.
+    * Help users recognize, diagnose, and recover from errors
+    * Provide online documentation and help
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Stone, et al. (2005)
+    * Visibility: First step to goal should be clear
+    * Affordance: Control suggests how to use it
+    * Feedback: Should be clear what happened or is happening
+    * Simplicity: As simple as possible and task-focused
+    * Structure: Content organized sensibly
+    * Consistency: Similarity for predictability
+    * Tolerance: Prevent errors, help recovery
+    * Accessibility: Usable by all intended users, despite handicap,
+        access device, or environmental conditions
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Johnson (2007)
+    Principle 1: Focus on the users and their tasks, not on the technology
+        * Understand the users
+        * Understand the tasks
+        * Consider the context in which the software will function
+
+    Principle 2: Consider function first, presentation later
+        * Develop a conceptual model
+
+    Principle 3: Conform to the users' view of the task
+        * Strive for naturalness
+        * Use users' vocabulary, not your own
+        * Keep program internals inside the program
+        * Find the correct point on the power/complexity tradeoff
+
+    Principle 4: Design for the common case
+        * Make common results easy to achieve
+        * Two types of "common": "how many users" vs "how often"
+        * Design for core cases, don't sweat edge cases
+
+    Principle 5: Don't complicate the users' task
+        * Don't give users extra problems
+        * Don't make users reason by elimination
+
+    Principle 6: Facilitate learning
+        * Think outside-in, not inside-out
+        * Consistency, consistency, consistency
+        * Provide a low risk environment
+
+    Principle 7: Deliver information, not just data
+        * Design displays carefully; get professional help
+        * The screen belongs to the user
+        * Preserve display inertia
+
+    Principle 8: Design for Responsiveness
+        * Acknowledge user actions instantly
+        * Let users know when software is busy and when it isn't
+        * Free users to do other things while waiting
+        * Animate movement smoothly and clearly
+        * Allow users to abort lengthy operations they don't want
+        * Allow users to estimate how much time operations will take
+        * Try to let users set their own work pace
+
+    Principle 9: Try it out on users; then fix it
+        * Test results can surprise even experienced designers
+        * Schedule time to correct problems found by tests
+        * Testing has two goals: informational and social
+        * There are tests for every time and purpose

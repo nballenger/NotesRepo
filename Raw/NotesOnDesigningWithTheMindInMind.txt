@@ -1,0 +1,255 @@
+Notes on Designing with the Mind in Mind
+
+Chapter 1: We Perceive What We Expect
+
+    Perceptions are biased by context, goals, experience, priming.
+
+    Design implications:
+        Avoid ambiguity
+        Be consistent
+        Understand the goals
+
+Chapter 2: Our Vision is Optimized to See Structure
+
+    Gestalt Principles
+    * Proximity: The relative distance between objects in a display 
+        affects our perception of whether and how the objects are 
+        organized into subgroups.
+    * Similarity: Objects that look similar appear grouped, all 
+        other things being equal.
+    * Continuity: Our visual perception is biased to perceive continuous
+        forms rather than disconnected segments.
+    * Closure: Our visual system automatically tries to close open figures
+        so that they are perceived as whole objects rather than separate
+        pieces.
+    * Symmetry: We tend to parse complex scenes in a way that reduces 
+        the complexity.
+    * Figure/Ground: Our mind separates the visual field into the figure
+        and the ground, with the figure being the elements that make up
+        the object of our primary attention.
+    * Common Fate: Items that move together appear grouped together.
+
+Chapter 3: We Seek and Use Visual Structure
+    * The more structured and terse the presentation, the more quickly it
+        can be scanned and comprehended.
+    * Always punctuate long numbers.
+    * Data-specific controls provide additional structure.
+    * Visual hierarchy scans well.
+
+Chapter 4: Reading is Unnatural
+    * Feature driven reading is a linear, bottom up parsing of text.
+    * Context driven reading is a gestalt, top down parsing based on
+        pattern recognition.
+    * Skilled readers may resort to context-based reading when feature
+        based reading is disrupted by poor presentation of information.
+    
+    Elements of poor design that can disrupt reading
+        * Uncommon or unfamiliar vocabulary
+        * Difficult scripts and typefaces
+        * Small/tiny fonts
+        * A visually noisy background
+        * information buried in repetition
+        * centered text
+
+    Design implications: minimize the need for reading.
+
+Chapter 5: Our Color Vision is Limited
+    * The visual system subtracts lots of information in signal processing
+    * We see edge contrast better than brightness.
+    * Our ability to distinguish colors is limited by:
+        - Paleness: the lower the saturation, the harder it is
+        - Color patch size: smaller/thinner is harder
+        - Separation: more separated the patches are, the harder it is
+
+    Guidelines for using color:
+        1.  Distinguish colors by saturation and brightness as well as hue
+        2.  Use distinctive colors
+        3.  Avoid color pairs that colorblind people can't distinguish
+        4.  Use color redundantly with other cues
+        5.  Separate strong opponent colors.
+
+
+Chapter 6: Our Peripheral Vision is Poor
+    * Peripheral vision sees motion, not detail or color.
+
+    Common Methods of Making Messages Visible
+        - Put it where the user is looking
+        - Mark the error
+        - Use an error symbol
+        - Reserve red for errors
+
+    Extreme ways to make users notice:
+        - Modal dialog
+        - Sound
+        - Flash/movement
+
+
+Chapter 7: Our Attention is Limited, our Memory is Imperfect
+    * Don't think of working memory as a temporary buffer where perceptions
+        and memories are brought to allow our brains to work on them.
+        Instead, think of it as the combined focus of attention--the
+        currently activated neural patterns of which we are aware. The
+        number of items in short-term memory at any given moment is
+        extremely limited and volatile.
+    * Seven, plus or minus two.
+
+    Implications of short term memory for UI design
+        - Avoid modal design, or give strong mode feedback
+        - Always show the search terms entered to produce results
+        - In multi-step instructions, let each step be referenced until
+            the process is completed.
+
+    * Long term memory is error prone, weighted by emotions, and
+        retroactively alterable.
+
+    Implications of long term memory for UI design
+        - At best you can augment memory--at least try not to burden it
+        - Learning and long-term retention are enhanced by UI consistency
+
+Chapter 8: Limits on Attention, Shape, Thought and Action
+    * We focus on our goals and pay little attention to our tools
+    * We use external aids to keep track of what we are doing
+        - We mark our environment to show us where we are in a task.
+    * Systems should indicate current state of progress.
+    * Systems should allow users to mark or move objects to indicate
+        which ones they have worked on.
+    * We follow information 'scent' toward our goal.
+    * We prefer familar paths
+        - Sometimes mindlessness trumps keystrokes
+        - Guide users to the best paths
+        - Help experienced users speed up
+    * A cyclical pattern that holds across a wide variety of activities:
+        - Form a goal
+        - Choose and execute actions toward the goal
+        - Evaluate whether the actions worked
+        - Repeat until the goal is reached or appears unreachable
+    * After we achieve a task's primary goal, we often forget cleanup steps
+    * Interactive systems should remind people that loose end steps remain
+
+Chapter 9: Recognition is Easy; Recall is Hard
+    * Recognition = perception + long term memory
+    * Information in long term memory is addressed by the content it
+        is triggered by
+    * Recall is the reactivation of a piece of long term memory without
+        an immediate perceptual trigger for it.
+    * "See and choose" is easier than "Recall and type"
+    * Use pictures when possible to convey function
+    * Use thumbnails to represent full sized images
+    * The more people who will use a function, the more visible it must be
+    * Use visual cues to let users recognize where they are
+    * Make authentication information easier to recall
+
+Chapter 10: Learning from Experience and Performing Learned Actions are Easy; Problem Solving and Calculation are Hard
+    * Complex situations that involve many variables or that are subject to
+        a wide variety of forces are difficult for people to predict, learn
+        from, and generalize about.
+    * Experiences from our own lives or those of relatives and friends
+        influence our conclusions more than experiences we read or hear
+        about.
+    * When people make a mistake, they don't always learn the right
+        lesson from it.
+    * People often overgeneralize based on incomplete data.
+
+    * Performing Learned Actions is Easy
+        - habits are easily repeated
+
+    * Problem solving and calculation are hard
+    * The frontal cortex limits impulsivity--don't engage it if you want
+        people to act on impulse decisions.
+    * Problems that exceed our short term memory limits, or require too
+        much long term memory recall, put strain on the brain.
+
+    Implications for UI Design
+        - Systems should minimize the amount of attention users must
+            devote to operating them, because that pulls cognitive
+            resources away from the task a user came to do.
+        - Prominently indicate system status and user progress
+        - Guide users toward their goals
+        - Tell users explicitly and exactly what they need to know
+        - Don't make users diagnose system problems
+        - Minimize the number and complexity of settings
+        - Let people use perception rather than calculation
+        - Make the system familiar
+        - Let the computer do the math
+
+Chapter 11: Many Factors Affect Learning
+    * We learn faster when operation is task-focused, simple, and 
+        consistent
+    * We learn faster when vocabular is task-focused, familar, and 
+        consistent
+    * Developing task-focused, familiar, consistent terminology is
+        easier with a good conceptual model.
+    * We learn faster when risk is low.
+    * Don't give people a fear of making mistakes.
+
+Chapter 12: We have Time Requirements
+    * Responsive systems keep a user informed even if they cannot fulfill
+        the user's requests immediately.
+
+    Orders of magnitude for tasks:
+        1ms:    Shortest detectable silent audio gap
+        10ms:   Preconscious visual perception, shortest noticeable pen-ink
+                lag, auditory fusion
+        100ms:  Subitizing one to four items, involuntary eye movement,
+                perception of cause-effect, perceptual-motor feedback,
+                visual fusion, flinch reflex, object identification,
+                editorial "window" of consciousnes, one "moment" in
+                conscious awareness.
+        1s:     Average conversation gap, visual-motor intentional reaction
+                time, attentional blink.
+        10s:    Unit task, unbroken attention to a task, one step of a
+                complex task.
+        100s:   Critical decision in emergency situation.
+
+    Guidelines for meeting real time human interaction deadlines:
+        - Acknowledge user actions instantly, even if returning the answer
+            will take time; preserve users' perception of cause and effect
+        - Let users know when the software is busy and when it isn't
+        - Free users to do other things while waiting for a function to
+            finish
+        - Animate movement smoothly and cleanly
+        - Allow users to abort lengthy operations they don't want
+        - Allow users to judge how much time lengthy operations will take
+        - Do its best to let users set their own work pace
+
+    Deadlines:
+        1ms:    Max tolerable delay or dropout time for audio feedback
+
+        10ms:   Inducing unconscious familiarity of images or symbols
+                Generating tones of various pitches
+                E-ink maximum lag time
+
+        100ms:  Assume users can count 1-4 screen items in ~100ms
+                More than 4 takes 300ms per item
+                Feedback for successful hand eye coordination
+                Feedback for click on button or link
+                Displaying busy indicators
+                Allowable overlap between speech utterances
+                Maximum interval between animation frames
+
+        1s:     Displaying progress indicators for long operations
+                Finishing user requested operations
+                Finishing unrequested operations
+                Time after info presentation that can be used for other
+                    computation, like making inactive objects active
+                Required wait time after presenting important info,
+                    before presenting more
+
+        10s:    Completing one step of a multistep task
+                Completing user input to an operation
+                Completing one step in a wizard
+
+        100s:   Assure that all info required for decision is provided
+                    or can be found within this time.
+
+    Additional Guidelines
+        * Use busy indicators.
+        * Use progress indicators
+        * Delays between unit tasks are less bothersome than delays
+            within unit tasks.
+        * Display important information first
+        * Fake heavyweight computations during hand-eye coordination tasks
+        * Work ahead of users when possible
+        * Process user input according to priority, not the order rec'd
+        * Monitor time compliance, decrease the quality of work to keep it
+        * Provide timely feedback even on the Web

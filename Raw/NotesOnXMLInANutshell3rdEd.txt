@@ -1,0 +1,534 @@
+Notes on XML in a Nutshell, Third Edition
+
+Chapter 2: XML Fundamentals
+
+2.1 XML Documents and XML Files
+    * Documents don't have to match their filenames, XML can be file independent.
+    
+2.2 Elements, Tags, and Character Data
+    * Element: <tagname> </tagname>
+    * Empty Element: <tagname />
+    * Every element must be closed or self closing.
+    * XML is case sensitive
+    * XML documents are hierarchical trees:
+    
+        <person>                                            <-- root element
+            <name>                                          <-- child of root
+                <first_name>Alan</first_name>               <-- siblings, children of name
+                <last_name>Turing</last_name>               <-- siblings, children of name
+            </name>
+            <profession>computer scientist</profession>     <-- siblings, children of root
+            <profession>mathematician</profession>          <-- siblings, children of root
+            <profession>cryptographer</profession>          <-- siblings, children of root
+        </person>
+        
+    * Root element has no parent, every document has one and only one root element.
+    * Elements can contain both child elements and text nodes, mixed together.
+    
+2.3 Attributes
+    * Attributes are name-value pairs attached to an element's start tag.
+    * Format: <element attrname="attrvalue"></element>
+    * Classifying a thing about an object as a child element or attribute isn't always
+        totally clear. One theory is attributes are metadata, children are actual info.
+    * Attributes are more limited in structure than child elements, element-based structure
+        is more flexible.
+        
+2.4 XML Names
+    * Rules for naming are shared by element names, attribute names, etc. Collectively
+        known as "XML names".
+    * Names may:
+        - contain any alphanumeric character
+        - contain non-english letters, numbers, and ideograms
+        - contain underscores, hyphens, and periods
+    * Names may NOT:
+        - contain other punctuation marks
+        - contain whitespace
+        - begin with the string 'XML'
+    * Names may start with:
+        - letters
+        - ideograms
+        - the underscore character
+    * Names may NOT start with:
+        - numbers
+        - hyphens
+        - periods
+    * There is no limit to the length of a name.
+    
+2.5 References
+    * Character data inside an element must not contain a raw, unescaped opening angle
+        bracket, '<'
+    * To use that character, you must refer to it as an 'entity', &lt; or &#60; or &#x3C;
+    * XML defines five entities. Use them in place of literal characters inside elements:
+        &lt;        <       required replacement
+        &amp;       &       required replacement
+        &gt;        >       optional replacement
+        &quot;      "       optional replacement
+        &apos;      '       optional replacement
+        
+    * One exception: you may never use the three character sequence ']]>' in character data
+    * Replace it with ']]&gt;'
+    * You can define custom entities in the document type definition.
+    * Entity resolution only occurs in element content or attribute values, not comments
+        or processing instructions.
+        
+2.6 CDATA Sections
+    * If you want to cause a portion of content to NOT be read and rendered by the parser,
+        you can enclose it in a CDATA section:
+        
+            <read-element><![CDATA[
+                <ignored-element></ignored-element>
+            ]]></read-element
+            
+    * The only illegal string inside a CDATA section is ']]>'
+    
+2.7 Comments
+    * Comment format is <!-- comment -->
+    * Comments may appear anywhere in the character data of a document.
+    * Comments may appear before or after the root element.
+    * Applications that read and process XML may or may not pass along comments.
+    * Comments should not be read by applications--use processing instructions.
+    
+2.8 Processing Instructions
+    * Processing instructions allow you to pass information to particular applications
+        that might read the document
+    * Processing instruction syntax: <?instruction attr="value"?>
+    * They are markup, but not elements, and so may appear anywhere in a document
+    * The most common one is xml-stylesheet, which appears before the root:
+    
+        <?xml-stylesheet href="person.css" type="text/css"?>
+        <person>
+            Alan Turing
+        </person>
+        
+2.9 The XML Declaration:
+    * Documents should but do not have to begin with an XML declaration
+    * Looks like a processing instruction (technically it's not--XML declaration is its
+        own thing, by itself):
+        
+        <?xml version="1.0" encoding="ASCII" standalone="yes"?>
+        
+    * Version attribute should be 1.0, 1.1 in very special circumstances.
+    * Encoding attribute is UTF-8 variable-length by default, but can be any of a range
+        of possible values. It is optional in the declaration.
+    * If standalone attribute is 'no', an application may be required to read an external
+        DTD (document type definition) to determine proper values for parts of the document.
+    * Documents with no DTD can have standalone="yes"
+    * Documents whose DTD does not change the content of the document in any way, or
+        where the DTD is purely internal, can also have standalone="yes". Standalone
+        is an optional attribute.
+        
+2.10 Checking Documents for Well-Formedness
+    * Basic (non-exhaustive) set of rules for well formedness:
+        1.  Every start tag must have a matching end tag
+        2.  Elements may nest but not overlap.
+        3.  There must be exactly one root element
+        4.  Attribute values must be quoted
+        5.  An element may not have two attributes with the same name.
+        6.  Comments and processing instructions may not appear inside tags.
+        7.  No unescaped < or & signs may occur in character data.
+        
+    * You can use a web browser to check your document, or the command line xmllint
+    
+    
+Chapter 3: Document Type Definitions (DTDs)
+    * Explains precisely which elements may appear where in the document, and what the
+        elements' contents and attributes are.
+    * Uses a formal syntax to enact statements whose meaning might be something like
+        "A ul element only contains li elements" or
+        "Every employee element must have a social_security_number attribute"
+    * A DTD validity error is not necessarily fatal like an well formedness error
+    
+3.1 Validation
+    * DTD lists all elements, attributes and entities the document uses, and the
+        contexts in which it uses them. May also list items the document does not use.
+    * Everything not permitted is forbidden.
+    * A document that satisfies its DTD is 'valid', otherwise 'invalid'
+    * The DTD does not say:
+        - what the root element of the document is
+        - how many instances of each kind of element appear
+        - what the character data inside the elements looks like
+        - the semantic meaning of an element
+    * Validity is optional, depends on the parser as to whether it's a warning or error
+    * Simple example of a DTD for a person:
+    
+        <!ELEMENT person        (name, profession*)>
+        <!ELEMENT name          (first_name, last_name)>
+        <!ELEMENT first_name    (#PCDATA)>
+        <!ELEMENT last_name     (#PCDATA)>
+        <!ELEMENT profession    (#PCDATA)>
+        
+    * If stored in a separate file, use the extension .dtd
+    * Each of these lines is an element declaration
+    * Line 1 says the element person must contain exactly one name child element, followed
+        by zero or more profession elements. name must come before all profession elements
+    * The person element cannot contain any element not listed in its declaration
+    * #PCDATA is a DTD keyword that stands for 'parsed character data'--raw text possibly
+        containing entity references like &amp;, but no child elements
+    * The order of declarations is not important
+    * DTDs allow forward, backward, and circular references
+    * A valid document includes a reference to the DTD to which it should be compared.
+    * A document has one and only one document type declaration:
+    
+        <!DOCTYPE person SYSTEM "http://example.com/dtds/person.dtd">
+        
+    * The declaration resides in the prolog, which is everything before the root element
+    * If you are using a dtd that resides in multiple places, you preface it with PUBLIC
+        instead of SYSTEM, and give a name that uniquely identifies it:
+        
+        <!DOCTYPE rss PUBLIC "-//Netscape Communications//DTD RSS 0.91//EN"
+                      "http://my.netscape.com/publish/formats/rss-0.91.dtd">
+                      
+    * If you want to have a local dtd inside the document itself, you can do:
+    
+        <?xml version="1.0"?>
+        <!DOCTYPE person [
+            <!ELEMENT person        (name, profession*)>
+            <!ELEMENT name          (first_name, last_name)>
+            <!ELEMENT first_name    (#PCDATA)>
+            <!ELEMENT last_name     (#PCDATA)>
+            <!ELEMENT profession    (#PCDATA)>
+        ]>
+        <person>
+            ...
+        </person>
+        
+    * You can link in a public or system dtd and also put in local directives:
+    
+        <!DOCTYPE person SYSTEM "name.dtd" [
+            <!ELEMENT profession (#PCDATA)>
+            <!ELEMENT person (name, profession*)>
+        ]>
+        
+    * The stuff inside the brackets is the "internal dtd subset"
+    * The stuff outside the document is the "external dtd subset"
+    * The two subsets must be compatible: neither can override the other's elements
+    * If you use an external DTD subset, use standalone="no"
+    * Typically web browsers don't validate, they only check for well formedness
+    * You can use online validators, if you use xmllint call it with --valid
+    
+3.2 Element Declarations
+    * Take the basic form <!ELEMENT name content_specification>
+    * Name can be any legal xml name, content specification says what kind of children
+        the element may or must have and in what order
+    * #PCDATA lets the element contain text content (parsed character data):
+        
+        <!ELEMENT phone_number (#PCDATA)>
+        
+    * An element with one and only one child:
+    
+        <!ELEMENT fax (phone_number)>
+        
+    * Ordered, comma separated child elements are a 'sequence', where each is required:
+    
+        <!ELEMENT name (first_name, last_name)>
+        
+    * Comma separated child elements can have number limits attached:
+        ?   zero or one
+        *   zero or more
+        +   one or more
+        
+        <!ELEMENT name (first_name, middle_name?, last_name?)>
+        
+    * Choices between n child elements:
+    
+        <!ELEMENT methodResponse (params | fault)>
+        
+    * Combining choices, sequences, and suffixes to make a complex element specification:
+    
+        <!ELEMENT circle (center, (radius | diameter))>
+        <!ELEMENT center ((x,y) | (r,o))>
+        
+    * Mixed content, where definition may contain zero or more pcdata or <term> nodes:
+    
+        <!ELEMENT definition (#PCDATA | term)*>
+        
+    * #PCDATA must always be the first child in the list:
+    
+        <!ELEMENT paragraph (#PCDATA | name | profession | footnote | emphasize | date)*>
+        
+    * Empty element:
+    
+        <!ELEMENT image EMPTY>
+        
+    * Some DTDs want to say an element exists without constraining it:
+    
+        <!ELEMENT page ANY>
+        
+    * Any children of an ANY element must be declared elements themselves--it doesn't let
+        you use undeclared elements, just doesn't say which declared ones you can use.
+        
+3.3 Attribute Declarations
+    * ATTLIST declarations can declare multiple attributes for a single element type
+    * If the same attribute is repeated on multiple elements, it must be declared separately
+        for each element type
+    * Simple example:
+    
+        <!ATTLIST image source CDATA #REQUIRED>
+        
+    * Multiple declarations:
+        
+        <!ATTLIST image source CDATA #REQUIRED
+                        width  CDATA #REQUIRED
+                        height CDATA #REQUIRED
+                        alt    CDATA #IMPLIED>
+                        
+    * Attribute values can be any string of text
+    * You can make specific restrictions on the content of an attribute
+    * XML has 10 attribute types:
+    
+        CDATA           any string acceptable in well formed XML
+        NMTOKEN         follows xml name rules, but first char can be any allowable char
+        NMTOKENS        one or mor xml name tokens separated by whitespace
+        Enumeration     all possible values, pipe separated
+        ENTITY          name of an unparsed entity declared elsewhere in the DTD        
+        ENTITIES        whitespace separated names of unparsed entities
+        ID              strict xml name that is unique in the document
+        IDREF           reference to the id attribute of some element in the document
+        IDREFS          whitespace separated list of idref strings
+        NOTATION        name of a notation declared in the DTD--quite rare
+        
+    * Attribute defaults:
+
+        #IMPLIED        attribute is optional, no default value
+        #REQUIRED       attribute is required, no default value
+        #FIXED          attribute is constant and immutable
+        Literal         actual default value is given as a quoted string
+        
+    * Examples:
+        
+        <!ATTLIST image alt CDATA #IMPLIED>
+        <!ATTLIST sku
+            list_price              CDATA #IMPLIED
+            suggested_retail_price  CDATA #IMPLIED
+            actual_price            CDATA #IMPLIED>
+        <!ATTLIST journal year NMTOKEN #REQUIRED>
+        <!ATTLIST performance dates NMTOKENS #REQUIRED>
+        <!ATTLIST date month (Jan | Feb | Mar | Apr | May | Jun | Jul 
+                              | Aug | Sept | Oct | Nov | Dec) #REQUIRED>
+        <!ATTLIST employee social_security_number ID #REQUIRED>
+        <!ATTLIST project project_id ID #REQUIRED>
+        <!ATTLIST team_member person IDREF #REQUIRED>
+        <!ATTLIST movie source ENTITY #REQUIRED>
+        <!ATTLIST slide_show slides ENTITIES #REQUIRED>
+        <!NOTATION gif SYSTEM "image/gif">
+        <!NOTATION tiff SYSTEM "image/tiff">
+        <!NOTATION jpeg SYSTEM "image/jpeg">
+        <!NOTATION png SYSTEM "image/png">
+        <!ATTLIST image type NOTATION (gif | tiff | jpeg | png) #REQUIRED>
+        
+        
+3.4 General Entity Declarations
+    * Predefined entities: &lt; &amp; &gt; &quot; &apos;
+    * Entity declarations look like:
+    
+        <!ENTITY super "supercalifragilisticexpialidocious">
+        
+    * Which would let you use &super; elsewhere.
+    * Entities can contain markup as well as text:
+    
+        <!ENTITY footer '<hr size="1" noshade="true" />
+        <p>
+        <a href="index.html">Home</a> | <a href="page2.html">Other</a>
+        </p>
+        '>
+        
+    * Entity replacement text must be well formed.
+    * Be careful of quote mark conflicts in entities holding markup
+    * Entities insert replacement text into the body of an xml document
+    * They can be used in the DTD in places where they will eventually be included in
+        the body of an XML document, like in a an attribute default value or in the
+        replacement text of another entity.
+    * They can NOT be used to provide the text of the DTD itself, so you can't do stuff like:
+    
+        <!-- THIS IS ILLEGAL -->
+        <!ENTITY coordinate "((x,y) | (y,x) | (o,r) | (r,o))">
+        <!ELEMENT polygon (&coordinate;, &coordinate;, &coordinate;+)>
+        <!-- THIS IS ILLEGAL -->
+        
+3.5 External Parsed General Entities
+    * Typically you'd store repeated content in external files, not inside entity declarations
+    * An external parsed general entity reference is declared in the DTD using an ENTITY
+        declaration, with the SYSTEM keyword and a url for the replacement text:
+        
+        <!ENTITY footer SYSTEM "/boilerplate/footer.xml">
+        
+    * External entities do not have to be internally well formed, but must be well formed
+        and not malform the document when inserted.
+        
+    * Instead of an XML declaration, an external entity can have a text declaration
+    * This carries the text encoding, while the version attribute is optional:
+    
+        <?xml encoding="MacRoman"?>
+        
+3.6 External Unparsed Entities and Notations
+    * If you need to embed a non-XML file in a document, you use an external unparsed entity:
+    
+        <!ENTITY turing_getting_off_bus
+                 SYSTEM "http://www.turing.org.uk/turing/pi1/busgroup.jpg"
+                 NDATA jpeg>
+                 
+    * The NDATA declaration specifies the type of the external data, via  notation defined
+        elsewhere in the DTD:
+        
+        <!NOTATION jpeg SYSTEM "image/jpeg">
+        
+    * Note that the above string, "image/jpeg" is an arbitrary, application-specific thing
+        since there is no standard for how to deal with passed in data--you have to build
+        that into whatever application will be reading the xml as a datasource.
+        
+    * To include the entity in the document at one or more locations, you insert an
+        element with an ENTITY type attribute whose value is the name of an unparsed entity
+        declared in the DTD--you don't use a reference like &turing_getting_off_bus;, because
+        entity references can ONLY refer to parsed entities.
+        
+    * Example:
+    
+        <!ELEMENT image EMPTY>
+        <!ATTLIST image source ENTITY #REQUIRED>
+        
+    * Which you'd then use via:
+    
+        <image source="turing_getting_off_bus" />
+        
+    * Actually displaying the image in this case would be totally application specific.
+    
+3.7 Parameter Entities
+    * Since general entity references are not allowed to provide replacement text for a 
+        content specification or attribute list, XML gives you the parameter entity, 
+        referred to by a parameter entity reference
+    * Parameter entities use % instead of &, and can only be used in a DTD
+    
+    * Declared much like an entity reference, but with extra % sign:
+    
+        <!ENTITY % residential_content "address, footage, rooms, baths">
+        <!ENTITY % rental_content "rent">
+        <!ENTITY % purchase_content "price">
+        
+    * Referenced like this:
+    
+        <!ELEMENT apartment (%residential_content;, %rental_content;)>
+        <!ELEMENT sublet    (%residential_content;, %rental_content;)>
+        <!ELEMENT coop      (%residental_content;, %purchase_content;)>
+        <!ELEMENT condo     (%residental_content;, %purchase_content;)>
+        <!ELEMENT house     (%residental_content;, %purchase_content;)>
+        
+    * Parameter entities can be redefined--an internal DTD subset can specify new replacement
+        text for entities declared in the external DTD subset.
+    * If ELEMENT and ATTLIST declarations in the external DTD subset are written indirectly
+        with parameter entity references, instead of directly with literal element names,
+        the internal DTD subset can change the DTD for the document.
+    * A single document could redefine residential_content to add a bedrooms child element:
+    
+        <!ENTITY % residential_content "address, footage, rooms, bedrooms, baths, available_date">
+        
+    * DTDs can be broken up into independent pieces, and then those can be combined
+        at validation time using external parameter entity references.
+    * External parameter entity references are declared using a normal ENTITY declaration
+        with a % sign just like a normal parameter entity, but uses the SYSTEM keyword
+        and a URI to point to the external entity:
+        
+        <!ENTITY % names SYSTEM "names.dtd">
+        %names;
+        
+3.8 Conditional Inclusion
+    * The IGNORE directive lets you "comment out" a section of declarations
+    * This example would make the parser ignore the following declaration:
+    
+        <![IGNORE[
+            <!ELEMENT production_note (#PCDATA)>
+        ]]>
+        
+    * INCLUDE lets you indicate that a given set of declarations are used in the DTD:
+    
+        <![INCLUDE[
+            <!ELEMENT production_note (#PCDATA)>
+        ]]>
+        
+    * Feels not-useful, but consider:
+    
+        <!ENTITY % notes_allowed "INCLUDE">
+        
+        <![%notes_allowed[
+            <!ELEMENT production_note (#PCDATA)>
+        ]]>
+        
+    * Which would let you trigger the include/exclude from elsewhere in the doc, or another doc
+    
+3.9 Two DTD Examples:
+
+    * A DTD describing people:
+    
+        <?xml version="1.0"?>
+        <!DOCTYPE person [
+            <!ELEMENT person (name+, profession*)>
+            <!ELEMENT name EMPTY>
+            <!ATTLIST name first CDATA #REQUIRED
+                           last  CDATA #REQUIRED>
+            <!ELEMENT profession EMPTY>
+            <!ATTLIST profession value CDATA #REQUIRED>
+        ]>
+        <person>
+            <name first="A" last="B" />
+            <profession value="c" />
+            <profession value="d" />
+            <profession value="e" />
+        </person>
+        
+    * A narrative-oriented DTD for biographies:
+    
+        <!ATTLIST biography xmlns:xlink CDATA #FIXED "http://www.w3.org/1999/xlink">
+        <!ELEMENT person (first_name, last_name)>
+        <!ATTLIST person born CDATA #IMPLIED
+                         died CDATA #IMPLIED>
+
+        <!ELEMENT date  (month, day, year)>
+        <!ELEMENT month (#PCDATA)>
+        <!ELEMENT day   (#PCDATA)>
+        <!ELEMENT year  (#PCDATA)>
+        
+        <!-- xlink:href must contain a url -->
+        <!ATTLIST emphasize xlink:type (simple) #IMPLIED
+                            xlink:href CDATA #IMPLIED>
+                            
+        <!ELEMENT profession (#PCDATA)>
+        <!ELEMENT footnote (#PCDATA)>
+        
+        <!-- source is in Chicago MoS conventions -->
+        <!ATTLIST footnote source CDATA #REQUIRED>
+        
+        <!ELEMENT first_name (#PCDATA)>
+        <!ELEMENT last_name (#PCDATA)>
+        
+        <!ELEMENT image EMPTY>
+        <!ATTLIST image source CDATA    #REQUIRED
+                        width  NMTOKEN  #REQUIRED
+                        height NMTOKEN  #REQUIRED
+                        ALT    CDATA    #IMPLIED>
+        
+        <!ENTITY % top_level "(#PCDATA | image | paragraph | definition
+                               | person | profession | emphasize | last_name
+                               | first_name | footnote | date)*">
+                               
+        <!ELEMENT paragraph     %top_level; >
+        <!ELEMENT definition    %top_level; >
+        <!ELEMENT emphasize     %top_level; >
+        <!ELEMENT biography     %top_level; >
+        
+
+Chapter 4: Namespaces
+    * Two purposes in XML:
+        1.  To distinguish between elements and attributes from different vocabularies with 
+            different meanings, that happen to share the same name.
+        2.  To group all related elements and attributes from a single XML application
+            together so that software can easily recognize them.
+            
+    * Implemented by attaching a prefix to each element and attribute
+    * Each prefix is mapped to a URI by an xmlns:prefix attribute
+    * Default namespaces are declared by xmlns attributes
+    * Elements and attributes attached to the same URI are in the same namespace
+    
+4.1 The Need for Namespaces
+    * Documents can contain markup from multiple XML vocabularies
+    * Name collisions between vocabularies are inevitable
+    
+4.2 Namespace Syntax

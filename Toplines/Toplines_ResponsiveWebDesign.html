@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>Toplines from Responsive Web Design, by Ethan Marcotte</title>
+        <style type="text/css">
+        /*  Reset based on Eric Meyer's work, revisted for HTML5
+            http://meyerweb.com/eric/tools/css/reset/ 
+            v2.0b1 | 201101 */
+
+        html, body, div, span, applet, object, iframe,
+        h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+        a, abbr, acronym, address, big, cite, code,
+        del, dfn, em, img, ins, kbd, q, s, samp,
+        small, strike, strong, sub, sup, tt, var,
+        b, u, i, center,
+        dl, dt, dd, ol, ul, li,
+        fieldset, form, label, legend,
+        table, caption, tbody, tfoot, thead, tr, th, td,
+        article, aside, canvas, details, figcaption, figure, 
+        footer, header, hgroup, menu, nav, section, summary,
+        time, mark, audio, video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            outline: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+        }
+        /* HTML5 display-role reset for older browsers */
+        article, aside, details, figcaption, figure, 
+        footer, header, hgroup, menu, nav, section {
+            display: block;
+        }
+        body {
+            line-height: 1;
+        }
+        ol, ul {
+            list-style: none;
+        }
+        blockquote, q {
+            quotes: none;
+        }
+        blockquote:before, blockquote:after,
+        q:before, q:after {
+            content: '';
+            content: none;
+        }
+
+        /* remember to define visible focus styles! 
+        :focus {
+            outline: ?????;
+        } */
+
+        /* remember to highlight inserts somehow! */
+        ins {
+            text-decoration: none;
+        }
+        del {
+            text-decoration: line-through;
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }        
+        
+        body { font-size: 62.5%; font-family: Helvetica, Arial, sans-serif; }
+        
+        h1 { font-size: 16px; font-size: 1.6rem; }
+        section h1, h2 { font-size: 14px; font-size: 1.4rem; }
+        section section h1, section h2, h3 { font-size: 12px; font-size: 1.2rem; }
+        section section section h1, section section h2, section h3, h4 { font-size: 12px; font-size: 1.2rem; }
+        
+        article, aside, details, figcaption, figure, 
+        footer, header, hgroup, menu, nav, section {
+            font-size: 12px; font-size: 1.2rem;
+        }
+        
+        article {
+            border: 4px solid #999999; 
+            margin: 10px;
+            padding: 10px;
+        }
+        
+        ol { list-style-type: decimal; list-style-position: inside;}
+        ul { list-style-type: circle; list-style-position: inside;}
+        
+        ol, ul { padding-left: 2%; width: 98%;}
+        li { margin: 0.3em 0.5%;  }
+        
+        code, pre { font-family: "Courier New", Courier, monospace; }
+        pre { display: block; background-color: #EEEEEE; }
+        
+        th, td { padding: 8px; border: 1px solid #CCCCCC; }
+        th { font-weight: bold; } 
+        section h2:before { content:'\00BB'; }  
+        section h2 { margin: 18px; }     
+        .attribution { font-style: italic; font-size: 10px; font-size: 1.0rem; padding-left: 2%;}
+        em { font-style: italic; }
+        
+        header { margin-bottom: 16px; }
+        summary { border: 1px solid #333333; background-color: #EEEEEE; padding: 2%; }
+        strong { font-weight: bold; }
+        </style>
+        <script type="text/javascript">
+        
+        </script>
+    </head>
+    <body>
+        <article>
+            <header>
+                <nav>
+                
+                </nav>
+                <hgroup>
+                    <h1>Topline Learnings from <em>Responsive Web Design</em></h1>
+                    <h2 class="attribution">by Ethan Marcotte, pub. 2011, A Book Apart, New York</h2>
+                </hgroup>
+            </header>
+            <summary>
+                <p><strong>Summary:</strong> There are three core ingredients to responsive web design:</p>
+                <ol>
+                    <li>A flexible, grid-based layout</li>
+                    <li>Flexible images and media</li>
+                    <li>Media queries, a module from the CSS3 specification</li>
+                </ol>
+            </summary>
+            <section>
+                <header>
+                    <h1>A Flexible, Grid-Based Layout</h1>
+                </header>
+                <h2>To create a typographic grid:</h2>
+                <ul>
+                    <li>Implement a reset stylesheet, like those Eric Meyer uses, to get to a uniform starting point in terms of fonts, spacing, etc.</li>
+                    <li>Set your body font-size to 100%. This will establish a baseline font size for all text.</li>
+                    <li>All font size effects will then be a product, in ems, of the following formula:
+                        <pre>desired result (in ems) = target (in px) / context (in px)</pre></li>
+                    <li>Context is the element your target element inherits font attributes from.</li>
+                    <li>Don't be tempted to unduly round off percentages--the browser can do the math, and the answer with a high degree of precision maintains proportionality best.</li>
+                </ul>
+    
+                <h2>To create a flexible layout:</h2>
+                <ul>
+                    <li>Be prepared to take a pixel-specific layout from your comps and translate it into a set of proportional measurements in percentages.</li>
+                    <li>Set a width of your outermost container against the body, then set internal containers using the formula
+                        <pre>desired result (in percent) = target (in px) / context (in px)</pre></li>        
+                    <li>Set margins/padding proportionally to create flexible guttering.</li>
+                    <li>When calculating, bear in mind context is different for padding/margins than width:
+                        <ol>
+                            <li>When setting margins, context is the width of the element's container</li>
+                            <li>When setting padding, context is the width of the element itself</li>
+                        </ol>
+                    </li>
+                    <li>It is reasonable to set negative proportional margins to pull an element outside of its parent.</li>
+                </ul>
+            </section>
+            
+            <section>
+                <header>
+                    <h1>Flexible Images and Media</h1>
+                </header>        
+                <h2>To create flexible images:</h2>
+                <ul>
+                    <li>To constrain fixed width media to the width of its container, use the following:
+                        <pre>img, embed, object, video { max-width: 100%; }</pre></li>
+        
+                    <li>In IE6 and below, use (note this works poorly for small images):
+                        <pre>img, embed, object, video { width: 100%; }</pre></li>
+        
+                    <li>In IE7 and below, images scaled with CSS render with artifacts. Use AlphaImageLoader (proprietary MSoft CSS extension) to correct for it</li>
+        
+                <h2>To create flexibly tiled backgrounds for multi-column layout:</h2>
+                <ul>
+                    <li>Create an extremely wide (several k px) background image that is relatively short</li>
+                    <li>Using your layout comp, figure out the breakpoints where your background colors
+                        change, and then determine what percentage each column color represents of the
+                        whole background.</li>
+                    <li>Find the pixel widths necessary to match the proportions in your very large background
+                        image, and paint backgrounds to those proportions.  You will end up with a very
+                        wide, but proportionally correct, set of color backgrounds.</li>
+                    <li>Set the very large background image on the element which contains the columns, so
+                        that it appears behind them. It will proportionally stretch at the same rate as
+                        the content it appears behind.</li>
+                    <li>Other options include CSS3 'background-size' property (support's not great), jQuery
+                        Backstretch plugin, and using media queries to show different backgrounds at
+                        different widths.</li>
+                </ul>
+        
+                <h2>To create background images that do not rescale, but progressively appear at larger sizes of their containing element:</h2>
+                <ul>
+                    <li>Set the parent element to <code>overflow: hidden</code></li>
+                    <li>Set the image to <code>display: block</code> and <code>max-width: auto</code></li>
+                </ul>
+            </section>
+            
+            <section>
+                <header>
+                    <h1>Media Queries</h1>
+                </header>
+                    <h2>To select style rules based on the capabilities / characteristics of the device viewing your content, use media queries.</h2>
+                    <h2>Media queries are made of two components:</h2>
+                    <ol>                            
+                        <li>A media type, drawn from this list:
+                        <pre>all, braille, embossed, handheld, print, projection, screen, speech, tty, tv</pre></li>
+                        <li>In parentheses, the query itself, which will be made of one or more features and values, separated by logical operators</li>
+                    </ol>
+                    <h2>Media queries can be used in three basic ways:</h2>
+                    <ol>
+                        <li>As a block declaration within a stylesheet:
+                            <pre>@media screen and (min-width: 1024px) { body { font-size: 100%; } }</pre></li>                                    
+                        <li>As a media argument to a <link> tag:
+                            <pre>&lt;link rel=stylesheet" href="wide.css" media="screen and (min-width: 1024px)" /&gt;</pre>
+                        <li>As an argument to an @import statement:
+                            <pre>@import url('wide.css') screen and (min-width: 1024px);</pre></li>
+                    </ol>
+                    <h2>Important to understand that:</h2>
+                    <ol>
+                        <li>Each device has a 'display area' (the browser's viewport) and a 'rendering surface'
+                                (the entire display of the device)</li>
+                        <li>To test values above or below thresholds, many features accept min- and max- prefixes</li>
+                    </ol>
+                    <h2>The testable features:</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Feature</th>                 
+                                <th scope="col">Definition</th>
+                                <th scope="col">min-/max-</th>
+                            </tr>
+                        </thead>
+                        <tbody>    
+                            <tr>
+                                <td>width</td>
+                                <td>Width of the display area.</td>
+                                <td>Y</td>
+                            </tr>
+                            <tr>
+                                <td>height</td>                  
+                                <td>Height of the display area.</td>
+                                <td>Y</td>
+                            </tr>
+                            <tr>
+                                <td>device-width</td>            
+                                <td>Width of the rendering surface.</td>                     
+                                <td>Y</td>
+                            </tr>
+                            <tr>
+                                <td>device-height</td>           
+                                <td>Height of the rendering surface.</td>                    
+                                <td>Y</td>
+                            </tr>
+                            <tr>
+                                <td>orientation</td>             
+                                <td>Accepts 'portrait' or 'landscape'</td>                   
+                                <td>N</td>
+                            </tr>
+                            <tr>
+                                <td>aspect-ratio</td>            
+                                <td>Ratio of display area's width/height.</td>               
+                                <td>Y</td>
+                            </tr>
+                            <tr>
+                                <td>device-aspect-ratio</td>     
+                                <td>Ratio of rendering surface's width/height.</td>          
+                                <td>Y</td>
+                            </tr>
+                            <tr>
+                                <td>color</td>                   
+                                <td>Number of bits per color component of device.</td>       
+                                <td>Y</td>
+                            </tr>
+                            <tr>
+                                <td>color-index</td>             
+                                <td>Number of entries in color lookup table for device.</td>
+                                <td>Y</td>
+                            </tr>
+                            <tr>
+                                <td>monochrome</td>              
+                                <td>Number of bits per pixel in a monochrome device.</td>    
+                                <td>Y</td>
+                            </tr>
+                            <tr>
+                                <td>resolution</td>              
+                                <td>Density of the pixels in the device, in dpi.</td>        
+                                <td>Y</td>
+                            </tr>
+                            <tr>
+                                <td>scan</td>                    
+                                <td>For tv, measures 'progressive' or 'scan'.</td>           
+                                <td>N</td>
+                            </tr>
+                            <tr>
+                                <td>grid</td>                    
+                                <td>Tests whether device is a grid based display.</td>
+                                <td>N</td>
+                            </tr>
+                        </tbody>
+                        <tfoot></tfoot>
+                    </table>
+                    <h2>Not all features are supported on all devices / browsers--research before using them.</h2>
+
+                    <h2>In 2007, Apple introduced the &lt;meta&gt; tag value 'viewport', which allows you to manipulate the size of the canvas a mobile browser uses to render web content to screen. For most purposes, it is reasonable to simply assert the following: <pre>&lt;meta name="viewport" content="initial-scale=1.0, width=device-width" /&gt;</pre></h2>
+    
+                    <h2>That declaration will make the width of the browser's viewport equal to the width of the device's screen, so an iPhone, for instance, won't lay out content at 980px wide, but instead 320px in portrait mode and 480px in landscape mode.</h2>
+    
+                    <h2>If you set the viewport to width=device-width, you are more able to use max-width and
+                        min-width queries to look for the resolution range that a user is browsing at, and
+                        style your content accordingly. It also makes your content more likely to render
+                        coherently across multiple mobile devices / screen sizes.</h2>
+    
+                    <h2>Note that media queries are widely supported, but do NOT have support in IE8 or below.
+                        However, you can shim/patch that behavior with javascript in many cases.</h2>
+                </ul>
+            </section>
+        </article>
+    </body> 
+</html>

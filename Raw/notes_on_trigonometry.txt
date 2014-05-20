@@ -1,0 +1,446 @@
+Notes on Master Math: Trigonometry by Debra Anne Ross
+
+Chapter 1: Review of Numbers and Coordinate Systems
+
+1.1 Review of Numbers, Including Natural, Whole, Integers, Zero, Rational, Irrational, Real, Complex and Imaginary
+
+    * Natural numbers are the counting numbers starting with 1
+    * Whole numbers are the natural numbers and zero
+    * Integers are positive numbers, zero, and negative numbers
+    * Zero is an integer, a whole number, and an even number
+    * A rational number can be expressed as a fraction with a denominator that is not zero
+    * An irrational number cannot be expressed as a fraction
+    * Complex numbers involve i, the sqrt(-1)
+    * Imaginary numbers are real numbers multiplied by i
+    
+1.2 Absolute Value
+    * |x| >= 0
+    * |x - y| = |y - x|
+    * |x| * |y| = |x*y|
+    * |x + y| <= |x| + |y|
+
+1.3 Significant Digits and Rounding Numbers and Decimals
+1.4 Review of Coordinate Systems, incl 2 and 3d rect coords, polar, cylindrical, and spherical
+    * 2d, planar rectangular coodinate systems have two axes at right angles to each other, x and y, for horizontal and vertical
+    * 3d rectangular (Cartesian) coordinate system has three axes, x, y and z, also at right angles to each other
+    * Points have coordinate values like (x,y) or (x,y,z)
+    * Lines have points that exist in space
+    * Polar coordinates give an r value that tells you distance from the origin, and a 0 value that gives you angle of the r-ray from the horizontal positive x axis
+    * In three dimensions, polar coordinates become cylindrical coordinates, and have an additional z dimension
+    * Spherical coordinates are expressed in terms of p (rho), q (theta) and phi, where p can be from 0 to infinity, q can be from 0 to 2n, and phi can range from 0 to pi
+    * The p component is measured from the origin, q measures the distance around the z axis, and phi measures down from the z-axis, and is the 'polar angle'
+    
+Chapter 2: Review of Geometry
+
+2.1 Introduction
+2.2 Lines and Angles
+    * Shortest distance between two points is a straight line
+    * Distance formula is:
+    
+        d = [(x2 - x1)^2 + (y2 - y1)^2]^(1/2)
+        
+    * Coordinates of the midpoint of a line:
+    
+        [ (x1 + x2)/2, (y1 + y2)/2 ]
+        
+    * Line segment is a section of a line between two points
+    * Lines are perpendicular if they intersect at 90 degrees
+    * Lines are parallel if they do not intersect
+    * A ray has one end point, and the other end extends to infinity
+    * When straight lines meet or cross, an angle is formed
+    * The point where the lines meet is a vertex
+    * An angle can be formed by rotating a ray around its endpoint
+    * Clockwise rotations produce negative angles, counterclockwise produce positive
+    * Angles are measured in degrees or radians
+    * Full circle is 360deg or 2n rad
+    * Degrees can be divided into minutes and seconds, where:
+        1' = 1/60th degree
+        1" = 1/60th of 1' = 1/3600th degree
+    * 180deg angle is a straight line
+    * Right angles measure 90deg
+    * Angles < 90deg are acute
+    * Angles > 90deg are obtuse
+    * Angles with the same initial and terminal sides are 'coterminal angles'
+    * Angles with the same vertex are adjacent angles
+    * If the sum of any two angles = 180deg, they're called 'complementary angles'
+    * A transversal is a line that intersects two other lines
+
+2.3 Triangles (Planar)
+    * Triangles are three sided polygons with three angles and three vertices
+    * The sum of the angles of a planar triangle is always 180deg
+    * Properties of planar triangles:
+        - If the value of two angles is know, the third angle will be 180-a1-a2
+        - The length of one side is always less than the sum of the lengths of the other two sides
+        - The largest side is opposite the largest angle, the smallest side is opposite the smallest angle, and the middle length side is opposite the middle-size angle
+    * Types of triangles:
+        - equilateral, isosceles, scalene, acute, obtuse, right
+    * Pythagorean Theorem: a^2 + b^2 = c^2, where a and b are legs of a right triangle and c is the hypotenuse
+    * Acute angles of a right triangle are complementary and sum to 90deg
+    * Two triangles are congruent if:
+        1) All three corresponding sides are equal
+        2) Two corresponding sides with their vertex angles are equal
+        3) Two corresponding angles with the side in between are equal
+        4) Two angles and a non included side are equal
+    * If the angles are equal, they are 'similar' triangles, despite size differences
+
+2.4 Polygons and Quadrilaterals
+    * Polygon is a closed planar figure formed by three or more line segments that meet at their end points, and intersect only at their end points.
+    * Examples: triangle, square, rectangle, octagon, hexagon, trapezoid, heptagon, pentagon
+    * Four sided polygons are quadrilaterals
+    * Named according to the number of sides
+    * If the lengths of the sides and the angles of the vertices are all equal, it's a 'regular' polygon
+    * Two polygons with the same angles and sides are congruent
+    * Two with the same angles are similar
+    * The sum of the angles in a polygon is (n-1) * 180deg, where n is the number of sides
+    * The perimeter of polygons and planar figures is the sum of the lengths of the sides
+    * The area of polygons is typically found by breaking them into smaller polygons that have regular area formulas
+    * A parallelogram is a quadrilateral in which both sets of opposite sides are parallel
+        - Area of a parallelogram is base * height
+    * A rectangle is a quadrilateral with four right angles
+        - Area of a rectangle is length times height
+    * A square has four right angles and four same sized sides
+        - Area of a square is one side's length, squared
+    * A trapezoid is a quadrilateral that has one pair of parallel sides
+        - Area of a trapezoid is average of bases times the height
+        
+2.5 Conic Sections, Including Circles, Arcs and Angles, Ellipses, Parabolas and Hyperbolas
+    * Circles, Arcs and Angles
+        - Circle is a planar shape consisting of a closed curve in which each point on the curve is equidistant from the center of the shape
+        - radius is the distance between the center and any point on the edge
+        - diameter is the distance across the circle, through the center
+        - a chord is any line segment whose ends are on the circle
+        - a semicircle is an arc join the endpoints of a diameter chord
+        - Pi defines the ratio between the circumfrence and diameter of a circle
+        - A circle always measures 360deg around, equal to 2pi radians
+        - Half of the circle measures 180deg, equal to pi radians
+        - Quarter circle is 90deg, equal to pi/2 radians
+        
+        1 radian = 360deg / 2pi = 180deg / pi
+        1 degree = 2pi radians / 360deg = pi radians / 180deg
+        1 minute = 1/60 * 1deg = 0.0167deg
+        1 second = 1/60 * 1 minute = 1/3600 deg = 0.00027778deg
+        
+        - A tangent line passes through only one point a circle
+        - A radius drawn to the point the tangent touches the circle is perpendicular to the tangent
+        - A secant is a line that intersects a circle at two points
+        - Circles with the same center point are 'concentric'
+        - Any angle whose vertex is at the center of a circle is a 'central angle'
+        - Any angle whose vertex is on the circle is an 'inscribed angle'
+        
+        Arc length is a section of a circle defined by two or more points:
+        
+            Arc length = (radius) * (central angle measured in radians)
+                       = r*theta, with theta measured in radians
+                       = (pi/180deg) * r*theta deg, with theta the central angle meausred in degrees
+                       
+        - The measure of a central angle is proportional to the measure of the arc it intercepts. Relationship for central angles and arcs:
+        
+            A is on outer edge
+            B is central angle
+            C is on outer edge
+        
+            measure of angle B (central)   length of arc AC   area of sector BAC
+            ---------------------------- = ---------------- = ------------------
+                     360deg                  circumfrence       area of circle
+                     
+        - A central angle subtending an arc equal in length to the radius of a circle is defined as a radian--a radian is the measure of the central angle subtending an arc of a circle equal to radius of the circle.
+        
+        Using 2pi radians = 360deg:
+            
+            1 radian = 360deg / 2pi = 180deg / pi =~ 57.296deg
+            1 degree = 2pi / 360deg = pi / 180deg =~ 0.017454 radians
+            
+        - The measure of an inscribed angle is equal in measure to half of the arc it intercepts (measured in radians):
+        
+            A is on the outer edge
+            B is the inscribed angle, which touches the outer edge
+            C is on the outer edge
+            
+            angle ABC = (1/2)(Arc AC)
+            
+        - An inscribed angle with its rays ending on the points of a diameter chord will have a right angle, since it is one half the 180deg the arc measures
+        - Inscribed angles with the same endpoints defined by the same arc have the same measure.
+        - An inscribed angle is equal to one half of the central angle formed by the endpoints of the same arc
+        - The perimeter of a circle is its 'circumfrence':
+        
+            circumfrence = 2pi * radius = pi * diameter
+            
+        - The area of a circle is given by pi * radius^2 = pi * (d/2)^2
+        - The area of a sector of a circle (piece cut with a central angle) is a fraction of the area of the whole circle:
+        
+            measure of angle B   length of arc AC   area of sector BAC
+            ------------------ = ---------------- = ------------------
+                 360deg            circumfrence       area of circle
+                 
+        - Area of a sector also equals (1/2) * (radius)^2 * (central angle in radians)
+        
+        - Equations for a circle located at the origin of a coordinate system can be written in the form x^2 + y^2 = r^2, where r is the radius and r > 0
+        - To plot, choose values for x and solve for y values
+        
+    * Ellipses
+        - ellipses are flattened circles
+        - A circle has one focus at the center, an ellipse has two foci, F1 and F2, along the major axis on either side of the center.
+        - The sum of the distances of the foci to any point on an ellipse is 2a
+        - Can be described by:
+        
+            [(x-c)^2 + y^2]^(1/2) + [(x+c)^2 + y^2]^(1/2) = 2a
+              = distance from F1 + F2 to a point (x,y)
+              
+          where +c and -c represent the location of F1 and F2 on the major axis
+        - Equation for an ellipse at the origin:
+        
+            (x^2/a^2) + (y^2/b^2) = 1, where a != b, a > 0, b > 0, origin at (0,0)
+            
+        - Equation for an ellipse outside the origin:
+        
+            ((x-p)^2 / a^2) + ((y-q)^2 / b^2) = 1, where a != b, a > 0, b > 0, and origin is at (p,q)
+            
+        - Shape of an ellipse (rounder or flatter) is designated by its eccentricity, which is given by e = sqrt( (a^2 = b^2) / a )
+        
+    * Parabolas
+        - Parabolas are sets of points in a plane that form a curve with symmetry
+        - They can point in any direction
+        - Their equations are quadratic
+        Equations:
+        
+            y = ax^2 + bx + c (with a vertical axis)
+            x = ay^2 + by + c (with a horizontal axis)
+            
+        - If a is positive and axis is vertical, parabola is open at the top
+        - If a is negative and axis is vertical, parabola is open at the bottom
+        - The axis of symmetry can be drawn to divide a parabola in half
+        - Equation for axis of symmetry is x sub v = -b/2a
+        - The vertex point of a parabola can be found by substituting the axis of symmetry (x sub v) into the equation y = ax^2 + bx + c and solving for y or y sub v, resulting in (x sub v, y sub v)
+        - The focus of a parabola is a point on the axis of symmetry on to which any ray coming toward the bottom of the parabola parallel with the axis of symmetry is reflected
+        - The directrix is a line that exists perpendicular to the axis of symmetry such that every point on the parabola is the same distance from the focus point as it is from the directrix line. If focus is at (0, a), directrix is a line crossing the y axis at (0, -a)
+        
+    * Hyperbolas
+        - Hyperbolas are a set of points in a plane that form two parabola like curves that are mirror images of each other.
+        - Equations can be written in the form:
+        
+            (x^2 / a^2) - (y^2 / b^2) = 1 or (x^2 / a^2) + (y^2 / b^2) = 1
+            
+          where a and b have opposite signs and the center of the hyperbola is at 0,0
+          
+        - A hyperbola located at (p,q):
+        
+            ((x-p)^2 / a^2) - ((y-q)^2 / b^2) = 1
+            
+        - A hyperbola can be drawn along the X-axis or Y-axis and is symmetric wrt its axis.
+        - Each hyperbola has two asymptotes such that the curve of a hyperbola approaches its asymptotes
+        - Asymptotes can also be formed with the equation xy = k, where if k is positive the hyperbola will graph in the upper right and lower left quadrants, and if k is negative will graph in the upper left and lower right
+        
+2.6 Three Dimensional Objects including Cubes, Rectangular solids, cylinders, spheres, cones and pyramids
+    - Measurements in 3d include volume and surface area
+    - units for volume are always cubic
+    - surface area is the sum of all surfaces, and is always square units
+    - cubes have six square surfaces with the same measurements
+    
+        Volume of of a cube = (edge)^3
+        Surface area of a cube = (6 sides) * (area of each side)
+        
+    - rectangular solids have six rectangular surfaces with three pairs of opposite sides with the same measurements
+    
+        Volume of a rectangular solid = (length) * (width) * (height)
+        Surface area of a rectangular solid = sum of area of six faces
+        
+    - cylinders have two identical circles connected by a tube
+    
+        Volume of a cylinder = (area of circle) * (height) = (pi*r^2) * (height)
+        Surface area of a cylinder = (area of both circles) + (area of tube)
+          = 2pi * r^2 + 2pi * r * h
+
+    - spheres are 3d objects consisting of all points the same distance from some center
+    
+        Volume of a sphere = (4/3)pi * r^3
+        Surface area of a sphere = 4pi * r^2
+        
+    - Cones are 3d objects that have a circle whose circumfrence is connected to a point
+    
+        Volume of a cone = (1/3) * (area of circle) * (height) = (1/3)pi * r^2 * d
+        
+    - Pyramids are 3d objects that have a square, rectangle, triangle or other polygon base, connected to a point
+    
+        Volume of a pyramid = (1/3) * (area of base) * (height)
+        
+Chapter 3: Triangles and Trigonometric Functions
+
+3.1 Right Triangles and Trigonometric Functions
+    - Right triangles have one 90deg angle and two acute angles that sum to 90deg
+    - trigonometric functions can be defined using ratios of sides of a right triangle
+    - Six trig functions, defined with a triangle of sides x, y and hypotenuse r, with one angle theta, between r and x:
+    
+        sine theta      = sin theta = opposite / hypotenuse = y/r
+        cosecant theta  = csc theta = hypotenuse / opposite = r/y = 1/sin theta
+        cosine theta    = cos theta = adjacent / hypotenuse = x/r
+        secant theta    = sec theta = hypotenuse / adjacent = r/x = 1/cos theta
+        tangent theta   = tan theta = opposite / adjacent = y/x = sin theta / cos theta
+        cotangent theta = cot theta = adjacent / opposite = x/y = 1/tan theta
+        
+    - Cofunction identities describe the complementary nature of the acute angles in a right triangle:
+    
+        sin theta = cos (90deg - theta);  cos theta = sin (90deg - theta)
+        tan theta = cot (90deg - theta);  cot theta = tan (90deg - theta)
+        sec theta = csc (90deg - theta);  csc theta = sec (90deg - theta)
+        
+    - There are also reciprocal relationships:
+    
+        csc theta = 1/sin theta  or  sin theta = 1/csc theta
+        sec theta = 1/cos theta  or  cos theta = 1/sec theta
+        cot theta = 1/tan theta  or  tan theta = 1/cot theta
+        
+3.2 Solving Right Triangles
+    - To solve, you find the unknown sides and angles
+    - If we know 1 acute angle and 1 side, or the measures of two sides, we can find everything else
+    
+3.3 Examples and Applications of Right Triangles
+
+3.4 Oblique Triangles and the Law of Sines and Law of Cosines
+    - Oblique triangles do not contain a right angle
+    - Described and solved with the law of sines, law of cosines, sometimes law of tangents
+    - Can have all acute angles, or one obtuse and two acute
+    - Law of sines is used to determine unknown side and angle measurements:
+    
+        x is the side opposite angle X
+        y is the side opposite angle Y
+        z is the side opposite angle Z
+    
+          x         y         z
+        -----  =  -----  =  -----
+        sin X     sin Y     sin Z
+
+    - Derived forms:
+    
+        x/y = sin X/sin Y
+        y/z = sin Y/sin Z
+        z/x = sin Z/sin X
+        x/z = sin X/sin Z
+        y/x = sin Y/sin X
+        z/y = sin Z/sin Y
+        
+        x sin Y = y sin X
+        y sin Z = z sin Y
+        z sin X = x sin Z
+        
+        x = y sin X / sin Y
+        x = z sin X / sin Z
+        y = z sin Y / sin Z
+        y = x sin Y / sin X
+        z = x sin Z / sin X
+        z = y sin Z / sin Y
+        
+        sin X = x sin Y / y
+        sin X = x sin Z / z
+        sin Y = y sin Z / z
+        sin Y = y sin X / x
+        sin Z = z sin X / x
+        sin Z = z sin Y / y
+        
+    - The law of cosines is given by:
+    
+        x^2 = y^2 + z^2 - 2yz cos X
+        y^2 = z^2 + x^2 - 2zx cos Y
+        z^2 = x^2 + y^2 - 2xy cos Z
+        
+    - Derived forms:
+    
+        cos X = (y^2 + z^2 - x^2) / 2yz
+        cos Y = (z^2 + x^2 - y^2) / 2zx
+        cos Z = (x^2 + y^2 - z^2) / 2xy
+
+    - Derivation of the Law of Sines--extend your obtuse triangle out to a right triangle, find the hypotenuse of the resulting smaller right triangle
+    - Derivation of the Law of Cosines--basically the same sort of thing
+    
+    Law of Tangents
+        - Rarely used, given by
+        
+            x + y    tan (1/2)*(X + Y)
+            ----- = --------------------
+            x - y    tan (1/2)*(X - Y)
+            
+3.5 Solving Oblique Triangles
+
+
+
+
+Chapter 4: Trigonometric Functions in a Coordinate System and Circular Functions
+
+4.1 Review of Functions and Their Properties
+    - domain set is the stuff that goes in
+    - range set is the results that come out for a given domain set
+    - for a thing to be a function, there must be only one element in the range set for every element in the domain set--one output for one input
+    
+4.2 Types of Functions, Including Composite, Inverse, Linear, Nonlinear, Even, Odd, Exponential, Logarithmic, Identity, Absolute Value, Squaring, Cubing, Square Root, Cube Root, Reciprocal, and Functions with More Than One Variable
+    - Composite/compound functions are multiple, combined functions--f(g(x))
+    - Inverse functions are pairs that result in the same output of the second function as the input to the first--sqrt(x^2)
+    - Linear equations are those in which the variables do not have exponents other than 1
+    - General form of a linear function can be y = f(x) = b + mx, where m is the slope of the line and b is the vertical intercept
+    - Nonlinear functions have variables with exponents other than 1--graphs of them make curved lines and surfaces
+    - Even functions is even if f(x) = f(-x) for all x
+    - Odd functions are odd if f(x) = -f(-x) for all x
+    - Exponential functions form curved lines, and have variables in their exponents--2^x
+    - The inverse of e^x is ln x, the natural logarithm of x
+    - Logarithms can have any base
+    - The identity function is f(x) = x
+    - The absolute value function is f(x) = |x|
+    - The squaring function is f(x) = x^2
+    - The cubing function is f(x) = x^3
+    - The square root function is f(x) = sqrt(x) = x^(1/2), x >= 0
+    - The cube root function is f(x) = cube_root(x) = x^(1/3), x is positive, zero, or negative real number
+    - A function's reciprocal function is, for f(x) = x, f(x) = 1/x
+    
+4.3 Coordinate Systems, Radians, Degrees, and Arc Length
+    - Trig functions can be used in a coordinate system to describe the position, location and distances of points with reference to the axes of the coordinate system.
+    - A point P can be identified by its distance from the axes, called coordinates
+    - For a point P(x,y), the distance from P to the origin is a radius vector:
+    
+        r = sqrt( x^2 + y^2 )
+    
+    - Planar Cartesian coordinate systems have quadrants I, II, III, and IV, labeled counterclockwise from the top right
+    - A point in a coordinate system can also be described in terms of the angle alpha that its radius vector makes from the x axis. Alpha can be measured in degrees or radians.
+    - A radian is the measure of the central angle subtending an arc of a circle equal to the radius of the circle
+    - In a circle having a radius 1 (the unit circle), a radian is equal to the angle at the center that cuts across an arc of length 1
+    - Length of an arc is r * theta, where theta is in radians and r is the radius of the circle
+    - The angle theta is the arc length divided by the radius, theta = (s/r) radians
+
+4.4 Angles in Standard Position and Coterminal Angles
+    - An angle is in standard position if its vertex is at the origin, and its initial side lies on the X axis
+    - If the angle is measured counterclockwise it's positive, otherwise negative
+    - Coterminal angles have terminal sides that coincide when both angles are placed in their standard positions in the same coordinate system
+    - There are an unlimited number of coterminal angles for any angle, because you can keep adding 360 degrees to an angle
+    - For any angle alpha, coterminal angles exist in radians with angles (2pi + alpha), (4pi + alpha), and so on
+    
+4.5 The Trigonometric Functions defined in a Coordinate System in Standard Position, Quadrant Signs, and Quadrantal Angles
+    - The trigonometric functions defined in standard position in terms of the angle theta, x, y and radius r are:
+    
+        sin theta = y/r
+        cos theta = x/r
+        tan theta = y/x
+        csc theta = r/y
+        sec theta = r/x
+        cot theta = x/y
+        
+    - The signs of the trig functions depend on the signs of x and y in the quadrant in which the terminal side of the standard position angle lies
+    
+        Quadrant I, +x +y
+            sin, csc, cos, sec, tan, cot are all +
+            
+        Quadrant II, -x, +y
+            sin, csc are +
+            cos, sec, tan, cot are -
+            
+        Quadrant III, -x, -y
+            tan, cot are +
+            sin, csc, cos, sec are -
+            
+        Quadrant IV, +x, -y
+            cos, sec are +
+            sin, csc, tan, cot are -
+            
+    - A quadrantal angle is an angle where the terminal side coincides with one of the axes of the coordinate system
+    
+4.6 Reference Angles and Reference Triangles
+
+
+
+

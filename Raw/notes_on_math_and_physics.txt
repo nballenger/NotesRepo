@@ -1,0 +1,519 @@
+notes on Beginning Math and Physics for Game Programmers
+
+Chapter 1: Points and Lines
+
+* The Point Defined
+    - Cartesian x,y or x,y,z double or triplet, indicating a point in 2 or 3 d space
+    - Screen coordinate systems typically place 0,0 at top left
+
+* The Line Defined
+    - Linear equations are those whose complete solutions produce a line
+    - Straight line linear equations have the general form:
+    
+        Ax + By = C, with A != 0 && B != 0
+        
+* Properties of Lines
+    - Lines have slope, which is 'rise' over 'run':
+    
+        (y2 - y1) / (x2 - x1) = slope (m)
+        
+    - If two lines are parallel, m1 == m2
+    - If two lines are perpendicular: 
+        
+        m1 * m2 = -1 OR 
+        m1 = -(1/m2) OR 
+        m2 = -(1/m1)
+        
+    - Two forms for the equation of a line that are useful:
+    
+        Slope-intercept:   y = mx + b
+        Point-slope:       (y-y1) = m(x-x1), where (x1,y1) is a point on the line
+
+* Applications in Collision Detection
+    - Combining multiple linear equations creates a 'system of linear equations'
+    - Solving a system of two lines is searching for the intersection
+    - Theorem: A system of two linear equations in the same plane has:
+        + Exactly one solution if the two graphs have different slopes
+        + An infinite solution set if both graphs share slope and y intercept
+        + No solution if the graphs have the same slope but different y intercepts
+    - Algorithm for finding size of solution set:
+    
+        Given two slopes, m1 and m2:
+            if (m1 != m2) {
+                return 'one solution'
+            }
+            else {
+                b1 = y intercept of line 1
+                b2 = y intercept of line 2
+                if (b1 != b2) {
+                    return 'zero solutions'
+                }
+                else {
+                    return 'infinite solutions'
+                }
+            }
+            
+    - Two methods for finding intersections for m1 != m2 systems:
+        + Linear combination:
+            .. Multiply both sides by the same nonzero number, 
+                until both equations share an X or a Y coefficient
+            .. Combine the two equations into one by subtracting one from the other
+            .. The resulting x or y value will be one half of the solution point
+            .. Plug that back in to solve for the other half of the ordered pair
+        + Substitution:
+            .. Choose an equation, and solve for one coordinate variable
+            .. Substitute the resulting equation for the coordinate in the other eq
+            .. Solve for the remaining variable
+            .. Substitute that value into one of the originals to find the other
+            
+
+Chapter 2: Geometry Snippets
+
+* Distance between Points
+    - Easiest method is the pythagorean theorem:
+    
+        sqrt( (x2 - x1)^2 + (y2 - y1)^2 ) = distance from x1,y1 to x2,y2
+        
+    - Inverse of the theorem states that for sides a,b,c of a triangle, if 
+        a^2 + b^2 = c^2, the triangle is a right triangle with hypotenuse c
+        
+    - The distance formula in 3 dimensions:
+    
+        sqrt( (x2-x1)^2 + (y2-y1)^2 + (z2-z1)^2 ) = d from point 1 to point 2
+        
+    - The midpoint formula:
+    
+        midpoint's x,y = dx/2, dy/2
+        
+    - Midpoint formula in 3d:
+    
+        midpoint's x,y,z = dx/2, dy/2, dz/2
+
+* Parabolas
+    - A symmetric arc
+    - Tip of the arc is the 'vertex', 'axis of symmetry' splits it into halves
+    - Vertical axis parabola:
+    
+        y = a * (x - h)^2 + k, with vertex (h,k) and axis of symmetry x = h
+        
+    - Horizontal axis parabola:
+    
+        x = a * (y - k)^2 + h, with vertex (h,k) and axis of symmetry y = k
+    
+
+* Circles and Spheres
+    - A 'circle' is all points at a given distance (radius) from a center point
+    - The equation of a circle is:
+    
+        (x - h)^2 + (y - k)^2 = r^2, with center (h,k) and radius r
+        
+    - For each point on the circle, you can use the pythagorean theorem to find
+        the location of the point.
+    - The equation of a circle centered at the origin is:
+    
+        x^2 + y^2 = r^2, with a center of (0,0) and radius r
+        
+    - To find a bounding circle for some object, you need a center and a radius
+    - To find a center:
+    
+        P1.x = (max(x) - min(x)) / 2
+        P1.y = (max(y) - min(y)) / 2
+        
+    - Radius is:
+    
+        sqrt( (center.x - furthest_corner.x)^2 + (center.y - furthest_corner.y)^2 )
+        
+    - Equation of a Sphere:
+    
+        (x - h)^2 + (y - k)^2 + (z - l)^2 = r^2, center is (h,k,l), radius is r
+        
+    - Equation of a Sphere at the Origin:
+    
+        x^2 + y^2 + z^2 = r^2
+
+* Applications in Collision Detection:
+    - If two circles are touching, the distance between their centers is less than 
+        the sum of their radii
+        
+    - Circle-Circle Collision Detection:
+    
+        Given two circles:
+        
+            C1:     (x-h1)^2 + (y-k1)^2 = r1^2
+            C2:     (x-h2)^2 + (y-k2)^2 = r2^2
+            
+        if sqrt(dh^2 + dk^2) <= (r1 + r2), a collision occurs
+        
+    - Optimized Version, eliminating sqrt():
+    
+        if dh^2 + dk^2 <= (r1+r2)^2, there is a collision
+        
+    - Optimized Sphere-Sphere collision detection:
+    
+        Given two spheres:
+        
+            S1:     (x-h1)^2 + (y-k1)^2 + (z-l1)^2 = r1^2
+            S2:     (x-h2)^2 + (y-k2)^2 + (z-l2)^2 = r2^2
+            
+        if dh^2 + dk^2 + dl^2 <= (r1+r2)^2, there is a collision
+
+
+Chapter 3: Trigonometry Snippets
+
+* Degrees Versus Radians
+    - Angles consist of two rays that intersect at a point, called a vertex
+    - One ray is the initial side, the other is the terminal side
+    - In standard position on a cartesian grid, the vertex is at the origin, and
+        the initial side always falls on the positive x axis
+    - From the positive x axis, measure positive angles counterclockwise, negative
+        angles clockwise
+    - Greek letters typically represent angles, alpha, beta, theta
+    - A full revolution about the axis is 360 degrees, and 2pi radians
+    - Degrees to radians:
+    
+        Angle in degrees * (pi / 180) = angle in radians
+        
+    - Easy conversion constants:
+    
+        RadToDeg = 57.29577951
+        DegToRad = 0.017453293
+        
+    - Radians to Degrees:
+    
+        Angle in Radians * (180 / pi) = angle in degrees
+
+* Trigonometric Functions
+    - For a right triangle with sides a and b, and hypotenuse c, where alpha is the angle
+        between a and c:
+        
+        sin alpha = opp/hyp = b/c
+        cos alpha = adj/hyp = a/c
+        tan alpha = opp/adj = b/a
+        csc alpha = 1 / sin alpha = hyp/opp
+        sec alpha = 1 / cos alpha = hyp/adj
+        cot alpha = 1 / tan alpha = adj/opp
+        
+    - Lookup table for trig functions:
+    
+        my @sin_table = ();
+        foreach my $i (0..360) {
+            $sin_table[$i] = sin($i * $DegToRad);
+        }
+        
+        my $value = $sin_table[abs(int($angle)) % 360];
+        
+    - Graph of sin(x) is a periodic wave function
+    - To expand or contract the wave horizontally, apply a coefficient to x
+    - Numbers greater than 1 shorten the period, less than one lengthen it
+    - The period of a sine wave is:
+    
+        for y = sin(Bx), the period = 360deg / abs(B) 
+        
+    - To expand or contract vertically, apply a coefficient to the sin function
+    - Numbers greater than 1 shorten the amplitude
+    - Numbers less than 1 increase the amplitude
+    - The amplitude of a sine wave is:
+    
+        for y = A sin(x), the amplitude = abs(A)
+
+* Trigonometric Identities
+    - The unit circle is a circle centered at the origin with radius 1
+    - Equation for the unit circle is x^2 + y^2 = 1
+    - For any point on the unit circle, you can create a right triangle with one
+        angle in standard position, where the hypotenuse is the radius (1)
+    - Consequently, the sine and cosine functions are:
+    
+        sin alpha = y/1 = y AND cos alpha = x/1 = x
+        which gives us
+            y = sin alpha
+            x = cos alpha
+            
+    - Given that, we get the Unit Circle Identity:
+    
+        cos^2 alpha + sin^2 alpha = 1
+        
+    - Given that sin alpha = opp/hyp, and cos alpha = adj/hyp:
+    
+        (sin alpha)/(cos alpha) = (opp/hyp) / (adj/hyp) = opp/adj = tan alpha
+        
+        which gives the Tangent and Cotangent identities:
+        
+            tan alpha = (sin alpha) / (cos alpha)
+            cot alpha = (cos alpha) / (sin alpha)
+            
+    - And additionally there are the negative angle identities:
+    
+        sin(-alpha) = -sin alpha
+        cos(-alpha) = cos alpha
+        tan(-alpha) = -tan alpha
+        
+    - Sum and Difference Identities for Sine:
+    
+        sin(alpha1 + alpha2) = sin(alpha1) * cos(alpha2) + cos(alpha1) * sin(alpha2)
+        sin(alpha1 - alpha2) = sin(alpha1) * cos(alpha2) - cos(alpha1) * sin(alpha2)
+        
+    - Sum and difference identities for cosine:
+    
+        cos(alpha1 + alpha2) = cos(alpha1) * cos(alpha2) - sin(alpha1) * sin(alpha2)
+        cos(alpha1 - alpha2) = cos(alpha1) * cos(alpha2) + sin(alpha1) * sin(alpha2)
+        
+        
+Chapter 4: Vector Operations
+
+* Vector Versus Scalar
+    - a scalar is just a number
+    - a vector has both magnitude and direction
+    - 'displacement' is the vector version of distance
+    - 'velocity' is the vector version of speed
+    - When calculating displacement, all you care about is starting and ending positions
+    - That's different than the distance traveled--like 'work' in physics
+    - Displacement = final position - initial position
+    
+        dx = xf - xi
+        
+
+* Polar Coordinates Versus Cartesian Coordinates
+    - Two different forms for describing a vector in 2d: polar and cartesian coordinates
+    - Polar coordinates:
+    
+        Vector A = mag(A) @ theta, where mag(A) is the magnitude of A and theta is direction
+        
+    - 20m @ 30deg would be termed '20 meters at 30 degrees in standard position'
+    
+    - Cartesian coordinates are used for coding vectors
+    - Describes a vector based on horizontal and vertical displacement
+    - Components of cartesian coordinates for vectors:
+    
+        Vector B = b1 i^ + b2 j^, where i^ is one unit in the x direction, and j^ is
+            one unit in the y direction
+            
+    - 3i + 4j would be read as '3 in the x direction, 4 in the y direction'
+    
+    - Converting from Polar to Cartesian:
+    
+        for vector A = mag(A) @ theta, A = a1 i^ + a2 j^, 
+            where mag(A) cos theta and mag(A) sin theta
+            
+    - Example:
+    
+        Convert A = 20m @ 30 deg to cartesian
+        
+        a1 = mag(A) cos theta = 20 cos 30deg = 20 * 0.8660 = 17.32
+        a2 = mag(A) sin theta = 20 sin 30deg = 20 * 0.5    = 10
+        
+        therefore:  20m @ 30deg = 17.32i^ + 10j^
+        
+    - Converting from Cartesian to Polar:
+    
+        for vector B = b1 i^ + b2 j^, mag(B) = sqrt( b1^2 + b2^2 ),
+            and theta = tan^-1 (b2/b1)
+            
+    - Example:
+    
+        Convert B = 3i^ + 4j^ to polar
+        
+        Magnitude of B = sqrt(b1^2 + b2^2) = sqrt(3^2+4^2) = sqrt(9+16) = sqrt(25) = 5
+        Direction of B = tan^-1 (b2/b1) = tan^-1 (4/3) = 53.1 deg
+        
+        therefore: B = 5 units # 53.1deg
+        
+    - 3d cartesian components: B = b1 i^ + b2 j^ + b3 k^
+    - More common syntax is a single row or single column matrix
+
+* Vector Addition and Subtraction
+    - Pointy end of a graphical vector is the tip, the other is the tail
+    - Method for graphically combining vectors is the 'tip to tail' method
+    - Place one tip to tail with the other--connect first point to last
+    - Commutative law of vector addition:
+    
+        A + B = B + A for vectors A and B
+        
+    - The magnitude of two vectors combined is not the sum of their magnitudes
+    - Always convert to Cartesian coordinates for that reason before adding
+    
+    - Adding vectors numerically:
+    
+        A + B = (a1 + b1) i^ + (a2 + b2) j^
+        
+    - Adding 3d vectors numerically:
+        
+        A + B = (a1 + b1) i^ + (a2 + b2) j^ + (a3 + b3) k^
+        
+    - Subtracing vectors numerically:
+    
+        A - B = (a1 - b1) i^ + (a2 - b2) j^
+        
+    - Subtracting 3d vectors numerically:
+    
+        A - B = (a1 - b1) i^ + (a2 - b2) j^ + (a3 - b3) k^
+
+* Scalar Multiplication
+    - Scalar multiplication in polar coordinates
+    
+        c * A = c * mag(A) @ theta
+        
+    - Scalar multiplication in cartesian coordinates
+    
+        c * A = c * a1 i^ + c * a2 j^
+        
+    - To 'normalize' a vector is to scale its magnitude to 1
+    - Normalizing in polar coordinates is easy--just change the magnitude to 1
+    - In cartesian coordinates, you have to calculate the magnitude, then
+        divide each component by the magnitude.
+        
+    - Normalizing a 2d vector, for any vector A = [a1 a2]:
+    
+        A = 1/mag(A) A = [a1/mag(A)  a2/mag(A)]
+        
+    - Normalizing a 3d vector, for any vector A = [a1 a2 a3]:
+    
+        A = 1/mag(A) A = [a1/mag(A)  a2/mag(A)  a3/mag(A)]
+        
+    - A normalized vector is symbolized with a cap, Â (or A^ here)
+
+
+* Dot Product
+    - Dot product of two vectors A * B is a single, scalar value
+    - Dot product in 2D:
+    
+        A . B = a1 * b1 + a2 * b2
+        
+    - Dot product in 3D:
+    
+        A . B = a1 * b1 + a2 * b2 + a2 * c2 + a3 * b3
+
+    - Using the dot product to check for perpendicularity:
+    
+        if A . B = 0, A is perpendicular to B
+        
+    - Angles of positive or negative:
+    
+        if A . B < 0, theta > 90deg
+        if A . B > 0, theta < 90deg
+          for angle theta between vectors A and B
+          
+    - Exact degree measure from dot product:
+    
+        A . B = mag(A) * mag(B) * cos(theta)
+        
+* Cross Product
+    - Where dot product returns a scalar, cross product returns a vector
+    - also sometimes known as the 'vector product'
+    - Cross product formula:
+    
+        A x B = [(a2 * b3 - a3 * b2) * (a3 * b1 - a1 * b3) * (a1 * b2 - a2 * b1)]
+        for any two vectors A = [a1 a2 a3] and B = [b1 b2 b3]
+        
+    - The vector returned is perpendicular to both original vectors
+    - Only makes sense in 3 dimensions
+    - Can go either 'up' or 'down' in the third dimension perpendicular to A and B
+    - Cross product is not commutative: A x B != B x A
+    - A x B = -(B x A), since it'll be either up or down
+    - Can be used to calculate the 'surface normal':
+    
+        Any two vectors can define a surface
+        surface normal is a vector perpendicular to the surface, length 1
+        
+    - Surface normal is signed A X^ B, and is equal to AxB / mag(AxB)
+    
+    - Cross product can also calculate the angle between two vectors
+    - Dot product is faster, but if you have cross product calculated, use that
+    - Angle between two vectors:
+    
+        mag(A x B) = mag(A) * mag(B) * sin(theta)
+        
+        
+Chapter 5: Matrix Operations
+
+* Equal Matrices
+    - A matrix is an array of numbers
+    - Can have as many rows and columns as necessary
+    - Always use brackets around each matrix
+    - Each number is an entry, and is denoted by its row and column location
+    - For two matrices of the same dimensions, entries in the same row and column
+        are called 'corresponding entries'
+    - Two matrices are equal if and only if they have the same dimensions, and
+        all their corresponding entries are equal
+
+* Matrix Addition and Subtraction
+    - To add matrices, they must have the same dimensions
+    - Add corresponding entries to combine
+    - To subtract them, subtract corresponding entries
+
+* Scalar Multiplication
+    - Works the same with matrices as with vectors, which are single row or single
+        column matrices
+    - For any scalar c and matrix A, multiply each entry in A by c to get cA
+    - To divide by a scalar, just divide each entry by it
+    
+* Matrix Multiplication
+    - You take a series of dot products to produce a matrix product
+    - Multiplying two 2x2 matrices:
+    
+             |(a00 * b00 + a01 * b10)  (a00 * b01 + a01 * b11)|            
+        AB = |                                                |
+             |(a10 * b00 + a11 * b10)  (a10 * b01 + a11 * b11)|
+             
+        for
+            A = [a00 a01]     and   B = [b00 b01]
+                [a10 a11]               [b10 b11]
+                
+    - Each result entry is a dot product of the corresponding row in the first
+        matrix and the corresponding column in the second matrix
+    - For a matrix multiplication to be defined, the number of columns in matrix A
+        must equal the number of rows in matrix B
+    - The size of the matrix product is determined by: rows in A by cols in B
+    - Matrix multiplication is not commutative: AB != BA
+    - In many cases, AB and BA may not both have defined products
+    
+* Transpose 
+    - Swaps each entry's row and column
+    - Example in a 3x3:
+    
+            | a00 a01 a02 |             | a00 a10 a20 |
+        A = | a10 a11 a12 |  then A^T = | a01 a11 a21 |
+            | a20 a21 a22 |             | a02 a12 a22 |
+            
+    - For any size matrix A, each entry amn moves to anm in A^T
+    
+    
+Chapter 6: Transformations
+
+* Translation
+    - Moving an object in two dimensions is known as translation
+    - Can happen either via matrix addition or matrix multiplication
+    - If you just want to move, addition is faster and easier
+    - If you want to scale and/or rotate in the same frame, you have to multiply
+    - Simple movement example:
+    
+        | x' |  =  | x |  +  | dx |
+        | y' |     | y |     | dy |
+
+    - 2D Translation by multiplication:
+    
+        | x' |     | 1 0 dx |   | x |
+        | y' |  =  | 0 1 dy | * | y |
+        | 1  |     | 0 0 1  |   | 1 |
+
+    - Always make sure that happens as (translation matrix * old point), not the reverse
+    - 3D Translation by multiplication:
+    
+        | x' |     | 1 0 0 dx |   | x |
+        | y' |  =  | 0 1 0 dy | * | y |
+        | z' |     | 0 0 1 0  |   | z |
+        | 1  |     | 0 0 0 1  |   | 1 |
+        
+* Scaling
+    - If you scale each vertex of an object, you scale the entire object
+    - Equation for 2D scaling:
+    
+        | x' |     | Sx 0  0 |   | x |
+        | y' |  =  | 0  Sy 0 | * | y |
+        | 1  |     | 0  0  1 |   | 1 |
+        
+        where Sx = the scale factor in the x direction
+        and   Sy = the scale factor in the y direction
+
+* Rotation
+
+* Concatenation

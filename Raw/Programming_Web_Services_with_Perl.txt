@@ -1,0 +1,306 @@
+Programming Web Services with Perl
+
+Chapter 1: Introduction to Web Services
+    XML-RPC (XML Remote Procedure Call) was the first web service protocol, formed from SOAP (Simple Object Access Protocol)
+    XML-RPC defines a standard way to encode data, method calls and exceptions
+    SOAP tries to solve more problems--introduces headers for extensibility
+
+Chapter 2: HTTP and XML Basics
+    2.1 HTTP
+        originally developed as a layer over TCP to simplify applications that exchanged HTML data
+        2.1.1 The Request / Response Cycle
+            client makes a request, server makes a response
+            both ends communicate mostly in message headers
+        2.1.2 HTTP Message Structure
+            Both request and response start with a line specific to message type, followed by a blank line or line of 0's
+            2.1.2.1 Examining the request
+                First line of request is the request ine, defining type of operation being requested
+                general structure of the request line is:
+                    verb SPACE resource (SPACE protocol)?
+                resource is a URL without the protocol and hostname information (a path, then?)
+                Common HTTP verbs:
+                    HEAD    A HEAD request is used to get the headers and response only for a given resource.
+                    GET     The GET request url contains all info for request, and body is presumed empty
+                    POST    POST sends to an address that is an application
+            2.1.2.2 Examining the response
+                response line looks like:
+                    protocol SPACE status_code SPACE status_message
+                HTTP response status code groups:
+                    1xx Informational           initial part of req has been read, client should continue with remainder
+                    2xx Successful client req   general success codes
+                    3xx Redirected request      used to redirect browser to new location
+                    4xx Request incomplete      unsuccessfully completed requests
+                    5xx Server-side errors      server based failure
+    2.2 XML
+        2.2.1 Self-describing data
+            data format descriptions: element/parameter names, structural relationships, hierarchical relationships
+            contains tags, attributes and values
+            2.2.1.1 Elements and namespaces
+                element format is <start attribute="value">content</start>
+                Elements and attributes can have a namespace, to associate tags with applications (when they might conflict)
+            2.2.1.2 Attributes
+                <tag attr="value">
+            2.2.1.3 Data
+                data is generally ASCII or UTF8, has entities
+            2.2.1.4 Comments, processing instructions and specialized content
+                <!-- comment -->
+                <?xml-stylesheet href="processinginstruction.xsl" type="text/xsl"?>
+                <!DOCTYPE> (entity declaration)
+        2.2.2 Describing XML with DTD and XML Schema
+            2.2.2.1 The DTD
+                Typical DTD Layout:
+                    <!ENTITY % container '(name, version?, hidden?, signature+, help?, package?, code)' >
+                    <!ELEMENT procedureref      %container; >
+                    <!ELEMENT methoddef         %container; >
+                    <!ELEMENT name              (#PCDATA) >
+            2.2.2.2 XML Schema
+                XML Schema is an alternative to using DTD syntax
+        2.2.3 XML Modules and Tools for Perl
+            2.2.3.1 XML::Parser
+                very fast, built around Expat parser library for C
+                doesn't have full namespace support
+            2.2.3.2 XML::LibXML and XML::LibXSLT
+                validating parser built around libxml2 (C library)
+                very fast
+            2.2.3.3 XML::SAX
+                provides a more thorough implementation of SAX and SAX2
+            2.2.3.4 XML::XPath, XML::Simple
+    2.3 XML Schema
+        spec that w3c created to replace DTD
+        2.3.1 Why Replace the DTD?
+            The DTD is not actually XML--it's inherited from HTML's roots in SGML
+            has a flexibility that XML doesn't actually need
+            DTD is generally smaller in size than XML Schema (this is good)
+            XML Schema doesn't give way to define named text entities
+            XML Schema is better at expressing complex structures and relationships
+            XML Schema can also define format and constraints on data in elements
+        2.3.2 Schema Components
+            A schema is built of a collection of components
+            components are classified as belonging to one of three groups:
+                Primary Components          Simple type definitions
+                                            Complex type definitions
+                                            Attribute Declarations
+                                            Element declarations
+                Secondary Components        Attribute group definitions
+                                            Identity-constraint definitions
+                                            Model group definitions
+                                            Notation declarations
+                "Helper" components         Annotations
+                                            Model groups
+                                            Particles
+                                            Wildcards
+                                            Attribute users
+            a schema doc uses a top-level container element called schema and a namespace http:///www.w3.org/2001/XMLSchema
+            2.3.2.1 The predefined simple types
+                All definitions must either be or reference an existing type
+                Types exist both as components to be used within a schema and as building blocks for more specific types
+                subset of types defined by XML Schema:
+                    string, boolean, decimal, dateTime, base64Binary, integer, NMTOKEN
+                specification has 19 primitive types, and 25 types derived from the primitives
+            2.3.2.2 Primary Components
+                primary components are those that define elements, attributes and types (simple and complex)
+                each type of components may be considered local or global, depending on where they fall in schema doc
+            2.3.2.3 Attributes
+                attributes are declared with the attribute element
+            2.3.2.4 Elements
+                elements are defined using a tag called 'element'
+            2.3.2.5 Simple and complex types
+                defining types is more complex than defining elements or attributes
+                two categories of type definition: simple and complex
+                simple types don't allow attributes or nested elements within them
+                complex types may have attributes, elements, data or any combination thereof
+                a simple type is always a derivation of some sort, based on a previous type
+            2.3.2.6 A unified example schema:
+                <?xml version="1.0"?>
+                <xsd:schema targetNamespace="urn:schema-samples" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                    <!-- A basic attribute declaration -->
+                    <xsd:attribute name="lang" type="xsd:string" />
+                    <!-- An attribute with local (anonymous) typing -->
+                    <xsd:attribute name="lines">
+                        <xsd:simpleType>
+                            <xsd:restriction base="xsd:unsignedInt">
+                                <xsd:maxInclusive value="256000" />
+                            </xsd:restriction>
+                        </xsd:simpleType>
+                    </xsd:attribute>
+                    <!-- A simple type using enumeration -->
+                    <xsd:simpleType name="programming.lang">
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="C" />
+                            <xsd:enumeration value="Perl" />
+                            <xsd:enumeration value="PHP" />
+                            <xsd:enumeration value="Java" />
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                    <!-- A more complex type, using some of the above -->
+                    <xsd:complexType name="SoftwareModule">
+                        <xsd:simpleContent>
+                            <xsd:attribute name="code.language"
+                                           type="programming.lang" />
+                            <xsd:attribute name="comment.language" type="lang" />
+                            <xsd:attribute ref="lines" />
+                        </xsd:simpleContent>
+                    </xsd:complexType>
+                    <!-- Defining an element using the previous type at this
+                         level allows for a document referencing this schema
+                         to use the element as a top-level container -->
+                    <element name="code" type="CodeModule" />
+                    <!-- Now define an even more complex type -->
+                    <xsd:complexType name="CVS.Checkin">
+                        <xsd:sequence>
+                            <xsd:element name="module" type="xsd:string" />
+                            <xsd:element name="credentials">
+                                <xsd:complexType>
+                                    <xsd:choice>
+                                        <xsd:element name="pserver" type="xsd:string" />
+                                        <xsd:sequence>
+                                            <xsd:element name="name" type="xsd:string" />
+                                            <xsd:element name="password" type="xsd:string" />
+                                        </xsd:sequence>
+                                    </xsd:choice>
+                                </xsd:complexType>
+                            </xsd:element>
+                            <xsd:element name="file" type="xsd:string" />
+                            <xsd:element ref="code" />
+                        </xsd:sequence>
+                    </xsd:complexType>
+                    <element name="checkin" type="CVS.Checkin" />
+                </xsd:schema>
+            A simple XML document using the above schema:
+                <?xml version="1.0"?>
+                <checkin xmlns="CVS-Schema.xsd">
+                    <module>perl-web-examples</module>
+                    <credentials><pserver>...</pserver></credentials>
+                    <file>perl/server.pl</file>
+                    <code code.language="Perl" comment.language="en-US">
+                        # The Perl code would go here
+                    </code>
+                </checkin>
+        2.3.3 XML Schema in SOAP and Related Areas
+            SOAP uses basic data types from schema specs
+
+Chapter 3: Introduction to XML-RPC
+    XML-RPC is a web services protocol that implements remote procedure calls over HTTP
+    XML-RPC was originally a fork of the SOAP project
+    3.1.1 The XML in XML-RPC
+        XML-RPC uses a simple XML application to express function calls (requests) and returns values (responses)
+        3.1.1.1 Data encoding
+            XML-RPC supports six basic datatypes in messages and also serialization of arrays and structures
+            XML-RPC Data Types:
+                <int> or <i4>       32bit signed integer values
+                <double>            double precision floats
+                <string>            unedited character data--with &amp; and &lt; encoded
+                <boolean>
+                <dateTime.iso8601>  date and time according to ISO 8601 encoding
+                <base64>            a blob
+            Examples of XML-RPC Datatypes:
+                <int>255</int>
+                <i4>-2435345</i4>
+                <double>3.14159</double>
+                <string>XML-RPC &amp; Perl</string>
+                <boolean>0</boolean>
+                <dateTime.iso8601>20020726T02:50:54</dateTime.iso8601>
+                <base64>
+                    SnVzdCBBbm90aGVyIFBlcmwgQm9vaw==
+                </base64>
+        3.1.1.2 Arrays and Structures
+            XML-RPC uses array and struct datatypes to compress complex data
+            they can serialize almost any hash or array perl can produce, except objects
+            an array element contains one child, a data element
+            within the data container are zero or more value elements, each having one item of data
+            a simple array structure:
+                <array>
+                    <data>
+                        <value><int>255</int></value>
+                        <value>
+                            <array>
+                                <data>
+                                    <!-- no elements here -->
+                                </data>
+                            </array>
+                        </value>
+                    </data>
+                </array>
+            the struct type has key/value pairs, as in a hash--has zero or more containers called a member
+            order of serialization should not be taken to imply order of the struct / hash
+            sample struct expression:
+                <struct>
+                    <member>
+                        <name>pi</name>
+                        <value><double>3.14159</double></value>
+                    </member>
+                    <member>
+                        <name>nested array</name>
+                        <value>
+                            <struct>
+                            </struct>
+                        </value>
+                    </member>
+                </struct>
+            3.1.1.3 Making a request
+                xml encoded request will have a methodCall container, with a required methodName element
+                example:
+                    <?xml version="1.0"?>
+                        <methodCall>
+                            <methodName>user.create</methodName>
+                            <params>
+                                <param>
+                                    <value>
+                                        <struct>
+                                            <member>
+                                                <name>user_id</name>
+                                                <value>rjray</value>
+                                            </member>
+                                            <member>
+                                                <name>password</name>
+                                                <value>bad_password!</value>
+                                            </member>
+                                            <member>
+                                                <name>age</name>
+                                                <value><int>34</int></value>
+                                            </member>
+                                        </struct>
+                                    </value>
+                                </param>
+                                <param>
+                                    <value>www.blackperl.com</value>
+                                </param>
+                            </params>
+                        </methodCall>
+                    
+
+            3.1.1.4 Creating a response
+                a response always returns exactly one value
+                example XML-RPC response
+                    <?xml version="1.0"?>
+                    <methodResponse>
+                        <params>
+                            <param>
+                                <value><int>1</int></value>
+                            </param>
+                        </params>
+                    <methodResponse>
+            3.1.1.5 Sending an error response
+                HTTP response code can't be used to signal a process level error
+                A response message can include a fault value
+                Typical fault message:
+                    <?xml version="1.0"?>
+                    <methodResponse>
+                        <fault>
+                            <value>
+                                <struct>
+                                    <member>
+                                        <name>faultCode</name>
+                                        <value><int>404</int></value>
+                                    </member>
+                                    <member>
+                                        <name>faultString</name>
+                                        <value><string>Resource not found</string</value>
+                                    </member>
+                                </struct>
+                            </value>
+                        </fault>
+                    </methodResponse>
+                fault responses are entirely dictated by the people designing the app--no standards
+        3.1.2 Client and Server Communication
+            

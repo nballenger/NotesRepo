@@ -1,0 +1,435 @@
+The Definitive Guide to HTML5 WebSocket
+By: Vanessa Wang; Frank Salim; Peter Moskovits
+Publisher: Apress
+Pub. Date: February 06, 2013
+Print ISBN: 978-1-4302-4740-1
+Web ISBN: 1-4302-4740-1
+
+Chapter 1: Introduction to HTML5 WebSocket
+
+What is HTML5
+
+HTML5 Connectivity
+    * Includes WebSocket, Server-Sent Events, and Cross-Document Messaging
+
+Overview of Older HTTP Architectures
+    * Basically polling versus messaging.
+
+Introducing WebSocket
+    * Naturally full duplex, bidirectional, single socket connection
+    * The HTTP request becomes a single request to open a WebSocket connection,
+      and reuses the same connection from the client to the server and the
+      server to the client.
+    * Reduces latency because the server can send messages as they become
+      available, not waiting for the client to poll it.
+
+Why Do You Need WebSocket?
+    * Performance -- real time communication over HTTP without polling
+    * Simplicity -- defers real time notification, session state mangagement,
+      cross origin requests, and communication to another layer.
+    * Standards -- underlying network protocol that you can build on
+    * HTML5 -- gives TCP style networking to HTML5
+
+WebSocket and RFC 6455
+    * WebSocket is a protocol, but there is also a WebSocket API
+    * Gives you full duplex communication between client and server
+    * Layered on top of TCP
+
+The World of WebSocket
+
+WebSocket Options
+    * Lots of implementations like mod_pywebsocket, Jetty, Socket.IO, etc.
+
+Related Technologies
+    * Server-sent events -- if you run a primarily broadcast oriented service
+    * SPDY -- networking protocol by Google, augments HTTP to improve the
+      performance via compression/multiplexing.
+    * Web Real-Time Communication (WebRTC) -- peer to peer for browsers
+
+Chapter 2: The WebSocket API
+    
+Overview of the WebSocket API
+    * To connect to a remote host, you create a new WebSocket object instance
+      and give it the URL representing the endpoint you want to connect to.
+    * Established by upgrading from the HTTP protocol to the WebSocket protocol
+      during the initial handshake.
+    * Once the connection is established, you can send messages back and forth
+      between the methods defined by the WebSocket interface.
+    * Purely event driven once the duplex connection is established.
+
+Getting Started with the WebSocket API
+    * Call the constructor to get an instance, then listen for events on that.
+
+    The WebSocket Constructor
+        * Point your instance at an endpoint.
+        * Two URI schemes in the WebSocket Protocol: ws and wss for encrypted
+        * Analogous to an HTTP URI scheme.
+        * wss is WebSocket over Transport Layer Security (TLS/SSL)
+        * Constructor takes one required arg, URL, and one optional one, 
+          protocols, either a name or array of protocol names like XMPP, SOAP
+        * Example WebSocket constructor:
+
+            var ws = new WebSocket("ws://www.websocket.org");
+
+        * With hypothetical support negotiation for a protocol:
+
+            var ws = new WebSocket("ws://www.websocket.org", "myProtocol");
+
+        * Checking the protocol the server chooses:
+
+            var echoSocket = new WebSocket("ws://echo.websocket.org", 
+                            ["com.kaazing.echo", "example.protocol"]);
+
+            echoSocket.onopen = function(e) {
+                // check the protocol the server chose
+                console.log(echoSocket.protocol);
+            }
+
+        * Three types of protocols you can indicate:
+            - Registered protocols via IANA
+            - Open protocols like XMPP and STOMP
+            - Custom protocols that you've written
+
+    WebSocket Events
+        * Application code listens for events on WebSocket objects to handle 
+          incoming data and changes in connection status
+        * Four events will be dispatched: Open, Message, Error, Close
+        * You can listen using on<eventname> handler properties, and via
+          addEventListener()
+
+    WebSocketEvent: Open
+        * When the server responds to the connection request, the open event
+          fires and a connection is established. the callback onopen is called
+
+            ws.onopen = function(e) { console.log("Connection open."); };
+
+    WebSocket Event: Message
+        * Messages contain the data from the server.
+        * The message event fires when messages are received, and onmessage runs
+
+            // event handler for text messages
+            ws.onmessage = function(e) {
+                if (typeof e.data === 'string') {
+                    console.log('String message received', e, e.data);
+                }
+                else {
+                    console.log('Other message received', e, e.data);
+                }
+            };
+
+        * Can handle binary data as Blob messages or ArrayBuffer messages:
+
+            // Set binaryType to blob
+            ws.binaryType = "blob";
+
+            // Event handler for receiving blob messages
+            ws.onmessage = function(e) {
+                if (e.data instanceof Blob) {
+                    console.log("Blob message received", e.data);
+                    var blob = new Blob(e.data);
+                }
+            };
+
+            // Set binaryType to ArrayBuffer
+            ws.binaryType = "arraybuffer";
+
+            // Event handler for receiving ArrayBuffer messages
+            ws.onmessage = function(e) {
+                if (e.data instanceof ArrayBuffer) {
+                    console.log("ArrayBuffer Message Received", e.data);
+                    // e.data is an ArrayBuffer. Create a byte view of that.
+                    var a = new Uint8Array(e.data);
+                }
+            };
+
+    WebSocket Event: Error
+        * Fires for unexpected failures, calls onerror
+        * Causes the socket to close--expect a close event shortly
+
+            // Event handler for errors in the WebSocket object
+            ws.onerror = function(e) {
+                console.log("WebSocket Error: ", e);
+                // custom function for handling errors
+                handleErrors(e);
+            };
+
+    WebSocket Event: Close
+        * Fires when the connection is closed, calls onclose
+
+            // Event handler for closed connections
+            ws.onclose = function(e) {
+                console.log("Connection closed", e);
+            };
+
+        * The close event has three useful properties
+            - wasClean -- boolean telling you whether close was clean
+            - code -- close code
+            - reason -- reason for close
+
+    WebSocket Methods
+        
+        send()
+            * While the connection is open, you can send() messages from the
+              client to the server.
+
+                ws.send("Hello WebSocket!");
+
+            * Will not work until the connection is open--wait for open event.
+
+                var ws = new WebSocket("ws://echo.websocket.org");
+                ws.onopen = function(e) {
+                    ws.send("Initial data");
+                };
+
+            * If you want to send messages in response to another event, you can
+              check the WebSocket readyState property and choose to send data
+              only when the socket is open:
+
+                function myEventHandler(data) {
+                    if (ws.readyState === WebSocket.OPEN) {
+                        // ok to send data
+                        ws.send(data);
+                    }
+                    else {
+                        // do something else
+                    }
+                }
+
+            * You can send binary data, useful for binary protocols:
+
+                var blob = new Blob("blob contents");
+                ws.send(blob);
+
+                var a = new Uint8Array([8,6,5,4,3,4]);
+                ws.send(a.buffer);
+
+        close()
+            * Terminates a connection or attempted connection:
+
+                ws.close();
+
+            * Calling with a reason:
+                
+                ws.close(1000, "Closing normally");
+
+    WebSocket Object Attributes
+        
+        readyState
+            * Attributes, values, descriptions:
+
+            WebSocket.CONNECTING, 0, in progress but not established
+            WebSocket.OPEN, 1, messages can flow
+            WebSocket.CLOSING, 2, going through the closing handshake
+            WebSocket.CLOSED, 3, has been closed or could not be opened
+
+        bufferedAmount
+            * Amount of data buffered for transmission to the server
+            * Calling send() is instant, but transmission is not
+            * You can see the size of the current buffer with bufferedAmount
+            * Using bufferedAmount to send updates every second, or adjust
+              accordingly if the network can't handle that:
+
+                // 10k max buffer size
+                var THRESHOLD = 10240;
+
+                // create a new ws connection
+                var ws = new WebSocket("ws://echo.websocket.org/updates");
+
+                // Listen for opening event
+                ws.onopen = function() {
+                    // attempt to send update every second
+                    setInterval(function() {
+                        // send only if buffer is not full
+                        if (ws.bufferedAmount < THRESHOLD) {
+                            ws.send(getApplicationState());
+                        }
+                    }, 1000);
+                };
+
+        protocol
+            * Lists the result protocol of the initial handshake.
+
+Putting it All Together
+     
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>WebSocket Echo Client</title>
+    </head>
+    <body>
+        above
+        <div id="output"></div>
+        below
+
+        <script type="text/javascript">
+        var output, ws;
+
+        // Initialize WebSocket connection and event handlers
+
+        function setup() {
+            output = document.getElementById("output"),
+            ws = new WebSocket("ws://echo.websocket.org/echo");
+
+            // Listen for connection event
+            ws.onopen = function(e) {
+                log("Connected");
+                sendMessage("Hello WebSocket!");
+            };
+
+            // Listen for close event
+            ws.onclose = function(e) { log("Disconnected: " + e.reason); };
+
+            // Listen for errors
+            ws.onerror = function(e) { log("Error"); };
+
+            // Listen for new messages
+            ws.onmessage = function(e) {
+                log("Message rec'd: " + e.data);
+                // close once the message arrives
+                ws.close();
+            };
+        }
+
+        // Send a message on the socket
+        function sendMessage(msg) {
+            ws.send(msg);
+            log("Message sent.");
+        }
+
+        // Display logging info in the document
+        function log(s) {
+            var p = document.createElement('p');
+            p.style.wordWrap = "break-word";
+            p.textContent = s;
+            output.appendChild(p);
+
+            console.log(s);
+        }
+
+        // Start it up.
+        setup();
+        </script>
+    </body>
+</html>
+
+Checking for WebSocket Support
+    * Client code for support:
+
+        if (window.WebSocket) {
+            console.log("Yep.");
+        }
+        else {
+            console.log("Nope.");
+        }
+
+Using HTML5 Media with WebSocket
+    * Complete client application using HTML5 media and WebSocket
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>WebSocket Image Drop</title>
+</head>
+<body>
+    <h1>Drop image here</h1>
+    <script>
+    // Initialize WebSocket connection
+    var wsUrl = "ws://echo.websocket.org/echo";
+    var ws = new WebSocket(wsUrl);
+    ws.onopen = function(e) {
+        console.log("open");
+    };
+
+    // Handle binary image data rec'd on the socket
+    ws.onmessage = function(e) {
+        var blob = e.data;
+        console.log("message: " + blob.size + " bytes");
+        // Work with prefixed url API
+        if (window.webkitURL) {
+            URL = webkitURL;
+        }
+
+        var uri = URL.createObjectURL(blob);
+        var img = document.createElement("img");
+        img.src = uri;
+        document.body.appendChild(img);
+    }
+
+    // handle drop event
+    document.ondrop = function(e) {
+        document.body.style.backgroundColor = "#FFF";
+        try {
+            e.preventDefault();
+            handleFileDrop(e.dataTransfer.files[0]);
+            return false;
+        }
+        catch(err) {
+            console.log(err);
+        }
+    }
+
+    // Provide visual feedback for the drop area
+    document.ondragover = function(e) {
+        e.preventDefault();
+        document.body.style.backgroundColor = "#6fff41";
+    }
+    document.ondragleave = function() {
+        document.body.style.backgroundColor = "#FFF";
+    }
+
+    // Read binary file contents and send them over socket
+    function handleFileDrop(file) {
+        var reader = new FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onload = function() {
+            console.log("sending: " + file.name);
+            ws.send(reader.result);
+        }
+    }
+    </script>
+</body>
+</html>
+
+
+Chapter 3: The WebSocket Protocol
+    * Defined under RFC 6455: The WebSocket Protocol
+
+Before the WebSocket Protocol
+    * HTTP was great, because it doesn't require that both computers in an
+      interaction be addressible--the client can address the server and get
+      back a response without having an explicit address.
+    * However that prevents some types of interaction--so people stretch HTTP
+      with polling, long polling, and streaming.
+    * Essential problem is that HTTP is synchronous and the apps we want to
+      build with it are asynchronous, so attempts to shoehorn asynchronous
+      communication back into HTTP tend to be inefficient and nonstandard.
+
+Introducing the WebSocket Protocol
+    WebSocket: Internet Capabilities for Web Applications
+        * Asynchronous, like TCP
+        * Has lots of things from HTTP like URLs, security, message based data,
+          built in text support
+        * Addressing is still unidirectional, but servers can send data over
+          an open WebSocket connection, which are always established by clients.
+        * Comparison of TCP, HTTP, WebSocket:
+
+        Feature         TCP             HTTP            WebSocket
+        ---------------------------------------------------------------------
+        Addressing      IP address/port URL             URL
+        Simultaneous    Full Duplex     Half Duplex     Full Duplex
+          transmission
+        Content         Byte streams    MIME messages   Text/binary messages
+        Msg. Boundaries No              Yes             Yes
+        Connection      Yes             No              Yes
+          Oriented
+
+        * WebSocket layers on top of TCP, which is on top of IP.
+        * WebSocket is considered transport layer because you can put 
+          application layer protocols on top of it.
+
+    Inspecting WebSocket Traffic
+        * Use something like the network inspector, Wireshark, or tcpdump
+        * Lets you view the parts of the request/response cycle
+
+
+The WebSocket Protocol

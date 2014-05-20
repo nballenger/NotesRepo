@@ -1,0 +1,226 @@
+Things about JavaScript I have found surprising or valuable to know:
+
+* Explicitly naming a function gives you a variable, scoped to that function, that allows it
+    to refer to itself--sort of like 'this' but for the function itself. This is called an
+    "inline named function", per the book Secrets of the JavaScript Ninja, section 4.2.4.
+    
+    // the external handle is 'x.myMethod', but the function
+    // recursively calls itself via its inline name, 'signal'
+    var x = {
+        myMethod: function signal(n) {
+            return n > 1 ? signal(n-1) + "-beep" : "beep";
+        }
+    };
+    
+* Each function has a property, 'length', whose sole purpose is to hold the number of
+    parameters the function was originally defined with. This lets you compare the
+    length of 'arguments' to the length of the current function to find out whether it
+    is being called with the original number of parameters. (from Secrets of the JavaScript Ninja)
+    
+* The value of 'this' in a function body is determined by the invocation context, and there
+    are four possible invocation contexts for functions (from Secrets of the JavaScript Ninja):
+    - As a function, in which the function is invoked in a straightforward manner
+        'this' is set to the global head object
+    - As a method, which ties the invocation to an object
+        'this' refers to the containing object
+    - As a constructor, in which a new object is brought into being
+        A new, anonymous object is created, whose prototype is set to the prototype of
+        the constructor function. The constructor function body runs with 'this' referring
+        to the new anonymous object, which is then returned from the constructor (absent
+        any explicit return statements).
+    - Via its apply() or call() methods    
+        Each of these allows you to explicitly determine the value that 'this' will have
+        because you are essentially saying "run this function while using 'this' to refer
+        to object X"
+        
+    Note that there's a fifth case: when called as an event handler, this refers to the DOM
+        object that the handler was called on.
+        
+* To decrease work per iteration in a loop, minimize property lookups and do a reversal.
+    (from High Performance JavaScript):
+
+    // Instead of:
+    for (var i = 0; i < items.length; i++) {
+        process(items[i]);
+    }
+    
+    // Use this:
+    for (var i = items.length; i--; ) {
+        process(items[i]);
+    }
+
+* To decrease the iterations of a loop, use a variation on Duff's Device. 
+    For loops with more than 1k iterations, gives improvement, at 500k it's 70% faster
+    (from High Performance JavaScript):
+    
+    var iterations = items.length % 8,
+        i          = items.length - 1;
+
+    while (iterations) {
+        process(items[i--]);
+        iterations--;
+    }
+
+    iterations = Math.floor(items.length / 8);
+
+    while (iterations) {
+        process(items[i--]);
+        process(items[i--]);
+        process(items[i--]);
+        process(items[i--]);
+        process(items[i--]);
+        process(items[i--]);
+        process(items[i--]);
+        process(items[i--]);
+        iterations--;
+    }    
+    
+* You can turn a linear if-else series into a tree structure to minimize the number
+    of conditional evaluations necessary to reach a given condition. (from High Performance JS):
+    
+    if (value < 6) {
+        if (value < 3) {
+            if (value == 0) {
+                return result0;
+            } else if (value == 1) {
+                return result1;
+            } else {
+                return result2;
+            }
+        } else {
+            if (value == 3) {
+                return result3;
+            } else if (value == 4) {
+                return result4;
+            } else {
+                return result5;
+            }
+        }
+    } else {
+        if (value < 8) {
+            if (value == 6) {
+                return result6;
+            }
+        }
+    }    
+    
+* When running a compatibility check, you can save cycles after the first run of a function
+    if that function overwrites itself on first execution. (from High Performance JavaScript)
+    
+    function addHandler(target, eventType, handler) {
+        // overwrite the existing function
+        if (target.addEventListener) {      // DOM2 Events
+            addHandler = function(target, eventType, handler) {
+                target.addEventListener(eventType, handler, false);
+            };
+        }
+        else {  // assume IE
+            addHandler = function(target, eventType, handler) {
+                target.attachEvent("on" + eventType, handler);
+            };
+        }
+        // call the new function
+        addHandler(target, eventType, handler);
+    }    
+    
+* Double-negating something with !! will convert it to its equivalent boolean value:
+
+    if (!!1 === true) { console.log('Yep.'); }
+    
+* Interesting case where iterator variables bite you:
+    
+        var divs = document.getElementsByTagName("div");
+        
+        for (var i = 0; i < divs.length; i++) {
+            divs[i].addEventListener("click", function() {
+                alert("div #" + i + " was clicked");
+            }, false);
+        }
+        
+    - That will alert, for all clicked divs, the highest value i ever got to, because
+        i is being updated outside the closure context of the anonymous function that
+        is getting bound as the click handler
+        
+    - Handling the iterator properly:
+    
+        var divs = document.getElementsByTagName("div");
+        
+        for (var i = 0; i < div.length; i++) {
+            (function(n) {
+                div[n].addEventListener("click", function() {
+                    alert("div #" + n + " was clicked");
+                }, false);
+            })(i)
+        }
+        
+* Coping with greedy ids (from JavaScript Ninja, 11.2)
+    - Example:
+        
+        <form id="form" action="/conceal">
+            <input type="text" id="action" />
+            <input type="submit" id="submit" />
+        </form>
+        
+        <script>
+        // what will end up a reference to input#action element
+        var what = document.getElementById('form').action;
+        
+        // causes a script error: Property 'submit' of object #<HTMLFormElement> 
+        //  is not a function
+        document.getElementById('form').submit();
+        </script>
+        
+    - The browser added properties to the <form> element for each of the input elements
+        within the form that reference the element
+    - The name of the added property is taken from the id value of the input elements
+    - If that id value overloads an existing property of the form element, the
+        original properties are replaced by the new property
+    - To deal with, avoid id values that can conflict with standard property names        
+            
+* setInterval and setTimeout will take string arguments in place of function literals or
+    references, so you can use the timing functions to eval runtime strings. JS Ninja, Chapter 9
+    
+* You can force evaluation of runtime strings in the global scope in a browser safe manner
+    like this (JS Ninja, Chapter 9):
+    
+    function globalEval(data) {
+        data = data.replace(/^\s*|\s*$/g, "");
+        if (data) {
+            var head = document.getElementsByTagName("head")[0] ||
+                       document.documentElement,
+                script = document.createElement('script');
+                
+            script.type = 'text/javascript';
+            script.text = data;
+            
+            head.appendChild(script);   // attach to the DOM
+            head.removeChild(script);   // remove from the DOM
+        }
+    }    
+    
+* You can store arbitrary js in a script tag with a non-standard type attribute, and the
+    browser will ignore it. You can then pull it in and evaluate it in other code.  JS Ninja, Chapter 9
+    
+    <script type="text/javascript">
+    window.onload = function() {
+        var scripts = document.getElementsByTagName('script');
+        for (var i = 0; i < scripts.length; i++) {
+            if (scripts[i].type = 'x/onload') {
+                globalEval(scripts[i].innerHTML);
+            }
+        }
+    };
+    </script>
+    
+    <script type="x/onload">
+    assert(true, "Executed on page load.");
+    </script>
+        
+From DOM Enlightenment:        
+2.9 document.defaultView is a Shortcut to the Head/Global Object
+    * defaultView shortcuts to the JavaScript head object
+    * That's 'window' in a browser
+    * If you're dealing with a headless browser or a js environment outside a browser,
+        you can use this to get access to the head object scope
+        
+        

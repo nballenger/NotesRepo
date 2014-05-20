@@ -1,0 +1,377 @@
+Java I/O, Second Edition
+By: Elliotte Rusty Harold
+Publisher: O'Reilly Media, Inc.
+Pub. Date: May 16, 2006
+Print ISBN-13: 978-0-596-52750-1
+Print ISBN-10: 0-596-52750-0
+Pages in Print Edition: 736
+
+Part 1: Basic I/O
+
+Chapter 1: Introducing I/O
+
+1.1 What is a Stream?
+  * Ordered sequence of bytes, of indeterminate length.
+  * Input streams go external source to Java, output goes Java to a target
+
+  1.1.1 Where Do Streams come from?
+    * STDIN  == java.lang.System.in
+    * STDOUT == java.lang.System.out
+    * STDERR == java.lang.System.err
+    * out and err are instances of java.io.PrintStream
+    * Streams can come from files, network connections, Java programs
+
+  1.1.2 The Stream Classes
+    * Mostly in java.io
+    * Two main ones are InputStream and OutputStream, abstract base classes
+    * java.util.zip has input/output streams for compressed data
+    * java.util.jar has stream classes for reading from JAR
+    * java.security has streams for calculating message digests
+    * Java Cryptography Extension has encrypt/decrypt streams
+    * Couple of random stream classes in the sun packages
+
+1.2 Numeric Data
+  * Streams read and write bytes, readers and writers read/write characters
+  * Some non-obvious behaviors here.
+
+  1.2.1 Integer Data
+    * Literal integers are treated as type int, 4-byte, big-endian, two's comp
+    * Longs are 8-byte, literals are suffixed with L
+    * Shorts are 2-byte
+    * The 'byte' primitive is used a lot in I/O stuff. 8-bit, two's comp integer
+    * Values for byte are signed, -128 to 127.
+    * There are no short or byte literals, even in assignments.
+    * Assignment conversions happen in cases like 'byte b = 42'
+    * You can autocast int literals to byte, but not runtime ints:
+
+      int i = 42; byte b = i;  // results in a compilation error
+
+    * You can't even add them without an explict cast:
+
+      byte b1 = 22; byte b2 = 33; byte b3 = b1 + b2; // compilation error
+
+    * Most stream classes don't actually return bytes, they return unsigned int
+    * Their writers expect int args as well, but should only be 0-255.
+    * Real byte types are used in methods that read/write arrays of bytes
+    
+  1.2.2 Conversions and Casts
+    * Bytes are often converted to ints in calculations/method invocations
+    * Casting from wider type to narrower type requires truncation of the
+      higher order bytes. As long as the value of the wider type can be
+      expressed in the narrower type, no truncation occurs.
+
+1.3 Character Data
+  * Internally, Java uses Unicode as the charset, which is a superset of Latin-1
+  * Latin-1 is an 8-bit superset of ASCII, which is 7-bit
+
+  1.3.1 ASCII
+    * 7-bit, 128 combinations
+    * If you cast a byte between 0 and 127 to char, you get an ASCII character
+    * ASCII from 0-31 and 127 are nonprinting control characters
+    * 32-47 are punctuation and whitespace
+    * 48-57 are digits
+    * 58-64 are punctuation
+    * 65-90 are capital letters
+    * 91-96 are punctuation
+    * 97-122 are lower case letters
+    * 123-126 are punctuation
+
+  1.3.2 Latin-1
+    * First 128 characters are the ASCII mappings
+    * Characters from 128-255 are Latin-1 specific, used for accents, etc
+    * Reading an unsigned byte to char (by casting) will print Latin-1
+
+  1.3.3 Unicode
+    * First 256 characters of Unicode are Latin-1
+    * Unicode is only a character set, NOT an encoding, so it ties letter A to
+      code 65, but doesn't say whether 65 is written with one byte, two bytes,
+      or four bytes, or whether the bytes are big or little endian.
+    * There are standard encodings, like UTF-8, UTF-16, UTF-32
+    * UTF-32 is the most naive--each character is a 4-byte int
+    * UTF-16 represents most chars as 2-byte, unsigned short, but uncommon
+      characters are 4-byte.  The JVM uses UTF-16 internally.
+    * A Java char is NOT a unicode character, it's a UTF-16 code point, so
+      sometimes two chars are required to make a Unicode character.
+    * UTF-8 is relatively efficient, with one byte for each ASCII character,
+      two bytes for each character in most other alphabets, and three to four
+      bytes for uncommon (Asian mostly) languages.
+    * Java .class files use UTF-8 internally to store string literals.
+
+  1.3.4 Other Encodings
+    * IBM mainframes use EBCDIC, which has most of the same characters as ASCII
+      but assigns them to different numbers.
+    * Macs use (or did in 2006) MacRoman, an 8-bit encoding that is mostly like
+      Latin-1, though in different positions.
+    * DOS uses character sets like Cp850 that include box drawing characters
+    * Big-5 and SJIS are Chinese and Japanese encodings, respectively.
+
+  1.3.4 The char Data Type
+    * Text in Java is mostly the char primitive data type, char arrays, and
+      Strings, which are internally arrays of chars.
+    * A char is a 2-byte, unsigned integer, the only unsigned Java type.
+    * Each char represents a character in the Unicode character set.
+    * Chars can be assigned to by using int literals in the range 0-65535
+    * They can also be assigned to with char literals, a single char in ''
+    * The javac compiler can translate many encodings to unicode if called
+      with the -encoding command line flag.
+    * Most character sets understood by Java do not have equivalents for all
+      the unicode characters. If you need one that does not exist in your
+      charset, you can use Unicode escapes. Those are an unescaped backslash,
+      followed by any number of u characters, followed by four hex digits:
+
+      char copyright = '\u00A9';
+
+    * You may use unicode escapes in char literals, strings, identifiers, 
+      comments, keywords, separators, operators, and numeric literals.
+
+1.4 Readers and Writers
+  * Streams are specifically NOT for reading and writing text, or numbers
+    that are formatted as text. For these cases, use readers and writers.
+  * I/O streams are fundamentally byte-based, while readers/writers are
+    character based, and characters can have different widths by charset.
+  * Readers take their input from streams, but convert the streamed bytes
+    into char type objects according to a specified encoding format.
+  * Writers convert chars to bytes before writing.
+  * java.io.Reader and java.io.Writer are abstract superclasses
+  * The subclasses mostly do conversion between charsets
+  * java.io. includes 9 reader and 8 writer classes:
+
+    BufferedReader
+    BufferedWriter
+    CharArrayReader
+    CharArrayWriter
+    FileReader
+    FileWriter
+    FilterReader
+    FilterWriter
+    InputStreamReader
+    LineNumberReader
+    OutputStreamWriter
+    PipedReader
+    PipedWriter
+    PrintWriter
+    PushbackReader
+    StringReader
+    StringWriter
+
+  * Most methods are equivalent to stream classes, but a byte in the signature
+    of a stream method becomes a char in the signature of a reader/writer.
+  * Readers/writers may also have String capable methods, which streams do not.
+
+1.5 Buffers and Channels
+  * You're more likely to bottleneck on disk or network access than streams
+    competing with each other when you only have a few streams.
+  * If you have multiple streams, they can block until the hardware they need
+    to talk to is caught up.
+  * Traditionally the solution was one thread per connection, but threads
+    have a certain amount of overhead.
+  * Since 1.4 there's been nonblocking I/O, where streams take a back seat to
+    buffers and channels.
+  * Input buffers are filled with data from the channel, drained by the app
+  * Output buffers are filled by the app, drained by the target
+  * Thus one thread can service many channels simultaneously.
+  * Channels/buffers also give you memory-mapped I/O, where files are treated
+    as large blocks of memory (big byte arrays). You can read/write to specific
+    points in a file, and changes are pushed to that point on the disk directly.
+
+1.6 The Ubiquitous IOException
+  * I/O is very subject to external factors.
+  * Most methods with I/O implications throw IOException
+  * You have to declare that your methods throw it or enclose the call in try
+  * Exceptions are PrintStream and PrintWriter, which catch and eat any
+    exceptions inside a print() or println() method.
+  * If you call checkError() on them, it'll be true if an exception happened.
+  * Lots of subclasses to IOException.
+
+1.7 The Console: System.out, System.in, System.err
+  * STDIN, STDOUT, STDERR aren't that great as I/O places, generally speaking.
+
+  1.7.1 System.out
+    * System.out is an instance of java.io.PrintStream, which itself is a
+      subclass of java.io.OutputStream.
+
+  1.7.2 System.err
+    * Also an instance of java.io.PrintStream. Mostly used in try/catch blocks:
+
+      try {
+        // do something that might cause an exception
+      }
+      catch (Exception ex) {
+        System.err.println(ex);
+      }
+
+  1.7.3 System.in
+    * Instance of java.io.InputStream, which is really a .io.BufferedInputStream
+    * Buffered because users enter data one line at a time.
+    * Most of the time you have to enter the end of stream character
+
+  1.7.4 Redirecting System.out, System.in, System.err
+    * Basic unix redirection stuff.
+
+  1.7.5 The Console Class // Java 6
+    * In 6 you get java.lang.Console, that gives convenience I/O methods
+    * Console is a singleton, and always applies to the same shell that IN/OUT 
+      and ERR do.
+    * You get the instance by:
+
+      Console theConsole = System.console();  // returns null if no console
+
+    * Methods are readLine, readPassword, format, printf
+
+1.8 Security Checks on I/O
+  * Applets run under a security manager.
+  * Most checks are "Can the program..."
+    - read a particular file?
+    - write a particular file?
+    - delete a particular file?
+    - determine file existence for a particular file?
+    - make a network connection to a particular host?
+    - accept an incoming connection from a particular host?
+
+
+Chapter 2: Output Streams
+  * java.io.OutputStream has some basic methods:
+    - write(int b)
+    - write(byte[] data)
+    - write(byte[] data, int offset, int length)
+    - flush()
+    - close()
+
+2.1 Writing Bytes to Output Streams
+  * OutputStream.write() writes a single unsigned byte of data
+  * Example that prints the printable ASCII characters:
+
+    import java.io.*;
+    public class AsciiChart {
+      public static void main(String[] args) {
+        for (int i = 32; i < 127; i++) {
+          System.out.write(i);
+          // break after every eight chars
+          if (i % 8 == 7) System.out.write('\n'); 
+          else System.out.write('\t');
+        }
+        System.out.write('\n');
+      }
+    }
+
+  * write() can throw an IOException, so wrap it in a try/catch block
+
+2.2 Writing Arrays of Bytes
+  * write(byte[] data) and write(byte[] data, int offset, int length) are
+    variants of write() that write chunks of data, first one for a full array,
+    second for a subarray.
+  * Try writing files in small multiples of the disk's block size. Smaller
+    if you're writing over a network. Maybe 1024 for files, 128 for network.
+  * Example:
+
+    import java.io.*;
+    public class AsciiArray {
+      public static void main(String[] args) {
+        byte[] b = new byte[(127-31)*2];
+        int index = 0;
+        for (int i = 0; i < 127; i++) {
+          b[index++] = (byte) i;
+          // break after eight characters
+          if (i % 8 == 7) b[index++] = (byte) '\n';
+          else b[index++] = (byte) '\t';
+        }
+        b[index++] = (byte) '\n';
+        try {
+          System.out.write(b);
+        }
+        catch (IOException ex) {
+          System.err.println(ex);
+        }
+      }
+    }
+
+2.3 Closing Output Streams
+
+
+
+
+
+
+Chapter 3: Input Streams
+
+3.1 The read() method
+  * Abstract superclass to all input streams is java.io.InputStream
+  * read() reads a single unsigned byte of data, returns the integer value
+  * If you call read() on an InputStream descendant, you have to catch IOException
+  * read() return -1 at EOF
+  * Example of try/catch and EOF detection:
+
+    try {
+      InputStream in = new FileInputStream("file.txt");
+      int[] data = new int[10];
+      for (int i = 0; i < data.length; i++) {
+        int datum = in.read();
+        if (datum == -1) break;
+        data[i] = datum;
+      }
+    }
+    catch (IOException ex) {
+      System.err.println(ex.getMessage());
+    }
+
+3.2 Reading Chunks of Data from a Stream
+  * All input streams have read() methods that read chunks of data into a byte array
+  * Example of repeatedly reading until array is filled or EOF:
+
+    try {
+      byte[] b = new byte[100];
+      int offset = 0;
+      while (offset < b.length) {
+        int bytesRead = System.in.read(b, offset, b.length - offset);
+        if (bytesRead == -1) break;
+        offset += bytesRead;
+      }
+    }
+    catch (IOException ex) {
+      System.err.println("Couldn't read from System.in!");
+    }
+
+3.3 Counting Available Bytes
+  * InputStream.available() tells you how many bytes you can return w/o blocking
+  * Returns 0 if no data to be read
+  * Example of sizing an array appropriate to the input size:
+
+    try {
+      byte[] b = new byte[System.in.available()];
+      System.in.read(b);
+    }
+    catch (IOException ex) {
+      System.err.println("Couldn't read from System.in!");
+    }
+
+3.4 Skipping Bytes
+  * Example of skipping next 80 bytes in a stream:
+
+    try {
+      long bytesSkipped = 0;
+      long bytesToSkip = 80;
+      while (bytesSkipped < bytesToSkip) {
+        long n = in.skip(bytesToSkip - bytesSkipped);
+        if (n == -1) break;
+        bytesSkipped += n;
+      }
+    }
+    catch (IOException ex) {
+      System.err.println(ex);
+    }
+
+3.5 Closing Input Streams
+  * Close all streams associated with resources (not System.in)
+  * Example of a finally block that closes:
+
+    InputStream in = null;
+    try {
+      URL u = new URL("http://www.msf.org/");
+      in = u.openStream();
+      // read from the stream
+    }
+    finally {
+      if (in != null) in.close();
+    }
+
+3.6 Marking and Resetting

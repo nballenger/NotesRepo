@@ -1,0 +1,283 @@
+Drawing:
+
+    fillRect(x, y, width, height)
+    strokeRect(x, y, width, height)
+    clearRect(x, y, width, height)
+
+    beginPath()             starts a current (non state) path
+    moveTo(x, y)            moves the pointer
+    lineTo(x, y)            draws from current pointer to new xy
+    stroke()                strokes the entire current path
+    closePath()             ends the current path
+
+    arc(x, y, radius, startAngle, endAngle, anticlockwise)
+        // x,y is center, angles are in radians, anticlockwise is boolean
+        // degrees into radians is degree * (Math.PI/180)
+
+    arcTo(x1, y1, x2, y2, radius)
+
+    bezierCurveTo(cp1x, cp2y, cp2x, cp2y, x, y)
+
+    quadraticCurveTo(cpx, cpy, x, y)
+
+Context Variables:
+
+    context.fillStyle       color hex
+    context.strokeStyle     color hex
+    context.lineWidth       int or float
+    context.lineCap         [butt, round, square]
+    context.lineJoin        [miter, bevel, round]
+
+    context.globalAlpha     0.0 to 1.0, transparency level
+    context.globalCompositeOperation
+        // applies after globalAlpha and any transformations
+        // 'source' is the shape to draw, 'destination' is current canvas
+        // states are:
+        //      copy                where overlap, displays source
+        //      destination-atop    where overlap, displays destination
+        //      destination-in      destination image wherever both are opaque
+        //      destination-out     destination image wherever dest is opaque/sources is trans
+        //      destination-over    destination image wherever dest is opaque
+        //      lighter             source + destination--sum of images, to limit of 1.0
+        //      source-atop         where overlap, displays source
+        //      source-in           source image wherever both are opaque
+        //      source-out          source image wherever source is opaque and dest is trans
+        //      source-over         (default) source image where it is opaque
+        //      xor                 Source xor destination
+
+Saving and Restoring Canvas State:
+
+    context.save()          pushes to the stack
+    context.restore()       pops off the stack
+
+Clipping Region:
+
+    context.clip()          sets the clipping region a previous rect() call
+
+Transformations:
+
+    context.setTransform(1,0,0,1,0,0)       sets the current trans to 'identity'--resets
+    
+    var angleInRadians = 45 * Math.PI / 180;
+    context.rotate(angleInRadians);
+
+    // It is necessary to translate the origin point to rotate a shape around
+    // its own center, rather than the default origin of 0,0.
+
+        var x = 100;
+        var y = 100;
+        var width = 50;
+        var height = 50;
+        context.translate(x+0.5*width, y+0.5*height);             // move the origin
+        context.rotate(angleInRadians);
+        context.fillRect(-0.5*width, -0.5*height, width, height); // origin has moved
+
+
+    context.scale(x-scale, y-scale)
+
+    // Again, necessary to change the origin in order to scale in place
+
+        function drawScreen() {
+            context.setTransform(1,0,0,1,0,0);
+            var x = 100;
+            var y = 100;
+            var width = 50;
+            var height = 50;
+            context.translate(x+0.5*width, y+0.5*height);
+            context.scale(2,2);
+            context.fillStyle = "red";
+            context.fillRect(-.5*width, -.5*height, width, height);
+        }
+
+Colors and Gradients
+
+    // Linear horizontal gradient:
+
+        function drawScreen() {
+            // horizontal gradient values must remain 0
+            var gr = context.createLinearGradient(0,0,100,0);
+
+            // Add the color stops.
+            gr.addColorStop(0,'#FF0000');
+            gr.addColorStop(.5,'#00FF00');
+            gr.addColorStop(1,'#FF0000');
+
+            // Use the gradient as fillstyle
+            context.fillStyle = gr;
+            context.fillRect(0, 0, 100, 100);
+        }
+
+    // Vertical gradient stroke:
+
+        function drawScreen() {
+            var gr = context.createLinearGradient(0, 0, 0, 100);
+
+            // Add the color stops
+            gr.addColorStop(0, 'rgb(255,0,0)');
+            gr.addColorStop(.5, 'rgb(0,255,0)');
+            gr.addColorStop(1, 'rgb(255,0,0)');
+
+            // Use the gradient for the fillStyle
+            context.strokeStyle = gr;
+            context.beginPath();
+            context.moveTo(0,0);
+            context.lineTo(50,0);
+            context.lineTo(100,50);
+            context.lineTo(50,100);
+            context.lineTo(0,100);
+            context.lineTo(0,0);
+            context.stroke();
+            context.closePath();
+        }
+
+    // Diagonal gradients
+
+        var gr = context.createLinearGradient(x1, y1, x2, y2);
+
+    // Radial gradients
+
+        var gr = context.createRadialGradient(c1_x, c1_y, c1_r, c2_x, c2_y, c2_r);
+
+Patterns
+
+    // Created with createPattern(), which takes an image obj and a string
+    // Example:
+
+        function drawScreen() {
+            var fillImg = new Image();
+            fillImg.src = 'fill_20x20.gif';
+            fillImg.onload = function() {
+                var fillPattern = context.createPattern(fillImg, 'repeat');
+                context.fillStyle = fillPattern;
+                context.fillRect(0, 0, 200, 200);
+            }
+        }
+
+    // Four image fill types:
+        repeat, repeat-x, repeat-y, no-repeat
+
+Shadows on Shapes:
+
+    // Set four properties:
+        shadowOffsetX
+        shadowOffsetY
+        shadowBlur
+        shadowColor
+
+    // Example:
+
+        function drawScreen() {
+            context.fillStyle = 'red';
+
+            context.shadowOffsetX = 4;
+            context.shadowOffsetY = 4;
+            context.shadowColor = 'black';
+            context.shadowBlur = 4;
+            context.fillRect(10, 10, 100, 100);
+        }
+
+Basic Text
+
+    context.font = "50px serif";
+    context.fillStyle = "#FF0000";
+    context.fillText("Hello, World!", 100, 80);
+
+Text Width
+
+    var metrics = context.measureText(message);
+    var textWidth = metrics.width;
+    var xPosition = (theCanvas.width/2) - (textWidth/2);
+
+fillText() and strokeText():
+
+    fillText([text], [x], [y], [maxWidth]);
+    strokeText([text], [x], [y], [maxWidth]);
+
+Setting the Font:
+    
+    basic format of the font string:
+
+        [font style] [font weight] [font size] [font face]
+        
+    font styles are:
+
+        normal | italic | oblique | inherit
+
+    weights are:
+
+        normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 |
+        800 | 900 | inherit | auto
+
+    generic faces are:
+
+        serif | sans-serif | cursive | fantasy | monospace
+
+    size is an integer
+
+Vertical and horizontal alignment:
+
+    textBaseline Options are:
+
+        top         top of the em square and top of the highest glyph. Pushes farthest down
+        hanging     lower than top, line from which glyphs 'hang' at top of their face
+        middle      dead center vertical baseline
+        alphabetic  bottom of vertical writing styles like arabic/latin/hebrew
+        ideographic bottom of horizontal script glyphs like han, katakana, hiragana
+        bottom      bottom of the em square of the glyphs--pushes farthest up
+
+    textAlign options are:
+
+        center      horizontal center
+        start       directly after the y position
+        end         before the y position
+        left        starting at y position, left justified (like 'start')
+        right       ending at y position, right justified (like 'end')
+
+Shadows and Text:
+
+    context.shadowColor
+    context.shadowOffsetX
+    context.shadowOffsetY
+    context.shadowBlur
+
+Text with Gradients and Patterns:
+
+    var gradient = context.createLinearGradient([x0],[y0],[x1],[y1]);
+    gradient.addColorStop([offset], [color]);
+    context.fillStyle = gradient;
+    context.strokeStyle = gradient;
+
+Image patterns and text:
+
+    var pattern = context.createPattern([image], [repetition]);
+    context.fillStyle = pattern;
+    context.strokeStyle = pattern;
+
+Images:
+
+    Basics:
+
+        html image: 
+            <img src="ship1.png" id="spaceship" />
+        js image obj: 
+            var spaceShip = new Image();
+            spaceShip.src = "ship1.png";
+
+    Preloading:
+        
+        spaceShip.addEventListener('load', eventShipLoaded, false);
+        function eventShipLoaded() {
+            drawScreen();
+        }
+
+    Display with drawImage():
+
+        Call style 1: drawImage(Image, dx, dy);         // places
+        Call style 2: drawImage(Image, dx, dy, dw, dh); // resizes
+        Call style 3: drawImage(sx, sy, sw, sh, dx, dy, dw, dh); // sprite sheet
+
+Math, Physics, and Animation:
+
+Moving in a Straight Line:
+    
+    Add a constant value to x or y every draw cycle

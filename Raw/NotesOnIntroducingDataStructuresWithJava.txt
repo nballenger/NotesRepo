@@ -1,0 +1,674 @@
+Notes on Data Structures with Java
+
+Chapter 1: Some Basic Ideas
+
+1.1 Introduction
+1.2 What is a computer program?
+1.3 Advances in Processing Technology
+1.4 Executing a Program
+1.5 High level languages
+1.6 Program Control Structures
+1.7 Using Pseudocode
+1.8 Top-down design with stepwise refinement
+1.9 O-O programming
+    1.9.1 What are objects?
+    1.9.2 Object classes
+    1.9.3 Programs as classes
+1.10 Summary
+
+Chapter 2: Data Types
+
+2.1 Introduction
+2.2 Data Types and Variables
+    2.2.1 Operations on integers
+    2.2.2 Boolean operations
+2.3 Conversion between data types
+    2.3.1 Cast operations
+    2.3.2 String conversions
+2.4 Other data types
+2.5 Summary
+
+Chapter 3: Using Java
+
+3.1 Introduction
+3.2 The Java Language
+    3.2.1 A simple Java program
+        /* Hello.java */
+        import java.io.*;
+        public class Hello {
+            public static void main(String[] args) {
+                System.out.println("Hi.");
+            }
+        }
+    
+    3.2.2 Input and output in Java
+        /* IO test */
+        import java.io.*;
+        public class Testinput {
+            public static void main(String[] args throws IOException) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+                String input;
+                int x;
+                boolean OK = false;
+                while (OK == false) {
+                    try {
+                        System.out.print("Enter a number: ");
+                        input = in.readLine();
+                        x = Integer.parseInt(input);
+                        System.out.println(x + " is the value input");
+                    }
+                    catch (Exception e) {
+                        System.out.println("A number should be entered.");
+                    }
+                }
+            }
+        }
+        
+    3.2.3 Loop control structures
+    3.2.4 Selection control structures
+    3.2.5 Functions and Parameters
+        * Generic template:
+        
+            return-type function-name(arg-list) {
+                block;
+            }
+            
+        * Pass by reference:
+        
+            public class ByReference {
+                public static int findsum(int[] values) {
+                    int arraysize = values.length;
+                    int sum = 0;
+                    for (int i = 0; i < arraysize; i++) {
+                        sum = sum + values[i];
+                    }
+                    return sum;
+                }
+                public static void main(String[] args) throws IOException {
+                    int[] list = {5,10,15,20,25,30,35};
+                    int totalvalue = findsum(list);
+                    System.out.println("Sum: "+totalvalue);
+                }
+            }
+            
+    3.2.6 Creating objects in Java
+        * Counter class:
+        
+            import java.io.*;
+            public class Counter {
+                private static int count;
+                public Counter() {
+                    count = 0;
+                }
+                
+                public static void reset() {
+                    count = 0;
+                }
+                
+                public static void increment() {
+                    count++;
+                }
+                
+                public static void display() {
+                    System.out.println(count);
+                }
+            }
+            
+        * Testcount:
+        
+            public class Testcount {
+                public static void main(String[] args) {
+                    Counter mycounter = new Counter();
+                    for (int i = 0; i<3; i++) {
+                        mycounter.display();
+                        mycounter.increment();
+                    }
+                    mycounter.reset();
+                    mycounter.display();
+                }
+            }
+           
+3.3 Running the example programs
+3.4 Using the Sun jdk
+3.5 Compiling Java code
+3.6 Running the Programs
+
+Chapter 4: File Input and Output
+
+4.1 Introduction
+4.2 Text and Binary Files
+4.3 Reading input from a file
+    * Fileread1:
+    
+        import java.io.*;
+        public class Fileread1 {
+            public static void main(String[] args) throws IOException {
+                String contents;
+                File f = new File("sentences.txt");
+                FileReader fr = new FileReader(f);
+                BufferedReader br = new BufferedReader(fr);
+                while (br.ready()) {
+                    contents = br.readLine();
+                    System.out.println(contents);
+                }
+                fr.close();
+            }
+        }
+        
+4.4 Storing numerical data
+    * Fileread2:
+    
+        import java.io.*;
+        public class Fileread2 {
+            public static void main(String[] args) throws IOException {
+                String item;
+                String coststring;
+                double cost;
+                double total = 0;
+                File f = new File("Furnishings.txt");
+                FileReader fr = new FileReader(f);
+                BufferedReader br = new BufferedReader(fr);
+                while (br.ready()) {
+                    item = br.readLine();
+                    coststring = br.readLine();
+                    cost = Double.parseDouble(coststring);
+                    total = total + cost;
+                    System.out.print(item + " ");
+                    System.out.println(cost);
+                }
+                fr.close();
+                System.out.println("Total cost is " + total);
+            }
+        }
+        
+4.5 Writing output to a file
+    * Filewrite:
+    
+        import java.io.*;
+        public class Filewrite {
+            public static void main (String[] args) throws IOException {
+                String sentence;
+                BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+                BufferedWriter out = new BufferedWriter(new FileWriter("output.txt"));
+                System.out.print("Enter data, or 'Q' to end: ");
+                sentence = in.readLine();
+                while (sentence.compareTo("Q") != 0) {
+                    out.write(sentence);
+                    out.newLine();
+                    System.out.print("Enter data, or 'Q' to end: ");
+                    sentence = in.readLine();
+                }
+                out.close();
+            }
+        }
+        
+4.6 Summary
+
+Chapter 5: Array Data Structures
+
+5.1 Introduction
+5.2 What is an array?
+5.3 A Simple Array Application
+    
+    public static void main(String[] args) {
+        int[] numbers = {10,20,30,40,50,60,70,80};
+        int i;
+        float sum = 0;l
+        float average;
+        for (i = 0; i < 8; i++) {
+            sum = sum + numbers[i];
+        }
+        average = sum / 8;
+        System.out.println("Sum of contents i " + sum);
+        System.out.println("Average value is " + average);
+    }
+    
+5.4 Arrays of Other Data
+
+    public static void main(String[] args) {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        String[] names = new String[8];
+        int i;
+        System.out.println("Read in the strings");
+        for (i = 0; i < 8; i++) {
+            System.out.print("Enter name: ");
+            names[i] = in.readLine();
+        }
+        System.out.println("Now write them out ");
+        for (i = 0; i < 8; i++) {
+            System.out.println(names[i]);
+        }
+    }
+    
+5.5 Multidimensioned Arrays
+5.6 Populating the Array -- nested loops
+5.7 Accessing an arry column by column
+5.8 Further uses for the application
+5.9 Dynamically declaring arrays
+
+    String[] values = new String[10];
+    BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+    int i = 0;
+    boolean finish = false;
+    while ((!finish) && (i < 10)) {
+        System.out.print("Enter name " + (i+1) + ":");
+        String input = in.readLine();
+        if (input.equals("Z")) {
+            values[i] = input;
+            i++;
+        }
+        else {
+            finish = true;
+        }
+    }
+    for (int j = 0; j < i; j++) {
+        System.out.println(values[j]);
+    }
+    
+5.10 Pointers/References
+5.11 The 'garbage' problem
+5.12 Summary
+
+Chapter 6: Searching Arrays
+
+6.1 Introduction
+6.2 A simple search strategy
+    6.2.1 Unordered array
+        6.2.1.1 Linear or sequential search
+            * Pseudocode for linear search:
+            
+                start at location subscript 0
+                loop while current value is not the sought one
+                    examine next location
+                end loop
+                write out location of the sought value
+                
+            6.2.1.1.1 Dummy element linear search
+                * Declare an array range one value larger than needed, and
+                  populate it from index 1 upwards, leaving 0 empty. Then:
+                  
+                  1. Copy the sought value to subscript 0 in the list
+                  2. Start at the end of the list, comparing the current 
+                     value with the one sought. If they are unequal, examine
+                     the previous one by decrementing the subscript. If they
+                     are equal, the search stops.
+                  3. Examine the subscript, if 0, item not found, otherwise
+                     it is present.
+                     
+    6.2.2 Ordered Array
+        6.2.2.1 Binary Search
+            * Look at the midpoint, then up or down to a new sub-midpoint, 
+              recurse that until found or no possible split.
+              
+        6.2.2.2 Conducting a binary search 
+            * Pseudocode:
+            
+                first = 0
+                last = n - 1
+                mid = (first + last) / 2
+                loop while sought not equal to list[mid]
+                    if sought < list[mid]
+                        first = mid + 1
+                    else
+                        last = mid - 1
+                    endif
+                    mid = (first + last) / 2
+                end loop
+                write out "found at location " mid
+                
+6.3 Algorithm Efficiency and Big-O notation
+    6.3.1 O(N) -- linear search
+    6.3.2 O(log2 N) -- binary search
+    
+6.4 Summary
+
+Chapter 7: Hashing and Hash Tables
+
+7.1 Introduction
+7.2 An Alternative Array Storage Model
+7.3 Hashing
+    * Using some transform to find the storage bin of an item.
+    
+    7.3.1 A simple hash function
+        * a key value, 0000 to 1999 is divided modulo 200 to get a bin.
+    7.3.2 Collisions
+        * Can't completely avoid them, though they can be minimized.
+    7.3.3 Resolving collisions
+        * one method: check to see if the bucket is empty, if so, check the
+          next bucket, looping back to 0.
+    7.3.4 Marking free locations
+        * Store a dummy value in place of a key.
+    7.3.5 Table full condition
+        * you know if the table is full if you end up searching the full
+          width of the table for a spot and don't find one
+    7.3.6 Retrieving items
+        * Compute the hash, check the location, if not found iterate up.
+    7.3.7 Deleting keys
+        * Need to distinguish between originally empty spaces and freed
+          spaces, so set to a secondary dummy value so your search process
+          knows to keep iterating up when you hit a freed spot.
+    7.3.8 Table size and number of collisions
+        * You can get clustering if your hash function is unbalanced.
+    7.3.9 Non-integer keys
+        * Lots of ways to hash stuff.
+
+7.4 Efficiency of Hash Function
+    * Ideal case is O(1)
+    * Worst case is O(N)
+    
+7.5 Implementing a hash table in java
+    * Operations to implement, in addition to creating an array:
+    
+        1.  initializing the table with all locations 'empty'
+        2.  inserting an item using a hash function, to deal with collisions
+            and displacements
+        3.  retrieving an item
+        4.  deleting an item by marking its location
+        
+    7.5.1 Operation: initialize the table
+    7.5.2 Operation: insert an item
+    7.5.3 Operation: search for an item
+    7.5.4 Operation: delete an item
+    7.5.5 Operation: display table contents
+    
+    * Complete code:
+    
+        /* hash table */
+        import java.io.*;
+        public class Hashtable {
+            public static int readValue() throws IOException {
+                BufferedReader in = new BufferedReader (new InputStreamReader(System.in));
+                String input;
+                int value = 0;
+                boolean OK = false;
+                while (!OK) {
+                    try {
+                        input = in.readLine();
+                        value = Integer.parseInt(input);
+                        OK = true;
+                    }
+                    catch (Exception e) {
+                        System.out.println("Invalid - please enter integer");
+                    }
+                }
+                return value;
+            }
+            
+            static int[] table = new int[10];
+            
+            public static void initialiseTable() {
+                for (int i = 0; i < 10; i++) {
+                    table[i] = 0;
+                }
+            }
+            
+            public static void addItem() throws IOException {
+                int key, location;
+                System.out.print("Enter key value to store: ");
+                key = readValue();
+                location = key % 10;
+                int count = 0;
+                while (table[location] > 0 && count < 10) {
+                    count++;
+                    if (location == 9) {
+                        location = 0;
+                    }
+                    else {
+                        location++;
+                    }
+                }
+                if (count == 10) {
+                    System.out.println("Table is full!");
+                }
+                else {
+                    table[location] = key;
+                }
+            }
+            
+            public static void displayKeys() {
+                System.out.println("Location Key value stored");
+                for (int i = 0; i < 10; i++) {
+                    System.out.println(i + ": " + table[i]);
+                }
+            }
+            
+            public static void searchTable() throws IOException {
+                int key, location;
+                System.out.print("Key value sought: ");
+                key = readValue();
+                location = key % 10;
+                int count = 0;
+                
+                while (table[location] != key && count < 10) {
+                    count++;
+                    if (location == 9) {
+                        location = 0;
+                    }
+                    else {
+                        location++;
+                    }
+                }
+                if (count == 10) {
+                    System.out.println("No such key stored");
+                }
+                else {
+                    System.out.println("Key " + key + " stored at " + location);
+                }
+            }
+            
+            public static void deleteItem() throws IOException {
+                int key, location;
+                System.out.print("Key value to delete: ");
+                key = readValue();
+                location = key % 10;
+                int count = 0;
+                while (table[location] != key && count < 10) {
+                    count++;
+                    if (location == 9) {
+                        location = 0;
+                    }
+                    else {
+                        location++;
+                    }
+                }
+                if (location == 10) {
+                    System.out.println("No such key value present.");
+                }
+                else {
+                    table[location] = -1;
+                    System.out.println("Key marked as deleted");
+                }
+            }
+            
+            public static void main(String[] args) throws IOException {
+                int choice = 0;
+                Hashtable table = new Hashtable();
+                table.initialiseTable();
+                System.out.print("1-Add a key 2-Search for key 3-display all 4-delete a key 5-quit");
+                choice = readValue();
+                while (choice != 5) {
+                    System.out.println();
+                    switch(choice) {
+                        case 1:
+                            table.addItem();
+                            break;
+                        case 2:
+                            table.searchTable();
+                            break;
+                        case 3:
+                            table.displayKeys();
+                            break;
+                        case 4:
+                            table.deleteItem();
+                            break;
+                        default:
+                            System.out.println("Choose 1-5");
+                    }
+                    
+                    System.out.println();
+                    System.out.print("1-Add a key 2-Search for key 3-display all 4-delete a key 5-quit");
+                    choice = readValue();
+                }
+            }
+                    
+    
+Chapter 8: Sorting Arrays -- Selection, Bubble, Insertion, Merge, and Quick Sort
+
+8.1 Introduction
+8.2 General Principles of Sorting
+    8.2.1 Selection Sort
+        * Scans a list for the smallest item, puts that one first, scans
+          again, ignoring the first position, repeats until last location
+          contains largest item.
+        * Pseudocode:
+        
+            loop while start is less than limit
+                lowestindex = start { initial position of lowest value }
+                loop for current item from start to limit
+                    if current item < item at lowestindex
+                        lowestindex = current { now this is pos of lowest }
+                    endif
+                end for
+                temp = item at start { now the exchange }
+                item at start = item at lowestindex
+                item at lowestindex = item in temp 
+                increment start
+            end while
+            
+        8.2.1.1 Efficiency of Selection Sort
+            * O(N^2)
+            
+    8.2.2 Bubble sort
+        * A swap may take place with every comparison, so the largest item
+          "bubbles up" to the top of the list.
+        * Pseudocode for bubble sort:
+        
+            maxindex = n - 1
+            loop while maxindex > 0
+                loop for current = 0 to maxindex - 1
+                    { compare and swap pair at current, current+1 if needed }
+                end for
+                decrement maxindex
+            end while
+            
+        8.2.2.1 Efficiency of bubble sort
+            * O(N^2)
+            
+        8.2.2.2 Improving the algorithm, slightly better bubble sort
+            * Since multiple swaps can happen per scan, the list may be
+              sorted before the algorithm completes.
+            * If no exchanges occur during a scan, the process is complete.
+            
+        8.2.2.3 Comparing the two bubble sorts
+            * They're both still O(N^2), though the second is potentially faster
+            
+    8.2.3 Insertion sort
+        * The list is broken into two pieces, a left, 'sorted' side and a 
+          right, 'unsorted' side. Items are scanned left to right, and
+          placed in the appropriate location in the sorted left portion.
+        
+        8.2.3.1 How the insertion is performed
+            8.2.3.1.1 First method--repeated swapping
+                * Compares the item to be inserted with each of the items
+                  before it in the sorted sublist, to move it one position
+                  after another down the list.
+            8.2.3.1.2 Second method--shifting
+                * Shiftes items up in the sorted list until an item is reached
+                  that is less in value than the one to be inserted.
+                  
+        8.2.3.2 Insertion sort program--using swapping
+            * Pseudocode:
+            
+                loop for count = 1 to number-1
+                    position = count {start at 1, not 0}
+                    loop while position > 0 and list[position] < list[pos-1]
+                        store list[position] as temp
+                        copy list[pos-1] to list[pos]
+                        copy temp to list[pos-1]
+                        decrement pos
+                    end while
+                end for
+                
+        8.2.3.3 The shifting version
+            * Pseudocode:
+                
+                loop for count = 1 to number - 1
+                    store list[count] to insertValue
+                    position = count
+                    loop while position > 0 and list[position-1] > insertValue
+                        copy list[pos-1] to list[pos]
+                        decrement pos
+                    end while
+                    copy insertValue to list[pos]
+                end for
+                
+        8.2.3.4 Efficiency of Insertion Sort
+            * Ideal case (preordered set): O(N)
+            * Worst case: O(N^2)
+            
+    8.2.4 Merge sort
+        * Combines two sorted lists into one.
+        * Create a temporary array that can hold all items.
+        * Compare the values at the first locations in both, write the
+          smaller one to the temp array. Repeat.
+          
+        8.2.4.1 Sorting the original sub-lists
+            * Split each list in two, recursively, until you get single items
+            * Merge the single item lists back up until you get one list.
+            
+        8.2.4.2 A pseudocode description
+        
+            mergesort list from start to end
+                if start < end { when start = end, list is 1 long }
+                    calculate mid as (start+end)/2
+                    mergesort list from start to mid
+                    mergesort list from mid+1 to end
+                    merge sub-lists { they're now sorted }
+                end if
+                
+        8.2.4.3 Java code for merge sort
+            8.2.4.3.1 Merging
+            8.2.4.3.2 The merging operation
+                * Pseudocode for merge operation
+                
+                position = startLeft
+                loop while items remain to copy in left subarray and items
+                 -to copy in right sub-array
+                    { if item in left range is lower, copy to templist }
+                    { else copy item from right range }
+                    if item at startLeft < item at startRight
+                        copy item at startLeft to position in templist
+                        { now move to next item in left }
+                        increment startLeft to next item in left subarray
+                    else
+                        copy item at startRight to position in templist
+                        { move to next item in right range }
+                        increment startRight to next item in right subarray
+                    endif
+                    { move to next location to be filled in templist }
+                    increment position to next location in templist
+                endloop
+                { one subarray now completely copied over, so copy from other }
+                loop while items still to copy in left subarray
+                    increment startLeft
+                    increment position
+                endloop
+                loop while items still to copy in right subarray
+                    copy item at startRight to position in templist
+                    increment startRight
+                    increment position
+                endloop
+                { all items are in templist, so copy back to original list from
+                  start location startLeft } 
+                  
+        8.2.4.4 Efficiency of merge sort
+            * O(log2 N) for forming the subarrays
+            * O(N) for combining them
+            * O(N log2 N) overall
+            
+    8.2.5 Quick sort
+        * Take a list with a leftEnd and a rightEnd, and choose a pivot value
+          somewhere between the ends
+        * Move items larger than the pivot from the left to the right list
+        * Move items smaller than the pivot from the right to the left
+            

@@ -1,0 +1,487 @@
+Tomcat 6 Developer's Guide
+By: Damodar Chetty
+Publisher: Packt Publishing
+Pub. Date: December 15, 2009
+Print ISBN-13: 978-1-847197-28-3
+
+Chapter 1: Introduction to Tomcat
+    * A servlet in its most basic form is a Java class that acts as a dynamic
+      web resource. It can be the target of a browser request.
+    * JavaServer Pages (JSPs) are templates mostly made of static content with
+      some few specifically dynamic parts.
+    * Tomcat is a servlet container--an environment within which servlets can
+      run. Provides admin support to servlets, session management, class
+      loading, etc.
+    * Primary responsibility of a container is to process a request and generate
+      a corresponding response.
+    * A connector provides the external interface for the container.
+    * Request processing is implemented with multiple levels of sub containers.
+    * An application server is different from a servlet container--a server
+      contains a servlet container, along with containers like an EJB container,
+      an applet container, and an application client container.
+    * Application servers include JBoss, GlassFish, WebSphere, WebLogic. 
+
+Chapter 2: Servlet API Overview
+
+Java Community Process
+    * API development process, starting with specifications, then implementations.
+
+Java Enterprise Edition Platform
+    * The essence of an enterprise application can be boiled down to four concepts:
+      simultaneous users, highly performant systems, hetergeneous environments,
+      and a distributed nature.
+    * Java EE is a superset of Java SE, gives you more APIs to work with.
+    * EE is designed around a containment hierarchy, where an application server
+      hosts containers, each of which hosts components.
+    * A container is responsible for configuring its components, and managing
+      the life cycle of those components. It is also the gateway between
+      components and their runtime environment.
+    * EE spec has four types of containers:
+        - application client container -- provides the runtime for Java programs
+          that execute on a client workstation. These are the same as SE apps.
+        - applet container -- contains applets that typically execute natively
+          within a browser plugin or through the Java plugin.
+        - servlet container -- hosts Servlet API and JavaServer Pages API
+          components, for serving http requests.
+        - Enterprise JavaBeans (EJB) container hosts EJB components, which house
+          the business logic usually found in the middle tier of an EE app.
+    * A servlet container like Tomcat lets you package a web app via the
+      Servlet spec.
+    * Containers are usually controlled by conf files like server.xml.
+    * Key APIs defined in Java EE platform:
+        - Java Database Connectivity API (JDBC)
+        - Java Naming and Directory Interface (JNDI)
+        - Java EE Connector Architecture (JCA)
+        - Java API for XML Processing (JAXP)
+        - Java Message Service (JMS) API
+        - JavaMail API
+        - Java Transaction API (JTA)
+        - Remote Method Invocation over Internet Inter-ORB protocol (RMI/IIOP)
+        - Java Persistence API (JPA)
+        - Web Service APIs: Java API for XML Web Services, Java API for XML-based
+          RPC (JAX-RPC), Java Architecture for XML Binding (JAXB), Java API for
+          XML Registries (JAXR).
+        - Java IDL
+        - JavaServer Faces (JSF)
+        - JavaServer Pages Standard Tag Library (JSTL)
+        - Streaming API for XML (StAX)
+        - Java Management Extensions (JMX)
+
+    * A typical enterprise app is divided into three tiers:
+        - Presentation -- the web container, housing components like servlets  
+          and JSP pages.
+        - Middle -- the EJB container, housing the enterprise beans components
+        - Persistence / Enterprise Information Systems -- houses the
+          persistent data store.
+
+Hypertext Transfer Protocol 
+    * Connection oriented but stateless. Whee.
+    * Methods: GET, POST, PUT, DELETE, TRACE, OPTIONS, HEAD
+    * Lots about headers, responses, blah blah.
+
+What is the Servlet API?
+    * A servlet is a web component, a pluggable piece of functionality that is
+      written in Java and deployed to a web container to extend the container's
+      functionality in a custom way.
+    * Acts like a server without forcing the developer to deal with lower layers.
+    * The servlet container contains web components like servlets, JSP pages,
+      filters, and event listeners.
+    * The container is responsible for managing component lifecycles and providing
+      access to Service APIs like JNDI and JAXP.
+    * For a servlet component, the container instantiates an instance of that
+      servlet, calls its init(), then its service() method once for every
+      incoming request, and its destroy() method when it is taken out of service.
+    * Process flow:
+        1. Client requests a resource.
+        2. Server checks the request. If it's for a static resource, it locates
+           that and returns it, skipping to step 6.
+        3. If it's a dynamic resource, the web server delegates to the servlet
+           container, which locates the servlet that will process the request
+           by using the URI plus mappings from the deployment descriptor.
+
+           If the servlet is already loaded and initialized, skip to step 4.
+
+           Otherwise, the servlet class is located, loaded, and instantiated.
+           The servlet's init() is called, to let it initialize itself.
+        4. The service() method of the servlet is invoked to generate the response.
+        5. The response is generated.
+        6. The web server returns the completed response to the client.
+        7. The client browser renders the rendered response.
+
+    Core Servlet Classes
+
+        ServletContext
+            getContext(String): ServletContext
+            getContextPath(): String
+            getResource(String): URL
+            getResourceAsStream(String): InputStream
+            getRequestDispatcher(String): RequestDispatcher
+            getNamedDispatcher(String): RequestDispatcher
+            getInitParameter(String): String
+            getAttribute(String): Object
+            setAttribute(String, Object)
+            removeAttribute(String)
+            getServletContextName(): String
+            getRealPath(String): String
+
+        ServletConfig
+            getServletName(): String
+            getServletContext(): ServletContext
+            getInitParameter(String): String
+            getInitParameterNames(): Enumeration
+
+        Servlet
+            init(ServletConfig)
+            getServletConfig(): ServletConfig
+            service(ServletRequest, ServletResponse)
+            getServletInfo(): String
+            destroy()
+
+        GenericServlet
+            init()
+
+        HttpServlet
+            service(HttpServletRequest, HttpServletResponse)
+            #doGet(HttpServletRequest, HttpServletResponse)
+            #doPost(HttpServletRequest, HttpServletResponse)
+
+
+        * Servlets -- javax.servlet.Servlet defines key lifecycle methods that
+          are invoked by the servlet's container.
+            - After a servlet is loaded and instantiated, init(ServletConfig)
+              is called, which gives it init params and access to the RE.
+            - After init() is called once, service() is called once per 
+              incoming request.
+            - destroy() is called by the container before the servlet is taken
+              out of service, which lets it release any resources it acquired.
+            - GenericServlet.init() is basically blank, to be overridden.
+            - GenericServlet.service() is abstract, but you mostly don't override
+              it. javax.servlet.http.HttpServlet.service() can deal with all
+              seven of the HTTP request types, and most developers only override
+              doGet and doPost methods.
+            - HttpServlet.getLastModified() supports resource caching.
+
+        * ServletConfig Interface -- basically a holder for the servlet context.
+        * ServletContext Interface
+            - Represents the web application to which this servlet belongs.
+            - Represents the collection of web components (servlets, filters, 
+              listeners, and JSP files), utility classes, library JARs, static
+              content (HTML, CSS, JavaScript), and other resources that are made
+              available to clients under a specific context path within the
+              servlet container.
+            - There is one context per web application deployed into the container.
+            - Gives access to attributes placed into the context/application scope.
+            - Accessed through the ServletConfig object
+        * Multithreading in servlets
+            - Inherently multithreaded. The servlet container will create only one
+              instance per servlet declaration within the deployment descriptor.
+            - At any time, multiple processor threads within the container may be
+              executing within a servlet instance's service() method.
+            - Dev is responsible for making sure invocation of service is threadsafe.
+        * Request
+            - incoming requests are represented by an implmentation of the
+              javax.servlet.http.HttpServletRequest interface, which extends
+              ServletRequest with HTTP specific characteristics.
+            - Methods are things like getRequestURI(), getContextPath(), etc.
+            - Lifetime of a request object is intended to be the duration of
+              a request. It's constructed by the container from the incoming request.
+        * Request Parameters and Attributes
+            - Both are key/value pairs.
+            - Request parameter represents a form parameter coming from the incoming
+              request, either as part of the payload or from the query string.
+            - Request attribute is a named object set on the HttpServletRequest
+              by a web component like a filter or a servlet.
+            - Value of an attribute can be any java object. Meant to be used only
+              during the current request processing cycle, is a conveninent way
+              to cache objects while processing a request, or to transfer
+              objects between servlets.
+        * Protocol and URI Details
+            - requestURI = contextPath + servletPath + pathInfo
+            - context path is the web application specific prefix
+            - servlet path represents the web.xml servlet mapping that activated
+              the request
+            - path is the remaineder of the URI
+            - You can query things like the protocol, scheme, secure channel, etc.
+        * Reading Request Data
+            - You can directly read the request body or use a reader to access it.
+        * Connection Information
+            - The request object can be queried for things like IP, host name,
+              port, etc. of the requesting client.
+        * HTTP Specific Information
+            - HttpServletRequest lets you access information specific to the HTTP
+              protocol, like request headers, session info, and the request method.
+        * Response
+            - HttpServletResponse objects represent a general HTTP response that
+              was generated by the servlet, including the status code, any
+              response headers, and the response entity body.
+            - Has methods like getContentType(), setContentType, getOutputStream, etc.
+            - A response can be buffered for efficiency.
+            - You can write to a response with a Writer or a ServletOutputStream.
+            - Headers must be added before any part of the response is flushed
+              to the client.
+        * Sessions
+            - javax.servlet.http.HttpSession instances are associated with a
+              particular client.
+            - Session cookies are used by default, URL rewriting is a fallback.
+        * Filters
+            - Filters are web components that typically don't process requests.
+            - They preprocess the request, passing to the next filter in line,
+              until it hits the servlet, which does the actual processing.
+            - Then the process reverses, and each filter gets to examine the
+              generated response from the servlet.
+            - Any filter can stop the chain and just pass a response to the client.
+            - The servlet container is responsible for instantiating filters and
+              deciding the order in which they must be invoked for a request.
+            - Can be configured to be invoked for one or more of the following:
+                * Those that come directly from a client.
+                * Those that come from a server-side forward (from another servlet)
+                * Those coming from an include, delegated from another servlet
+                * Those arising from the error page mechanism
+        * Listeners
+            - Classes that implement one or more of the standard servlet event
+              listener interfaces.
+            - Declared in the web app's deployment descriptor. When the webapp
+              is deployed, hte web container will automatically instantiate each
+              listener it finds in the deployment descriptor, and will register
+              them with their subjects.
+            - During webapp execution, listeners are notified in order of their
+              registration.
+
+    Web Applications
+        * A javax.servlet.ServletContext instance represents a running web
+          application within a container.
+        * A web application is a collection of servlets, JSPs, utility classes,
+          static content, and other resources, with an application deployment
+          descriptor that are arranged in a structured hierarchy of directories.
+        * The root of that hierarchy maps to the context path for the web app,
+          and is the document root for files in the application.
+        * A directory called WEB-INF exists in the hierarchy, which is not part
+          of the document root of the web application, and no files inside it
+          may be served to the client--requests for them 404 out.
+        * Usual contents of WEB-INF include the web app's deployment descriptor,
+          in web.xml; a classes folder that contains the servlets and utility
+          classes for this application; and a lib folder that has the JAR files
+          required by this application.
+        * Web apps can be packaged into a Web Archive Format (WAR) using the 
+          JAR tool. WAR files have their own META-INF folder, containing an
+          optional context fragment as well as a manifest file.
+
+        Deployment Descriptors
+            - Every webapp must be accompanied by a deployment descriptor, web.xml
+            - It is placed directly into the application's WEB-INF folder.
+            - The root element of the document is <web-app>, and sub-elements can
+              be in an arbitrary order.
+            - The purpose of web.xml is to link the various elements into a whole.
+            - <servlet> maps a fully qualified servlet class to a logical name,
+              which is then mapped using a <servlet-mapping> element to a given URL
+              pattern.
+            - <filter> elements associate the fully qualified class name of a servlet
+              filter with a logical name, which can then be mapped to a URL pattern
+              or to a servlet's logical name using <filter-mapping> elements.
+            - Servlets and filters can be initialized using params from the descriptor.
+            - <context-param> elements let you specify global servlet context init
+              params, available to all servlets that run in this application context.
+            - <listener> elements define the fully qualified name of a class that
+              is to be registered as a web app event listener.
+            - <session-config> element lets you set the default session timeout
+              interval for all sessions created in the web application.
+
+Chapter 3: Servlet Container Overview
+    * Tomcat container:
+
+    Server          Listener | Global Resources
+
+        Service+
+
+            Connector (HTTP) --> Processors --> 
+
+                Engine      Valves | Listener
+                |   Host+       Valves | Listener
+                |   |   Context+    Valves | Listener | Loader | Manager | Resources
+                |   |   |   Wrapper+    Valves
+                |   |   |   |   Servlet
+
+    * Plus sign indicates there may be multiples of that kind of instance.
+
+    Component Taxonomy
+        * In Tomcat, a container refers to any component that can contain another,
+          like Server, Service, Engine, Host, or Context.
+        * Server and Service are 'Top Level Elements', because they represent
+          aspects of the running tomcat instance--all other components are 
+          subordinate to those top level containers.
+        * Engine, Host, and Context are 'Containers' and process incoming requests.
+        * Nested components are sub elements nestable inside either TLEs or
+          Containers.
+        * A Valve is a reusable unit of work, a Pipeline represents a chain of
+          Valves, a Realm helps set up container-managed security.
+        * A Loader enforces the specification's guidelines for servlet class
+          loading; a Manager supports session management; a Resources component
+          represents a handle for static resource access; a Listener lets you
+          insert custom processing in a container's life cycle.
+        * The Connector component represents the connection end point that an
+          external client can use to connect to the Tomcat container.
+        * Structural organization:
+
+            JVM
+            | Server 
+            | |..shutdown port and command
+            | | Service #1 | Service #2
+            | | |..name
+            | | |
+            | | | Connecter #1 | Connecter #2 (Browser) | Connecter #n (Apache)
+            | | | |..IP address, port, protocol
+            | | |
+            | | | Engine
+            | | | |..baseDir, defaultHost
+            | | | | Virtual Host #1 | Virtual Host #2
+            | | | | |..appBase
+            | | | | | Context #1 | Context #2 | Context #3
+            | | | | | |..docBase, context path
+
+        * When Tomcat starts, the JVM creates a singleton Server TLE representing
+          the entire server, and typically containing one Service object that
+          combines one or more Connectors that push requests through to a single
+          Cataline servlet Engine.
+        * The Engine may have multiple virtual hosts within it, each of which
+          can support multiple web applications known as Contexts.
+        * A context is represented either as a WAR or as an uncompressed directory.
+        * A context is configured using a web.xml file defined by the servlet spec.
+        * A context can contain multiple servlets that are deployed into it, each
+          of which is wrapped in a Wrapper component.
+        * Server, Service, Connector, Engine, Host, and Context are configured
+          using a server.xml conf file.
+
+    Architectural Benefits
+        * server.xml is parsed one time at startup, changes are picked up on restart.
+        * Child containers can inherit the configuration of their parent containers.
+
+    Top Level Components
+        Server
+            * Represents the entire Tomcat instance, is a singleton within a JVM.
+            * Manages the lifecycle of contained services.
+            * By default opens a server socket on 8005 to listen for a shutdown
+              command. When that comes, the server gracefully shuts down.
+            * Provides an implementation of the Java Naming and Directory Interface.
+            * There is one Server instance in a JVM, but you can have multiple
+              Server instances on a machine by having each encased in a JVM.
+        Service
+            * Represents the set of request processing components inside Tomcat.
+            * Each Service in a Server associates a group of Connector components
+              with a single Engine.
+            * If you want to partition your services by IP/port, use multiple Services.
+    
+    Connectors
+        * A Connector is a service endpoint on which a client connects to the
+          Tomcat container.
+        * Insulates the engine from the various communications protocols, like
+          HTTP, HTTPS, or the Apache JServ Protocol (AJP)
+        * Tomcat can run in standalone mode, or in Conjunction with a server.
+        * In standalone, Tomcat has HTTP/HTTPS connectors.
+        * In conjunction, Tomcat works with httpd or IIS, where the server
+          talks to Tomcat through an Apache module or an ISAPI DLL.
+        * In conjunction mode, Tomcat is running its own JVM.
+        * In both modes, the primary attributes of a Connector are IP,
+          port, and protocol.
+
+    Container Components
+        
+        Engine
+            * Represents a running instance of the Catalina servlet engine.
+            * Can be only one Engine within a given service.
+            * Engines can contain one or more virtual hosts.
+            * Receives objects representing the request and response.
+            * Main job is delegating to the appropriate vhost.
+
+        Virtual Host
+            * Represented by the Host component, a container for webapps/contexts.
+            * Two big concepts: domain name and application base folder.
+            * Domain name is the expected value that will come with the Host header.
+            * Base folder is the location containing the contexts that will be
+              deployed to this host. Can be specified as an absolute path, or
+              relative to CATALINA_BASE.
+            * CATALINA_HOME references the location of the tomcat binaries.
+            * CATALINA_BASE lets you use a single binary to run multiple Tomcat
+              instances with different configurations.
+            * Also those env variables keep your setup separate from the core
+              install of Tomcat, so upgrading is smoother.
+
+        Basic Concepts
+            * Two main ways to set up vhosts: IP-based, Name-based
+            * For IP-based, each fully qualified host name resolves to a separate
+              IP address, though all of them resolve to the same machine.
+            * IP-based can be done with a machine with multiple NICs, or by
+              having multiple virtual network interfaces at the OS level.
+            * Name-based vhosting lets you map multiple domain names to a
+              single IP address. Since HTTP/1.1 requires a Host: header, the
+              server can parse that to route requests appropriately.
+            * You can tell the server to alias one domain to another for routing.
+
+        Context
+            * Tomcat term for 'web application', which is where application specific
+              code (servlets and JSPs) live.
+            * Structure:
+
+                Context -- config'd by server.xml/context.xml/web.xml
+                | Static Content
+                | | HTML
+                | | images
+                | | css
+                | | js
+                |
+                | Dynamic Content
+                | | Config files
+                | | Listener classes
+                | | Servlet classes
+                | | filter classes
+                | | JSPs
+                | | 3rd party libraries
+                | | Domain / utility classes
+
+            * Maps to a ServletContext instance within the servlet spec.
+            * Important attributes for a context:
+                - Document base -- the path name to its WAR file or exploded folder
+                - Context path -- the portion of a URL that identifies a web app
+                  within a given host.
+                - Automatic reload -- a context's resources can be monitored for
+                  changes, and autoreloaded if changes are detected.
+
+        Context configuration
+            * Can be configured with a context fragment file--a portion of server.xml.
+            * Tomcat expects that to be at CATALINA_HOME/conf/<EngineName>/<HostName>/
+            * Files will be named <ContextPath>.xml
+            * The default case is an engine named Catalina and a host named localhost.
+            * Context fragments can also be embedded within the META-INF folder of the
+              WAR, in which case it must be named context.xml.
+            * Can also be configured from the using the web application deployment
+              descriptor, web.xml.
+
+        Wrapper
+            * A child of the context container and represents an individual
+              servlet (or a JSP file converted to a servlet).
+            * Wraps an instance of javax.servlet.Servlet.
+            * Lowest level of the Container hierarchy, and no children can be
+              added to it without throwing an exception.
+            * Responsible for the servlet it represents, load/instantiate/invoke.
+            * Responsible through its basic valve for the invocation of filters.
+
+    Nested Components
+        * Specific to Tomcat implementation, exist to enable various containers
+          to perform their tasks.
+
+        Valve
+            * A processing element that can be placed within the processing path
+              of each of Tomcat's containers: engine, host, context, or servlet wrapper.
+            * Added to a container with a <Valve> element in server.xml.
+            * Executed in the order they appear in server.xml.
+            * A container does not hold references to valves, but instead a reference
+              to a single entity known as the Pipeline, which represents a chain
+              of valves for that container.
+            * Final valve in a Pipeline is the 'basic valve', which performs the
+              task that embodies the core purpose of a given container.
+            * Each Valve is aware of the next valve in the pipeline. After it
+              does its preprocessing task, it invokes the next Valve, and when
+              that call returns it performs its postprocessing.
+            * Valves need to be very efficient to not introduce delays into serving.
+
+        Realm
+            * 

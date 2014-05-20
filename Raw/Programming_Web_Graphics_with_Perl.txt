@@ -1,0 +1,240 @@
+Programming Web Graphics with Perl & GNU Software
+
+Chapter 1: Image File Formats:
+    1.1 Network Graphics Basics
+        1.1.1 Fields and Streams
+            Web graphics can be thought of as data streams broken up into fields
+            GIF and JPEG call their sequential fields 'blocks'
+            PNG calls them 'chunks'
+            Fields are fixed, predictable data structures within an image, defined by the spec
+        1.1.2 Color Tables
+            Color depth of 24 bits/pixel is 'truecolor'
+            1 byte each for RGB == 256^3 (16,777,216) possible colors
+            full size images at 200x200 px would be 120k
+            PNG allows depth of up to 48 bits/pixel, or grayscale at 16 bits/pixel
+            JPEG allows storage of up to 36 bits/pixel depth
+            8bit depth is 'pseudocolor' or 'indexed color'
+            Image contains a color table index
+            pixels are stored as index value to color index
+            'quantization' allows you to reduce an image's colors to your palette depth
+            'dithering' attempts to soften effects of quantization, by approximating colors
+            GIF is an indexed color file format, PNG can optionally be indexed
+        1.1.3 Transparency and Alpha
+            Transparency is not currently supported in JPEG (2002)
+            GIF allows transparency by marking one index value as transparent
+            PNG allows for better transparency by allowing more space for describing
+              the transparency characteristics of the image
+            PNG images with grayscale or color data sampled at a rate between 8 and 16
+              bits per sample may also have an alpha channel (or 'alpha mask') with an
+              additional 8 to 16 bits representing the transparency of that sample.
+        1.1.4 Compression
+            JPEG is 'lossy', PNG and GIF are 'lossless'
+            'lossless' compression algorithm does not discard information about the source
+              image during the compression process--inflation will completely restore image
+        1.1.5 Interlacing
+            interlacing is the progressive display of an image as it is downloaded
+            interlaced files tend to be slightly larger than non-interlaced
+            1.1.5.1 GIF Interlacing
+                GIF data is stored by the row (scanline) with one byte per pixel
+                non-interlaced GIFs store each row consecutively in the image data field of the GIF
+                interlaced GIFs group pixels into scanlines, but in a different order
+                rows are read and saved in four passes, with the interlacing algorithm:
+                    Pass One: Save row 0, then every 8th row thereafter (0,8,16...)
+                    Pass Two: Save row 4, then every 8th row thereafter (4,12,20...)
+                    Pass Three: Save row 2, then every 4th row thereafter (2,6,10,14,18...)
+                    Pass Four: Save every odd row
+            1.1.5.2 PNG Interlacing:
+                PNG uses a seven-pass interlacing scheme called Adam7:
+                    Pass One: Save every 8th pixel (starting w 0) on every 8th row (starting w 0)
+                    Pass Two: Save every 8th pixel (starting w 4) on every 8th row (starting x 0)
+                    Pass Three: Save every 4th pixel (starting w 0) on every 8th row (starting w 4)
+                    Pass Four: Save every 4th pixel (starting w 2) on every 4th row (starting w 0)
+                    Pass Five: Save every even pixel on every 4th row (starting w 2)
+                    Pass Six: Save every odd pixel on every even row
+                    Pass Seven: Save every pixel on every odd row
+                Entire image appears first at 8x8 pixel resolution blocks, then 4x8 pixel blocks, etc.
+            1.1.5.3 JPEG interlacing: Progressive JPEGs
+                Progressive JPEG is an extension to the JPEG standard
+                JPEGs don't store data in scanlines like GIF/PNG
+                Progressive JPEG appears first as low quality JPEG, then progressively higher
+        1.1.6 GIF, PNG, JPEG: Which to Use When?
+            Category                    GIF         PNG         JPEG
+            Truecolor support           NO          YES         YES
+            Color table support         YES         YES         NO
+            Max size of color table     256         256         --
+            Max Color Depth             8-bit index 8-bit index 12-bit gray
+                                                    16b gray    36b RGB
+                                                    48b RGB     32b CMYK
+                                                    +16b w/alpha
+            Transparency support        Yes         Yes         Yes
+            Alpha Channel               No          Yes         No
+            Max alpha channel depth     --          16 bit      --
+            Max image size (px)         64Kx64K     2Gx2G       64Kx64K
+            Multiple images/file        Yes         No          No
+            Byte ordering               Little-end  Big-endian  Big-endian
+            Compression                 LZW         Deflate     JPEG
+            Compression Ratio           3:1 to 5:1  4:1 to 10:1 5:1 to 100:1
+            Compression method          Lossless    Lossless    Lossy
+            Progressive display         Yes         Yes         Yes
+            Interlacing style           Scanline    Adam7       PJPEG
+
+            1.1.6.1 Circular or Irregularly Shaped Images
+                only GIF and PNG support transparency, which is what's used to support irregular outlines
+            1.1.6.2 Photographs
+                JPEG allows greater compression ratio and max image quality for photos
+            1.1.6.3 Images with Text
+                GIF or PNG should be used for images with text, because JPEG doesn't handle sharp edges well
+            1.1.6.4 Grayscale images
+                Grayscale images with 256 or fewer levels should be GIF or PNG--and even larger ranges too
+            1.1.6.5 Line drawings
+                256 or fewer colors, GIF or PNG, 256+, PNG should be used
+            1.1.6.6 Animated images
+                GIF89a works for animated images
+    1.2 Graphics Interchange Format (GIF)
+        A GIF file always starts with the three-byte signature "GIF" and ends with the hex byte "3B"
+        There is no built in error checking for corruption
+        Signature is part of the header block
+        1.2.1 The Header Block
+            Header is 13 bytes in length, and consists of:
+                Signature (3 bytes): Always GIF
+                Version (3 bytes): Always 87a or 89a
+                Screen width and Screen Height (2 bytes each): min. screen dimensions to display image
+                Color Table information (1 byte): eight bits in this byte contain:
+                    Bits 0-2: Number of bits used for each color table entry minus one
+                    Bit 3: Set to 1 if elements in table are sorted in order of decreasing occurence
+                    Bits 4-6: A number from 0 to 7, indicating the significant bits per sample
+                      of each color in the table, minus 1
+                    Bit 7: The Global Color Table flag, which is 1 if the file contains a global color table
+                Background Color (1 byte): A byte containing an index for the color to be used as border and bg
+        1.2.2 The Global Color Table Block
+            If the image contains the optional global color table, it will immediately follow the header in
+              the data stream, and will contain 2,4,8,16,32,64,128 or 256 entries and will take up from 6 to 768 bytes
+            Each element consists of three bytes--one for R,G and B
+            Each Image block can also contain a local color table, which takes precedence over the global color table
+            GIF specification suggests and the first two elements (0 and 1) be black and white
+        1.2.3 The Image Block(s)
+            A GIF file can contain an unlimited number of images, and each image is stored in a block
+            Each image block is made of two or three parts:
+            1.2.3.1 Local Image Descriptor
+                10 bytes that contain the dimensions of the image and info on which color table to use
+                  and how the image data is stored.  Local Image Descriptor block fields are:
+                    Separator (1 byte): Always hex value 2C
+                    Left,Top (2 bytes each): Each of these is a number in range to 65,535, indicating the x,y coord
+                      within the image fram at which the upper left corner of the image should be offset when displayed
+                    Width, Height (2 bytes each): width and height in pixels
+                    Color Information (1 byte): The last byte of the Local Image Descriptor contains 8 bits:
+                        Bit 0: 1 if the image block has a local color table
+                        Bit 1: 1 if the image data is stored in an interlaced format
+                        Bit 2: 1 if the local color table is sorted in order of decreasing occurence
+                        Bit 3-4: reserved for future use
+                        Bits 5-7: number of bits used for each entry in the Local Color Table
+            1.2.3.2 Local Color Table
+                Same format as the global color table--no local color table if bit 0 of descriptor is 0
+            1.2.3.3 Image Data
+                Image data is always stored in the LZW compressed format
+                not stored as a continuous stream of LZW encoded data, but rather as an arbitrary number of
+                  shorter sub-blocks from 1 to 255 bytes in length.
+                Sub-blocks each start with a count byte that is the number of bytes in the sub-block
+                Each sub-block must be LZW decoded individually before being assembled to form decoded image data
+        1.2.4 The Extension Block(s)
+            GIF89a adds four extension blocks to GIF87a
+            Two are used for transparency and animation loops
+            The four blocks are: Graphics Control, Application, Comment, and Plain Text Extensions
+            Extension blocks may appear anywhere between the global color table and the trailer
+            all extension blocks begin with byte 0x21, followed by extension type byte: 0xF9 (Graphics Control) 0xFF (Application)
+            1.2.4.1 The Graphics Control Extension
+                contains information about dealing with transparency and multi-image gif.  8 bytes long, 7 fields:
+                    Introducer (1 byte): 0x21
+                    Extension Label (1 byte): 0xF9 (Graphics control extension identifier)
+                    Block Size (1 byte): 0x04, because there are four more bytes of info before block terminator
+                    Control Information (1 byte): 
+                        Bit 0: Transparent color flag, 1 if images referred to contain transparent color
+                        Bit 1: User Input Enabled (flag not used by web browsers)
+                        Bits 2-4: Disposal Method (number from 1-4 indicating how app should display next image in multi-image)
+                            0: Not specified
+                            1: Do not dispose between frames
+                            2: Overwrite frame with background color from header
+                            3: Overwrite with previous frame
+                        Bits 5-7: Reserved
+                    Delay Time (2 bytes): number of hundredths of a second that client should wait before displaying next
+                      image in a multi-image GIF
+                    Transparent Color Index (1 byte): color with this index value should be transparent if trans color flag is 1
+                    Extension Terminator (1 byte): always 0
+            1.2.4.2 The Application Extension
+                allows GIF files to be customized for particular applications
+                Generic application extension format:
+                    Introducer (1 byte): 0x21
+                    Extension Label (1 byte): 0xFF
+                    Block Size (1 byte): 0x0B (11 more fields before block terminator)
+                    Identifier (8 bytes): human readable 8 char string
+                    App Authentication Code (3 bytes): 3 byte code to identify app that created the file
+                    Application Data (4 bytes): variable number of subblocks, first of which is the number of bytes of
+                      sub-blocks remaining in the Data field
+                    Extension Terminator (1 byte): 0
+    1.3 Portable Network Graphics (PNG)
+        A PNG file is a series of chunks, semi-equivalent to GIF blocks
+        There are a number of standard chunks, and 4 critical chunks:
+        Critical Chunks:
+            Name                    Description                                 Code
+            Header chunk            Global info about image                     IHDR
+            Palette chunk           A palette (optional)                        PLTE
+            Image data chunk        The compressed image data                   IDAT
+            Image end chunk         The end-of-file marker                      IEND
+        Ancillary Chunk
+            Bacckground color       bg color index in palette or bg shade (rgb) bKGD
+            Primary chromacities    info accounting for color correction        cHRM
+            Gamma                   info about gamma value of image             gAMA
+            Image Histogram         data on freq. of occurrence of each color   hIST
+            Physical Pixel          indicates image resolution                  pHYs
+            Significant Bits        bit depth of original image                 sBIT
+            Text Data               stores text in Latin-1 charset              tEXt
+            Time Modified           time image was last changed                 tIME
+            Transparency            1-255 alpha vals for transparency           tRNS
+            Compressed Text         Stores compressed text                      zTXt
+        At the beginning of each PNG file is an 8 byte signature that identifies the file as PNG formatted
+        The signature always starts with 0x89 and the remaining 7 bytes are PNG\r\n^Z\n
+        Each of these bytes provides an added layer of info about the format and integrity of the data that follows:
+            Byte 0: 0x89
+                First byte indicates that it's a binary file, and allows decoder to detect data corruption
+            Bytes 1-3: PNG
+                A human readable ASCII display of the file format
+            Bytes 4-5: \r\n
+                transfers between OS's can sometimes cause problems with stripping out newlines and carriage returns
+            Byte 6: ^Z
+                If the file is displayed on Win32 command line, ^Z halts listing of the file
+            Byte 7: \n
+                some file transfer modes on some systems have problems with carriage returns and newlines
+        Each PNG chunk is laid out in a standard form
+    1.3.1 The header chunk
+        describes the overall attributes of the PNG.  13 bytes long, 7 fields:
+            Width, Height (4 bytes each):
+                31 bits are used, which puts max png size at around 2G x 2G
+            Bit Depth (1 byte):
+                number of bits used for each index in the palette chunk or each sample in an RGB or grayscale
+            Color Type:
+                field is a code that indicates the method the imate uses to represent colors.  values can be:
+                    0: Each pixel is a grayscale value
+                    2: Each pixel is an RGB triplet
+                    3: Each pixel is an index to a color table
+                    4: Each pixel is a grayscale value followed by an alpha mask
+                    5: Each pixel is an RGB triplet followed by an alpha mask
+            Compression Type (1 byte):
+                a code indicating type of compression used to encode the image data
+            Filtering Type (1 byte):
+                filter byte contains a code indicating type of filtering applied to the data before compression
+            Interlace Scheme (1 byte):
+                code indicating the type of interlacing used -- defined values are none and 1 (Adam7 interlacing)
+    1.3.2 The Palette Chunk
+        a suggested color table to be used when rendering image data
+        required for indexed color files, optional otherwise
+    1.3.3 The Image Data Chunk
+        holds compressed data for each of the pixels in the image
+        before display, must be decompressed and decoded
+    1.3.4 Ancillary chunks
+        most of the possible chunks are not in wide use (1999?)
+1.4 JPEG
+    Joint Photographic Experts Group is ISC committee tasked with maintaining standard
+    actual software in JPEG toolkit is maintained by Independent JPEG group
+    JPEG only defines a stream encoding, not a file format per se
+    Actual format used for the web is JFIF, JPEG File Interchange Format
+

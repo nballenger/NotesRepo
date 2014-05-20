@@ -1,0 +1,44 @@
+Boxing and Unboxing:
+
+  List<Integer> ints = new ArrayList<Integer>();
+  ints.add(1); // takes an int primitive, autoboxes it to Integer
+  int n = ints.get(0); // auto-unboxes to int primitive
+
+Generics must always use reference types, not primitives.
+Caution: == for primitives is by value, == for reference objects is object identity.
+When comparing Integer types, use equals() for equal by value.
+
+Foreach loops:
+  
+  List<Integer> ints = Arrays.asList(1,2,3);
+  int s = 0;
+  for (int n : ints) { s += n; }
+  assert s == 6;
+
+Foreach can be applied to anything that implements the java.lang.Iterable<E> interface.
+Iterators have iterator(), hasNext(), next(), and remove().
+All collections, sets, and lists in the collections framework implement Iterable.
+You can also use it on an array.
+
+
+Generic methods and varargs:
+
+  class Lists {
+    public static <T> void addAll(List<T> list, T... arr) { // takes variable length args
+      for (T elt : arr) list.add(elt);
+    }
+  }
+
+Any time you declare a vararg with ..., you can pass a list of args or an array:
+
+  List<Integer> ints = new ArrayList<Integer>();
+  Lists.addAll(ints, 1, 2);  // add values
+  Lists.addAll(ints, new Integer[] { 3, 4 }); // add array
+  assert ints.toString().equals("[1, 2, 3, 4]");
+
+
+Subtyping and Substitution Principle
+
+A is a subtype of B if related by 'extends' or 'implements'.
+Subtyping is transitive.
+Every reference type is a subtype of Object.

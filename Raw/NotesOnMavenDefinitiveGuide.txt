@@ -1,0 +1,238 @@
+Maven: The Definitive Guide
+By: Sonatype Company
+Publisher: O'Reilly Media, Inc.
+Pub. Date: September 24, 2008
+Print ISBN-13: 978-0-596-51733-5
+Pages in Print Edition: 480
+
+Chapter 1: Introducing Apache Maven
+
+1.1 Convention over Configuration
+  * Maven assumes the following default behaviors:
+    - source code is in ${basedir}/src/main/java
+    - resources are in ${basedir}/src/main/resources
+    - tests are in ${basedir}/src/test
+    - projects are assumed to produce a JAR file
+    - byte code compiles to ${basedir}/target/classes
+    - the JAR file is created in ${basedir}/target
+
+1.2 A Common Interface
+  * Makes for a common build tool and commands across projects.
+
+1.3 Universal Reuse Through Maven Plugins
+  * Most responsibility is delegated to plugins that affect the Maven lifecycle
+  * The core of the thing is an XML parser, lifecycle tracker, and plugin host
+  * The Surefire plugin runs unit tests, projects are compiled with a Compiler
+    plugin, JAR files produced with a Jar plugin, etc.
+
+1.4 Conceptual Model of a "Project"
+  * Every project has a model that describes attributes of that project.
+  * The model gives you features like:
+    - Dependency management -- a project is defined as unique coordinates that
+      consist of a group identifier, artifact identifier, and version. Projects
+      can use these coordinates to declare dependencies.
+    - Remote repositories -- coordinates in the Project Object Model (POM) can
+      be used to create repositories of Maven artifacts
+    - Universal reuse of build logic -- plugin configuration and customization
+      is abstracted into the model
+    - Tool portability and integration -- IDEs have a common way to find info
+      about a project.
+    - Easy searching and filtering of project artifacts -- tools like Nexus let
+      you index and search the contents of a repository using the POM
+
+1.5 Is Maven an Alternative to XYZ?
+  * Comparing it to other build tools is a bit apples and oranges.
+  * Blah blah blah.
+
+1.6 Comparing Maven and Ant
+  * Ant is modeled on make, with targets and dependencies
+  * Ant needs you to tell it what to do, very specifically
+  * Maven infers a lot from the model + conventions
+  * Specific stuff about Ant:
+    - Ant doesn't have formal conventions--you have to give it exact configs
+    - Ant is procedural, so you have to tell it to take each step
+    - Ant doesn't have a lifecycle, so you have to declare goals and goal
+      dependencies, and attach a sequence of tasks to each goal manually.
+  * Specific stuff about Maven:
+    - Maven uses conventions to locate and store things
+    - Maven is declarative--you define a POM file and it automatically works
+    - Maven has a lifecycle invoked when you call mvn install.
+
+1.7 Summary
+  * Blah.
+
+
+Chapter 2: Installing and Running Maven
+
+2.1 Verify Your Java Installation
+2.2 Downloading Maven
+2.3 Installing Maven
+  * Put it in /usr/local or /usr/java
+  * symlink 'maven' to the full path name
+  * Set JAVA_HOME, M3_HOME, and PATH
+
+2.4 Testing a Maven Installation
+  * Run mvn -v to see if it is installed and in the path.
+
+2.5 Maven Installation Details
+  * When you start using Maven it'll download plugins to a local repo
+  * Contents of the Maven install directory:
+    - LICENSE.txt / NOTICE.txt / README.txt
+    - bin/ -- where the mvn script lives
+    - boot/ -- contains a JAR responsible for creating the Class Loader
+    - conf/ -- has a settings.xml that can customize your Maven install
+    - lib/ -- has a JAR file containing the core of Maven
+  * Customary to put local conf file in ~/.m2 (or m3?)
+
+  2.5.1 User-Specific Configuration and Repository
+   * Contents of ~/.m2 are settings.xml and repository/
+
+  2.5.2 Upgrading a Maven Installation
+    * Unpack and switch the symbolic link.
+
+2.6 Getting Help with Maven
+  * maven.apache.org, user mailing list, sonatype.com
+
+2.7 Using the Maven Help Plugin
+  * Lets you list active Maven profiles, display an effective POM, print the
+    effective settings, or list the attributes of a Maven plugin
+  * Commands:
+    - help:active-profiles
+    - help:effective-pom
+    - help:effective-settings
+    - help:describe  -- describes the attributes of a plugin
+
+  2.7.1 Describing a Maven Plugin
+    * Example of using describe to print info about the Help plugin:
+
+      mvn help:describe -Dplugin=help
+
+2.8 About the Apache Software License
+  
+
+Chapter 3: A Simple Maven Project
+
+3.1 Introduction
+  * Simple project created from scratch with teh Archetype plugin
+
+3.2 Creating a Simple Project
+  * Use the Archetype plugin from the command line:
+
+    mvn archetype:create \
+      -DgroupId=org.sonatype.mavenbook.ch03 \
+      -DartifactId=simple \
+      -DpackageName=org.sonatype.mavenbook
+
+3.3 Building a Simple Project
+  * To build and package the application, run mvn install from the directory
+    that contains the pom.xml file
+  * That'll build the target directory and a JAR file
+
+3.4 Simple Project Object Model
+
+3.5 Core Concepts
+  3.5.1 Maven Plugins and Goals
+    * Plugins have 'goals', 'create' is the goal in 'archetype:create'
+    * A plugin is a collection of one or more goals
+    * Custom plugins can be written in multiple different languages
+    * A goal is a specific task that may be executed alone or along with other
+      goals as part of a larger build. It's a 'unit of work' in Maven.
+    * You can pass configuration properties to customize goal behavior
+  
+  3.5.2 Maven Lifecycle
+    * 'mvn install' isn't a plugin goal, it's a maven lifecycle phase
+    * The build lifecycle is an ordered sequence of phases to build a project
+    * Maven can support different lifecycles, but the default Maven one is
+      the most used.
+    * Lifecycle phases are intentionally vague.
+    * Simplified representation of the default Maven lifecycle:
+
+      process-resources      =>
+        compile                =>
+          process-classes        =>
+            process-test-resources =>
+              test-compile           =>
+                test                   =>
+                  prepare-package        =>
+                    package                =>
+
+    * Plugin goals can be attached to a lifecycle phase.
+    * Executing a phase will first execute all preceding phases in order.
+    * The following goals are executed during the default lifecycle:
+
+      resources:resources
+        - copies all resources from src/main/resources to the output directory
+      compiler:compile
+        - compiles all source from src/main/java
+      resources:testResources
+        - copies all resources from src/test/resources to test output directory
+      compiler:testCompile
+        - compiles test cases from src/test/java to test output directory
+      surefire:test
+        - executes all tests and creates output files--may terminate build
+      jar:jar
+        - packages the output directory into a JAR file
+
+  3.5.3 Maven Coordinates
+    * During execution, each goal has access to the info from the project's POM
+    * Goals execute in the context of a POM
+    * Maven coordinates define identifiers that can be used to uniquely identify
+      a project, a dependency, or a plugin in a POM
+    * Example:
+
+      <project ...>
+        [...]
+        <groupId>mavenbook</groupId>
+        <artifactId>my-app</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        [...]
+      </project>
+
+    * Coordinates are often written groupId:artifactId:packaging:version when
+      they are listed as dependencies, etc.
+    * The parts are:
+
+      groupId -- group, company, team, project, or other group. Typically
+        begin with the reverse domain name of the organization.
+      artifactId -- unique identifier that represents a single project
+      version -- specific release of a project
+      packaging -- type of project, defaulting to 'jar'
+
+  3.5.4 Maven Repositories
+    * To use non-public libraries, you need to set up a custom repo, or
+      download and install dependencies manually.
+    * A maven repo is defined by structure--it's a collection of project
+      artifacts stored in a structure and format understood by Maven.
+    * The directory structure mirrors the project's coordinates:
+
+      root/<groupId>/<artifactId>/<version>/<artifactId>-<version>.<packaging>
+
+  3.5.5 Maven's Dependency Management
+    * The <dependencies> section of the pom.xml file details dependencies for
+      the project
+    * Maven supports transitive dependencies--it'll recursively fetch them
+    * When Maven gets a dependency, it gets the pom file in addition to the JAR
+    * Maven also supports different dependency scopes. Some dependencies can
+      be set to a scope of 'test', for instance, which only makes them available
+      during the compiler:testCompile and surefire:test goals.
+    
+  3.5.6 Site Generation and Reporting
+    * 'mvn site' can give you documentation and reports by executing the
+      site lifecycle phase.
+    * The site phase is only concerned with processing site content under the
+      src/site directories, and generating reports.
+    * Some of the default reports are about unit tests, Javadoc of the project's
+      API, etc.
+
+3.6 Summary
+  * Blah blah blah.
+
+
+Chapter 4: Customizing a Maven Project
+ 
+4.1 Introduction
+
+4.2 Defining the Simple Weather Project
+  * User provides a zip code on the command line, app talks to Yahoo weather.
+
+4.3 Creating the Simple Weather Project

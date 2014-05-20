@@ -1,0 +1,152 @@
+Statistical Inference: A Short Course
+By: Michael J. Panik
+Publisher: John Wiley & Sons
+Pub. Date: July 3, 2012
+Print ISBN: 978-1-118-22940-8
+Web ISBN: 1-118229-40-1
+eISBN: 978-1-118-30980-3
+Pages in Print Edition: 400
+
+
+Chapter 1: The Nature of Statistics
+
+1.1 Statistics Defined
+  * Two major branches:
+    - descriptive: summarizing data, a picture of what is or what was
+    - inductive: employs statistical inference to make guesses about an entire
+      data set based on a population within that dataset
+
+1.2 The Population and the Sample
+  * "Population" -- the entirety of a dataset/the group to be studied.
+    Represented by N.
+  * "Variable" -- characteristics of members of the population
+  * "Qualitative variable" -- categorical or nominal data
+  * "Quantitative variable" -- discrete or continuous data
+  * "Sample" -- a subset of the population, denoted n
+  * "Representative sample" -- sample typical of the population in the
+    attributes under study.
+
+1.3 Selecting a Sample from a Population
+  * Methods:
+    - simple random sampling
+    - with/without replacement
+  * "Sampling error" -- natural variation in samples skews result
+  * "Biased sample" -- sample that misrepresents the population in some way
+
+1.4 Measurement Scales
+  * Types:
+    - nominal
+    - ordinal
+    - interval
+    - ratio
+
+1.5 Let Us Add
+  * Introduces Sigma summation notation
+
+Chapter 2: Analyzing Quantitative Data
+
+2.1 Imposing Order
+  * This chapter is about descriptive statistics
+
+2.2 Tabular and Graphical Techniques: Ungrouped Data
+  * Assume a sample of n observations on some variable X, denoted:
+
+    X : X<sub>1</sub>, X<sub>2</sub>, ..., X<sub>n</sub>, i = 1, ..., n
+
+  * "Absolute frequency distribution" -- Table of values and their frequencies
+  * "Relative frequency distribution" -- each absolute frequency as a fraction
+    of the total number of observations
+  * "Percent distribution" -- relative frequencies * 100
+
+2.3 Tabular and Graphical Techniques: Grouped Data
+  * "Class frequency" -- frequency distribution after grouping data 
+  * "Histogram" -- vertical bars with heights corresponding to a frequency dist
+
+Chapter 3: Descriptive Characteristics of Quantitative Data
+
+3.1 The Search for Summary Characteristics
+  * "Parameter" -- any descriptive measure of a population
+  * "Statistic" -- any descriptive measure of a sample
+  * For a population, parameters are static. Statistics are variable, since they
+    measure across a sample of the population.
+  * Summary characteristics of a variable X:
+    1. Measures of central location (describes a typical data value)
+      a. Mean (unweighted or weighted)
+      b. Quantiles (median and other measures of position)
+      c. Mode
+    2. Measures of dispersion (used to describe variation in a data set)
+      a. Range and interquartile range
+      b. Standard deviation
+      c. Coefficient of variation
+      d. Z-scores
+    3. Measures of shape
+      a. Coefficient of skewness
+      b. Coefficient of kurtosis
+    4. Measures which detect outliers
+
+3.2 The Arithmetic Mean
+  * Population mean:
+
+             &Sum; X<sub>i</sub>
+      &mu; = --------
+                N
+
+  * Sample mean:
+
+      _   &Sum; X<sub>i</sub>
+      X = -------
+             n
+
+  * Properties of the mean:
+    1. The mean always exists.
+    2. The mean is unique.
+    3. The mean is affected by outliers.
+    4. The mean is said to be "relatively reliable"--doesn't vary considerably
+       under repeated sampling from the same population.
+    5. Each observation used in the calculation of X-bar has the same weight
+
+  * Weighted mean:
+
+      _               &Sum; X<sub>i</sub> * w<sub>i</sub>
+      X<sub>w</sub> = ---------
+                      &Sum; w<sub>i</sub>
+
+
+3.3 The Median
+  * "Median" -- value that divides the observations of X into two equal parts
+  * Rules for finding the median:
+    
+    1. Arrange the observations on a variable X in an increasing sequence.
+    2.
+      a. For an odd number of observations, take the middle term.
+      b. For an even number, average the two middle terms.
+
+  * Properties of the median:
+    1. The median may or may not equal the mean.
+    2. The median always exists.
+    3. The median is unique.
+    4. The median is not affected by outliers.
+
+3.4 The Mode
+  * "Mode" -- value that occurs with the highest frequency.
+  * Samples can be modal (one mode), bimodal (two values tied for mode), etc.
+  * Properties of the mode:
+    1. The mode may or may not equal the mean and median.
+    2. The mode may not exist.
+    3. If the mode exists, it may not be unique.
+    4. The mode is not affected by outliers.
+    5. The mode always corresponds to an actual value of X.
+
+3.5 The Range
+  * "Range" -- max(X) - min(X)
+  * Measures the total spread.
+
+3.6 The Standard Deviation
+  * The i-th deviation from the sample mean X-bar is X<sub>i</sub> - X-bar
+  * The sum of all deviations from the mean is zero.
+  * You square the deviations to avoid that zeroing, since they all become 
+    positive numbers.
+  * Population variance of X = average of the squared deviations from avg(X)
+  * Variance generally:
+
+    

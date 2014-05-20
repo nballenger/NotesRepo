@@ -1,0 +1,22 @@
+// Interfaces are reference types that can contain only:
+//    constants
+//    method signatures
+//    nested types
+// They cannot be instantiated, only implemented or extended.
+
+[ PROTECTION_MODIFIERS ]
+interface InterfaceName
+[ extends Interface1, Interface2, ..., InterfaceN ]
+{
+  // Constant declarations
+  double E = 2.718282;
+
+  // Method signatures
+  void doSomething (int i, double x);
+  int doSomethingElse(String s);
+}
+
+// Extending an interface
+public interface ExtendedInterfaceName extends InterfaceName {
+  boolean didItWork(int i, double x, String s);
+}

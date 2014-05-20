@@ -1,0 +1,56 @@
+XPath
+
+Seven kinds of nodes:
+    * The root node
+    * Element nodes
+    * Text nodes
+    * Attribute nodes
+    * Comment nodes
+    * Processing-instruction nodes
+    * Namespace nodes
+    
+Root node of the tree is not the same as the root element of the document.
+Root node of the tree contains entire document--including the root element.
+
+xmlns and xmlns:prefix are not considered attribute nodes--however, namespace nodes are attached to every element node for which a declaration is in scope
+
+A location path identifies a set of nodes in a document.
+A location path is made of location steps.
+Each step is evaluated relative to a particular node called the context node.
+
+Simplest location path is the root node: /
+/ matches the entire input document
+/ is an absolute location path
+
+Second simplest is a single element name
+selects all child elements of the context node with the specified name
+
+In XSLT, the context node for an XPath expression used in the select attribute of xsl:apply-templates and similar elements is the node that is currently matched.
+
+Attributes are addressable by using an @ sign
+@born selects the "born" attribute of the context node
+
+comment(), text() and processing-instruction() tests will get you those things
+each comment is a separate comment node
+each text node contains the maximum possible contiguous run of text not interrupted by any tag
+
+Wildcards are *, node() and @*
+* matches any element node regardless of name
+you can use a namespace prefix with a *, like svg:*
+node() matches elements, the root node, text nodes, processing-instruction nodes, namespace nodes, attribute nodes and comment nodes
+@* matches all attribute nodes
+
+| lets you match multiple things, like match="first_name|last_name|profession|hobby"
+
+Compound location paths:
+
+. refers to context node
+.. parent node
+// descendants of the context node
+
+/ starts a path relative to the root node
+all other paths start relative to the context node
+
+Each step in a location path may have a predicate that selects from the node-set current at that step in the expression
+predicates are Boolean expressions, tested for each node in the context node list
+

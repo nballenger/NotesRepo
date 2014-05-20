@@ -1,0 +1,572 @@
+Notes on Web Workers
+
+Chapter 1: Overview
+    * Web Workers spec defines an API for running code in a thread other than the web application UI
+    
+    What Can Web Workers Do?
+        * Anything that takes more than 150ms should consider using a web worker
+        * Shorter times on mobile devices, since the cpu is less powerful
+        * Stuff like complex math, big sort tasks, network requests, prefetch/caching, background IO
+        
+    Creating a Worker
+        * You just need to call its script.  Example:
+        
+            var worker = new Worker("worker.js");
+            
+        * Loads worker.js and executes it in the background
+        * Worker constructor must be called with URI of a script to execute
+        * If you want to get data from it, set its onmessage property to an event handler:
+        
+            var worker = new Worker('routes.js');
+            worker.onmessage = function(event) {
+                console.log("Called back by the routes-worker with the best route.");
+            }
+            
+        * You can keep in touch with workers via addEventListener:
+        
+            var worker = new Worker('routes.js');
+            worker.addEventListener('message', function(event) {
+                console.log("Called back by the routes-worker...with best route.");
+            }, false);
+            worker.postMessage();   // start the worker
+            
+    What Web Workers Can and Can't Do
+        * Don't have access to the DOM of the parent page (no window, document, parent, jquery)
+        * Can only access a limited set of JS features:
+            - navigator object
+            - location object (read only)
+            - XMLHttpRequest function
+            - atob() and btoa() functions for converting base 64 ASCII to/from binary
+            - setTimeout() / clearTimeout() and setInterval() / clearInterval()
+            - dump()
+            - The application cache
+            - External scripts uisng importScripts() method
+            - Spawning other Web Workers
+            
+    Worker Execution
+        * The threads run synchronously, top to bottom, then go into async phase to respond
+            to events and timers
+        * Two types of Web Workers:
+            - Those that register an onmessage event handler, for long running background tasks
+                this won't exit, keeps listening for new messages
+            - Those that never register for onmessage events, handling single tasks that need
+                to be offset from the main web app thread, like grabbing a huge JSON object
+                these exit once they've completed their operations and callbacks
+                
+    Web Workers API Browser Availability
+        * Web worker support:
+            IE 10, Chrome 12+, FF 5+, Safari 4+, Opera 11+, iOS Safari 5+, Opera Mobile 11+, android 2.1
+        * Shared Web Worker support:
+            IE 10?, Chrome 12+, FF 9+?, Safari 5+, Opera 11+, iOS Safari 5+, Opera Mobile 11+
+            
+Chapter 2: How and Where Can We Use Web Workers?
+        * Have to check for support--whether there's a Worker property on the global window object
+        * Helper function:
+        
+            isWorkersAvailable() { return !!window.Worker; }
+            
+        * Can also use the Modernizr library:
+        
+            if (Modernizr.webworkers) {  
+                // window.Worker is available!
+            } 
+            else { 
+                // no native support
+            }
+            
+        * Basic prime generator
+            highPrime.js:
+            
+                var n = 1;
+                search: while (true) {
+                    n += 1;
+                    for (var i = 2; i <= Math.sqrt(n); i += 1) {
+                        if (n % i === 0) {
+                            continue search;
+                        }
+                    }
+                    // found a prime
+                    postMessage(n);
+                }
+                
+            HTML host for the web worker:
+            
+                <!DOCTYPE HTML>
+                <html>
+                    <head>
+                        <title>Web Worker: Highest Prime</title>
+                    </head>
+                    <body>
+                    <style>
+                        #result { background-color: yellow; padding: 20px; font-size: 140%; }
+                        footer { font-size: 70%; color: red; position: fixed; bottom: 1em; text-align: center; }
+                    </style>
+                    <body>
+                        <h1>Web Worker: The Highest Prime</h1>
+                        <article>The highest prime discovered so far is:
+                            <output id="result"></output>
+                        </article>
+                        <script>
+                            var worker = new Worker('highPrime.js');
+                            worker.onmessage = function (event) {
+                                document.getElementById('result').textContext = event.data;
+                            };
+                        </script>
+                    </body>
+                </html>
+                
+        * Messages sent via postMessage() are copied (not shared)
+        * main web app page and Web Worker don't point to the same object instance, so we have
+            a duplicate memory footprint on each end
+        * Modern browsers do that by doing JSON encoding/decoding on the object value on each side
+        * You can pass serialized JSON, or any other serialized data
+    
+    Loading External Scripts
+        * To load external script files or libraries into a web worker, use the importScripts() global fn
+        * If you give it one or more urls, it will load and execute the JS (regardless of MIME type)
+            in the Web Worker
+        * Importing some scripts into a Web Worker:
+        
+            importScripts('script1.js');
+            importScripts('script2.js');
+            
+            // OR
+            
+            importScripts('script1.js', 'script2.js');
+            
+        * One way to use importScripts() is by passing the script a callback function to handle results:
+        
+            importScripts('http://twitter.com/statuses/user_timeline/' + 
+                user + '.json?count=10&callback=processTweets');
+                
+            function processTweets(data) {
+                // parse the json object holding the tweets and build an html block
+            }
+            
+        * Code from index.html for creating a Web Worker:
+        
+            function startWorker(settings) {
+                var myWorker = new Worker('scripts/worker.js');
+                myWorker.addEventListener("message", workerListener, false);
+                myWorker.postMessage(settings);
+            }
+            
+        * The worker.js file:
+        
+            self.addEventListener('message', function(e) {
+                doSomeWork();
+            };
+            
+            function doSomeWork() {
+                importScripts('http://example.com?callBack=handleWorkerResults');
+            }
+            
+            function handleWorkerResults() {
+                postMessage(result);
+            }
+            
+        * Can be a good way to fetch JSON from REST APIs and then work on it
+        
+Chapter 3: Dedicated Workers
+        * Let you run scripts in background threads
+        * Good for CPU heavy jobs, masking the latency in network time
+        * Keeps the main UI thread free to handle user actions
+        * A dedicate worker supports two events:
+            onmessage -- triggered when a message is received, gives an event object with data member
+            onerror   -- triggered when an error occurs in the Worker thread, event.data has error info
+        * Example that:
+            1.  Starts the Worker by calling its constructor
+            2.  Sets itself up to listen for messages (the tweet info) using worker.addEventListener
+            3.  When tweets arrive, create a new DOM element and add items to it
+            4.  Save the tweets inside the loop using the ts of the tweet as a localStorage key
+            
+        * Code:
+        
+            <!DOCTYPE HTML>
+            <html>
+                <head>
+                    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+                    <style>
+                    #result { background: lightblue; padding: 20px; border-radius: 18px; }
+                    #tweets { background: yellow; border-radius: 28px; padding: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Web Workers: Pull Tweets and Save to Local Storage</h1>
+                    <article>Open Chrome Dev Tool on the Resources tab<br/>
+                        Click on Local Storage to see the data saved by tweet-id<br />
+                        <br />
+                        <div id="result"></div>
+                        <div id="tweets"></div>
+                    </article>
+                    
+                    <script>
+                        console.log("WebWorker: Starting");
+                        var worker = new Worker("Example-3-2-tweet.js");
+                        worker.addEventListener("message", function(E) {
+                            var curTime = new Date();
+                            // here we will show the messages between our page and the Worker
+                            $('#result').append(curTime + ' ) ' + e.data + '<br />');
+                            var source = e.data[0].source;
+                            // in case we have data from twitter, show it to the user
+                            if (typeof source != 'undefined') {
+                                var tweets = document.createElement('ul');
+                                for (var i = 0; i < 10; i++) {
+                                    if (typeof e.data[i] != 'undefined' &&
+                                               e.data[i].text != 'undefined') {
+                                        var tweetTextItem = document.createElement('li');
+                                        var tweetText = document.createTextNode(e.data[i].text + ' | ' +
+                                            e.data[i].source + " (" +
+                                            e.data[i].created_at + ")" );
+                                        tweetTextItem.appendChild(tweetText);
+                                        tweets.appendChild(tweetTextItem);
+                                        saveTweet(e.data[i]);
+                                    }
+                                }
+                                // update the DOM outside our loop, for efficiency
+                                console.log("WebWorker: Updated the DOM with Tweets");
+                                $("#tweets").append(tweets);
+                            }
+                        }, false);
+                        
+                        worker.onerror = function(e) {
+                            throw new Error(e.message + " (" + e.filename + ":" + e.lineno + ")");
+                        };
+                        
+                        // Key  - tweet ID
+                        // Val  - Time tweet created and the text of the tweet
+                        function saveTweet(tweet) {
+                            localStorage.setItem(tweet.id_str, "{" +
+                                "'created': '" + tweet.created_at + "'," +
+                                "'tweet-text': '" + tweet.text + "'}");
+                        }
+                        
+                        // Get a tweet from localStorage
+                        // could use sessionStorage if we just need it for this session
+                        function getTweet(tweetID) {
+                            return localStorage.getItem(tweetID);
+                        }
+                    </script>
+                </body>
+            </html>
+            
+
+        * Code of the web worker itself:
+        
+            // Example-3-2-tweet.js
+            // Pull tweets and send them so the parent page can push to local storage
+            var connections = 0;        // count active connections
+            var updateDelay = 30000;    // 30s delay
+            var user = "greenido";
+            
+            function getURL(user) {
+                return 'http://twitter.com/statuses/user_timeline/' + user
+                    + '.json?count=' + 12 + '&callback=processTweets';
+            }
+            
+            function readTweets() {
+                try {
+                    var url = getURL(user);
+                    postMessage("Worker Status: Attempting to Read Tweets for user - " + user +
+                        " from: " + url);
+                    importScripts(url);
+                }
+                catch (e) {
+                    postMessage("Worker Status: Error - " + e.message);
+                    setTimeout(readTweets, updateDelay);
+                }
+            }
+            
+            function processTweets(data) {
+                var numTweets = data.length;
+                if (numTweets > 0) {
+                    postMessage("Worker Status: New Tweets - " + numTweets);
+                    postMessage(data);
+                } else {
+                    postMessage("Worker Status: New Tweets - 0");
+                }
+                setTimeout(readTweets, updateDelay);
+            }
+            
+            // start the party in the Worker
+            readTweets();
+            
+
+    Control Your Web Workers
+        * Managing a worker with a protocol of two commands, start and stop
+        
+            <!DOCTYPE HTML>
+            <html>
+                <head>
+                    <title>Web Worker: Highest Prime</title>
+                    <!-- get the latest jQuery -->
+                    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+                </head>
+                <style>
+                #actions { position: fixed; top: 10px; background: lightBlue; padding: 8px; }
+                h1 { position: relative; bottom: 10px; left: 280px; }
+                #status { position: relative; font-size: 120%; background: darkslategrey; padding: 20px; border-radius: 20px; }
+                article { position: relative; color: yellow; background: darkgray; padding: 25px; }
+                input { width: 80px; height: 35px; font-size: 120%; }
+                </style>
+                <body>
+                    <h1>Web Worker: Highest Prime</h1>
+                    <article>The prime numbers:
+                        <output id="result"></output>
+                        <div id="status"></div>
+                    </article>
+                    <div id="actions">
+                        <input type="text" name="upto" id="upto" />
+                        <button onclick="start()" title="Start the work">Start</button>
+                        <button onclick="stop()" title="Stop the work">Stop</button>
+                    </div>
+                    <script>
+                        var myWorker;
+                        
+                        function start() {
+                            console.log("WebWorker: Starting");
+                            myWorker = new Worker("highPrime2.js");
+                            myWorker.addEventListener("message", primeHandler, false);
+                            var maxNum = $('#upto').val();
+                            myWorker.postMessage({'cmd': 'start', 'upto': maxNum});
+                        }
+                        
+                        function stop() {
+                            if (myWorker) {
+                                var msg = "<br />WebWorker: Terminating " + new Date();
+                                console.log(msg);
+                                $('#status').append(msg);
+                                myWorker.terminate();
+                                myWorker = null;
+                            }
+                        }
+                        
+                        function primeHandler(event) {
+                            console.log ('got e:' + event.data);
+                            if (is_numeric(event.data)) {
+                                $('#result').append(event.data);
+                            }
+                            else {
+                                $('#status').append(JSON.stringify(event.data) );
+                            }
+                        }
+                        
+                        function isNumeric(input) {
+                            return typeof(input) === 'number';
+                        }
+                    </script>
+                </body>
+            </html>
+        
+        * highPrime2.js, the more controllable Web Worker:
+        
+            <script>
+            // self in this case refers to the Worker context inside the Worker
+            self.addEventListener('message', function(e) {
+                var data = e.data;
+                var shouldRun = true;
+                
+                switch(data.cmd) {
+                case 'stop':
+                    postMessage('Worker stopped the prime calculation.' + data.msg);
+                    shouldRun = false;
+                    self.close();   // terminates the Worker
+                    break;
+                case 'start':
+                    postMessage("Worker start working up to: " + data.upto + " (" + new Date() + ")<br/>");
+                    var numbers = isPrime(data.upto);
+                    postMessage("Got back these numbers: " + numbers + "<br />");
+                    break;
+                default:
+                    postMessage('Unknown cmd: ' + data.msg);
+                };
+            }, false);
+            
+            // calculation of primes
+            function isPrime(number) {
+                var numArray = "";
+                var divisor;
+                var notPrime;
+                var thisNumber = 3;
+                while thisNumber < number) {
+                    divisor = parseInt(thisNumber / 2);
+                    notPrime = 0;
+                    while (divisor > 1) {
+                        if (thisNumber % divisor === 0) {
+                            notPrime = 1;
+                            divisor = 0;
+                        }
+                        else {
+                            divisor = divisor - 1;
+                        }
+                    }
+                    if (notPrime === 0) {
+                        numArray += (thisNumber + " ");
+                    }
+                    thisNumber = thisNumber + 1;
+                }
+                return numArray;
+            }
+            </script>
+            
+    Parsing Data with Workers
+        * Use for anything you want to parse that'll take more than 250ms
+        * Example of parsing a string and getting JSON in return:
+        
+            var worker = new Worker("worker-parser.js");
+            
+            // when data is fetched, this handler is called
+            worker.onmessage = function(event) {
+                // let's get a JSON structure back
+                var jsonObj = event.data;
+                // work with the json obj
+                showData(jsonObj);
+            };
+            
+            // send the JSON string to parse
+            worker.postMessage(jsonText);
+            
+        * worker-parser.js:
+        
+            self.onmessage = function(event) {
+                // the JSON string comes in as event.data
+                var jsonText = event.data;
+                // parse the structure
+                var jsonObj = JSON.parse(jsonText);
+                // send back the json obj
+                self.postMessage(jsonObj);
+            };
+            
+    Transferable Objects
+        * In FF and Chrome 13+ we can send ArrayBuffers to and from a Web Worker using 'structured cloning'
+        * Lets you use postMessage not just for strings, but complex types
+        * It's powerful, but still bears a time cost for the cloning
+        * Chrome 17+ gives Transferable Objects, which is a move op and not a copy
+        * Basically a pass-by-reference, though once you pass it the original context doesn't have it
+        * In chrome 17+, this is the version of postMessage that supports transferable objects:
+        
+            worker.webkitPostMessage(arrayBuffer, [arrayBuffer]);
+            
+        * You can send messages through the window object, which requires adding targetOrigin:
+        
+            window.webkitPostMessage(arrayBuffer, targetOrigin, [arrayBuffer]);
+            
+        * Lets you pass big data chunks around without as much memory/speed cost
+        
+Chapter 4: Inline Workers
+        * You may want to create worker scripts on the fly to handle an event
+        * May also want to have a self contained page without having to call separate js files
+        * Creating an inline worker using BlobBuilder:
+        
+            <script id="worker1" type="javascript/worker">
+            // won't be parsed by js engines because of the type
+            // code to calculate prime number and send it back to the parent page
+            self.onmessage = function(e) {
+                self.postMessage("<h3>Worker: Started the calculation</h3><ul>");
+                var n = 1;
+                search: while (n < 500) {
+                    n += 1;
+                    for (var i = 2; i <= Math.sqrt(n); i += 1) {
+                        if (n %i == 0) {
+                            continue search;
+                        }
+                    }
+                    postMessage("<li>Worker: Found another prime: " + n + "</li>");
+                }
+                postMessage("</ul><h3>Worker: Done</h3>");
+            }
+            </script>
+            
+        * The main page:
+        
+            <script>
+            // creating the blobbuilder and adding web worker code to it
+            var bb = new (window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder)();
+            bb.append(document.querySelector('#worker1').textContent);
+            
+            // Creates a simple URL string which can be used to reference
+            // the data stored in a DOM file / blob object
+            // In Chrome, there's a nice page to view all of the created
+            // blob URLs: chrome://blob-internals/
+            
+            // OurUrl enable our code to run in Chrome and FF
+            var ourUrl = window.webkitURL || window.URL;
+            var worker = new Worker(ourUrl.createObject(bb.getBlob()));
+            
+            worker.onmessage = function(e) {
+                status(e.data);
+            }
+            worker.postMessage();
+            </script>
+            
+        * Method can be harder to debug--try testing as an external file and then moving it inline
+                        
+                        
+Chapter 5: Shared Workers
+        * They let multiple web app instances communicate with a single instance of Worker
+        * Identified by the name or url you provide in the constructor SharedWorker()
+        * Use a single shared worker as a hub that does all communications with the server
+        * Can also use offline capabilities to persist data state
+        * Other good uses:
+            - Single source of truth for any type of logic your app needs in more than one place
+                like user identification, connection status
+            - Ensuring data consistency between windows of the same web app
+            - Reducing memory consumption of multiple web app tabs / windows
+        * Main event the shared worker will execute is 'connect'
+        * Each client connection has a port assigned to uniquely identify it
+        * Messaging gets pushed to that port
+        * Example SharedWorker1.html:
+        
+            <!DOCTYPE HTML>
+            <html>
+                <head>
+                    <title>Shared Web Workers</title>
+                </head>
+                <body>
+                    <h1>Shared Workers: Basic Example</h1>
+                    <article>
+                        To create a shared Web Worker, pass a JS file name to a new instance of SharedWorker:
+                        <br /><code>var worker = new SharedWorker("jsworker.js");</code>
+                        <br />
+                        Our web shared Web Worker will count the connection and return the data back to our listener in this page. You may want to open chrome devtools to see the process.
+                        <output id="result"></output>
+                    </article>
+                    <script>
+                        var worker = new SharedWorker('sharedWorker1.js');
+                        
+                        worker.port.addEventListener('message', function(e) {
+                            document.getElementById('result').textContent += " | " + e.data;
+                        }, false);
+                        
+                        worker.port.start();
+                        
+                        // post a message to the shared Web Worker
+                        console.log("Calling the worker from script session 1");
+                        worker.port.postMessage("script-1");
+                    </script>
+                    
+                    <script>
+                        // This new script block might be found on a separate tab/window
+                        // of our web app. Here it's just for the example on the same page.
+                        console.log("Calling the worker from script section 2");
+                        worker.port.postMessage("script-2");
+                    </script>
+                </body>
+            </html>
+            
+        * Example sharedWorker1.js:
+        
+            // This is the code for: 'sharedWorker1.js' file
+            // Shared workers that handle the connections and welcome each new script
+            
+            var connections = 0;    // count active connections
+            self.addEventListener("connect", function(e) {
+                var port = e.ports[0];
+                connections++;
+                port.addEventListener("message", function(e) {
+                    port.postMessage("Welcome to " + e.data + 
+                        " (On port #" + connections + ")");
+                }, false);
+                //
+                port.start();
+            }, false);

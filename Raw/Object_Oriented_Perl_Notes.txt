@@ -1,0 +1,474 @@
+Object Oriented Perl--Damian Conway
+
+Chapter 1: What You Need to Know
+	1.1 The Essentials of Object Orientation
+		1.1.1 Objects
+			An object is an access mechanism for data.
+			Objects have attributes, which in turn have attribute values.
+			Objects have a property known as encapsulation:
+				Attributes of an object cannot be directly accessed
+				access to data must come through object methods
+		1.1.2 Classes
+			Classes represent the association between a particular object and a set of methods
+			Class is a formal specification of attributes and methods for an object type
+			Objects belonging to a class have an interface (methods) and implementation (internal workings)
+			Objects are instances of classes
+		1.1.3 Class attributes and methods
+			Class attributes and methods are shared by all instances of the class, and are not object specific
+			Class methods access class attributes
+		1.1.4 Inheritance
+			Classes can have derived subclasses, which extend or modify the base class's functionality
+			Inheritance has an inherent "is a" relationship
+			Inheritance can be expressed over multiple, increasingly general levels
+			Inheritance can indicate abstract relationships between types of objects
+			Inheritance is heirarchical
+			Derived classes can have multiple base classes, though this is potentially confusing
+		1.1.5 Polymorphism
+			Polymorphism indicates different objects' or classes' ability to respond differently to identical input
+			Inheritance polymorphism exists when a class modifies or extends a derived base method
+			Interface polymorphism exists when any class having an appropriate method can respond to a method call
+			Abstract methods, which are never called directly, may exist towards the base of a class heirarchy
+			Abstract methods exist to inform derived classes, which will extend the abstract methods into usability
+	1.2 Other Object-Oriented Concepts
+		1.2.1 Interface vs. Implementation
+			A class's interface should be separate from it's implementation, such that changing the implementation
+				does not change the interface (which would break legacy code)
+		1.2.2 Aggregation
+			Just as subroutines can call other subroutines, as in sqrt(sin($number)), objects can call other objects
+		1.2.3 Genericity
+			It is sometimes important to have general classes (essentially algorithmic templates)
+			Perl decreases the need for that, though it can still sometimes be useful
+		1.2.4 Persistence
+			Persistence is the ability of objects to retain their attribute values, their association with a class,
+				and their individual identity between separate executions of a program
+			Persistence goes beyond dumping to and reading from a storage device--a persistent object will be
+				identifiably reconstructed (same name or same memory location, etc)
+			Process of translating internal, language specific representations of the object to disk storage
+				is termed serialization or encoding
+			Coarse grained persistence writes changes to storage at the end of run-time (fine grained writes continuously)
+			Persistence does not guarantee data integrity
+Chapter 2: What You Need to Know Second (a perl refresher)
+	2.1 Essential Perl
+		2.1.1 Scalars
+			Scalar variables can store any single number, string, or reference
+			starts with a $
+		2.1.2 Arrays
+			stores a series of values, each uniquely identified by an integer index value
+			full array name is @name
+			individual elements are $name[$index]
+			length: varialbe $#name stores length
+			index values can be negative, which goes from the end of the array ($name[-1] == $name[$#name])
+			list is a sequence of comma separated values, separate from an array
+			list assignment can be @name = (1,2,3) or ($name[0],$name[1],$name[2]) = (1,2,3)
+			quoted list is qw(1 2 3)
+			push adds last element, pop removes last, unshift adds first element, shift removes first element
+			array slicing = @name[0,1,2]
+		2.1.3 Hashes
+			hash contains linked list of keys and values
+			full hash name is %name
+			element access is $name{$key} = $value
+			loading hash:
+				%name = (1,'one',2,'two')
+				%name = (1 => 'one', 2 => 'two')
+			to iterate a hash:
+				foreach $key (keys %name) { print "$key: $name{$key}\n"; }
+			to slice a hash:
+				@name(1,2,3)
+		2.1.4 Subroutines
+			define with
+				sub name { code; returnvalue; }
+			arguments passed in are available in @_
+			called by name (if previously defined) or as &name if defined after call
+			if no args are passed, and sub is called with '&', current value of @_ is passed
+			to pass named args, pass a hash in, then initialize the hash inside the sub:
+				sub blah { %args = @_; code; return; }
+				blah(name => 'namevalue', stuff = 'stuffvalue');
+			there are three contexts in which a sub can be called:
+				listdir(@files);			# void context, no return value expected
+				$listed = listdir(@files);	# scalar context, scalar return value expected
+				@missing = listdir(@files); # list context, list return value expected
+			wantarray() builtin returns context information:
+				undef if void context
+				'' if scalar context
+				1 if list context
+			use to determine return value:
+				sub listdir { 
+					code;
+					return @missing_files if wantarray();   # returns 1, wants a list
+					return $listed_count if defined(wantarray()); # returns '', defined but false
+				}
+			the caller() function will return:
+				0 - package from which the current sub is called
+				1 - name of the file from which the sub is called
+				2 - line in the file that calls the current sub
+				3 - name of the subroutine
+				4 - whether the sub was passed args
+				5 - context in which sub was called
+				6 - source code that called the sub, if call was part of an eval TEXT statement
+				7 - whether the sub was called as part of a require or use statement
+		2.1.5 References and Referents
+			references are stored in scalars:
+				$scalar_ref = \$s;
+				$array_ref = \@a;
+				$hash_ref = \%h;
+				$sub_ref = \&s;
+			dereferencing:
+				prepend the appropriate symbol
+				put the reference in braces
+				${\$s} or ${$scalar_ref} or $$scalar_ref
+				@{\@a} or @{$array_ref} or @$array_ref
+				%{\%h} or %{$hash_ref} or %$hash_ref
+				&{\&s} or %{$sub_ref} or %$sub_ref
+			arrow operator:
+				${$array_ref}[0] = $h{"first"}  is equivalent to  $array_ref->[0] = $h{"first"}
+				$a[0] = ${$hash_ref}{"first"}  is equivalent to  $a[0] = $hash_ref->{"first"}
+			ref operator: 
+				returns a value when passed a scalar containing a reference:
+				$scalar_ref contains...							ref($scalar_ref) returns...
+				a scalar value									undef
+				a reference to a scalar							"SCALAR"
+				a reference to an array							"ARRAY"
+				a reference to a hash							"HASH"
+				a reference to a subroutine						"CODE"
+				a reference to a filehandle						"IO" or "IO::Handle"
+				a reference to a typeglob						"GLOB"
+				a reference to a precompiled pattern			"Regexp"
+				a reference to another reference				"REF"
+			references and anonymous arrays:
+				my $table =
+				[
+					[1,2,3],
+					[2,4,6],
+				];
+				creates $table->[$x][$y] type series of anonymous arrays
+			references and anonymous hashes:
+				$behaviour =
+				{
+					cat => { nap => 'lap', eat => 'meat' },
+					dog => { prowl => 'growl', pool => 'drool' },
+				}
+				creates $behaviour->{cat}->{eat} type series of anonymous hashes
+			anonymous subroutine references
+				$sub_ref = { print "$_[0]\n" };
+				$sub_ref->('some stuff to print');
+		2.1.6 Packages
+			perl assumes 'main' package if none specified
+			declare a package with 'package packagename;'
+			call methods in a package with packagename::method()
+			package variables (our $blah) are global to that package
+			lexical variables (my $blarg) are local to the scope
+			local variables (local $blah) are local-to-scope versions of package variables
+	2.2 Nonessential (but very useful) perl
+		2.2.1 Modules
+			perl modules are text files with .pm extension which contain perl code
+			often a module is a package, though a module can contain more than one package
+		2.2.2 Autoloading
+			create AUTOLOAD sub--when a method is called that's not in the @ISA tree, perl will traverse @ISA again
+				and load the first AUTOLOAD it finds
+		2.2.3 Closures
+			a closure is a subroutine that refers to one or more lexical variables declared outside the subroutine itself
+			example:
+				my $name = "Damian";
+				sub print_my_name { print $name, "\n"; }
+			normally, $name would go out of scope (and be cleaned up) when we hit EOF or the end of the current scope block
+			however, because it's referenced in a sub, it never goes out of scope (till EOF)
+			but, because it technically goes out of scope at the end of the block, it's no longer available outside the sub
+			a closure preserves any lexical variables it's using, even after nothing else can use them
+			closures can give subs their own private memory space
+			closures can also share the same memory space:
+				{
+					my $locked;
+					sub lock { return 0 if $locked; $locked = 1; }
+					sub unlock { $locked=0; }
+				}
+				lock() or die "Resource already in use";
+				unlock();
+		2.2.4 Typeglobs
+			each entry in the symbol table has a namespce for one name of each type (scalar, array, hash, sub, etc)
+			to refer to the symbol entry table for anything falling under a single name, use *name
+			assigning one typeglob to another causes the references in the second symbol table to be assigned
+				to the matching slots of the first
+			easiest way to use this is to shorten a long set of variable names:
+				*rules = *the_Marquis_of_Queensbury_rules;
+			they can also be selectively assigned:
+				*SOURCE = \$SOURCE1;
+				*args = \@ARGV;
+				*do_it = sub {print "doin' it!\n" };
+			you can take a reference to them:
+				$var = 'this is $var';
+				%var = (v=>"very",a=>"active",r=>"rodent");
+				sub var { print "This is &var\n"; }
+				$typeglob_ref = \*var;
+			to get to the parts of a typeglob reference, use:
+				${*$typeglob_ref}
+				@{*$typeglob_ref}
+				%{*$typeglob_ref}
+			to get at the references that are stored in a typeglob, use the *foo{THING} syntax:
+				$scalar_ref = *var{SCALAR};
+				$array_ref = *var{ARRAY};
+				$hash_ref = *var{HASH};
+				$sub_ref = *var{CODE};
+				$handle_ref = *var{IO};
+			symbolic references are charater strings containing the name of a variable or a sub in the symbol table
+			example:
+				package main;
+				$name = "data";
+				print ${$name}; 	# equivalent to print $main::data
+				push @{$name}, $next;	# equivalent to push @main::data, $next
+			if the string looks like a fully qualified name, the appropriate symbol table is used
+Chapter 3: Getting Started
+	3.1 Three Little Rules
+		3.1.1 To create a class, build a package
+			with the package operator:
+				package Animal;
+		3.1.2 To create a method, write a subroutine
+			to create:
+				sub print_me { #code goes here }
+			to call:
+				$new_animal = Animal->new(); # assumes you defined a constructor
+				$new_animal->print_me();
+			to call via symbolic reference:
+				$method = 'print_me';
+				$new_animal->$method();
+			first argument to any method is the object reference of the caller, or the class name of the class
+			which implies:
+				package Animal;
+				sub print_me {
+					my $self = shift; # or my $self, @args = @_;
+					code;
+				}
+		3.1.3 To create an object, bless a referent
+			any type of perl variable can become an object
+			tell perl that a variable belongs to a particular class, with bless
+			bless takes as arguments a reference to the variable to be blessed, and a string with the name of the class
+	3.2 A Simple Perl Class
+		3.2.1 The code
+			Providing a constructor
+				create an anonymous hash, fill it up, bless it
+			Accessing an object's read-only data
+				provide getters and setters--don't access object variables directly
+			Catching attempts to change read-only attributes
+				an error catcher isn't necessary--just don't make it possible
+			Method Prototypes
+				method prototypes don't work--perl ignores them
+				you can use them as indicators of usage, but not as safeguards
+			Accessing class data
+				example:
+					package CD::Music;
+					use strict;
+					{
+						my $_count = 0;			# establishing a class variable in a scope block
+						sub get_count { $_count }
+						sub _incr_count { ++$count }
+					}
+					sub new {
+						my ($class, @arg) = @_;
+						$class->_incr_count();
+						...
+					}
+				the two methods defined in the scope block have access to the variable, which is a closure
+				access data with:
+					CD::Music->get_count();
+				protect from external usage by putting the constructor (and anything else that needs to change the count)
+					inside the scope block with the $_count variable
+		3.2.2 Using the CD::Music class
+			implementation details here
+	3.3 Making Life Easier
+		3.3.1 Class Modules
+			create an appropriately named .pm file in an appropriately named subdir
+			put the code in it and make sure the last statement evaluates to true
+			arrange to import the module's interface--typically one or more subroutines--into the package that'll use it
+			don't import any subs from an object oriented module
+		3.3.2 use strict and the -w flag
+		3.3.3 Automating data member access
+			use AUTOLOAD to replace repetitive and similar getters and setters
+			example:
+				use vars '$AUTOLOAD';				# keep 'use strict' happy
+				sub AUTOLOAD {
+					my ($self) = @_;
+					$AUTOLOAD =~ /.*::get(_\w+)/ or croak "No such method: $AUTOLOAD";
+					exists $self->{$1} or croak "No such attribute: $1";
+					return $self->{$1};
+				}
+	3.4 The Creation and Destruction of Objects
+		3.4.1 Constructors
+			add constructor default values by passing in a hash (as a list) and then:
+				sub new {
+					my ($class, %arg) = @_;
+					$class->_incr_count();
+					bless {
+						_name		=> $arg{name}		|| croak ("missing name"),
+						_artist		=> $arg{artist}		|| "???",
+					}, $class;
+				}
+			Constructors as object duplicators
+				object to object assignment does not work
+				copying requires a call to the constructor
+				we need to change the constructor slightly:
+					package CD::Music;
+					{
+						my $_class_defaults =
+						{	_name		=> "???",
+							_artist		=> "???",
+							_publisher	=> "???",
+							_ISBN		=> "???",
+							_tracks		=> "???",
+							_room		=> "uncataloged",
+							_shelf		=> "",
+							_rating		=> -1,
+						};
+						sub _class_defaults { $_class_defaults }
+						sub _class_default_keys { map { s/^_//; $_ } keys %$_class_defaults }
+					}
+					sub new {
+						my ($caller, %arg) = @_;
+						my $class = ref($caller);
+						my $defaults = $class ? $caller : $caller->_class_defaults();
+						$class ||= $caller;
+						$class->_incr_count();
+						my $self = bless {}, $class;
+						foreach my $attrname ( $class->_class_default_keys ) {
+							if (exists $arg{$attrname}) {
+								$self->{"_$attrname"} = $arg{$attrname} 
+							} else {
+								$self->{"_$attrname"} = $defaults->{"_$attrname"}
+							}
+						}
+						return $self;
+					}
+				now, call this with:
+					my $cdref2 = $cdref1->new();
+				or copy and modify:
+					my $cdref2 = $cdref1->new( name => "Somename", artist => "Someartist");
+				or ignore the stored values and use the standard defaults:
+					my $cdref2 = ref($cdref1)->new();		# this is an obtuse way of calling the class constructor
+				alternatively, provide a separate clone method
+		3.4.2 Destructors
+			create a sub DESTROY to handle cleanup
+			for circular references, you need to have your destructor deal with them:
+				package Network;
+				sub DESTROY {
+					my ($self) = @_;
+					foreach my $node ( @{$self->{_nodes}} ) {
+						$node->delete_links();
+					}
+				}
+				package Node;
+				sub delete_links {
+					my ($self) = @_;
+					delete $self->{_outlinks};
+				}
+			if an object's destructor is called, and it doesn't exist, the AUTOLOAD will fire, so include:
+				return if $AUTOLOAD =~ /::DESTROY$/;
+			in the AUTOLOAD sub
+
+Chapter 4: Blessing Arrays and Scalars
+	4.1 What's Wrong with a Hash?
+		sometimes you don't want the processing overhead associated with a hash
+		autovivification can sometimes be an issue, since mistakes just go right into the hash
+	4.2 Blessing an Array
+		it can be confusing to use an array, since you lose the labels that hash keys provide
+		one way to address this is to introduce a bunch of constants, which act as array keys:
+			use constant FLIGHT_TIME => 2;
+			use constant FLIGHT_DISTANCE => 11;
+			return $self->{FLIGHT_TIME} / $self->{FLIGHT_DISTANCE};
+		It's possible to build an array based implementation of the CD::Music class
+		in that recoding, you dispense with the AUTOLOAD function, for performance reasons, since
+			the point of blessing an array was speed, and AUTOLOAD naturally sacrifices that
+		4.2.1 An array-specific example--iterators
+			trying to iterate over nested versions of the same hash can be problematic using 'each', because of cursor resets
+			an iterator class would help:
+				package Iterator;
+				$VERSION = 1.00;
+				use strict;
+				sub new {
+					my ($class, @data) = @_;
+					@data = @$class if !@data && ref($class);
+					bless [ @data ], ref($class) || $class;
+				}
+				sub each {
+					my ($self) = @_;
+					my @next = splice @$self, 0, 2;
+					return wantarray ? @next : $next[0];
+				}
+	4.3 Blessing a Pseudo-Hash
+		4.3.1 A pseudo what???
+			an array reference pretending to be a hash reference is a pseudo hash
+			example:
+				my $pseudo_hash = [ { a=>1,b=>2,c=>3 }, "val a", "val b", "val c" ];
+			can be accessed as an array:
+				$pseudo_hash->[1];
+			or as a hash:
+				$pseudo_hash->{"a"};
+			perl translates that to:
+				$pseudo_hash->[$pseudo_hash->[0]->{"a"}];
+			first retrieves the hash reference stored in element zero of the array
+			then uses that hash to look up the index corresponding to the specified key
+			finally uses that index to access the appropriate element in the original array
+			first item in a pseudo-hash must be a hash-ref, or perl will throw an exception
+			to add new items to a pseudo-hash:
+				1. add a new key-to-index mapping:
+					$pseudo_hash->[0]->{"z"} = $newval;
+				2. access the new entry directly, to assign it a value:
+					$pseudo_hash->{"z"} = "value z";
+		4.3.2 Advantages of a pseudo-hash
+			it's good that pseudo-hashes don't auto-vivify, since it keeps typo errors from creeping into a hash
+		4.3.3 The worst of both worlds?
+			it would appear that a pseudo-hash has real efficiency implications, due to the array and hash lookups
+		4.3.4 Compile-time support for run-time performance
+			the fields.pm module provides some support for pseudo-hashes
+			to bring it in:
+				use fields qw( field names here );
+			which:
+				--informs the perl compiler that those are the only valid names that may be accessed in objects of the class
+				--createas a package hash named %FIELDS with an entry for each named field
+				--causes the perl compiler to translate any pseudo-hash accesses into direct array accesses
+	4.4 Blessing a scalar
+		4.4.1 Why not bless a scalar?
+			they only store a single piece of data, which doesn't usually go well as an object
+			it may make more sense to use a hash, even to store a single item, for familiarity's sake
+		4.4.2 An object-oriented password
+			example:
+				package Password;
+				$VERSION = 1.00;
+				use strict;
+
+				my @salt = ("A".."Z", "a".."z", "0".."9", "/",".");
+
+				sub new {
+					my ($class, $cleartext) = @_;
+					my $salt = $salt[rand @salt].$salt[rand @salt];
+					my $pw = crypt($cleartext, $salt);
+					return bless \$pw, ref($class) || $class;
+				}
+				sub verify {
+					my ($self, $candidate) = @_;
+					my $salt = substr($$self,0,2);
+					return crypt($candidate, $salt) eq $$self;
+				}
+		4.4.3 A bit-string class
+			occasionally it will be useful to, when working with a bit set, pack them into a scalar
+			scalar representations of bits are much more efficient than array representations
+
+Chapter 5: Blessing Other things
+	5.1 Blessing a REGEX
+		5.1.1 The qr Operator
+			qr takes its argument and turns it into a perl regex
+			regex is compiled, but not matched against anything
+			example:
+				$rxref = qr{[A-Za-z_][A-Za-z0-9_]*};
+			reference to the regex can then be interpolated, but doesn't have to recompile
+			example:
+				$pattern_string = qq{[A-Za-z_]\w*}; # make a pattern string
+				$regex_reference = qr{[A-Za-z_]\w*}; # make a regex reference
+				$str =~ m/$pattern_string/; # Interpolate string, recompile regex, then match
+				$str =~ m/$regex_reference/; # Interpolate precompiled regex, then match
+		5.1.2 Why an object-oriented regex class?
+		5.1.3 Designing a differente regular expressions mechanism
+			this is dumb.  having multiple regex syntaxes just makes things harder, not easier
+	5.2 Blessing a Subroutine
+		5.2.1 So, how can a subroutine be an object?
+			blessing a sub is sometimes a good idea
+	5.3 Blessing a Typeglob
+		5.3.1 Paging STDOUT
+			

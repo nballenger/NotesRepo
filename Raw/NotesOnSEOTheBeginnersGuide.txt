@@ -1,0 +1,338 @@
+Notes on The Beginner's Guide to SEO
+
+http://www.seomoz.org/article/beginners-guide-to-search-engine-optimization
+
+Chapter 1: How Search Engines Operate
+
+1. Crawling and Indexing
+    * Robots crawl link structures, store locations/indexes.
+    
+2. Providing Answers
+    * SEO is meant to influence the relevance and importance of results.
+    * Currently, importance = popularity.
+    
+    SEO Info from Google Webmaster Guidelines
+        * Make pages for users, not search engines.
+        * Site with clear hierarchy and text links.
+        * Useful, info rich sites, with pages that clearly and accurately
+          describe your content.
+        * Make title elements and alt attributes descriptive and accurate.
+        * Keywords to create descriptive, human friendly URLs.
+        * One version of a URL to reach a document, using 301 redirects or
+          the rel="canonical" element for duplicate content.
+          
+     SEO Info from Bing Webmaster Guidelines
+        * Clean, keyword rich URL structure.
+        * Content not buried in rich media.
+        * Ensure rich media doesn't hide links from crawlers.
+        * Keyword rich content based on research against user searches.
+        * Fresh content regularly.
+        * Indexable text outside images.
+        
+Chapter 2: How People Interact with Search Engines
+    Steps that comprise most search processes:
+        1.  Experience the need for an answer, solution, or information.
+        2.  Formulate that need in a string of words and phrases (the query).
+        3.  Enter the query into a search engine.
+        4.  Browse the results for a match.
+        5.  Click on a result.
+        6.  Scan for a solution, or a link to a solution.
+        7.  If unsatisfied, return to the search results and browse further.
+        8.  Perform a new search with refinements to the query.
+        
+    Three types of search queries users generally perform:
+        * "Do" Transactional Queries - action queries such as buy a plane ticket
+          or listen to a song.
+        * "Know" informational queries - seeking information, like the name of
+          a band or the best restaurant in a city.
+        * "Go" navigation queries - seeking a particular online destination
+        
+    Summary statements about web search and search engine marketing:
+        * Search is very popular, reaches nearly every online American, billions
+          of people worldwide.
+        * Drives an incredible amount of online/offline economic activity.
+        * Higher rankings in the first few results are critical to visibility.
+        * Top rankings generate traffic, but also trust / relative importance.
+        
+        
+Chapter 3: Why Search Engine Marketing is Necessary
+    * Argument basically amounts to "you should be communicative about your own
+      metadata, since machines aren't human."
+      
+    Limitations of Search Engine Technology:
+        1.  Spidering and Indexing problems
+            * Not good at completing online forms.
+            * CMS's often have duplicate version of content/pages.
+            * Errors in robots.txt may block search engines.
+            * Bad link structures block search engines, or leave it minimally
+              exposed, leading to it being deemed "unimportant."
+            * Rich media content is hard to spider and index.
+        2.  Content to Query Matching
+            * Text not written in the same terms that people will use to search.
+            * Language and Internationalization issues
+            * Location targeting based on bad assumptions
+            * Mixed contextual signals: metadata mismatches content
+        3.  The "Tree Falls in a Forest"
+            * Search engines do a good job at making already popular content
+              available to users, but cannot make content popular from scratch.
+            * "This is a task that demands talented internet marketers." Haha.
+            
+Chapter 4: The Basics of Search Engine Friendly Design and Development
+    * Most important content should be in HTML text format.
+    * Images need good alt attributes.
+    * Search boxes should be supplemented with navigation and crawlable links.
+    * Dynamic content should be supplemented with text content.
+    * Video and audio should have an accompanying transcript if the content
+      is meant to be indexed.
+    
+    * Check your site via google cache to see it more as a spider does.
+    
+    Common reasons pages may not be reachable
+        * Requiring a form submission prior to content availability.
+        * Links are within JavaScript
+        * Links to pages blocked by the meta robots tag or robots.txt
+        * Using frames or iframes.
+        * Robots won't use search forms
+        * Links are in dynamic content via plugins
+        * Links are lost in a huge sea of links.
+        
+    rel="nofollow"
+        * Tells search engines not to interpret a link as valuable.
+        * Natural part of a diverse link profile.
+        * High ranking sites tend to have a higher percentage of inbound
+          nofollowed links than lower ranking sites.
+        * Google says that they drop nofollowed links from their graph.
+        * Some people think it still contributes to trust rankings.
+        * Bing may follow links, but don't count them for rankings.
+        
+    Keyword usage
+        * Use keywords in prominent page elements, titles and headings.
+        * The more specific your keywords, the better your chances of having
+          low competition for a search space.
+        * Best practice is to use keywords naturally and strategically.
+        
+    SEOmoz best practices for keyword optimization:
+        * Use the keyword in the title tag at least once. Try to keep the
+          keyword as close to the beginning of the title as possible.
+        * Use a keyword once prominently near the top of the page.
+        * Use it at least 2-3 times, including variations, in the body copy
+          on the page, more with greater text content.
+        * Use at least once in the alt attribute of an image on the page.
+        * Once in the URL.
+        * At least once in the meta description tag. Not actually used for
+          rankings, but will show up in the snippet on a lot of search screens.
+        * Not in link anchor text that points to other pages. 
+        
+    Title Tags
+        * Keep to shorter than 65-75 characters. Go longer only for multiple
+          keyword testing, if necessary.
+        * Put important keywords at the front.
+        * End title tags with a brand name mention, to increase clickthrough
+          and brand recognition.
+        * Compelling title tags pull more visitors.
+        
+    Meta Tags
+        Meta Robots
+            * index/noindex - tells engines whether to crawl and index a page.
+            * follow/nofollow - tells whether to crawl
+            * noarchive - restricts caching
+            * nosnippet - refrain from displaying a block of text
+            * noodp/noydir - don't grab a descriptive snippet from the Open
+              Directory Project (DMOZ) or the Yahoo! Directory.
+            * The x-robots-tag http header can carry the same info.
+        Meta Description
+            * Short description of a page's content.
+            * Not used for rankings, but primary source of snippets.
+            * Try to keep less than 160 characters.
+        Meta Keywords
+            * No longer valuable or important for SEO.
+        Meta refresh, revisit-after, content type, etc.
+            * Somewhat useful, but specialized.
+            
+    URL Construction Guidelines
+        * Employ empathy. Can you predict content from the URL?
+        * Shorter is better. Minimize length and trailing slashes.
+        * Use (moderately) keywords.
+        * Static, human readable urls without lots of parameters are best.
+        * Use hyphens to separate words, not _ + %20, etc.
+        
+    Canonical and Duplicate Versions of Content
+        * Duplicate content is a problem for indexing--things like a different
+          version of the same page for print and web consumption.
+        * Canonicalization is the process of making sure every unique piece of
+          your content has one and only one URL.
+        * Making multiple inbound links 301 redirect to a single location will
+          mean search engines actually only index one page, which will be
+          stronger in the rankings by not being diluted.
+        * Use the canonical url tag:
+            <link rel="canonical" href="http://www.somesite.com/"/>
+        * Tells search engines that the page in question should be treated as
+          though it were a copy of the URL somesite.com, and that all link
+          and content metrics the engines apply should flow back to that URL.
+        * Similar in many ways to a 301 redirect for SEO purposes.
+        
+    Rich Snippets
+        * Structured data allowing webmasters to mark up content for engines.
+        * Schema.org provides examples.
+        * You can also use Google's rich snippet testing tool.
+        * Might look like:
+        
+            <div itemscope itemtype="http://schema.org/Event">
+            <div itemprop="name">SEO Conference</div>
+            <span itemprop="description">Learn about SEO!</span>
+            Event date:
+            <time itemprop="startDate" datetime="2012-05-08T19:30">
+              May 8, 7:30pm</time>
+            </div>
+            
+    Defeating content scrapers
+        * When you publish content in a feed, ping the major blogging/tracking
+          services (Google, Technorati, Yahoo!, etc).
+        * Services like Pingomatic can automate it.
+        * Most scrapers will republish without editing, so you should include
+          links back to your own site and the specific post you've authored.
+        * Use absolute rather than relative urls in your link structure, so that
+          the scraped links still point to you.
+          
+Chapter 5: Keyword Research
+    Basic process for assessing a keyword's value
+        Ask yourself...
+            * Is the keyword relevant to your site's content?
+            * Will searchers find what they want, be happy with it, and further
+              some of your organizational goals?
+        If so, search for term/phrase in major search engines
+            * Look at who is already ranked for that term or terms.
+            * Look at how many search ads are placed--more means high value.
+        Buy a sample campaign for the keyword with google or bing    
+            * Do an exact match test, and track impressions/conversions.
+        Using the data, determine the exact value of the keyword
+            * Example: ad generates 5k impressions, 100 clicks, 3 conversions,
+              for a total profit of $300, a single visitor for that keyword is
+              worth $3. Top ranking would generate 18-36% clickthrough, so
+              900-1800 visits daily, at $3 each, for $1-2M per year.
+              
+    Understanding the Long Tail of Keyword Demand
+        * Aggregate of multiple semi-unique, specialized searches that end up
+          leading to your content via keyword.
+        * 30% in the 'fat head', 70% in the 'long tail'
+        * Typically better conversions, because they catch people later in the
+          buying/conversion cycle.
+        * Can be looked at with a keyword demand curve showing the tail.  
+        
+    Keyword Research
+        * Sources:
+            Google adwords' keyword tool
+            Google insights for search
+            Google trends keyword demand prediction
+            Microsoft advertising intelligence
+            Wordtracker's free basic keyword demand
+            SEOmoz blog category on Keyword Research
+            
+    Keyword Difficulty
+        * Understand both the demand for a term and the work required to get
+          and keep high rankings for that phrase. Don't fight uphill battles.
+          
+Chapter 6; How usability, user experience, and content affect rankings
+    General, search sites have several traits in common:
+        1. Easy to use, navigate, and understand
+        2. Provide direct, actionable information relevant to the query
+        3. Professional designed and accessible to modern browsers
+        4. Deliver high quality, legitimate, credible content.
+        
+    Signals of Quality Content
+        1. Engagement metrics - how long before returning to search
+        2. Machine learning - Google's 'Panda Update' to the ranking algorithm
+           changed the metrics for quality. Built machines to mimic human
+           evaluators of 'low quality' content.
+        3. Linking Patterns - structure as a proxy for votes/popularity.
+        
+    Search Intent Flavors - fulfill them to secure engagement
+        * Transactional
+        * Navigational
+        * Informational
+        
+Chapter 7: Growing Popularity and Links
+    * Engines use links as proxies for popularity and importance.
+    * Trustworthy sites tend to link to other trusted sites.
+    * Spammy sites get few links from trusted sites.
+    * Authority models like the Hilltop algorithm suggest links are a good
+      way of identifying expert documents on a given subject.
+      
+    Link Signals used by search engines
+        Global Popularity
+            * The more popular a site, the more links from it matter.
+        Local/Topic-Specific Popularity
+            * Links from sites within a topic specific community matter more
+              than links from general or off topic sites.
+        Anchor text
+            * Using the same keywords to link to a site correlates that site
+              highly with those keywords.
+        TrustRank
+            * Engines tend to derive trust from the link graph.
+            * Links from high trust domains will boost your trust.
+        Link Neighborhood
+            * A website that links to spam is likely spam itself.
+            * Looking at the totality of links in and out, an engine can 
+              establish a site's link neighborhood, and derive trust from that.
+        Freshness
+            * Link signals decay over time--continuing to add incoming links
+              is an indicator that fresh content is being produced.
+        Social Sharing
+            * Socially shared links are treated differently, but do factor in.
+            * For the time being, links are far superior to social sharing.
+            
+    Three basic types of link acquisition
+        1. "Natural" Editorial links - links given by sites and pages that want
+           to link to your content or company.
+        2. Manual "Outreach" link building - expressly requesting links.
+        3. Self-Created, Non-Editorial - spamming, basically.
+        
+    Starting a Link Building Campaign
+        Metrics for building a rating scale of link value:
+            * Ranking for Relevant Search Terms - look for terms that a page is
+              targeting to find out how it is currently valued by engines.
+            * SEOmoz mozRank - shows the popularity of a given page.
+            * Competitor's Backlinks - look at the backlinks of a highly ranked
+              site for your target keywords to find out which links helped to
+              create their ranking.
+            * Number of Links on a Page - a link is diluted by the presence of
+              other links on a page. Getting linked by a page with few links is
+              better than getting a link from a page with many links.
+            * Domain Authority - query independent measure of how likely a 
+              domain is to rank for any given query. Looks at the internet's
+              domain graph and compares it to google search results.
+            * Potential referral traffic - search engines aren't the only way
+              for potential conversions to reach a location.
+              
+        5 Samples of Link Building Strategies
+            * Get your customers to link to you
+            * Built a company blog, make it valuable, informative, entertaining
+            * Create content that inspires viral sharing/natural linking
+            * Be newsworthy
+            * Find directories or listings of relevant resources
+            
+Chapter 8: Search Engine Tools and Services
+    Common Search Engine Protocols
+        1. Sitemaps - help crawlers find and classify content they may not 
+           have found on their own. Sitemaps.org gives details. They can be 
+           XML, RSS, Txt
+        2. Robots.txt - instructions for crawlers to find sitemaps, not index
+           or follow specific directories, etc.
+        3. Meta Robots - page level instructions for crawlers.
+        4. rel="nofollow" - tells engine not to follow the link / count it
+        5. rel="canonical" - credits a page's interactions towards a specific
+           url, to deduplicate content spread across a site.
+           
+    Search Engine Tools
+        Google Webmaster Tools
+        SEOmoz Open Site Explorer
+        
+Chapter 9: Myths and Misconceptions about Search Engines
+    * You can't submit to engines anymore, just earn or create links.
+    * Title and description are critically important, and robots is important
+      as well, other meta tags not so much.
+    * Keyword density doesn't effect ranking.
+    * Buying ads through engines doesn't effect ranking.
+    
+        
+        

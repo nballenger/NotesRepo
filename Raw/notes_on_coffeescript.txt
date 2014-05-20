@@ -1,0 +1,693 @@
+Notes on The Little Book on CoffeeScript
+
+Chapter 1: CoffeeScript Syntax
+    * File must be pure coffeescript
+    * No semicolons
+    * Comments start with a hash
+    * Multiline comments are enclosed in ###
+    * White space is significant
+    * Curly brackets replaced with a tab
+1.1 Variables and Scope
+    * Scripts are wrapped in an anonymous function, which creates a local scope
+    * prepends 'var' to all variable declarations
+    * You can optionally set globals on the window object
+    * You can also do it with:
+    
+        exports = this
+        exports.MyVariable = "foo-bar"
+        
+1.2 Functions
+    * function keyword is replaced with ->
+    * You can do oneliners or indented blocks
+    * Example:
+        
+        func = -> "bar"
+        func = ->
+            "bar"
+            
+    1.2.1 Function Arguments
+        * Specified before the arrow:
+        
+            times = (a, b) -> a * b
+            times = (a = 1, b = 2) -> a * b
+            
+        * Use a splat to accept multiple args (...)
+        
+            sub = (nums...) ->
+                result = 0
+                nums.foreach (n) -> result += n
+                result
+                
+    1.2.2 Function Invocation
+        * with parens, apply() or call()
+        * Will automatically call if they're invoked with at least one arg
+        * parens are optional, but recommended
+        * with no arguments, you must use parens to invoke
+        
+    1.2.3 Function Context
+        * Helper syntax: the fat arrow =>
+        * Using => ensures the function context will be bound to the local one
+        * Example:
+        
+            this.clickHandler = -> alert "clicked"
+            element.addEventListener "click", (e) => this.clickHandler(e)
+            
+        * Similar to jQuery's proxy()
+        * Lets you avoid "self = this" type stuff
+        
+1.3 Object Literals and Array Definition
+    * Syntax is the same as in JS, though braces are optionally replaced with
+        indentation and new lines can replace commas:
+        
+        object1 = {one: 1, two: 2}
+        object2 = one: 1, two: 2
+        object3 = 
+            one: 1
+            two: 2
+        User.create(name: "John Smith")
+        
+    * Arrays can use whitespace instead of commas, though square brackets are
+        required:
+        
+        array1 = [1,2,3]
+        array2 = [
+            1
+            2
+            3
+        ]
+        array3 = [1,2,3,]
+        
+    * Coffeescript will strip trailing commas in array defs
+    
+1.4 Flow Control
+    * Optional parens with if and else:
+    
+        if true == true
+            "We're Ok"
+            
+        if true != true then "Panic"
+        
+    * 'then' lets you know in a one liner where the block begins
+    * You can't use the ternary operator
+    * Allows suffixed if statements:
+    
+        alert "It's cold!" if heat < 5
+        
+    * You can use either ! or 'not' for negation:
+    
+        if not true then "Panic"
+        
+    * Also has an unless statement:
+    
+        unless true
+            "Panic"
+            
+    * Uses 'is' to mean ===:
+        
+        if true is 1
+            "Type coercion fail!"
+            
+    * You can use 'isnt' to mean 'is not':
+    
+        if true isnt true
+            alert "Opposite day!"
+            
+1.5 String Interpolation
+    * Uses Ruby style string interpolation.
+    * Double quoted strings can have #{} tags, containing interpolatable strings
+    * Example:
+    
+        favorite_color = "Blue. No, yel..."
+        question = "Bridgekeeper: What... is your favorite color?
+                    Galahad: #{favorite_color}
+                    Bridgekeeper: Wrong!
+                    "
+    * You can use multiple lines without connecting with a +
+    
+1.6 Loops and Comprehensions
+    * Iteration syntax:
+    
+        for name in ["Roger", "Roderick", "Brian"]
+            alert "Release #{name}"
+            
+    * Current iteration index by passing in a variable:
+    
+        for name, i in ["Roger the pickpocket", "Roderick the robber"]
+            alert "#{i} - Release #{name}"
+        
+    * You can iterate on one line with the postfix form:
+    
+        release prisoner for prisoner in ["Roger", "Roderick", "Brian"]
+        
+    * You can filter, like python comprehensions:
+    
+        prisoners = ["Roger", "Roderick", "Brian"]
+        release prisoner for prisoner in prisoners when prisoner[0] is "R"
+        
+    * You can use comprehensions for iterating over properties in objects:
+    
+        names = sam: seaborn, donna: moss
+        alert("#{first} #{last}") for first, last of names
+        
+    * while is very similar to pure js, but returns an array like map()
+    
+        num = 6
+        minstrel = while num -= 1
+            num + " Brave Sir Robin ran away"
+            
+1.7 Arrays
+    * Lets you use ranges separated by .. or ...
+    * A range with no prefix will expand into an array:
+    
+        range = [1..5]
+        
+    * If the range is specified after a variable, it's converted into a 
+        call to slice() on the array:
+        
+        firstTwo = ["one, "two, "three"][0..1]
+        
+    * You can use the syntax to replace an array segment with another array:
+    
+        numbers = [0..9]
+        numbers[3..5] = [-3, -4, -5]
+        
+    * You can also use ranges with a string to return a subset:
+    
+        my = "my string"[0..1]
+        
+    * You can search for a value in an array with 'in':
+    
+        words = ["rattled", "roudy", "rebbles", "ranks"]
+        alert "Stop wagging me" if "ranks" in words
+        
+1.8 Aliases and the Existential Operator
+    * @ can be used as an alias for 'this'
+    
+        @savior = true
+        
+    * :: is an alias for 'prototype':
+    
+        User::first = -> @records[0]
+        
+    * CS replaces null checks using if with a '?' existential operator
+    * ? returns true unless a variable is null or undefined:
+    
+        praise if brian?
+        
+    * Can also be used in place of ||:
+        
+        velocity = southern ? 40
+        
+    * If you put '?' before accessing a property, it'll do a null check:
+    
+        blackKnight.getLegs()?.kick()
+        
+    * You can check that a property is a function and callable by putting
+        '?' right before the parens--if it's not a function or not callable
+        it just won't get called:
+        
+        blackKnight.getLegs().kick?()
+        
+Chapter 2: CoffeeScript Classes
+    * Behind the scenes it's prototype based, but you use the class keyword
+    
+        class Animal
+        animal = new Animal
+        
+    * Constructors are defined with 'constructor':
+    
+        class Animal
+            constructor: (name) ->
+                @name = name
+                
+    * If you prefix an argument with @, CS will set the arguments as instance
+        properties in the constructor:
+        
+        class Animal
+            constructor: (@name) ->
+            
+    * Arguments passed on instantiation are proxied to the constructor:
+    
+        animal = new Animal("Parrot")
+        alert "Animal is a #{animal.name}"
+        
+2.1 Instance Properties
+    * Adding instance properties is the same syntax as adding properties
+    * Make sure properties are indented correctly inside the class body:
+    
+        class Animal
+            price: 5
+            sell: (customer) ->
+            
+        animal = new Animal
+        animal.sell(new Customer)
+        
+    * If you use a fat arrow (=>) in an instance method, it'll always invoke
+        in the correct context, and 'this' will always refer to the current
+        instance:
+        
+        class Animal
+            price: 5
+            
+            sell: =>
+                alert "Give me #{@price} shillings!"
+                
+        animal = new Animal
+        $("#sell").click(animal.sell)
+        
+    * Particularly useful in event callbacks--in the above, normally sell() would
+        get invoked in the context of #sell (#sell would be 'this'), but the
+        fat arrow ensures it executes in the context of the animal object
+        
+2.2 Static Properties
+    * Inside a class definition, 'this' refers to the class object
+    * You can set class properties directly on 'this'
+    
+        class Animal
+            this.find = (name) ->
+            
+        Animal.find("Parrot")
+        
+    * You can also use @ as an alias for this to write static properties:
+    
+        class Animal
+            @find: (name) ->
+            
+        Animal.find("Parrot")
+        
+2.3 Inheritance and Super
+    * You can inherit from another class using the 'extends' keyword
+    
+        class Animal
+            constructor: (@name) ->
+            
+            alive: ->
+                false
+                
+        class Parrot extends Animal
+            constructor: ->
+                super("Parrot")
+                
+            dead: ->
+                not @alive()
+                
+    * super() is turned into a function call on the class's parent prototype
+    * In practice it's the same as super in Python, invoking the overwritten
+        inherited function
+    * Unless you override 'constructor', CS will invoke the parent's constructor
+    * CS uses prototypal inheritance to automatically inherit all of a class's
+        instance properties
+    * Classes are dynamic--if you add properties to a parent class after a
+        child has been created, the property will still be propagated to all 
+        inherited children:
+        
+        class Animal
+            constructor: (@name) ->
+            
+        class Parrot extends Animal
+        
+        Animal::rip = true
+        
+        parrot = new Parrot("Macaw")
+        alert("This parrot is no more") if parrot.rip
+        
+    * Note: static properties are copied to subclasses, rather than inherited
+    
+2.4 Mixins
+    * Not natively supported by CoffeeScript, but easy to implement
+    * Example of two functions, extend() and include() that'll add class and
+        instance properties respectively to a class:
+        
+        extend = (obj, mixin) ->
+            obj[name] = method for name, method of mixin
+            obj
+            
+        include = (klass, mixin) ->
+            extend klass.prototype, mixin
+            
+        # Usage
+        include Parrot,
+            isDeceased: true
+            
+        (new Parrot).isDeceased
+        
+    * Lets you share common logic between modules when inheritance doesn't work
+    * You can use multiple mixins, compared to one inheritable class
+    
+2.5 Extending Classes
+    * Going to define a class Module that we can inherit from for mixin support
+    * Will have two static functions, @extend() and @include()
+    
+        moduleKeywords = ['extended', 'included']
+        
+        class Module
+            @extend: (obj) ->
+                for key, value of obj when key not in moduleKeywords
+                    # Assign properties to the prototype
+                    @::[key] = value
+                    
+                obj.included?.apply(@)
+                this
+                
+    * moduleKeywords makes sure you have callback support when mixins extend a 
+        class:
+        
+        classProperties = 
+            find: (id) ->
+            create: (attrs) ->
+            
+        instanceProperties =
+            save: ->
+            
+        class User extends Module
+            @extend classProperties
+            @include instanceProperties
+            
+        # Usage:
+        user = User.find(1)
+        
+    * Since we've got callbacks whenever modules are extended, we can shortcut
+        the process of applying both static and instance properties:
+        
+        ORM =
+            find: (id) ->
+            create: (attrs) ->
+            extended: ->
+                @include
+                    save: ->
+                    
+        class User extendes Module
+            @extend ORM
+            
+Chapter 3: CoffeeScript Idioms
+
+3.1 Each
+    * In pure JS you could use forEach() or a for loop to iterate an array
+    * In CS you can use this:
+    
+        myFunction(item) for item in array
+        
+3.2 Map
+    * CS comprehensions can produce map() behavior, though you MUST surround
+        the comprehension in parens to get a mapped array back
+        
+        result = (item.name for item in array)
+        
+3.3 Select
+    * JS 5 has a filter() function for reducing arrays
+    * Looks like this:
+    
+        var result = []
+        for (var i = 0; i < array.length; i++)
+            if (array[i].name == "test")
+                result.push(array[i])
+                
+        result = array.filter(function(item, i){
+            return item.name == "test"
+        });
+        
+    * CS's syntax uses the 'when' keyword to filter items with a comparison,
+        which compiles to a for loop executed in an anonymous function
+        
+        result = (item for item in array when item.name is "test")
+        
+    * Complex selections with comprehensions:
+    
+        passed = []
+        failed = []
+        (if score > 60 then passed else failed).push score for score in [...]
+        
+        # Or
+        passed = (score for score in scores when score > 60)
+        
+    * Multi-line comprehension:
+    
+        passed = []
+        failed = []
+        for score in [49, 58, 76, 82, 88, 90]
+            (if score > 60 then passed else failed).push score
+            
+3.4 Includes
+    * To check inside an array you have to use indexOf(), which requires
+        a shim because IE hasn't implemented it
+    * In CS, you can use:
+    
+        included = "test" in array
+        
+    * CS uses Array.prototype.indexOf(), shimming if necessary
+    * The syntax won't work for strings:
+    
+        included = "a long test string".indexOf("test") isnt -1
+        
+    * Or use the bitwise operator to avoid the -1 comparison
+    
+        string = "a long test string"
+        included = !!~ string.indexOf "test"
+        
+3.5 Property Iteration
+    * In JS, you'd use the 'in' operator:
+    
+        var object = {one: 1, two: 2}
+        for (var key in object) alert(key + " = " object[key])
+        
+    * CS reserves in for use with arrays
+    * You can use 'of' in the same way:
+    
+        object = {one: 1, two: 2}
+        alert("#{key} = #{value}") for key, value of object
+        
+3.6 Min/Max
+    * Math.max and Math.min take multiple args, so you can use ... to pass
+        an array to them, retrieving the min and max in the array:
+        
+        Math.max[14, 35, -7, 46, 98]... # 98
+        Math.min[14, 35, -7, 46, 98]... # -7
+        
+3.7 Multiple Arguments
+    * We can use ... to destructure an array and pass it as multiple arguments
+    * Behind the scenes, CS converts the function call to apply()
+    * We can use this to do things like proxying function calls:
+    
+        Log = 
+            log: ->
+                console?.log(arguments...)
+                
+    * Or you can alter arguments before passing onward:
+    
+        Log = 
+            logPrefix: "(App)"
+            
+            log: (args...) ->
+                arg.unshift(@logPrefix) if @logPrefix
+                console?.log(args...)
+                
+3.8 And/Or
+    * CS style prefers and / or to && / ||
+    * A nice addition in CS is 'or equals', which looks like:
+    
+        hash or= {}
+    
+3.9 Destructuring Assignments
+    * Can be used with any depth of array and object nesting to help pull
+        out deeply nested properties:
+        
+        someObject = { a: 'value for a', b: 'value for b' }
+        { a, b } = someObject
+        console.log "a is '#{a}', b is '#{b}'"
+        
+3.10 External Libraries
+    * Exactly the same to calling functions on CS libraries
+    * Using CS with jQuery is especially good, due to the number of callbacks
+    
+    # Use local alias
+    $ = jQuery
+    
+    $ ->
+        # DOMContentLoaded
+        $(".el").click ->
+            alert("Clicked!")
+            
+3.11 Private Variables
+    * The 'do' keyword in CS lets us execute functions immediately
+    * Example that defines a var classToType in the context of an anonymous
+        function immediately called by 'do'
+    * That function returns a second anon function, which will be assigned 
+        to 'type'
+        
+        # Execute function immediately
+        type = do ->
+            types = [
+                "Boolean"
+                "Number"
+                "String"
+                "Function"
+                "Array"
+                "Date"
+                "RegExp"
+                "Undefined"
+                "Null"
+            ]
+            
+            classToType = {}
+            for name in types
+                classToType["[object " + name + "]"] = name.toLowerCase()
+                
+            # Return a function
+            (obj) ->
+                strType = Object::toString.call(obj)
+                classToType[strType] or "object"
+                
+Chapter 4: Compiling Coffeescript
+    * You can do basic compilation of CS with
+    
+        coffee --compile --output lib src
+        
+4.1 Cake
+    * Very simple build system
+    * Bundled with the coffee-script npm package, executable is 'cake'
+    * You can define tasks in CS in a 'Cakefile'
+    * Can be invoked by running cake [task] [options] in a directory
+    * To print a list of tasks and options, just call 'cake'
+    * Tasks are defined using the task() function, passing a name, optional
+        description, and callback function
+    * Example Cakefile:
+    
+        fs = require 'fs'
+        
+        {print} = require 'util'
+        {spawn} = require 'child_process'
+        
+        build = (callback) ->
+            coffee = spawn 'coffee', ['-c', '-o', 'lib', 'src']
+            coffee.stderr.on 'data', (data) ->
+                process.stderr.write data.toString()
+            coffee.stdout.on 'data', (data) ->
+                print data.toString()
+            coffee.on 'exit', (code) ->
+                callback?() if code is 0
+                
+        task 'build', 'Build lib/ from src/', ->
+            build()
+            
+    * You can call 'build' with 'cake build'
+    * It will compile the files in src into js in lib
+    * To not have to run every time the file changes, you can use the --watch
+        flag to the 'coffee' executable
+    * Another task that uses that:
+    
+        task 'watch', 'Watch src/ for changes', ->
+            coffee = spawn 'coffee', ['-w', '-c', '-o', 'lib', 'src']
+            coffee.stderr.on 'data', (data) ->
+                process.stderr.write data.toString()
+            coffee.stdout.on 'data', (data) ->
+                print data.toString()
+                
+    * If one task relies on another, you can call invoke(taskname):
+    
+        task 'open', 'Open index.html', ->
+            # First open, then watch
+            spawn 'open', 'index.html'
+            invoke 'watch'
+            
+    * You can also define options for your task using option()
+    
+        option '-o', '--output [DIR]', 'output dir'
+        
+        task 'build', 'Build lib/ from src/', ->
+            # Now we have access to an options object
+            coffee = spawn 'coffee', ['-c', '-o', options.output or 'lib', 'src']
+            coffee.stderr.on 'data', (data) ->
+                process.stderr.write data.toString()
+            coffee.stdout.on 'data', (data) ->
+                print data.toString()
+                
+4.2 Creating Applications
+    * For dynamic sites you can integrate compilation into the request/response
+    * Integrations exist for Rails and Django
+    4.2.1 Structure and CommonJS
+        * CommonJS exists to encapsulate server side libraries
+        * Common format across all JS implementations
+        4.2.1.1 Requiring Files
+            * You can load in other modules using require():
+            
+                User = require("models/user")
+                
+        4.2.1.2 Exporting Properties
+            * By default modules don't expose any properties
+            * If you want something available, you'll need to set it on
+                module.exports:
+                
+                # random module.js
+                module.exports.myFineProperty = ->
+                    # Some stuff
+                    
+            * Usage:
+            
+                myFineProperty = require("random_module").myFineProperty
+                
+    4.2.2 Stitch It Up
+        * This gets way in the weeds about implementation.
+        
+Chapter 5: The Good Parts
+5.1 The Unfixed Parts
+    5.1.1 Using eval
+        * Don't.
+    5.1.2 Using typeof
+        * Use Object.prototype.toString() instead
+    5.1.3 Using instanceof
+        * Useless for built in types
+        * Doesn't work when comparing across browser frames
+        * Only works for custom classes--don't use it
+    5.1.4 Using delete
+        * If you want to remove a reference to a variable, set it to null
+    5.1.5 Using parseInt
+        * Always use the radix argument to give it the base
+    5.1.6 Strict Mode
+        * Not sure why they flag this as unfixed.
+    5.1.7 Strict Mode Changes
+        * Good to use strict mode. Specific reasons are listed.
+    5.1.8 Strict Mode Usage
+        * Enable with:
+        
+            ->
+                "use strict"
+                
+5.2 The Fixed Parts
+    5.2.1 A JavaScript Subset
+        * CS ditches 'with', restricts to the 'Good Parts' of JS
+    5.2.2 Global Variables
+        * Very difficult to use globals in CS without assigning them to window
+        * Forces you to be explicit in defining globals
+    5.2.3 Semicolons
+        * CS has none, so JS errors from them don't happen
+    5.2.4 Reserved Words
+        * Escapes reserved keywords automatically
+    5.2.5 Equality Comparisons
+        * CS converts all weak compartors to strict ones
+        * You must explicitly convert types before comparing
+    5.2.6 Function Definition
+        * Function expressions replace function definitions entirely, avoiding 
+            inconsistent hoisting behavior across browsers
+    5.2.7 Number Property Lookups
+        * CS will use double dot notation on property lookups of numbers, to
+            avoid errors arising from the interpreter thinking it's a float
+
+5.3 JavaScript Lint
+    * CS already lints all output, and actually has a --lint option
+    
+Chapter 6: The Little Conclusion (written by Jeremy Ashkenas)
+6.1 Philosophy 
+    * Not built from the ground up--intended to improve on core JS concepts
+    * Very minimal--takes JS and drops as much as possible syntactically
+    * Attempts to take the dynamic semantics of JS--object literals, function
+        expressions, prototypal inheritance--and express them cleanly
+        
+6.2 It's Just Javascript
+    * Doesn't add features, doesn't require libraries, has no run time compiler
+    
+6.3 Build Your Own JavaScript
+    * The compiler has been annotated with commentary to make it easier to
+        get started prototyping changes and improvements
+    * You should write your own compile-to-JS language.
+                
+    

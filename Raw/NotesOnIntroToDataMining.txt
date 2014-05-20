@@ -1,0 +1,1272 @@
+Notes on Introduction to Data Mining
+
+Chapter 2: Data
+
+General Data Terms:
+    data set
+        * A collection of data objects.
+
+    data object
+        synonyms: record, point, vector, pattern, event, case, sample, 
+                  observation, entity
+
+    attribute
+        * A property or of characteristic an object that may vary, either from 
+          one object to another or from one time to another.
+        * The values used to represent an attribute may have properties that are
+          not properties of the attribute itself, and vice versa. Ex: Ages are
+          represented by integers, but not all integer operations are meaningful
+          for ages.
+          
+        synonyms: variable, characteristic, field, feature, dimension
+      
+    measurement scale
+        * A rule (function) that associates a numerical or symbolic value with
+          an attribute of an object.
+        
+    measurement
+        * The application of a measurement scale to associate a value with a
+          particular attribute of a specific object.
+
+Attribute Terms:
+         
+    nominal attribute
+        * The values of a nominal attribute are different names, relatable only
+          by = and !=. Distinguishable from one another, but not inherently
+          ordered or comparable.
+        * Operators: =, !=
+        * Operations include: mode, entropy, contingency correlation, x^2 test
+    
+    ordinal attribute
+        * Ordinal provide attributes enough information to order their values.
+        * Operators: =, !=, <, >, <=, >=
+        * Operations include: median, percentiles, rank correlation, run tests,
+                              sign tests
+    
+    interval attribute
+        * The differences between values are meaningful--a unit measurement
+          scale exists.
+        * Operators: =, !=, <, >, <=, >=, +, -
+        * Operations include: mean, standard deviation, Pearson's correlation,
+                              t and F tests
+    
+    ratio attribute
+        * Both differences and ratios are meaningful.
+        * Operators: =, !=, <, >, <=, >=, +, -, *, /
+        * Operations include: geometric mean, harmonic mean, percent variation
+        
+    categorical / qualitative attributes
+        * Nominal and Ordinal attributes are categorical/qualitative.
+        
+    numeric / quantitative
+        * Interval and Ratio attributes are numeric/quantitative.
+        
+    discrete attribute
+        * Has a finite or countably infinite set of values. Often represented
+          with integers.
+          
+    binary attribute
+        * Special case of a discrete attribute, with only two permitted values.
+        
+    continuous attribute
+        * An attribute whose values are real numbers, like temperature or height
+        
+    asymmetric attributes
+        * Attribute where only the non-zero values are important.
+
+Data Set Terms
+        
+    dimensionality
+        * The number of attributes that data objects in a data set have.
+        
+    sparsity
+        * Data sets where the majority of object attributes are zero or null.
+        
+    resolution
+        * The level of measurement at which the data set was created.
+        
+    transaction/market basket data
+        * Data sets where each record involves a set of items.
+        
+    data matrix / pattern matrix
+        * If data objects in a collection have the same number of attributes,
+          they can be thought of as vectors in a multidimensional space 
+          described by an m by n matrix.
+          
+    sparse data matrix
+        * Data matrix in which the attributes are of the same type and are
+          asymmetric. Transaction data or document data are common examples,
+          where each item (market item or word) is represented 0 or more times,
+          and the vast majority of items will be 0 for any given transaction
+          or document.
+          
+    document-term matrix
+        * A sparse data matrix covering the presence of a list of words in a
+          document.
+          
+    sequential / temporal data
+        * Record data where each record has a time associated with it.
+        
+    sequence data
+        * A data set that is a sequence of individual entities, like letters.
+        
+    time series data
+        * Each record in the set represents a series of measurements taken
+          over time.
+          
+    temporal autocorrelation
+        * records that are very close in time are likely close in value also
+        
+    spatial data
+        * data objects that have spatial attributes, like positions or areas.
+        
+    spatial autocorrelation
+        * Objects that are close to each other tend to have similar values.
+        
+        
+Data Quality Terms
+
+    measurement error
+        * Problems resulting from the measurement process.
+        
+    error
+        * For continuous attributes, the numeric difference between the measured
+          and the true values.
+          
+    data collection error
+        * Errors like omitting data objects or attribute values, or 
+          inappropriately including a data object.
+          
+    noise
+        * The random component of a measurement error.
+        
+    artifacts
+        * Deterministic distortions of data, like streaks on a series of images
+          stemming from dust on the lens that recorded them.
+          
+    precision
+        * The closeness of repeated measurements (of the same quantity) to one
+          another.
+          
+    bias
+        * A systematic variation of measurements from the quantity being
+          measured.
+          
+    accuracy
+        * The degree of measurement error in data.
+        * The closeness of measurements to the true value of the quantity being
+          measured.
+          
+    significant digits
+        * Use only as many digits as are justified by the precision of the data.
+        
+    outliers / anomalous objects
+        * Data objects that have characteristics that are different from most of
+          the other data objects in the data set.
+        * Values of an attribute that are unusual WRT the typical values of
+          that attribute.
+          
+    duplicate data
+        * Records that are exactly or almost exactly the same.
+        
+    deduplication
+        * The rules / process for combining or choosing duplicate records in a
+          data set.
+          
+    timeliness
+        * The 'age' or 'freshness' of the data, in relation to its usage.
+        
+    relevance
+        * Whether the available data contains the information necessary for the
+          application it will be put to.
+          
+    sampling bias
+        * When a sample does not contain different types of objects in 
+          proportion to their actual occurrence in the population of study.
+          
+Data Preprocessing Terms
+    
+    aggregation
+        * The combining of two or more objects into a single object.
+        
+    sampling
+        * Selecting a subset of data objects to be analyzed.
+        
+    representative sample
+        * A sample is representative if it has approximately the same property
+          (of interest) as the original data set.
+          
+    simple random sampling
+        * Sampling with an equal probability of selecting any particular item.
+        
+    sampling without replacement
+        * As each item is sampled, it is removed from the pool of possible
+          samples, and cannot be chosen again.
+          
+    sampling with replacement
+        * Objects are not removed from the population as they are selected.
+        
+    stratified sampling
+        * Sampling starting with prespecified groups of objects. Objects are
+          sampled from those groups either proportionally (by some measure) or
+          evenly (despite possible ratio differences to the whole population).
+          
+    adaptive / progressive sampling
+        * Starting with a small sample, and increasing the sample size until a
+          sample of sufficient size is obtained.
+          
+    dimensionality reduction
+        * Removing an attribute or attributes from records in the data set in
+          order to simplify analysis. 
+        * Creating new, composite attributes from existing separate attributes.
+        
+    curse of dimensionality
+        * Many types of analysis become considerably harder at higher and higher
+          levels of dimensionality.
+        * As dimensionality increases, the data becomes increasingly sparse in
+          the space that it occupies, which can make many classification and
+          clustering algorithms ineffective or inefficient.
+          
+    Principal Components Analysis (PCA)
+        * A linear algebra technique for doing dimensionality reduction on
+          continuous attributes, producing linear, orthogonal attributes from
+          combinations of previous attributes.
+         
+    Singular Value Decomposition (SVD)
+        * Technique related to PCA, also common in dimensionality reduction.
+        
+    feature subset selection
+        * Using only a subset of available attributes for analysis.
+        
+    redundant features
+        * Features that duplicate much or all of the information in one or more
+          other attributes.
+          
+    irrelevant features
+        * Features containing little or no useful information for the current
+          data mining task.
+          
+    embedded feature subset selection
+        * Selection occurs naturally as part of the data mining algorithm.
+        
+    filter subset selection
+        * Features are selected before the data mining algorithm is run.
+        
+    wrapper subset selection
+        * Using the data mining algorithm as a black box to find the best subset
+          of attributes, but typically without enumerating all possibilities.
+          
+    feature weighting
+        * Weights are assigned to features, either automatically or on the basis
+          of domain knowledge about those features.
+          
+    feature extraction
+        * Creating a new set of features from the original raw data.
+        * Highly domain specific in practice.
+        
+    discretization
+        * Transforming a continuous attribute into a categorical attribute.
+        
+    binarization
+        * Transforming a continuous or discrete attribute into a binary
+          attribute.
+          
+    split points
+        * The defined borderlines between categories in a discretization.
+        
+    supervised discretization
+        * Class information is used in creating the discretization.
+        * "A conceptually simple approach is to place the splits in a way that
+          maximizes the purity of the intervals. In practice, however, such an
+          approach requires potentially arbitrary decisions about the purity and
+          maximum size of an interval. [...] Entropy-based approaches are one of
+          the most promising approaches to discretization."
+        
+    unsupervized discretization
+        * Class information is not used in creating the discretization.
+        
+    equal width discretization
+        * The range of attributes is divided into a number of intervals of equal
+          size, and values are bucketed accordingly.
+        * Can be badly effected by outliers.
+    
+    equal frequency / equal depth discretization
+        * Attempt to put the same number of objects into each interval, 
+          adjusting the size of the intervals as necessary.
+          
+    entropy
+        * A measure of the "purity" of an interval. If an interval contains only
+          values of one class (is perfectly pure), then the entropy is 0 and it
+          contributes nothing to the overall entropy.
+        * Equation for entropy:
+        
+            Let:
+                k   = number of different class labels
+                Mi  = number of values in the i-th interval of a partition
+                Mij = number of values of class j in interval i
+                Ei  = entropy of the i-th interval
+            
+            Then:    
+                     _k_
+                Ei = \   Pij log2 Pij
+                     /__
+                     i=1
+                     
+            Where:
+                Pij = Mij / Mi (probability of class j in the i-th interval)
+                E = total entropy, weighted average of the individual intervals
+                
+            Therefore:
+            
+                     _n_
+                E  = \   Wi*Ei
+                     /__
+                     i=1
+                     
+            Where:
+                Wi = Mi / M (fraction of values in the i-th interval)
+                n  = number of intervals
+                
+    variable transformation
+        * A transformation applied to all values of a variable/attribute.
+        
+    normalization / standardization
+        * Process to make an entire set of values have a certain property.
+        * Common usage refers to transforming all values of an attribute to
+          proportional values between 0 and 1.
+          
+Similarity / Dissimilarity Terms
+
+    proximity
+        * Either similarity or dissimilarity.
+        
+    similarity
+        * Numerical measure of the degree to which two objects are alike.
+        * Non-negative, typically between 0 and 1.
+        
+        Of nominal attributes:
+            * s = 1 if a = b, else 0
+        Of ordinal attributes:
+            * Map ordinal values to successive integers, s = distance(aInt,bInt)
+            * Alternatively, s = distance(aInt,bInt) / n, where n is the number
+              of ordinal values in total, to produce results in [0,1]
+        Of interval/ratio attributes:
+            * Multiple approaches: -distance, 1/1+distance, e^-distance, etc.
+        
+    dissimilarity / distance
+        * Numerical measure of the degree to which two objects are different.
+        * Lower dissimilarity indicates objects are more similar
+        * Often in [0,1], but also expressed in [0,inf]
+     
+    Euclidean distance
+        * Distance between points in n-dimensional space.
+        * Equation:
+                         /  _n_              \
+            d(x,y) = sqrt|  \   (xk - yk)^2  |
+                         |  /__              |
+                         \  k=1              /
+                         
+    Minkowski distance metric
+    
+                     /  _n_             \^1/r
+            d(x,y) = |  \   |xk - yk|^r |        where r is a parameter
+                     |  /__             |
+                     \  k=1             /
+                     
+    Manhattan / taxicab / L1 norm distance
+        * Where Minkowski r = 1
+        * Common example is the Hamming distance, which is the number of bits
+          that are different between two objects that have only binary
+          attributes, i.e., between two binary vectors.
+          
+    Euclidean distance / L2 norm
+        * Where Minkowski r = 2
+        
+    Supremum / Lmax norm / L inf norm distance
+        * Where Minkowski r = inf:
+        
+                            / _n_             \^1/r
+            d(x,y) =  lim   | \   |xk - yk|^r |
+                     r->inf | /__             |
+                            \ k=1             /
+                            
+    similarity coefficients
+        * Similarity measures between objects that contain only binary 
+          attributes. They typically have values between 1 and 0.
+        * Equations:
+        
+            Let:
+                x, y = two objects consisting of n binary attributes
+                f00 = number of attributes where x is 0 and y is 0
+                f01 = number of attributes where x is 0 and y is 1
+                f10 = number of attributes where x is 1 and y is 0
+                f11 = number of attributes where x is 1 and y is 1
+                SMC = "Simple Matching Coefficient"
+                
+            Then:
+                      number of matching attribute values         f11 + f00
+                SMC = ----------------------------------- = --------------------- 
+                             number of attributes           f01 + f10 + f11 + f00
+                             
+    Simple Matching Coefficient (SMC)
+        * For binary attributed objects, the number of matching attribute values
+          divided by the number of attributes total.
+          
+    Jaccard Coefficient
+        * Used for objects consisting of asymmetric binary attributes.
+        * Given by:
+        
+                           number of matching presences                 f11
+            J = ----------------------------------------------- = ---------------
+                number of attributes not involved in 00 matches   f01 + f10 + f11
+                
+        * Avoids the trap of SMC saying asymmetric objects are very similar just
+          because they contain large numbers of 00 matches.
+          
+    Cosine similarity
+        * Used for document-term maps, which are extremely sparse/asymmetric.
+        * If x and y are document vectors, then:
+        
+                           x vector-dot-prod y
+            cos(x,y) = ---------------------------
+                       magnitude(x) * magnitude(y)
+                       
+                       
+                       sum of xk*yk for k from 1 to n
+                     = ------------------------------
+                         sqrt(x vector-dot-prod x)
+                     
+    Extended Jaccard Coefficient / Tanimoto Coefficient
+        * Can be used for document data, reduces to the Jaccard coefficient in
+          the case of binary attributes.
+          
+                                     x vector-dot-prod y
+            EJ(x,y) = -----------------------------------------------------
+                      magnitude(x)^2 + magnitude(y)^2 - x vector-dot-prod y
+                      
+    Pearson's correlation
+        * The correlation between two data objects that have binary or
+          continuous variables is a measure of the linear relationship between
+          the attributes of the objects.
+        
+                                covariance(x,y)
+                corr(x,y) = -----------------------
+                            std-dev(x) * std-dev(y)
+                        
+          Where:                        _n_
+                                   1    \   (xk - mean(x)) * (yk - mean(y))
+                covariance(x,y) = --- * /__
+                                  n-1   k=1
+
+                                  /       _n_                  \
+                std-dev(v) = sqrt |  1    \   (xk - mean(v))^2 |
+                                  | --- * /__                  |
+                                  \ n-1   k=1                  /
+                                  
+                               
+                mean(v) = (1/n) * (sum of xk for k from 1 to n)
+                
+
+    Mahalanobis distance
+        * Useful when attributes are correlated, have different ranges of values,
+          and the distribution of the data is approximately Gaussian (normal).
+          
+            mahalanobis(x,y) = (x-y) * E^-1(transverse(x-y))
+            
+            where E^-1 is the inverse of the covariance matrix of the data.
+            
+            
+    Algorithm for (weighted) similarities of heterogeneous objects
+        1. For the k-th attribute, compute a similarity, sk(x,y) in range [0,1]
+        2. Define an indicator variable, delta-k, for the k-th attribute:
+        
+                    | 0  if the kth attribute is an asymmetric attribute and
+                    |    both objects have a value of 0, or if one of the
+            delta-k |    objects has a missing value for the k-th attribute
+                    | 
+                    | 1  otherwise
+                    
+        3. Compute the overall similarity between the two objects using the 
+           following fomula:
+           
+                              sum of (weight-k * delta-k * std-dev-k(x,y)), 1 to n
+            similarity(x,y) = ----------------------------------------------------
+                                          sum of delta-k for 1 to n
+                                 
+                                 
+            Minkowski distance can be weighted by:
+            
+                         /  _n_                        \^1/r
+                d(x,y) = |  \   weight-k * |xk - yk|^r |        
+                         |  /__                        |
+                         \  k=1                        /                     
+            
+            
+Chapter 3: Exploring Data
+
+General Terms
+    
+    data exploration
+        * A preliminary investigation of the data in order to better understand
+          its specific characteristics.
+          
+    summary statistics
+        * Quantities like mean and standard deviation that capture various
+          characteristics of a potentially large set of values with a single
+          number or small set of numbers.
+          
+    frequency
+        * Given a categorical attribute x, which can take values {v1,...,vn},
+          and a set of m objects, the frequency of value vi is:
+          
+                          number of objects with attribute value vi
+          frequency(vi) = -----------------------------------------
+                                             m
+                                             
+    mode
+        * The value of a categorical attribute with the highest frequency.
+        
+    percentiles
+        * Given an ordinal or continuous attribute x and a number p between 0
+          and 100, the p-th percentile xp is a value of x such that p% of the
+          observed values of x are less than xp.
+          
+    mean
+                           1     m
+        mean(x) = x-bar = --- &Sigma; xi
+                           m    i=1
+        
+    median
+                    | x<sub>(r+1)</sub>                     if m is odd
+        median(x) = | 
+                    | 1/2(x<sub>r</sub> + x<sub>r+1</sub>)  if m is even
+
+    trimmed mean
+        A percentage p between 0 and 100 is specified, the top (p/2)% of the
+        data is thrown out, and the mean is then calculated normally.
+        
+    range   
+        The simplest measure of spread.
+        
+            range(x) = max(x) - min(x) = x<sub>m</sub> - x<sub>1</sub>
+            
+    variance
+        A preferred measure of spread.
+        Sensitive to outliers, since it relies on the mean.
+        Typically written s<sup>2</sup><sub>x</sub> for var x.
+        
+                       1     m
+        variance(x) = ---  &Sigma; (x<sub>i</sub> - mean(x))^2
+                      m-1    i=1
+                      
+    standard deviation
+        Square root of the variance, written s<sub>x</sub>.
+        Has the same units as x.
+        
+    absolute average deviation (AAD)
+        A more robust estimate of the spread of a data set.
+        
+                  1    m
+        AAD(x) = --- &Sigma; |x<sub>i</sub> - mean(x)|
+                  m   i=1
+                  
+                  
+    median absolute deviation (MAD)
+        A more robust estimate of the spread of a data set.
+        
+        MAD(x) = median({|x<sub>i</sub> - mean(x)|, 
+                                    ..., 
+                         |x<sub>m</sub> - mean(x)})
+                         
+    interquartile range
+        A more robust estimate of the spread of a data set.
+        
+        interquartile range(x) = x<sub>75%</sub> - x<sub>25%</sub>
+        
+        
+    multivariate mean of data objects
+        The mean of each separate attribute of a dataset.
+        
+        X-bar = (mean(x1),...,mean(xn))
+        
+    covariance matrix S
+        * Spread measure for data with continuous variables.
+        * Covariance is a measure of the degree to which two attributes vary
+          together, though correlation is preferred for judging the degree of
+          that relationship.
+        * The ij-th entry s-ij is the covariance of the i-th and j-th attributes
+          of the data.
+        
+            s-ij = covariance(xi,xj)
+            
+                                 1     m
+            covariance(xi,xj) = --- &Sigma; (xki - mean(xi)) * (xkj - mean(xj))
+                                m-1   k=1
+                                
+    correlation matrix R
+        * The correlation between the i-th and j-th attributes of the data.
+        * If xi and xj are the i-th and j-th attributes:
+        
+                                              covariance(xi,xj)
+        r<sub>ij</sub> = correlation(xi,xj) = -----------------
+                                                  si * sj
+                                                  
+        * The diagonals are correlation(xi,xi) = 1, while other entries vary
+          between 0 and 1.
+          
+    skewness
+        * Measurement of the degree to which the values are symmetrically 
+          distributed around the mean.
+          
+          
+Visualization Terms
+
+    stem and leaf plot
+        * Higher orders of magnitude are grouped vertically, last digit of each
+          number is displayed to the right of the aggregated higher order number
+          
+            1 | 3,3,4,5         <= 13,13,14,15
+            2 | 2,2,2,4,9       <= 22,22,22,24,29
+            3 | 8,8,9           <= 38,38,39
+    
+    bar plot
+        * Plot where each category is represented by a vertical or horizontal
+          bar, whose size corresponds to the value for the category.
+            
+    histogram
+        * Divide possible values into bins, show the number of items in the data
+          that fall into each of the bins.
+          
+    relative (frequency) histogram
+        * A histogram with the count replaced by the relative frequency, which is
+          just a change in the scale of the y axis.
+          
+    Pareto histogram
+        * Categories are sorted by count so that the count is decreasing from
+          left to right.
+          
+    two-dimensional histogram
+        * Each attribute is divided into intervals and the two sets of intervals
+          define two-dimensional rectangles of values.
+          
+    box plot
+        * A vertical or horizontal box, whose lower end corresponds to the 25th
+          percentile, and whose upper end corresponds to the 75th percentile.
+          The 10th and 90th percentiles are represented as 'tails', and the 50th
+          percentile is a line inside the box itself.
+          
+    pie chart
+        * A chart indicating relative frequency, by showing histogram portions
+          as representatively sized pieces of a circular pie.
+          
+    cumulative distribution function (CDF)
+        * For each value of a statistical distribution, a CDF shows the
+          probability that a point is less than that value.
+          
+    empirical cumulative distribution function (ECDF)
+        * For each point in a CDF, an ECDF shows the number of points less than
+          that value.
+          
+    scatter plot
+        * Each data point is plotted as a point on a plane using the values of
+          two attributes as x and y coordinates.
+          
+    scatter plot matrix
+        * The arrangement of the scatter plots of pairs of attributes in a
+          tabular format.
+          
+    contour plot
+        * For three dimensional data, where two attributes give an x,y pair and
+          a third is some continuous variable, a contour plot breaks the plane
+          into separate regions where the values of the third value are roughtly
+          the same.
+          
+    contour line
+        * The lines separating regions in a contour plot.
+        
+    surface plot
+        * Three dimensions, two for x,y, third for the height above the plane.
+        
+    vector field plot
+        * Tool for plotting where an attribute has both a magnitude and direction
+        
+        
+Higher Dimensional Visualization Terms
+
+    matrix
+        * An image, where each pixel is characterized by color and brightness.
+        * Associate each entry of a data matrix with a pixel in the image, with
+          the color and brightness set by attribute values.
+          
+    parallel coordinates
+        * One coordinate axis for each attribute, but the different axes are
+          parallel to one another instead of perpendicular.
+        * An object is represented as a line instead of a point.
+        
+    glyph / icon
+        * Symbols that impart information non-verbally.
+        
+    star coordinates
+        * One axis for each attribute, all radiating from a center point. Objects
+          are mapped onto the frame by extending each axis out to its value for
+          that object, and then connecting the endpoints with lines to form a
+          polygon. The form and size of the polygon indicate the data.
+          
+    Chernoff faces
+        * Each attribute is associated with a specific feature of a line drawing
+          of a face, such as the size of the face, the length of the jaw, shape
+          of the forehead, etc.
+          
+    ACCENT Principles
+        * Apprehension: Ability to correctly perceive relations among variables.
+          Does the graph maximize apprehension of the relations among variables?
+        * Clarity: Ability to visually distinguish all the elements of a graph.
+          Are the most important elements or relations visually most prominent?
+        * Consistency: Ability to interpret a graph based on similarity to 
+          previous graphs. Are the elements, symbol shapes, and colors consistent
+          with their use in previous graphs?
+        * Efficiency: Ability to portray a possibly complex relation in as simple
+          a way as possible. Are the elements of the graph economically used? Is
+          the graph easy to interpret?
+        * Necessity: The need for the graph, and the graphical elements. Is the
+          graph a more useful way to represent the data than alternatives? Are
+          all the graph elements necessary to convey the relations?
+        * Truthfulness: Ability to determine the true value represented by any
+          graphical element by its magnitude relative to the implicit or explicit
+          scale. Are the graph elements accurately positioned and scaled?
+          
+    Edward Tufte's Guidelines
+        * Graphical excellence is the well designed presentation of interesting
+          data--a matter of substance, of statistics, and of design.
+        * Graphic excellence consists of complex ideas communicated with clarity,
+          precision, and efficiency.
+        * Graphic excellence is that which gives to the viewer the greatest
+          number of ideas in the shortest time with the least ink in the 
+          smallest space.
+        * Graphical excellence is nearly always multivariate.
+        * And graphical excellence requires telling the truth about the data.
+        
+OLAP and Multidimensional Data Analysis Terms
+
+    fact table
+        * A tabular representation of the data.
+        * Starting point of an OLAP analysis.
+        * Involves identifying the dimensions, and identification of an attribute
+          that is the focus of the analysis.
+        * Each combination of attributes defines a cell of a multidimensional
+          array.
+          
+    target quantity / target variable / target attribute
+        * The contents of one cell of a fact table, representing what we are
+          interested in analyzing.
+          
+    marginal totals
+        * Totals of a fact table by one of the attributes, as with totals by
+          date and totals by product id for a table of date x product id
+        
+    data cube
+        * A multidimensional representation of the data, together with all
+          possible totals (aggregates).
+        * Can have more or less than three dimensions, need not be equally wide.
+        
+    cross-tabulation
+        * The totaling of a series of marginal totals.
+        
+    pivoting
+        * Aggregating over all dimensions but two, resulting in a two dimensional
+          cross tabulation with the two specified dimensions as the only
+          remaining dimensions.
+          
+    slicing
+        * Selecting a group of cells from the entire multidimensional array by
+          specifying a specific value for one or more dimensions.
+          
+    dicing
+        * Selecting a subset of cells by specifing a range of attribute values.
+        
+    roll up
+        * Aggregating within an attribute, as with aggregation by month within
+          a date field.
+          
+    drill down
+        * Splitting out portions of an aggregated number, as with splitting a
+          month of sales into daily totals.
+          
+    
+    
+Chapter 4: Classification: Basic Concepts, Decision Trees, and Model Evaluation
+
+    input for classification
+        * A collection of records.
+        * Each record is characterized by a tuple x,y where x is the attribute
+          set and y is a special attribute, designated as the class label /
+          category / target attribute.
+        * Attributes can be discrete or continuous, but categories must be
+          discrete. This separates it from regression, which uses continous 
+          categories.
+          
+    classification
+        * The task of learning a target function f that maps each attribute set
+          x to one of the predefined class lables y.
+          
+    classification model
+        * Another name for the function that maps x onto y
+        
+    descriptive model
+        * An explanatory tool to distinguish between objects of different classes.
+        
+    predictive model
+        * A classification model that attempts to predict the class of unknowns.
+        * Most useful for binary / nominal data.
+        
+    classifier / classification technique
+        * Systematic approach to buildng classification models from a data set.
+        
+    learning algorithm
+        * Tool for identifying a model that best fits the relation between the
+          attribute set and the class label of the input data.
+          
+    training set
+        * Records whose class labels are known.
+        * Used to build a classification model.
+        
+    test set
+        * Records with unknown class labels.
+        
+    confusion matrix
+        * Tabulation of the performance of a classification model on a data set
+        
+    accuracy (performance metric)
+        
+                   Number of correct predictions         f11 + f00
+        accuracy = ----------------------------- = ---------------------
+                          Total predictions        f11 + f10 + f01 + f00
+    
+    error rate (performance metric)
+        
+                     Number of wrong predictions         f10 + f01
+        error rate = --------------------------- = ---------------------
+                         Total predictions         f11 + f10 + f01 + f00
+                         
+    decision tree
+        * A means of solving a classification problem by asking a series of
+          questions about the characteristics of data objects.
+        * Made up of nodes, representing test conditions for attributes.
+        
+    root node
+        * A decision tree node with no incoming edges and zero or more outgoing
+          edges.
+        * Represents first test condition.
+          
+    internal node
+        * A decision tree node which has exactly one incoming edge and two or
+          more outgoing edges.
+        * Represents a test condition.
+          
+    leaf/terminal node
+        * A decision tree node which has exactly one incoming edge and no
+          outgoing edges.
+        * Represents a classification.
+        
+    Hunt's algorithm
+        * Decision tree induction algorithm that grows a tree in a recursive
+          fashion by partitioning the training records into successively purer
+          subsets.
+        * Algorithm:
+        
+            Let:
+                Dt = the set of training records associated with node t
+                y = {y1, y2, ...,yc} = class labels
+                
+            Step 1:
+                If all the records in Dt belong to the same class yt, then t
+                is a leaf node labeled as yt.
+            Step 2:
+                If Dt contains records that belong to more than one class, an
+                attribute test condition is selected to partition the records
+                into smaller subsets. A child node is created for each outcome
+                of the test condition and the records in Dt are distributed to
+                the children based on the outcomes. The algorithm is then
+                recursively applied to each child node.
+                
+        * Special conditions:
+            1.  Some child nodes can be created that have no records associated
+                with them. This can happen if none of the training records have
+                the combination of attribute values associated with that node.
+                If this happens, the node is declared a leaf node with the same
+                class label as the majority class of training records associated
+                with its parent node.
+            2.  If all the records associated with Dt have identical attribute
+                values (except for the class label), then it is not possible to
+                split these records any further. In this case, the node is
+                declared a leaf node with the same class label as the majority
+                class of training records associated with the node.
+                
+    Designing for Decision Tree Induction
+        1.  How should the training records be split? Each step must select an
+            attribute test condition to divide the records into smaller subsets.
+            To implement this, the algorithm must provide a method for specifying
+            the test condition for different attribute types as well as an
+            objective measure for evaluating the goodness of each test condition.
+        2.  How should the splitting procedure stop? A stopping condtion is
+            needed to terminate the tree growing process. A possible strategy
+            is to continue expnading a node until either all the records belong
+            to the same class or all the records have identical attribute values.
+            Although both conditions are sufficient to stop any decision tree
+            induction algorithm, other criteria can be imposed to allow the
+            tree growing procedure to terminate earlier.
+            
+    attribute test condition
+        * A way of testing an attribute to split records into separate classes.
+        
+    binary attribute test condition
+        * Generates two potential outcomes
+        
+    nominal attribute test condition
+        * One outcome per distinct value of the corresponding attribute.
+        * Alternately, binary splits only by considering all 2^k-1 - 1 ways of
+          creating a binary partition of k attribute values.
+          
+    ordinal attribute test condition
+        * Can produce binary or multiway splits.
+        * Can be grouped if the grouping does not violate the order property of
+          the attribute values.
+          
+    continuous attributes
+        * Can be expressed as a comparison test (A < v | A > v) with binary
+          outcomes, or a range query with intervals.
+        * For a multiway split, deriving split points may require discretization
+        
+    impurity tests
+        * Let p(i|t) denote the fraction of records belonging to class i at a
+          given node t. The class distribution before splitting is (0.5,0.5), 
+          because there are an equal number of records from each class. If we
+          split the data on an attribute, the class distribution may change.
+          Comparing different splits based on the purity (closeness to (0,1))
+          of their child nodes, we choose the split with the lowest impurity.
+        * Measures of impurity include:
+        
+                             c-1
+            Entropy(t) =  -&Sigma; p(i|t) log2 p(i|t)
+                             i=0
+                             
+                            c-1
+            Gini(t) = 1 - &Sigma; [p(i|t)]^2
+                            i=0
+                            
+                           
+            Classification error(t) = 1 - max[p(i|t)]
+                                           i
+                                           
+            where c = number of classes and 0 log2 0 = 0 in entropy calculations
+            
+        * To determine how well a test condition performs, we need to compare
+          the degree of impurity of the parent node (before splitting) with the 
+          degree of impurity of the child nodes (after splitting). The larger
+          the difference, the better the test condition.
+        * The gain, &Delta;, can determine the goodness of a split:
+        
+                                     k    N(vj)
+            &Delta; = I(parent) - &Sigma; ----- I(vj)
+                                    j=1     N
+                                    
+            Where:
+                I()     = impurity measure of a given node
+                N       = total number of records at the parent node
+                k       = number of attribute values
+                N(vj)   = number of records at the child node
+                
+    splitting continuous attributes
+        * Order the values of the dataset.
+        * Compute the impurity of midpoints between adjacent values.
+        * For improved performance, consider only candidate split points between
+          adjacent numbers that have different classes.
+          
+    gain ratio
+        * Impurity measures tend to favor attributes with large numbers of
+          distinct values. Choosing between gender, car type, and zip code, for
+          instance, would tend to favor zip code.
+        * Two strategies for dealing with this problem:
+            - Restrict test conditions to binary splits only.
+            - Modify the splitting criterion to take into account the number of
+              outcomes produced by the attribute test condition, as with gain
+              ratio, which is:
+            
+                            &Delta; info
+              Gain ratio = --------------
+                             Split Info
+                             
+              where
+                                 k
+                Split Info = -&Sigma; P(vi) log2 P(vi)
+                                i=1
+                                
+                with k being the total number of splits.
+                
+    Algorithm for Decision Tree Induction
+        * Input consists of the training records E and the attribute set F.
+        * Works by recursively selecting the best attribute to split the data
+          and expanding the leaf nodes of the tree until the stopping criterion
+          is met.
+        * Algorithm:
+        
+            TreeGrowth(E,F)
+                if stopping_cond(E,F) = true then
+                    leaf = createNode()
+                    leaf.label = Classify(E)
+                    return leaf
+                else
+                    root = createNode()
+                    root.test_cond = find_best_split(E,F)
+                    let V = {v|v is a possible outcome of root.test_cond}
+                    for each v in V do
+                        Ev = {e | root.test_cond(e) = v and e in E}
+                        child = TreeGroth(Ev, F)
+                        add child as descendent of root
+                        label the edge (root --> child) as v
+                    end for
+                end if
+                return root
+    
+    data fragmentation problem
+        * When the leaf nodes of a decision tree are too small to make a
+          statistically significant decision about the class representation
+          of the nodes.
+        * One approach is to disallow further splitting when the number of 
+          records falls below a threshold.
+          
+    subtree replication problem
+        * When the same test is repeated multiple places throughout the tree.
+        
+    decision boundary
+        * The border between two neighboring regions of different classes.
+        * Boundaries considering one attribute are rectilinear WRT the axes of
+          a 2d graph, and can't adequately partition all datasets.
+          
+    oblique decision tree
+        * Means of overcoming limitations of single-attribute tests.
+        * Allows test conditions involving more than one attribute.
+        * Finding the optimal test condition for a node can be expensive.
+        
+    constructive induction
+        * Another method for partitioning data into homogeneous, nonrectangular
+          regions. Uses composite attributes representing arithmetic or logical
+          combinations of existing attributes.
+        
+    training error / resubstitution error / apparent error
+        * The number of misclassification errors committed on training records.
+        
+    generalization error
+        * Expected error of the model on previously unseen records.
+        
+    model overfitting
+        * When the classification model has a low training error but a higher
+          generalization error, it may indicate the model is too specific to the
+          training data set.
+        * Can be caused by noise in the training data.
+        * Can be caused by lack of representative samples.
+        * Can be caused by multiple comparison procedure: when an individual
+          data combination is unlikely to occur, but quite likely to occur in
+          repeated comparisons of individual items. Problematic when the decision
+          being made is whether to further extend a tree--any single attribute
+          being good enough to extend the tree is unlikely (at some terminal point)
+          but at least one of them being "best" is extremely likely to occur.
+        * As model complexity increases, overfitting becomes more likely. 
+          
+    model underfitting
+        * The training and test error rates are high when the size of the tree
+          is very small. Underfitting occurs because the model has yet to learn
+          the true structure of the data. As the number of nodes increases, there
+          will be fewer training and test errors.
+                  
+    tree pruning
+        * Reducing the size of the decision tree to prevent overfitting.
+        
+    Occam's Razor / principle of parsimony
+        * Given two models with the same generalization errors, the simpler 
+          model is preferred over the more complex model.
+          
+    minimum description length principle
+        * Two parties, A and B, are given a set of records with known attribute
+          values x. A knows the exact class label for each record, B does not.
+          B can get classifications from A by having A transmit labels 
+          sequentially, requiring theta(n) bits of information, where n is the
+          number of records.
+        * Alternatively, A could build a classification model that summarizes
+          the relationship between x and y. The model can be encoded and 
+          transmitted to B. If the model is 100% accurate, the cost of 
+          transmission is equivalent to the cost of encoding the model.
+          Otherwise, A must also transmit information about which record is
+          incorrectly classified.
+        * The overall cost of transmission is:
+        
+            Cost(model, data) = Cost(model) + Cost(data|model)
+            
+          where Cost(model) is the cost to encode the model, and Cost(data|model)
+          is the cost to encode mislabeled records.
+        * MDL says you should seek a model that minimizes the overall cost function.
+        
+    generalization error as upper bound of training error
+        * Statistical correction to derive generalization error from training 
+          error is computed as an upper bound of the training error, taking into
+          account the number of training records reaching a particular leaf node.
+          
+    validation set
+        * Divide the training data into two smaller subsets, and use one for
+          estimating the generalization error from the training error.
+          
+    prepruning / early stopping
+        * Stopping tree growth before a fully grown tree is produced.
+        * A more restrictive stopping condition is used.
+        * EG: stop expanding a leaf node when the observed gain in impurity falls
+          below a certain threshold.
+          
+    post-pruning
+        * Initially grow the tree to maximum size.
+        * Then trim the tree in a bottom up fashion.
+        * Methods:
+            1.  Replacing a subtree with a new leaf node whose class label is
+                determined from the majority class of records of the subtree.
+            2.  Replacing a subtree with the most frequently used branch of the
+                subtree.
+                
+Evaluating the Performance of a Classifier
+
+    model selection
+        * Finding a model of the right complexity that is not susceptible to
+          overfitting.
+          
+    holdout method (evaluation of a classifier)
+        * Original data with labeled examples is partitioned into two disjoint
+          sets, called training and test sets. A classification model is then
+          induced from the training set, and its performance is evaluated on
+          the test set.
+        * Limitations of the method: 
+            1.  The test set takes labeled examples away from the training set.
+            2.  Model may be highly dependent on the makeup of those two sets,
+                since the smaller the training set the larger the model variance.
+            3.  The training and test sets are no longer independent of each other.
+            
+    random subsampling (evaluation of a classifier)
+        * Repeating the holdout method several times to improve the
+          estimation of a classifier's performance
+          
+    cross-validation (evaluation of a classifier)
+        * Each record is used the same number of times for training and exactly
+          once for testing. For instance, split the initial subset equally, then
+          use one for training and one for test, then swap them.
+        * k-fold cross-validation segments the data into k equal sized portions.
+          During each run, one of the partitions is chosen for testing, while the
+          rest are used for testing exactly once. Process is repeated k times, so
+          that each partition is used for testing exactly once. The error is
+          found by summing the errors for all k runs.
+          
+    leave-one-out approach to cross validation
+        * Running k-fold cross validation with k = N, where N is the size of
+          the data set.
+        * Utilizes as much data as possible for training, but is usually
+          computationally expensive.
+          
+    bootstrap (evaluation of a classifier)
+        * Sampling the training records with replacement. Records not included
+          in the bootstrap sample are part of the test set. The model induced
+          from the training set is then applied to the test set to obtain an
+          accuracy measure. The bootstrap is then repeated b times, for an
+          accuracy of:
+          
+                     b
+            1/b * &Sigma; (0.632 * ei + 0.368 * acc-s)
+                    i=1
+                    
+          where acc-s is the accuracy computed from a training set that contains
+          all the labeled examples in the original data set. 0.632 is the 
+          asymptotic limit of the percent of a set that will be sampled by
+          selection with replacement.
+          
+Methods for Comparing Classifiers
+    * Observed difference in accuracy between two classifiers may not be
+      statistically significant.
+      
+    Estimating a Confidence Interval for Accuracy
+        
+        
+Chapter 5: Classification: Alternative Techniques
+
+    Rule Based Classifer
+        * Technique for classification using a collection of if-then rules.
+        * Rules describe disjunct segments.
+        
+    rule antecedent / precondition
+        * The logical test to perform.
+        
+    rule consequent
+        * Output class of the test.
+        
+    coverage
+        * Quality measure for classification rules.
+        * The fraction of records in a data set D that trigger the rule r.
+        
+            Coverage(r) = |A| / |D|
+            
+    accuracy / confidence factor
+        * The fraction of records triggered by r whose class labels equal y
+        
+            Accuracy(r) = |A intersect y| / |A|
+            
+          where |A| is the number of records that satisfy the rule antecedent,
+          |A intersect y| is the number that satisfy both the antecdent and the
+          consequent, and |D| is the total number of records.
+          
+    mutually exclusive rules
+        * Rules in R are mutually exclusive if no two rules in R are triggered
+          by the same record.
+          
+    exhaustive rules
+        * R has exhaustive coverage if there is a rule for each combination of
+          attribute values, ensuring that every record is covered by at least
+          one rule in R.
+          
+    ordered rules
+        * Rules in R are ordered in decreasing order of priority, so if a
+          record would trigger multiple rules, it is claimed by the first one
+          it triggers in priority order.
+          
+    unordered rules
+        * All triggered rules for a record are counted as 'votes' toward a
+          classification. Vote may be weighted by the rule's accuracy.
+          
+    rule based ordering scheme
+        * Order is by a measure of rule quality
+    
+    class-based ordering scheme
+        * Rules that belong to the same class appear grouped together in R.
+        
+Methods of Rule Extraction
+    
+    sequential covering algorithm
+        * Used to extract rules directly from data.
+        * Rules are extracted one class at a time for non-binary classed rulesets.
+        * Algorithm:
+        
+            Let:
+                E  = training records
+                A  = set of attribute value pairs {(Aj,vj)}
+                Yo = ordered set of classes {y1,y2,...,yk}
+                R  = {}, empty initial rule list
+                
+            for each class y in Yo - {yk} do
+                while stopping condition is not met do
+                    r <- Learn-One-Rule (E,A,y)
+                    Remove training records from E that are covered by r
+                    Add r to the bottom of the rule list: R -> R and v
+                end while
+            end for
+            Insert the default rule, {} -> yk, to the bottom of R
+            
+    Learn-One-Rule Function
+        * Attempts to extract a classification rule that covers many of the
+          positive examples in the training set.
+        * Generates an initial rule r and refines it until the stop condition
+          is met. The rule is then pruned to improve its generalization error.
+          
+    general-to-specific rule growing strategy

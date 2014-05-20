@@ -1,0 +1,350 @@
+Chapter 8: Cluster Analysis: Basic Concepts and Algorithms
+
+* "In the context of understanding data, clusters are potential classes and 
+  cluster analysis is the study of techniques for automatically finding classes."
+* "In the context of utility, cluster analysis is the study of techniques for 
+  finding the most representative cluster prototypes."
+* Uses:
+    Summarization -- some algorithms are too expensive to play over entire
+      datasets, but can be played out effectively over cluster prototypes.
+    Compression -- a table that consists of the prototypes for each cluster
+      is created, then each object is represented by the index of the prototype
+      associated with its cluster. This is 'vector quantization.'
+    Efficiently Finding Nearest Neighbors -- usually requires lots of pairwise
+      distance comparisons, and comparing to cluster centroids is much easier.
+
+8.1 Overview
+    8.1.1 What is Cluster Analysis?
+        * Grouping data objects based only on information inherent to the data.
+        * The greater the homogeneity within groups, the better the clustering.
+        * Similar to unsupervised discretization / classification.
+        * 'Segmentation' and 'partitiioning' are often used as synonyms, but this
+          is typically a misnomer, since those techniques are typically simpler.
+
+    8.1.2 Different Types of Clusterings
+        clustering
+            * An entire collection of clusters.
+
+        partitional clustering
+            * Division into non-overlapping subsets such that each object is in
+              exactly one set.
+
+        hierarchical clustering
+            * Clustering which may allow clusters to have subclusters, nested and
+              organized as a tree.
+            * Each node in the tree (except leaf nodes) is the union of its 
+              children, and the root of the tree is the cluster containing all of
+              the objects in the dataset.
+            * Can be thought of as a series of partitional clusterings, and
+              partitional clusterings can be obtained by taking one level of the
+              hierarchy at a time.
+
+        exclusive clustering
+            * Each object is assigned to a single cluster.
+
+        overlapping / non-exclusive clustering
+            * An object can simultaneously belong to more than one group/class.
+
+        fuzzy clustering
+            * Every object belongs to every cluster with a membership weight between
+              0 (absolutely does not belong) and 1 (absolutely does belong).
+            * The sum of the weights for each object must equal 1.
+            * Similar to probabilistic clustering, where probabilities must also
+              sum to 1.
+            * Does not address truly multiclass situations, but are appropriate for
+              avoiding the arbitrariness of assigning an object to only one cluster
+              when it may be close to several.
+
+        complete clustering
+            * Assigns every object to a cluster.
+
+        partial clustering
+            * Does not necessarily assign every object to a cluster.
+            * Objects may be unassigned because they represent noise, outliers, etc.
+
+    8.1.3 Different Types of Clusters
+        well-separated
+            * A cluster is a set of objects in which each object is closer to every
+              other object in the cluster than to any object not in the cluster.
+            * Sometimes a threshold is defined to say that items in a cluster must
+              be sufficiently similar to one another. This condition will only be
+              fully satisfied if the data contains natural clusters that are quite
+              far from each other.
+
+        prototype-based
+            * A cluster is a set of objects in which each object is closer to the 
+              prototype that defines the cluster than to the prototype of any other
+              cluster.
+            * For continuous attributes, the prototype is often a centroid, the mean
+              of all points in the cluster. If the centroid isn't meaningful, (as with
+              categorical attributes), the prototype is often is medoid, the most
+              representative point of a cluster.
+            * Prototype based clusters are commonly referred to as center based.
+
+        graph-based
+            * If the data is a graph, a cluster can be defined as a 'connected
+              component,' a group of objects that are connected to each other, but
+              that have no connection to objects outside the group.
+            * Example: 'contiguity-based clusters', where two objects are connected
+              only if they are within a specified distance of one another. Useful
+              when clusters are irregular or intertwined, though can be disrupted
+              by noise.
+            * A 'clique' is a set of nodes in a graph that are completely connected
+              to each other. These tend to be globular.
+
+        density-based
+            * A cluster is a dense region of objects surrounded by a region of low
+              density. Often employed when clusters are irregular or intertwined,
+              and when noise and outliers are present, since contiguity based clusters
+              would tend to form bridges because of noise.
+
+        shared-property (conceptual clusters)
+            * A cluster is a set of objects that share some property.
+            * This definition encompasses all other definitions of a cluster.
+            * Too sophisticated a notion of a cluster takes you into pattern recognition.
+
+    Road Map
+        * Three types of cluster analysis techniques to introduce in this chapter:
+            - K-means -- prototype-based, partitional clustering technique that attempts
+              to find a user-specified number of clusters (K) which are represented
+              by their centroids.
+            - Agglomerative Hierarchical Clustering -- A collection of closely related
+              techniques that produce a hierarchical clustering by starting with each
+              point as a singleton cluster and then repeatedly merging the two closest 
+              clusters until a single, all-encompassing cluster remains.
+            - DBSCAN -- density-based clustering algorithm that produces a partitional
+              clustering, in which the number of clusters is automatically determined
+              by the algorithm. Points in low density regions are considered noise and
+              omitted, so DBSCAN doesn't do a complete clustering.
+
+8.2 K-means
+    * Prototype based techniques create a one-level partitioning of data objects.
+    * Two of the most prominent techniques are K-means and K-medoid.
+    * K-means defines a prototype in terms of a centroid (mean of a group of points).
+      Normally it's used for objects in a continuous n-dimensional space.
+    * K-medoid defines a prototype in terms of the most representative point, and
+      can be applied to a wide range of data since it requires only a proximity measure
+      for a pair of objects.
+
+    8.2.1 The Basic K-means Algorithm
+        * Description of the basic algorithm:
+            1) Choose K initial centroids, where K is a user specified number.
+            2) Each point is then assigned to the closest centroid, and each collection
+               of points assigned to a centroid is a cluster.
+            3) The centroid of each cluster is then updated based on the points assigned
+               to the cluster.
+            4) Repeat the assignment and update steps until no point changes clusters,
+               or until the centroids remain the same.
+
+        * Algorithm:
+
+            1: Select K points as initial centroids.
+            2: repeat
+            3:   Form K clusters by assigning each point to its closest centroid.
+            4:   Recompute the cluster of each cluster.
+            5: until Centroids do not change.
+
+        * For some combinations of proximity functions and types of centroids, K-means
+          always converges to a solution. However, since most of the convergence takes
+          place in the early steps, the exit condition is often weakened to something
+          like "only 1% of the points change clusters."
+
+        Assigning Points to the Closest Centroid
+            * Euclidean distance proximity measures work for things in Euclidean space,
+              while documents use something more like cosine similarity.
+            * There may be several types of proximity measure that are appropriate for
+              a given type of data. Manhattan distance can be used for Euclidean data,
+              and Jaccard for documents.
+
+        Notation for K-means
+
+            Symbol      Description
+              x         An object.
+              Ci        The ith cluster.
+              ci        The centroid of cluster Ci.
+              c         The centroid of all points.
+              mi        The number of objects in the i-th cluster.
+              m         The number of objects in the data set.
+              K         The number of clusters.
+
+        Centroids and Objective Functions
+            * Once we have specified a proximity measure and an objective function, the
+              centroid we should choose can often be determined mathematically.
+
+        Data in Euclidean Space
+            * For Euclidean proximity, our objective function (which measures the quality
+              of a clustering), is the 'sum of the squared error' (SSE), also known as
+              scatter. It represents the error of each data point (distance to closest
+              centroid), and then computes the total sum of the squared errors.
+            * Given two different sets of clusters from K-means runs, we prefer the one
+              with the smallest squared error since that means the prototypes of this
+              clustering are a better representation of the points in their cluster.
+            * Formal definition of the SSE:
+
+                       K
+                SSE =  &Sigma;  &Sigma;  dist(ci,x)^2
+                      i=1      x &isin; Ci
+
+            * The centroid that minimizes the SSE of the cluster is the mean.
+            * The centroid of the ith cluster is:
+
+                      1
+                ci = ---  &Sigma;  x
+                      mi x &isin; Ci
+
+        Document Data
+            * Assume that document data is represented in a document-term matrix.
+            * Objective is to maximize the similarity of the documents in a cluster to
+              the cluster centroid; this quantity is known as the 'cohesion' of the cluster.
+            * Here again, the cluster centroid is the mean. The analagous quantity to the 
+              total SSE is the total cohesion, which is:
+
+                               K
+              Total Cohesion = &Sigma;  &Sigma; cosine(x,ci)
+                              i=1      x &isin; Ci
+
+        The General Case
+            * Common choices for proximity, centroids, and objective functions:
+
+                Proximity Fn        Centroid        Objective Function
+            ------------------------------------------------------------------------------
+                Manhattan (L1)       median         Minimize sum of the L1 distance of
+                                                      an object to its cluster centroid
+            Squared Euclidean (L2^2)  mean          Minimize sum of the squared L2 distance
+                                                      of an object to its cluster centroid
+                cosine                mean          Maximize sum of the cosine similarity 
+                                                      of an object to its cluster centroid
+            Bregman divergence        mean          Minimize sum of the Bregman divergence
+                                                      of an object to its cluster centroid
+
+            * Bregman divergence is a class of proximity measures that includes the
+              squared Euclidean distance, the Mahalanobis distance, and cosine similarity.
+            * Any Bregman divergence function can be used as the basis of a K-means style
+              clustering algorithm with the mean as the centroid.
+
+        Choosing Initial Centroids
+            * Randomly chosen initial centroids produce different total SSEs across runs.
+            * One effective technique is to take a sample of points and cluster them
+              using a hierarchical clustering technique. K clusters are extracted from the
+              hierarchical clustering, and the centroids of those clusters are used as
+              the initial centroids. Works when the sample isin the hundreds to thousands
+              and K is relatively small compared to the sample size.
+            * Another approach to selecting initial centroids: select the first point at
+              random or take the centroid of all points. Then, for each successive initial
+              centroid, select the point that is farthest from any of the initial centroids
+              already selected. This gives you an initial set of centroids that is 
+              guaranteed to be not only randomly selected but well separated. Downsides are
+              that this can accidentally select outliers, and it is expensive to find the
+              farthest point from the current set of centroids. Solution is to work on
+              a sample instead of the whole set.
+
+        Time and Space Complexity
+            * Storage for K-means is O((m + K) * n), where m is the number of points and
+              n is the number of attributes.
+            * Time requirements are O(I * K * m * n), where I is the number of iterations
+              required for convergence.
+            * K-means is linear in m, and is efficient if K is significantly less than m.
+
+    8.2.2 K-means: Additional Issues
+        Handling Empty Clusters
+            * Empty clusters can be created if no points are allocated to a cluster during
+              the assignment step.
+            * A strategy is needed to choose a replacement centroid, since otherwise the
+              squared error will be deceptively large.
+            * You can choose the point furthest from any current centroid, or choose from
+              the cluster that currently has the highest SSE, which will typically split
+              that cluster and reduce the overall SSE.
+
+        Outliers
+            * Outliers can unduly influence SSE, and cluster formation.
+            * Often useful to discover and eliminate outliers before analysis.
+            * You should NOT eliminate outliers however for data compression, some financial
+              analysis, etc.
+            * Techniques for identifying outliers are in chapter 10.
+
+        Reducing the SSE with Postprocessing
+            * Finding more clusters will improve the SSE, but often you don't want to 
+              increase K, but do want a better SSE. There are techniques for fixing up
+              the SSE of result clusters--improving individual clusters to improve
+              overall SSE.
+            * Two strategies for decreasing SSE by increasing K:
+                - Split a cluster -- The cluster with the largest SSE is usually chosen,
+                  but you can also split the cluster with the largest stddev for one attribute.
+                - Introduce a new cluster centroid -- Choose the point farthest from any
+                  center (keep track of the SSE of each point separately to know this), or
+                  choose randomly from all points or from points with high SSE.
+            * Two strategies for decreasing SSE by decreasing K:
+                - Disperse a cluster -- Accomplished by removing the centroid that 
+                  corresponds to the cluster, and reassigning the points to other clusters.
+                  Ideally you disperse the cluster that increases total SSE the least.
+                - Merge two clusters -- the clusters with the closest centroids are
+                  typically chosen, or you can merge the two clusters that result in the
+                  smallest increase in total SSE.
+
+        Updating Centroids Incrementally
+            * You can run an update after every assignment of a point to a cluster.
+            * This guarantees no empty clusters.
+            * If incremental updating is used, the relative weight of the point
+              being added may be adjusted.
+            * Introduces an order dependency--clusters produced may depend on the
+              order in which the points are processed.
+            * Slightly more computationally expensive, but K-means converges in
+              early stages, so it's not too bad.
+
+    8.2.3 Bisecting K-means
+        * Extension of basic K-means based on a simple idea: to obtain K clusters,
+          split the set of all points into two clusters, select one of those to 
+          split, and so on, until K clusters are produced.
+        * Algorithm:
+
+            1: Initialize the list of clusters to contain the cluster consisting of all points.
+            2: REPEAT
+            3:   Remove a cluster from the list of clusters.
+            4:   { Perform several "trial" bisections of the chosen cluster }
+            5:   FOR i = 1 TO number of trials DO
+            6:     Bisect the selected cluster using basic K-means.
+            7:   END FOR
+            8:   Select the two clusters from the bisection with the lowest total SSE.
+            9:   Add these two clusters to the list of clusters.
+           10: UNTIL the list of clusters contains K clusters.                         
+
+        * Ways to choose a cluster to split: choose the largest cluster, the one
+          with the largest SSE, or use a criterion based on size and SSE.
+        * We often refine the resulting clusters by using their centroids as the
+          initial centroids for basic K-means. Necessary because bisecting K-means
+          finds only 'localized' clusters, that may not represent a local minimum
+          WRT total SSE.
+        * By recording the sequence of clusterings produced by bisection, you can 
+          produce a hierarchical clustering.
+             
+    8.2.4 K-means and Different Types of Clusters
+        * K-means has difficulty detecting "natural" clusters, when clusters have
+          non-spherical shapes or widely different sizes or densities.
+        * The K-means objective function is a mismatch for those kinds of clusters
+          because it is minimized by globular clusters of equal size and density,
+          or by clusters that are well separated.
+        * If you are willing to accept a clustering that breaks the natural
+          clusters into a number of subclusters, this can be overcome.
+
+    8.2.5 Strengths and Weaknesses
+        * Not suitable for all types of data: cannot handle non-globular clusters,
+          or clusters of different sizes and densities, though it can typically
+          find pure subclusters if a large enough number of clusters is specified.
+        * Has trouble clustering data that contains outliers, though outlier
+          detection and removal can help with that.
+        * Restricted to data for which there is a notion of a centroid. K-medoid
+          clustering doesn't have that restriction, but is more expensive.
+
+    8.2.6 K-means as an Optimization Problem
+        * Math here that I don't feel like doing.
+
+8.3 Agglomerative Hierarchical Clustering
+    * Two basic approaches for generating a hierarchical clustering:
+        - Agglomerative -- start with points as individual clusters and, at each
+          step, merge the closest pair of clusters. Requires a notion of proximity.
+        - Divisive -- start with one all inclusive cluster, and at each step
+          split a cluster until only singleton clusters of individual points remain.
+          Need to decide which cluster to split at each step, and how to split.
+    * Hierarchical clustering is often displayed graphically with a dendrogram.
+
+    8.3.1 Basic Agglomerative Hierarchical Clustering Algorithm

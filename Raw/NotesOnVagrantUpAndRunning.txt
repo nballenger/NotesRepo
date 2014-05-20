@@ -1,0 +1,423 @@
+Vagrant: Up and Running
+By: Mitchell Hashimoto
+Publisher: O'Reilly Media, Inc.
+Pub. Date: June 5, 2013
+Print ISBN-13: 978-1-4493-3583-0
+Pages in Print Edition: 158
+
+Chapter 1: An Introduction to Vagrant
+  * Swiss army knife for development environments.
+
+Why Vagrant?
+  * Reinstalling manually to set up a dev box sucks.
+  * You shouldn't crud up your workstation with environment specific stuff.
+  * You want environments that are the same across developers.
+
+The Tao of Vagrant
+  * High level workflow = "the Tao of Vagrant"
+  * Devs check out a repo from version control, run vagrant up, and are set.
+  * If you need to remake a box, destroy it and rebuild it.
+  * You want to embody your sysops decisions in your dev environments.
+
+Alternatives to Vagrant
+  * Virtualization alone--too much manual stuff.
+  * Containers -- you can only run the same kernel your system runs
+  * Cloud -- requires network access, pay to play
+
+Vagrant Versions
+  * The book covers 1.0 and 1.1+.
+
+Setting up Vagrant
+  * Install virtualbox first.
+  * Then install vagrant.
+
+Using Vagrant Without Virtualbox
+  * You can switch providers, but this book only covers virtualbox.
+
+Chapter 2: Your First Vagrant Machine
+
+Up and Running
+  * Initial commands:
+
+    vagrant init precise64 http://files.vagrantup.com/precise64.box
+    vagrant up
+
+  * Those will pull down an isolated, full install of 64 bit Ubuntu 12.04 LTS.
+  * Connecting to the started box:
+
+    vagrant ssh
+
+  * To remove:
+
+    vagrant destroy
+
+The Vagrantfile
+  * Vagrant is configured on a per project basis.
+  * A project is denoted by the existence of a Vagrantfile
+  * Vagrantfiles are Ruby.
+
+Boxes
+  * Vagrant pulls down a base image, uses that to create new machines.
+  * Base boxes are never modified, only instances are.
+
+Up
+  * Running vagrant up starts a headless VM.
+  * During up, Vagrant:
+    - Creates a new VirtualBox machine based on the base image (disk intensive)
+    - VirtualBox gives Vagrant a randomly generated MAC address.
+    - The visible name of the VM is set.
+    - Forwarded port definitions are managed.
+    - VirtualBox requires metadata about shared folders, so Vagrant gives that.
+    - Vagrant clears and sets up network interfaces on the virtual machine.
+    - Metadata is created for forwarded ports in VirtualBox
+    - Vagrant boots the machine, waits for SSH to come up.
+    - Operating system config is done for network devices.
+    - Shared folders are mounted across host and virt.
+  * Some state information is put into a .vagrant/ directory.
+  * Don't let .vagrant/ go into version control.
+
+Working with the Vagrant Machine
+  
+  State of the Vagrant Machine
+    * 'vagrant status' gives you the current state of the environment
+
+  SSH
+    * To access the machine, issue 'vagrant ssh'
+    
+  Shared Filesystem
+    * You can replicate folders on the host to the sandboxed virt.
+    * The shared filesystem folders won't be removed on 'vagrant destroy'
+    * By default, Vagrant shares the project directory (holds the Vagrantfile),
+      to /vagrant inside the virt.
+    * You can override the default location of the shared file in the conf, via
+      the config.vm.share_folder directive.
+    * If you make changes to the Vagrantfile, run 'vagrant reload'
+    * You can also define new shared folders with config.vm.share_folder
+    * There's a heavy IO load on the virt from shared folders, so use them
+      as dropboxes for source files, not compilation targets.
+
+  Basic Networking
+    * Exposing port 80 on the virt:
+
+      Vagrant::Config.run do |config|
+        #...
+        config.vm.forward_port 80, 8080
+      end
+
+  Teardown
+    * Vagrant can suspend, halt, or destroy the guest.
+
+    Suspend
+      * Use 'vagrant suspend'
+      * Saves state and stops the machine, via a point in time snapshot.
+      * HD space taken by the machine sticks around if you do this, including
+        replicating its ram state to disk.
+      * To resume, just do 'vagrant up' or 'vagrant resume'
+
+    Halt
+      * 'vagrant halt' shuts the machine down like a normal computer.
+      * Attempts graceful shutdown, then forces shutdown.
+      * Halting continues to consume HD space.
+      * You can pass a --force flag to skip straight to forced shutdown.
+
+    Destroy
+      * Shuts it down and removes all traces of it.
+      * After this, vagrant up will create a new virt in pristine state.
+      * You can skip confirmation with --force
+
+  
+Chapter 3: Provisioning Your Vagrant VM
+  * Provisioning can be done by baking the software into the box or installing
+    during the environment creation process.
+  * Base boxes used by Vagrant are typically very bare bones.
+  * Configured provisioners will run on every 'vagrant up'
+  * Out of the box you can use shell scripts, chef, or puppet
+
+Why Automated Provisioning?
+  * Because awesome.
+
+Support Provisioners
+  * Shell scripts, Chef, or Puppet.
+  * Vagrant does Chef via Chef Solo or Chef Client
+
+Manually Setting Up Apache
+  
+Automated Provisioner Basics
+  Shell Scripts
+    * You can tell vagrant to include provisioning with config lines.
+  Chef
+  Puppet
+
+Multiple Provisioners
+  * You can have multiple provisioners.
+  
+"No Provision" Mode
+  * You can call up or reload with --no-provision to temporarily disable
+    provisioning.
+
+In-Depth Provisioner Usage
+  * This section is largely a reference.
+
+Chapter 4: Networking in Vagrant
+  * There are three networking options in vagrant:
+    - forwarded ports
+    - host-only networking
+    - bridged networking
+
+Forwarded Ports
+  * You can't point to a port less than 1024 on the host
+  * You have to specify every port you want to forward
+  * The ports are open to the local subnet.
+  * Since you can't get lower than 1024, you can't open 443 for SSL.
+  * Vagrant has built in detection for port collisions, and will report errors.
+  * Forwards only work with TCP.
+  * If you need UDP, you have to configure it separately, with something like:
+
+    config.vm.forwarded_port 80,8080, protocol: "udp"
+
+Host-Only Networking
+  * Creates a network private to the host.
+  * New network has its own IP space.
+  * You get a static IP in the new space, for each virt and the host.
+  * Gives you access to all ports on the guest machine.
+
+  Pros and Cons
+    * Local network machines cannot tap into the cluster.
+    * It's secure, but isolated.
+    * It's the only way multiple virts can communicate with each other.
+    * It's the only way virts can communicate with the host.
+
+  Basic Usage
+    * Config in the Vagrantfile:
+
+      config.vm.network "hostonly", "192.168.33.10"
+
+    * Creates a host only network, assigns a static IP.
+    * Create or reload the virt, and it will be accessible at the IP
+    * Guest is able to access the host. IP of the host is the same as the
+      virt, but with 1 in the last octet.
+
+  Guest Operating System Dependency
+    * Host only networking only works for OS's that Vagrant knows the details of
+
+Bridged Networking
+  * Bridges the virt onto a device on the host, looks like another separate
+    physical machine on the network.
+  * Lets the network the host is on assign a DHCP address to the virt.
+  * Virt is accessible from any machine on the local network.
+
+  Pros and Cons
+    * No isolation, less secure but more accessible.
+    * No static IP--you get an IP from DHCP.
+    * Guest is subject to the network rules of the environment.
+
+  Basic Usage
+    * Enabled with:
+
+      config.vm.network "bridged"
+
+    * Tells Vagrant to enable a bridged network device for the virt.
+    * Make sure you bridge to a device that's connected to the network.
+    * Use 'vagrant ssh' and ifconfig to get the DHCP address.
+    * Ping the device to make sure it's reachable.
+
+Composing Networking Options
+  * Define multiple networks in the Vagrantfile, it's fine.
+  * You can also set up multiple networks of the same type, like host only
+    setups with different static IPs.
+
+NAT Requirement as the First Network Interface
+  * VirtualBox and Vagrant require the first network device attached to the
+    virt to be a NAT device.
+  * The NAT is used for port forwarding, gives ssh access to the machine.
+  * Any additional devices will be 'eth1', 'eth2', etc.
+  * eth0 or en0 are usually the NAT device.
+
+Chapter 5: Modeling Multimachine Clusters
+  * SOA needs multiple hosts, typically.
+
+Running Multiple Virtual Machines
+  * Make sure to run 'vagrant destroy' on any running machines before doing this
+  * Configure the Vagrantfile to include a second machine:
+
+    Vagrant::Config.run do |config|
+      config.vm.box = "precise64"
+
+      config.vm.define "web" do |web|
+        web.vm.forward_port 80,8080
+        web.vm.provision :shell, path: "provision.sh"
+      end
+
+      config.vm.define "db" do |db|
+        # will fill this in
+      end
+    end
+
+  * config.vm.define sets up a new config block that inherits from the main one
+  * When you run vagrant up, you get two machines instead of one.
+
+Controlling Multiple Machines
+  * With multiple machines, you have to give a name argument to commands like
+    up, destroy, and reload.
+  * If you give no arguments, you take action on all virts.
+  * vagrant status gives status on all virts, but can run on one by name
+  * You can specify multiple names in the same command.
+  * You can pass a regex:
+
+    vagrant reload /node\d/
+
+Communication Between Machines
+  * By default multiple virts have no way to communicate.
+
+  Host Only Networks
+    * Example config for machines that can communicate:
+
+      Vagrant::Config.run do |config|
+        config.vm.box = "precise64"
+
+        config.vm.define "web" do |web|
+          web.vm.forward_port 80,8080
+          web.vm.provision :shell, path: "provision.sh"
+          web.vm.network :hostonly, "192.168.33.10"
+        end
+
+        config.vm.define "db" do |db|
+          db.vm.network :hostonly, "192.168.33.11"
+        end
+      end
+
+    * Vagrant uses a default subnet mask of 255.255.255.0.
+
+  Bridged Networks
+    * Preferred method is host-only, but you can do bridged and look up the
+      DHCP addresses each box is assigned.
+
+Real Example: MySQL
+  * New file db_provision.sh in the project root:
+
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update
+    apt-get install -y mysql-server
+    sed -i -e 's/127.0.0.1/0.0.0.0/' /etc/mysql/my.cnf
+    restart mysql
+    mysql -uroot mysql <<< "GRANT ALL ON *.* TO 'root'@'%'; FLUSH PRIVILEGES;"
+
+  * Vagrantfile:
+
+      Vagrant::Config.run do |config|
+        config.vm.box = "precise64"
+
+        config.vm.define "web" do |web|
+          web.vm.forward_port 80,8080
+          web.vm.provision :shell, path: "provision.sh"
+          web.vm.provision :shell, inline: "apt-get -y install mysql-client"
+          web.vm.network :hostonly, "192.168.33.10"
+        end
+
+        config.vm.define "db" do |db|
+          db.vm.provision :shell, path: "db_provision.sh"
+          db.vm.network :hostonly, "192.168.33.11"
+        end
+      end
+
+  * Run vagrant destroy and start from a clean slate.
+  * ssh into web, and contact mysql on 'db' from there.
+
+Chapter 6: Boxes
+  * Boxes are base images that vagrant environments get built from.
+  * A box can contain any operating system.
+  * You can prebake a box with a bunch of software installed
+  * Boxes can be created automatically from vagrant environments, or manually
+    from non-Vagrant managed virtualbox virts.
+
+Why Boxes?
+  * They're an optimization so not every 'vagrant up' requires a full install.
+  * It enforces that everyone working from a box starts with the same image.
+  * Boxes are portable across virtualbox/vagrant installs.
+
+Box Format
+  * It's a tar file, optionally gzipped.
+  * Extension is .box, signifies it's for use with vagrant.
+  * Contents of the file for VirtualBox is just the output of exporting a 
+    VirtualBox virt.
+  * If you uncompressed it, you'd see a .vmdk, Vagrantfile, metadata.json, and
+    box.ovf.
+  * Having a vagrantfile in the box is optional, but lets you set defaults
+    for Vagrant that can be overridden by the user.
+  * metadata.json tells Vagrant what system the box works with (VirtualBox)
+  * Vagrant looks for box.ovf, tells VirtualBox to import that; the ovf file
+    points to the vmdk file (and other export files, if any).
+
+Basic Box Management with Vagrant
+  * Boxes are managed globally per user.
+  * Commands to manage boxes affect every Vagrant environment.
+  * You can move the directory (normally ~/.vagrant.d) with VAGRANT_HOME
+
+  * Boxes are mapped in Vagrant to a logical name you choose.
+  * The logical name maps the config.vm.box setting to an actual box file.
+  * All box management is done with 'vagrant box' and subcommands.
+  * Subcommands are add, list, remove, repackage
+
+  * Adding a box lets you pull a box without a 'vagrant init' arg or using
+    the 'config.vm.box_url' config option.
+  * Example:
+
+    vagrant box add precise64 http://files.vagrantup.com/precise64.box
+
+  * All installed boxes are shown with 'vagrant box list'
+  * Boxes are removed with 'vagrant box remove BOXNAME'
+  * To share a box when you don't have the original file, you can use
+
+    vagrant box repackage
+
+  * That gives no output, but puts a package.box file in the current directory
+  * That will be identical to the originally downloaded box.
+
+Creating New Boxes from an Existing Environment
+  * If you prebake a box, setup with 'vagrant up' is faster.
+  * Example of adding a package and creating a box:
+
+    vagrant ssh
+    sudo apt-get install -y htop
+    exit
+    vagrant package
+
+  * Creates a new box file.
+  * Difference between package and repackage:
+    - package takes the current environment and packages it
+    - repackage takes a previously added box and repackages it, with no regard
+      for the software installed since vagrant up was originally run.
+
+Creating New Boxes from Scratch
+  * Process is fairly manual and time consuming.
+
+  Creating the VirtualBox Machine
+    * Create the machine in Virtualbox itself.
+    * Configure it however you want it to be.
+    * General guidelines:
+      - use the minimum RAM you need for it to work reasonably
+      - use a dynamically resizing amount of disk space
+      - disable audio, USB, and other nonessential controllers
+      - Only hard requirement is that the first network device is a NAT
+    * Start up the machine.
+
+  Configuring the Operating System
+    * If you want to work within Vagrant defaults:
+      - create a vagrant user to be the default ssh user
+      - you can reset that name with config.ssh.username
+      - make sure an SSH server is installed and configured to run on boot
+      - ssh user must be configured to use public key authentication
+      - set up the ssh user to authenticate with the insecure private key
+        that ships with vagrant
+    * if you want to use a custom private key, set the value of 
+      config.ssh.private_key_path to point to a private key
+    * Setting up the user on a basic linux system, using the insecure key:
+
+      mkdir /home/vagrant/.ssh
+      chmod 700 /home/vagrant/.ssh
+      cd /home/vagrant/.ssh
+      wget --no-check-certificate 'https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub' -O authorized_keys
+      chmod 600 /home/vagrant/.ssh/authorized_keys
+      chown -R vagrant /home/vagrant/.ssh
+
+    * Give the vagrant user SUDO privileges.

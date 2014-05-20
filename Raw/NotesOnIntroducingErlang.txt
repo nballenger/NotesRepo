@@ -1,0 +1,480 @@
+Introducing Erlang
+By: Simon St. Laurent
+Publisher: O'Reilly Media, Inc.
+Pub. Date: January 29, 2013
+Print ISBN-13: 978-1-4493-3176-4
+
+Preface
+    * Primary things to think about in Erlang are pattern matching, message
+      passing, and establishing pathways for data rather than telling it where
+      to go.
+
+Who this book is for
+Who this book is not for
+What this book will do for you
+    * Write simple erlang
+    * learn some functional programming
+
+How this book works
+    * Installation > shell exploration
+    * Numbers > atoms, pattern matching, guards
+    * strings > lists, recursion
+    * processes, message passing for concurrency/resilience
+    * debugging and data storage
+
+Why I wrote this book
+    * Dev who like erlang, thought other people might like it.
+
+Other Resources
+    * Seven Languages in Seven Weeks (Bruce Tate), looks at Ruby, Io, Prolog,
+      Scala, Erlang, Clojure, and Haskell
+    * Learn You Some Erlang for Great Good (Fred Hebert)
+    * Programming Erlang (Joe Armstrong)
+    * Erlang Programming (Francesco Cesarini, Simon Thompson)
+    * Erlang and OTP in Action (Martin Logan, Eric Merritt, Richard Carlsson)
+    * Building Erlang Web Applications (Zachary Kessin)
+    * http://www.erlang.org
+
+Etudes for Erlang
+    * J David Eisenberg developed exercises for Erlang, available online at
+      Chimera.  They match the book.
+
+Are You Sure You Want Erlang?
+    * Clojure and Scala run on the JVM, have access to Java libraries.
+    * ClojureScript does the same thing with JavaScript.
+    * F# runs on .NET
+    * Haskell doesn't run on a virtual machine, but has a stronger type system
+      and a different kind of discipline.
+
+Erlang will change you
+    * Functional code + process-orientation + distributed development can
+      change the way you think about solving problems.
+
+A Note on Erlang Syntax
+    * Can feel weird.
+
+
+Chapter 1: Getting Comfortable
+    
+Installation
+Firing it Up
+    * Executable for the shell is 'erl'
+
+First Steps: The Shell
+    * ^G takes you to the user switch command
+    * ^C takes you to a menu
+    * q(). lets you quit out of the shell--actually calls init::stop()
+    * Period is line terminator
+    * Quitting with q() turns off everything erlang is doing--to quit without
+      risking shutting down the Erlang runtime on another system, use ^G-q
+    * Most key combos for moving around a command line work in erl.
+    * Tab completion works for module/function names, but not filenames.
+    * Up and down takes you through history, h() gives you all history.
+    * Execute a given line with e(N), reference a value with v(N)
+    * pwd() gives you present working directory
+    * cd("path") moves you around
+    * ls() gives you files in pwd
+
+Doing Something
+    * Using the shell as a calculator:
+
+        1> 2+2.
+        4
+        2> 27-14.
+        13
+        3> 35*42023943.
+        1470838005
+        4> 200/15.
+        13.333333333333334
+        5> 200 div 15.
+        13
+        6> 200 rem 15.
+        5
+        7> 3*(4+15).
+        57
+
+    * Ops from that are + - * /
+    * div/rem give int results
+    * Parens support changes to order of ops
+    * round() converts a float to an int
+    * Referring to a value from a previous line: 4 * v(8)
+    * You can negatively index previous results: v(-1)
+
+Calling Functions
+    * Math module gives you the classic set of math functions.
+    * They return floats.
+    * Trig functions take radians.
+    * Access them by prefixing with math:'
+    * Examples:
+
+        1> math:sin(0).
+        0.0
+        2> math:cos(math:pi()).
+        -1.0
+        3> math:cos(2*math:pi()).
+        1.0
+        4> math:pow(2,16).
+        65536.0
+
+Numbers in Erlang
+    * Two kinds: ints and floats
+    * Ints are stored precisely, no loss at high ranges.
+    * Floats have 64-bit double precision--about 15 decimal places + exponent
+    * Floats can be written in exponent form: 2.923e10
+    * Because some calculations have limited precision, you can get stuff like:
+
+        7> math:sin(math:pi()).
+        1.2246467991473532e-16
+
+    * Use ints for money stuff, use smallest available unit (cents, etc)
+    * For other bases, you can use Base#Value notation: 2#1010111
+    * Numbers are reported back in base 10
+    * Hex digits are case insensitive
+    * You can use bases up to 36
+    * The minus sign is a unary negation op
+
+Working with Variables in the Shell
+    * Variable names start with a capital letter or underscore
+    * Underscores denote "don't care" variables
+    * You can't reassign variables with new values.
+    * This is because expressions are expected to balance--having the left
+      side not have the same value as the right causes an error, though if
+      the variable is unassigned it will assign it.
+    * Expressions which balance are fine:
+
+        8> N=2-1.
+        1
+        9> N=15 div (3*5).
+        1
+
+    * But they don't do any new assignment.
+    * During assignment, make sure all calculation is on the right side.
+    * The b() command will show all currently bound variables.
+    * The f(Var) function will clear a binding.
+    * Calling f() with no arguments clears all current bindings.
+
+    Chapter 2: Functions and Modules
+
+Fun with fun
+    * Functions are created with the 'fun' function:
+
+        1> FallVelocity = fun(Distance) -> math:sqrt(2 * 9.8 * Distance) end.
+        #Fun<erl_eval.6.80484245>
+        2> b().
+        FallVelocity =
+            fun(Distance) ->
+                   math:sqrt(2 * 9.8 * Distance)
+            end
+        ok
+        3> FallVelocity(20).
+        19.79898987322333
+        4> FallVelocity(200).
+        62.609903369994115
+        5> FallVelocity(2000).
+        197.9898987322333
+
+Defining Modules
+    * Modules have a file extension of .erl
+    * Filename needs to match declared module in the file
+    * Example module:
+
+        -module(drop).
+        -export([fall_velocity/1, mps_to_mph/1, mps_to_kph/1]).
+
+        fall_velocity(Distance) -> math:sqrt(2 * 9.8 * Distance).
+        mps_to_mph(Mps) -> 2.23693629 * Mps.
+        mps_to_kph(Mps) -> 3.6 * Mps.
+
+    * -module and -export directives name the module and determines its public
+      api. -export gives a list of functions to make visible, each with its
+      'arity', the number of arguments it takes. Functions with the same name
+      but different arity are different functions.
+    * All code in a module must be in functions.
+    * Function names start with lowercase.
+    * When defining a function in a module, you don't use fun()/end
+    * To bring in a file, compile it with c(path/to/file).
+    * Compiling a file will create a .beam file.
+    * Calling functions from a module requires prefixing the module name
+      to the function call.
+
+    Erlang Compilation and the Runtime System
+        * The BEAM processor is a part of the Erlang Runtime System (ERTS).
+        * Stands for Bogdan's Erlang Abstract Machine.
+        * When you create and deliver Erlang programs, you distribute them as
+          .beam files.
+        * The 'erlc' executable can compile files directly.
+
+    From Module to Fun
+        * You can alias a function from a module with the fun() operater:
+
+            5> F_v = fun drop:fall_velocity/1.
+            #Fun<drop.fall_velocity.1>
+            6> F_v(20).
+            19.79898987322333
+    
+        * You can do this within a module as well.
+
+    Functions and Variable Scope
+        * Function level scope.
+        * No importation of variables from outside the function scope.
+
+    Module Directives
+        * Everything inside a module is private.
+        * To get something out, you have to use a directive.
+        * You can use a function from an external module if you qualify its name
+        * You can bring in functions with -import, and use them unqualified:
+
+            -module(combined).
+            -export([height_to_mph/1]).
+            -import(drop, [fall_velocity/1]).
+            -import(convert, [mps_to_mph/1]).
+
+            height_to_mph(Meters) -> mps_to_mph(fall_velocity(Meters)).
+
+        * You can add arbitrary directives.
+
+Documenting Code
+    * Single line comments start with %
+    * Levels of documentation are indicated with number of percent signs
+    * %%% is flush left
+    * %% is indented with surrounding code
+    * % is used for end of line comments
+    * You can produce documentation files with:
+
+        edoc:files(["drop.erl"], [{dir, "doc"}]).
+
+    * If you need to specify data types for functions, you can use:
+
+        -spec(fall_velocity(number()) -> number()).
+
+    * To document a project, you can create an overview.edoc file.
+
+
+Chapter 3: Atoms, Tuples, and Pattern Matching
+
+Atoms
+    * Data type, bits of text that start with a lowercase letter.
+    * Can contain (though not start with) underscores and @
+    * If you put them in single quotes you can use uppercase letters/spaces
+    * The value of an atom is the same as its text.
+
+Pattern Matching with Atoms
+    * If you were to define three versions of fall_velocity() like this:
+
+        -module(drop).
+        -export([fall_velocity/2]).
+
+        fall_velocity(earth, Distance) -> math:sqrt(2 * 9.8 * Distance);
+        fall_velocity(moon, Distance) -> math:sqrt(2 * 1.6 * Distance);
+        fall_velocity(mars, Distance) -> math:sqrt(2 * 3.71 * Distance);
+
+    * They would be considered separate definitions because they are 
+      separated by semicolons.
+    * Definitions separated by semicolons are 'clauses'.
+    * To use each:
+
+        drop:fall_velocity(earth,20).
+        drop:fall_velocity(moon,20).
+        drop:fall_velocity(mars,20).
+
+    * The atom 'earth' or 'moon' or 'mars' is part of the function signature
+
+Atomic Booleans
+    * 'true' and 'false' are atoms, may be returned from a comparison
+    * Operators that work on true/false and comparisons resolving to them:
+
+        true and true.
+        true and false.
+        true or false.
+        false or false.
+        true xor false.
+        true xor true.
+        not true.
+
+    * Additional operators that don't eval both arguments:
+
+        true andalso false  % <-- evaluates arg2 only if arg1 is true
+        true orelse false   % <-- evaluates arg2 only if arg1 is false
+
+Guards
+    * You can specify which data a given function will accept with guards.
+    * Guards are indicated by the 'when' keyword, let you fine-tune pattern
+      matching based on the content of arguments, not just their shape.
+    * Guards can only use a subset of functions, can't change data.
+    * Guards evaluate to true or false.
+    * You can write 'when true' for a guard that always gets called, and
+      when false to block out code from running.
+    * Adding guards to function clauses:
+
+        -module(drop).
+        -export([fall_velocity/2]).
+
+        fall_velocity(earth, Distance) when Distance >= 0 
+            -> math:sqrt(2 * 9.8 * Distance);
+        fall_velocity(moon, Distance)  when Distance >= 0 
+            -> math:sqrt(2 * 1.6 * Distance);
+        fall_velocity(mars, Distance)  when Distance >= 0 
+            -> math:sqrt(2 * 3.71 * Distance);
+
+    * If you violate a guard, you get an exception.
+    * Example of using guards + clauses as a CASE like construct:
+
+        -module(mathdemo).
+        -export([absolute_value/1]).
+
+        absolute_value(Number) when Number < 0 -> -Number;
+        absolute_value(Number) when Number == 0 -> 0;
+        absolute_value(Number) when Number > 0 -> Number.
+
+    * Guards are really important to choosing among function clauses.
+    * Secondary way to do the same thing as above:
+
+        absolute_value(Number) when Number < 0 -> -Number;
+        absolute_value(0) -> 0;
+        absolute_value(Number) -> Number.
+
+    * The combination of falling through the first guard plus the different
+      signatures of the second two.
+
+Underscoring that you don't care
+    * If, in a function declaration, you declare an argument as an underscore,
+      you can safely ignore that argument. It matches anything for the
+      function signature pattern match, and never binds a value.
+    * Alternately, if you start a variable name with an underscore, it will
+      bind, but the compiler won't complain if you never use it. You can't,
+      however, use the same variable name more than once in a set of args.
+
+Adding Structure: Tuples
+    * Erlang tuples combine multiple items into a single composite data type.
+    * Can contain any kind of data--numbers, atoms, other tupes, lists, strings
+    * A tuple is a group of items in curly braces: {earth,20}
+    * Often an atom at the start of the tuple indicates what it's for.
+    * There are builtin functions that let you look inside a tuple:
+
+        1> Tuple = {earth,20}.
+        {earth,20}
+        2> element(2,Tuple).
+        20
+        3> NewTuple = setelement(2, Tuple, 40).
+        {earth,40}
+        4> tuple_size(NewTuple).
+        2
+
+    * It's more common practice to just use tuples in pattern matching.
+
+    Pattern Matching with Tuples
+        * Tuples let you pass one thing to a function, and let it
+          decide what to do with the contents.
+        * Example:
+
+            -module(drop).
+            -export([fall_velocity/1]).
+
+            fall_velocity({earth,Distance}) -> math:sqrt(2*9.8*Distance);
+            fall_velocity({moon,Distance})  -> math:sqrt(2*1.6*Distance);
+            fall_velocity({mars,Distance})  -> math:sqrt(2*3.71*Distance);
+
+        * Passing tuples rather than args gives you more flexibility.
+
+    Processing Tuples
+        * If you get the tuple as a single variable, you can do things like
+          pass it through to a private version of the function:
+
+            -module(drop).
+            -export([fall_velocity/1]).
+
+            fall_velocity({Planemo, Distance}) 
+                -> fall_velocity(Planemo,Distance).
+
+            fall_velocity(earth,Distance) -> math:sqrt(2*9.8*Distance);
+            fall_velocity(moon,Distance)  -> math:sqrt(2*1.6*Distance);
+            fall_velocity(mars,Distance)  -> math:sqrt(2*3.71*Distance);
+
+Chapter 4: Logic and Recursion
+    
+Logic Inside of Functions
+    * Two condition evaluation constructs: case and if
+    * case lets you use pattern matching and guards inside a function clause
+    * if evaluates only a series of guards, without pattern matching
+
+    Evaluating Cases
+        * Using the case construct:
+
+            -module(drop).
+            -export([fall_velocity/2]).
+
+            fall_velocity(Planemo, Distance) when Distance >= 0 ->
+                case Planemo of
+                    earth -> math:sqrt(2*9.8*Distance);
+                    moon  -> math:sqrt(2*1.6*Distance);
+                    mars  -> math:sqrt(2*3.71*Distance) % no closing period
+                end.
+
+        * If you include an underscore as a pattern match in case, it acts
+          like 'default' or 'else'--should come last.
+        * A version that uses the return value of the case construct:
+
+            fall_velocity(Planemo, Distance) when Distance >= 0 ->
+                Gravity = case Planemo of
+                    earth -> 9.8;
+                    moon  -> 1.6;
+                    mars  -> 3.71
+                end,  % note comma, function isn't finished
+
+                math:sqrt(2*Gravity*Distance).
+
+        * You can use guards within a case statement:
+
+            fall_velocity(Planemo, Distance) ->
+                Gravity = case Planemo of
+                    earth when Distance >= 0 -> 9.8;
+                    moon  when Distance >= 0 -> 1.6;
+                    mars  when Distance >= 0 -> 3.71
+                end,
+
+                math:sqrt(2*Gravity*Distance).
+
+    If This, Then That
+        * If is similar to case but without pattern matching.
+        * Example that uses an if to convert numbers into atoms:
+
+            -module(drop).
+            -export([fall_velocity/2]).
+
+            fall_velocity(Planemo, Distance) when Distance >= 0 ->
+                Gravity = case Planemo of
+                    earth -> 9.8;
+                    moon  -> 1.6;
+                    mars  -> 3.71
+                end,
+
+                Velocity = math:sqrt(2*Gravity*Distance),
+
+                if
+                    Velocity == 0 -> 'stable';
+                    Velocity <  5 -> 'slow';
+                    Velocity >= 5, Velocity < 10 -> 'moving';
+                    Velocity >= 10, Velocity < 20 -> 'fast';
+                    Velocity >= 20 -> 'speedy'
+                end.
+
+        * It's possible to capture the return value of the if construct:
+
+            Description = if
+                Velocity == 0 -> 'stable';
+                [...]
+            end,
+
+            if 
+                (Velocity > 40) -> io:format("Look out below!~n");
+                true -> true     % every if must find a true statement
+            end,
+
+            Description.
+
+    Variable Assignment in case and if Constructs
+        * Every path in an if or case has the opportunity to bind variables.
+        * If you have cases that don't fire that do bind variables, you can
+          get an error further in the flow if those variables are referenced.
+
+The Gentlest Side Effect: io:format

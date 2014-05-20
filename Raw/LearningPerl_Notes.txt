@@ -1,0 +1,1052 @@
+Chapter 2: Scalar Data
+	Numbers
+		All numbers are double precision floating point
+		Integers are converted appropriately
+
+	Numeric Operators
+		+ - / * %
+
+	Strings
+		'hello'	single quoted string
+		"hello" double quoted string
+
+	Double quoted escapes
+	\n	newline
+	\r	return
+	\t	tab
+	\f	formfeed
+	\b	backspace
+	\a	bell
+	\e	Escape(ASCII escape character)
+	\007	any Octal ASCII
+	\x7f	any hex ASCII
+	\\	backslash
+	\"	double quote
+	\l	lowercase next letter
+	\L	lowercase all following letters until \E
+	\u	uppercase next letter
+	\U	uppercase all following letters until \E
+	\Q	quote non-word characters by adding a backslash until \E
+	\E	end \L, \U, \Q
+
+	String Operators
+	.	concatenate
+	x	multiply times an integer argument
+
+	Perl's Built In Warnings
+		command line argument:	perl -w
+		#! line:	#!/usr/bin/perl -w
+		pragma:		use warnings;
+		diagnostics pragma:	use diagnostics;
+		command line diagnostics:	perl -Mdiagnostics
+
+	Scalar Variables
+		start with $, followed by _ or a letter
+
+	Scalar Assignment
+		$var = 10;
+		$var = 'abcde';
+		$var = $var + 3;
+
+	Binary Assignment Operators
+		+= -= *= /= %= .= **=
+
+	Output with print
+		print "hello world\n";
+		print 6*5;
+		print "number ",10," is divisible by ",5".\n";
+
+	Associativity and Precedence of Operators
+	assoc.	operator
+	left	parentheses and arguments to list operators
+	left	->, ++, --
+	right	**
+	right	\ ! ~ + -
+	left	=~ !~
+	left	* / % x
+	left	+ - .
+	left	<<  >>
+	left	Named unary operators (-X filetests, rand)
+	left	<, <=, >, >=, lt, le, gt, ge (the 'unequal' ones)
+	left	==, !=, <=>, eq, ne, cmp (the 'equal' ones)
+	left	&
+	left	| ^
+	left	&&
+	left	||
+	left	..  ...
+	right	?: (ternary)
+	right	=, +=, -=, .= (other assignment operators
+	left	,  =>
+	left	list operators
+	right	not
+	left	and
+	left	or, xor
+
+	Comparison Operators
+		each returns a truth value
+
+	Numeric and String Comparison Operators
+	comparison	numeric		string
+	Equal		==		eq
+	Not Equal	!=		ne
+	Less Than	<		lt
+	Greater Than	>		gt
+	LT or equal	<=		le
+	GT or equal	>=		ge
+
+	The if control structure
+		if(condition) {
+			commands;
+		}
+	
+		if(condition) {
+			commands;
+		} else {
+			commands;
+		}
+
+	Boolean Values
+		If the value is numeric, 0 is false--all non-zero numbers are true
+		If the value is a string, '' is false, all non empty strings are true, except '0'
+		If the value is another kind of scalar, convert it to a number or string and try again
+	
+	Getting User Input
+		Use <STDIN> to request input, terminated by a newline
+	
+	Chomp operator
+		strips off newlines
+		Ex:
+		$text="a line of text\n";
+		chomp($text);
+		Ex:
+		chomp($text=<STDIN>);
+		Return value is number of characters removed
+		Will remove only a single trailing newline
+	
+	The while control structure
+		$count = 0
+		while ($count < 10) {
+			$count += 2;
+			print "count is not $count\n";
+		}
+
+	The undef value
+		variables are 'undef' before having a value assigned
+		acts like zero as a number
+		acts like empty string as string
+		variables can be dereferenced with $var = undef;
+
+	The defined function
+		$madonna = <STDIN>;
+		if (defined($madonna)) {
+			print "the input was $madonna";
+		} else {
+			print "no input available";
+		}
+
+Chapter 3: Lists and Arrays
+	A list is an ordered collection of scalars
+	An array is a variable that contains a list
+	A list can exist outside an array, but every array contains a list
+	each element in an array is a separate scalar variable with a scalar value
+	Values are ordered, starting at 0
+	
+	Accessing Array Elements
+		$fred[0] = "yabba";
+		$fred[1] = "dabba";
+		$fred[2] = "doo";
+
+	Special Array Indices
+		creating an element in an array past the last item extends the array to that item
+		fills with undef items
+		The last element in the array has an index of $#arrayname
+	
+	List Literals
+		(1,2,3)		# list of three values 1, 2, and 3
+		(1,2,3,)	# same three values, trailing comma ignored
+		("fred",4.5)	# two values, "fred" and 4.5
+		()		# empty lists
+		(1..100)	# list of 100 integers
+		.. is the range operator
+
+	qw Shortcut
+		qw(fred barney betty wilma)	# same as ("fred","barney","betty","wilma","dino")
+		whitespace is ignored, other than a single space
+		any punctuation character can delimit the list's beginning and end
+		qw! fred barney betty wilma !
+		qw# fred barney betty wilma #
+
+	List Assignment
+		List values can be assigned to variables
+		($fred, $barney, $dino) = ("flintstone", "rubble", undef);
+		entire arrays can be referred to as @arrayname
+		@rocks = qw( bedrock slate lava );
+		@tiny = ();
+		@giant = 1..1e5;
+		@stuff = (@giant,undef,@giant);
+		$dino = "granite";
+		@quarry = (@rocks, "crushed rock", @tiny, $dino);
+
+	Pop and push
+		pop takes the last element off an array and return it
+		@array = 5..9;
+		$fred = pop(@array);	# $fred gets 9, array now has (5,6,7,8)
+		$barney = pop @array;	# $barney gets 8, @array now has (5,6,7)
+		pop = @array;		# @array now has (5,6), 7 is discarded
+		push adds an element or a list of elements to the end of an array
+		push(@array,0);		# @array now has (5,6,0)
+		push @array,8;		# @array now has (5,6,0,8)
+		push @array, 1..10;	# @array now has those 10 new elements
+		@others = qw/ 9 0 2 1 0 /;
+		push @array, @others;	# @array now has those five new elements (19 total)
+
+	Shift and Unshift
+		Shift and unshift work like push and pop, on the start/left side of the array
+		
+	Interpolating arrays into strings
+		@rocks = qw{ flintstone slate rubble };
+		print "quartz @rocks limestone\n";	# prints five rocks separated by spaces
+		
+	foreach Control Structure
+		foreach $rock (qw/ bedrock slate lava /) {
+			print "One rock is $rock.\n";  # prints names of three rocks
+		}
+
+	perl's favorite default: $_
+		foreach (1..10) {
+			print "I can count to $_!\n";
+		}
+
+	Reverse operator
+		returns a list in reverse order
+		@fred = 6..10;
+		@barney = reverse(@fred); 	# gets 10,9,8,7,6
+		
+	sort Operator
+		sorts a list in ASCII order as a return value
+	
+	<STDIN> in List context
+		@lines = <STDIN>;		# read standard input in list context
+		returns lines until Ctrl-D
+		chomp(@lines = <STDIN>);	# discards all newline characters in input
+
+Chapter 4: Subroutines
+	Defining a subroutine
+		the keyword sub defines a subroutine block
+		subroutines are global
+		sub marine {
+			$n += 1;	# global variable $n
+			print "Hello, sailor number $n!\n";
+		}
+
+	Invoking a subroutine
+		Invoke with the subroutine name and an ampersand
+		&marine;
+
+	Return values
+		whatever calculation is last performed in a subroutine is automatically the return value
+		to explicitly return a value, have the variable appear as the last thing in the sub		
+		or use the return operator
+
+	Arguments
+		to pass an argument, place it in list context after the sub invocation
+		$n = &max(10,15);
+		passed in via the @_ variable
+		variables in $_[0], $_[1], $_[2]...
+		
+	Private variables in subroutines
+		private variables can be created via the my() operator
+		sub max {
+			my($m, $n);		# new, private variables for this block
+			($m, $n) = @_;		# give names to the parameters
+			if($m > $n) { $m } else { $n }
+		}
+		combined statement: my($m, $n) = @_;
+		
+	Variable length parameter lists
+		$maximum = &max(3,5,10,4,6);
+		sub max {
+			my($max_so_far) = shift @_;	# the first one is the largest yet seen
+			foreach(@_) {
+				if($_ > $max_so_far) {
+					$max_so_far = $_;
+				}
+			}
+			$max_so_far;
+		}
+
+	Notes on Lexical (my) Variables
+		can be used in any block
+		scoped to the block, and any blocks inside the block
+		my() does not affect the context of variable assignment
+		
+	The use strict Pragma
+		requires that all new variables be declared expressly with my()
+
+	The return Operator
+		immediately returns a value from a subroutine
+
+	Omitting the Ampersand
+		if the sub is compiled before it is called, you can omit the ampersand
+		if it's obvious from subname(vars) that it's a sub, you can omit the ampersand
+		if the sub has the same name as a builtin, you must use the &
+
+	Non-scalar return values
+		you can return a list or an array
+
+Chapter 5: Input and Output
+	These two statements are equivalent
+		while(defined($line = <STDIN>)) {
+			print "I saw $line";
+		}
+	and
+		while(<STDIN>) {
+			print "I saw $_";
+		}
+
+	This works as well:
+		foreach(<STDIN>) {
+			print "I saw $_";
+		}
+
+	However, the while() loop is much more efficient than the foreach, because it reads a line
+	and then performs the loop, rather than reading the entire available series of lines
+	into memory, as the foreach loop will do.
+
+	The diamond operator <>
+		takes input from the user's choice of input, whether that be the argument string
+		or a pipeline into the script
+		while(<>) {
+			print "It was $_ that I saw!\n";
+		}
+
+	Invocation Arguments
+		command line arguments live in the @ARGV array
+		The diamond operator iterates through @ARGV
+		
+	Output to standard output
+		print takes a list of values and sends each item as a string to standard out
+		printing an array with print @array is different from print "@array", in that the
+		second example interpolates the array, adding spaces between values
+		if print looks like a function call (with parentheses), then it acts like a 
+		function call, which means that its return value will be 1 or 0
+		so print (2+3)*4 prints 5, not 20, and is the same as (print(2+3))*4
+
+	Formatted Output with printf
+		printf "number: %g, decimal: %d, string: %s, floating point: %f",$num,$dec,$str,$float
+
+	Using printf with an array
+		my @items = qw( wilma dino pebbles );
+		my $format = "The items are:\n".("%10s\n"x@items);
+		printf $format,@items;
+
+	Filehandles
+		reserved filehandles: STDIN,STDOUT,STDERR,DATA,ARGV,ARGVOUT
+
+	Opening a filehandle
+		use the open operator
+		simple examples:
+			open CONFIG, "dino";
+			open CONFIG, "<dino";
+			open BEDROCK, ">fred";
+			open LOG, ">>logfile";
+		one and two are equivalent, three means write to, four means append to
+		three argument syntax for open:
+			open CONFIG, "<", "dino";
+			open BEDROCK, ">", $filename;
+			open LOG, ">>", &logfile_name();
+
+	Closing a filehandle
+		close BEDROCK;
+
+	Fatal errors with die
+		die immediately exits the program, throwing whatever argument is provided to it
+		$! holds the error string
+		common syntax
+			open CONFIG, "dino" || die "couldn't open file dino: $!\n";
+
+	Warning messages with warn
+		like die, but does not exit
+		open CONFIG, "dino" || warn "couldn't open file dino: $!\n";
+
+	Using filehandles
+		print CONFIG "some stuff to add to the config file";
+		printf STDERR "%d percent complete.\n", $done/$total*100;
+
+	Changing the default output filehandle
+		select BEDROCK;
+		print "this is going to the BEDROCK filehandle";
+		select STDOUT;
+	
+Chapter 6: Hashes
+	like arrays, but with string valued keys
+	keys are always strings
+
+	Hash element access
+		$hash{$some_key}
+		$family_name{"fred"} = "flintstone";
+		$family_name{"barney"} = "rubble";
+
+	The hash as a whole
+		%hashname
+
+	list assignment to a hash
+		%somehash = ("foo",35,"bar",12.4,"hello","wilma");
+
+	array of the hash (unwinding the hash)
+		@hash_array = %somehash;
+
+	copying a hash
+		%firsthash = %secondhash;
+		this unwinds the hash into an array, then loads it into the assigned array
+
+	reversing a hash (unique value problem)
+		%firsthash = reverse %secondhash;
+		unwinds, applies reverse, reloads
+
+	arrow style assignment
+		my %hashname = (
+			"fred" => "flintstone",
+			"barney" => "rubble",
+			"dino" => undef,
+			"betty" => "rubble"
+		);
+
+	hash functions: keys and values
+		my %hash = ("a" => 1, "b" => 2, "c" => 3);
+		my @keys = keys %hash;
+		my @values = values %hash;
+
+	iterating over a hash with each
+		while (($key, $value) = each %hash) {
+			print "$key => $value\n";
+		}
+		each returns a key value pair, which is assigned into the list ($key, $value)
+		
+	iterating over a sorted hash
+		foreach $key (sort keys %hash) {
+			$value = $hash{$key};
+			print "$key => $value\n";
+			# or use print "$key => $hash{$key}\n";
+		}
+
+	the exists function	
+		if (exists $books{"dino"} {
+			print "hely, there's a library card for dino!\n";
+		}
+		returns a true value if the key named exists in the hash
+
+	the delete function
+		removes a key value pair, by making reference to the key
+		my $person = "betty";
+		delete $books{$person}; #removes entry for "betty"
+
+	hash element interpolation
+		foreach $person (sort keys %books) {
+			if($books{$person} {
+				print "$person has $books{person} items\n";
+			}
+		}
+
+Chapter 7: In the world of REGEX
+	to match a simple pattern against the contents of $_, put it inside //
+		$_ = 'yabba dabba doo';
+		if (/abba/) {
+			print "It matched!\n";
+		}
+	all normally escaped charaters are available
+	Character Class Shortcuts
+		\d (digit) = 		[0-9]
+		\w (word character) = 	[A-Za-z0-9_]
+		\w+ (entire word)
+		\s (space) =		[\f\t\n\r ]
+		\s* (any amount of whitespace)
+		\s+ (one or more whitespace chars)
+		\D (non-digit)
+		\W (non word)
+		\S (non-space)
+		[\d\D] matches anything, including \n
+
+Chapter 8: Matching with REGEX
+	m// is the pattern match operator (// is a shortcut for this)
+	any punctuation is acceptable separator: m{}, m::, m##, etc.
+	
+	Option Modifiers (flags)
+	case insensitive matching
+		m/pattern/i
+	match any character with .
+		m/.pattern/s
+		this changes all the . metachars to [\d\D]
+	adding whitespace (makes the regex more readable)
+		m/p a t t e r n/x
+		also allows comments:
+		m/
+		patt  # first part of the regex
+		ern   # second part of the regex
+		/
+	combining modifiers (order doesn't matter)
+		m/pattern/ixg
+
+	Anchors
+		^	beginning of the string
+		$	end of the string
+		\b	word boundary at either end of word
+		\w	word
+		\B	non-word boundary anchor--any point where \b would not match
+	Binding Operator
+		=~ tells perl to match pattern on right against string on left, instead of
+			matching against $_
+	Interpolating into Patterns
+		regex is interpolated like a double quoted string
+	Match Variables
+		$1-$n
+		persist until next successful match resets them
+		if you need memory for more than the immediate case, copy to local var
+	Automatic Match Variables
+		$& is the part of the string that matched the pattern
+		$` is whatever came before the matched portion
+		$' is the part of the string the pattern never got to
+		Using any of these exacts a slight performance cost
+	General Quantifiers
+		*	any number of the preceding
+		+	at least one of the preceding
+		?	zero or one of the preceding
+		{n,m}	between n and m repetitions inclusive
+		{n,}	n or more repetitions
+		{n}	exactly n repetitions
+	Precedence
+		()		grouping and memory
+		* + ? {n,m}	quantifiers
+		^$\b\w\s\B\W\S	anchors
+		|		alternation
+
+Chapter 9: Processing Text with Regular Expressions
+	Substitutions with s///
+		s/pattern/replacement/
+		works on $_
+		returns a boolean, true on successful replacement
+	Global replacements with /g
+		s/pattern/replacement/g
+		works multiple times on a line
+	Different Delimiters
+		s#pattern#replacement#g
+		s{pattern}{replacement}g
+	Option Modifiers
+		/i	case insensitive search
+		/x	white space insensitive
+		/s	enables . metacharacter
+	Binding Operator
+		$filename =~ s#^.*/##s; 
+		will remove any unix style path in $filename
+	Case Shifting
+		\U forces uppercase
+		\L forces lowercase
+		take effect on the rest of the replacement string
+		\E turns off effect
+		\l and \u affect only the next character
+	The split Operator
+		breaks up a string according to a pattern
+		@fields = split /separator/, $string;
+		leading empty fields are retained, trailing empty fields are discarded
+	The join Function
+		my $result = join $glue, @pieces;
+		puts split strings back together
+	m// in List Context
+		When m// is used in list context, the return value is a list of the memory
+		variables created in the match or an empty list if the match failed
+		$_ = "Hello there, neighbor!";
+		my($first, $second, $third) = /(\S+) (\S+), (\S+)/;
+		print "$second is my $third\n";
+		With /g, a pattern with a pair of parentheses will return a memory from each time it matches
+		my $text = "Fred dropped a 5 ton granite block on Mr. Slate";
+		my @words = ($text =~ /[a-z]+)/ig);
+		print "Result: @words\n";
+	Non-Greedy Quantifiers
+		+? matches one or more times, but it prefers to match as few times as possible
+		*? matches zero or more, but prefers to match as few times as possible
+		{5,10}? and {8,}? are the other two non-greedy
+	Matching Multiline Text
+		Multiple lines of text in a single string involve inline newline characters
+		with the //m flag, ^ and $ can match inline newlines
+	Updating Many Files
+		Using the <> diamond operator, with the $^I variable, allows your program to make changed
+		copies of files, and save a backup copy of the originals with the string specified in $^I
+		If you use the empty string in $^I, you'll get inplace editing
+		Example Usage:
+			$^I = ".bak";
+			while (<>) {
+				s/^Author:.*/Author: John Wayne/;
+				s/^Phone:.*\n//;
+			}
+		this edits the files specified on the command line, and produces backup files with .bak extensions
+	In Place Editing from the Command Line
+		perl -p -i.bak -w -e 's/Ncik/Nick/g' file*.txt
+		-p causes perl to write a program for you
+		-i sets the value of $^I
+		-w turns on warnings
+		-e gives executable code
+	Non-Capturing Parentheses
+		(?:pattern) will not insert the captured text into memory as a $n variable
+
+Chapter 10: More Control Structures
+	The unless Control Structure
+		unless(condition) {
+			commands;
+		}
+		equivalent to
+		if(!condition) {
+			commands;
+		}
+		equivalent to
+		if(condition) {
+			nothing
+		} else {
+			commands;
+	Unless with Else
+		unless(condition) {
+			command a;
+		} else {
+			command b;
+		}
+		equivalent to
+		if(condition) {
+			command b;
+		} else {
+			command a;
+		}
+	Until control structure
+		until(condition) {
+			commands;
+		}
+		reverse of while
+	Naked Block control structure
+		{
+			command;
+			command;
+			command;
+		}
+		Useful for scoping temporary lexical variables
+	eslif Clause
+		if(condition_a) {
+			commands;
+		} elsif(condition_b) {
+			commands;
+		} elsif(condition_c) {
+			commands;
+		} else {
+			commands;
+		}
+	Autoincrement and Autodecrement
+		$var++ and $var--
+	Preincrement and Predecrement
+		++$var and --$var
+		increases or decreases the value before fetching that value
+	The for Control Structure
+		for(initialization; test; increment) {
+			commands;
+		}
+	foreach and for
+		foreach and for are equivalent, with perl looking inside the parentheses for syntax clues
+		if semi-colons are present, perl assumes that for is in play
+		no semi-colons means that foreach is being used
+	Loop Controls
+	the last operator
+		immediately ends the execution of the loop
+		# print all input lines mentioning 'fred' until the __END__ marker
+		while(<STDIN>) {
+			if(/__END__/) {
+				last;
+			} elsif(/fred/) {
+				print;
+			}
+		}
+		## last brings you here ##
+	the next operator
+		immediately takes you to the top of the current loop
+		uses the next line of input, leaving the current line of input
+	the redo operator
+		goes back to the top of the current block, using the same line of input
+		# Typing test
+		my @words = qw{ fred barney pebbles dino wilma betty };
+		my $errors = 0;
+		foreach(@words) {
+			## redo brings you here ##
+			print "Type the word '$_': ";
+			chomp(my $try = <STDIN>);
+			if($try ne $_) {
+				print "Sorry - That's not right.\n\n";
+				$errors++;
+				redo;
+			}
+		}
+		print "You've completed the text, with $errors errors.\n";
+	Labeled blocks
+		LINE: while(<>) {
+			foreach(split) {
+				last LINE if /__END__/; # bail out of the LINE loop
+				...
+			}
+		}
+	Logical Operators
+		&& is AND
+		|| is OR
+	Short-Circuit Operator
+		$var = $blah{$someone} || '(no value)'
+		if $blah{$someone} evaluates to undef, the value beyond the || becomes the assigned value
+	The ternary operator, ?:
+		expression ? if_true_expr : if_false_expr
+Chapter 11: File Tests
+	File Test Operators
+		-e test checks for whether a file exists or not
+		die "file called '$filename' already exists.\n" if -e $filename;
+		tests can be used on a filename or a filehandle, if one is open
+		Tests:
+		-r	file or dir is readable by this (effective) user or group
+		-w	file or dir is writable by this (effective) user or group
+		-x	file or dir is executable by this (effective) user or group
+		-o	file or dir is owned by this (effective) user
+		-R	file or dir is readable by this real user or group
+		-W	file or dir is writable by this real user or group
+		-X	file or dir is executable by this real user or group
+		-O	file or dir is owned by this real user
+		-e	file or directory exists
+		-z	file exists and has zero size (always false for directories)
+		-s	file or directory exists with non-zero size (value is size in bytes)
+		-f	entry is a plain file
+		-d	entry is a directory
+		-l	entry is a symbolic link
+		-S	entry is a socket
+		-p	entry is a named pipe
+		-b	entry is a block-special file, like a mountable disk
+		-c	entry is a character special file, like an IO device
+		-u	file or directory is setuid
+		-g	file or directory is setgid
+		-k	file or directory has the sticky bit set
+		-t	the filehandle is a TTY
+		-T	file looks like a 'text' file
+		-B	file looks like a 'binary' file
+		-M	modification age (measured in days)
+		-A	Access age (measured in days)
+		-C	inode-modification age (measured in days)
+	The stat and lstat Functions
+		stat takes a filehandle as its argument, and returns either nothing (if it fails)
+		or a thirteen element list of numbers:
+		my($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size, $atime, $mtime, $ctime, $blksize, $blocks) = stat($filename);
+		$dev and $ino
+			device number and inode number of the file
+		$mode
+			set of permission bits for the file and some other bits
+		$nlink
+			number of (hard) links to the file or directory
+		$uid and $gid
+			numeric user id and group id showing the file's ownership
+		$size
+			size of the file in bytes, as returns by the -s filetest
+		$atime, $mtime, $ctime
+			The three timestamps, in seconds since Epoch
+		
+		lstat returns the same information about a symbolic link
+	
+	the localtime function
+		converts a timestamp to usable time
+			
+
+Chapter 12: Directory Operations
+	Moving around the directory tree
+		chdir operator changes the working directory
+		chdir "/etc" or die "cannot chdir to /etc: $!";
+		All processes that perl spawns inherit the working directory
+		perl cannot affect the working directory of the calling process
+	Globbing
+		perl can be passed globbed values--they show up in @ARGV
+		the glob operator will expand a glob out to an array of file names
+		my @all_files = glob "*";
+		my @pm_files = glob "*.pm";
+		legacy syntax:
+			my @all_files = <*>;
+			my $dir = "/etc";
+			my @dir_files = <$dir/* $dir/.*>;
+	Directory Handles
+		directory handles look and act like file handles
+		open with opendir, close with closedir
+		example:
+			my $dir_to_process = "/etc";
+			opendir DH, $dir_to_process or die "Cannot open $dir_to_process: $!";
+			foreach $file (readdir DH) {
+				print "one file in $dir_to_process is $file\n";
+			}
+			closedir DH;
+		brings back all directory contents, processing must be done after
+		example:
+			while($name = readdir DIR) {
+				next unless $name =~ /\.pm$/;
+				... more commands ...
+			}
+	Removing Files
+		the unlink function removes files
+		unlink "file1","file2","file3";
+		takes a list as its argument, glob returns a list, thus you can combine them into
+		unlink glob "*.pm";
+		return value of unlink is the number of successfully deleted files
+		example:
+			my $successful = unlink "file1","file2";
+			print "deleted $successful file(s)";
+		example 2:
+			foreach my $file (qw(file1 file2 file3)) {
+				unlink $file or warn "failed on $file:$!\n";
+			}
+	Renaming files
+		rename "old", "new";
+		can be used to move files around like mv
+		moving files of type .a to .b:
+			foreach my $file (glob "*.a") {
+				my $newfile = $file;
+				$newfile =~ s/\.a$/.b/;
+				if(-e $newfile) {
+					warn "can't rename $file to $newfile: $newfile exists\n";
+				} elsif (rename $file, $newfile) {
+					## success, do nothing
+				} else {
+					warn "rename $file to $newfile failed: $!\n";
+				}
+			}
+		hard link files with the link command
+		link "a", "b";
+		symlink files with the symlink command
+		symlink "a", b";
+		use readlink to return the target of a symlink
+	Making and Removing Directories
+		mkdir "fred", 0755 or warn "Cannot make fred directory: $!";
+		do not try to store octal permissions number as a string--it breaks
+		if you do, it becomes decimal--to correct, use the oct function
+			my $name = "fred";
+			my $permissions = "0755";
+			mkdir $name, oct($permissions);
+		rmdir glob "fred/*"; # remove all empty diretories below fred
+		foreach my $dir (qw(fred barney wilma)) {
+			rmdir $dir or warn "cannot rmdir $dir: $!\n";
+		}
+		rmdir will fail on a non-empty directory
+	Modifying permissions
+		chmod 0755, "fred", "barney";
+		returns the number of items successfully altered
+	Changing ownership
+		my $user = 1004;
+		my $group = 100;
+		chown $user, $group, glob "*.html";
+	
+Chapter 13: Strings and Sorting
+	Finding a substring with an index
+		$where = index($big, $small);
+		returns first occurrence of $small (as integer from left)
+		$where = index($big, $small, $startposition)
+		adds third parameter, which tells it where to start in the string
+		to find the last occurrence of the substring, use rindex
+		$where = rindex($big, $small, $max_return_val)
+	Manipulating a substring with substr
+		$part = substr($string, $initial_position, $length)
+		-position goes backward from end
+		combination of index and substr:
+			my $long = "some very long string";
+			my $right = substr($long, index($long, "l"));
+		changing a substring:
+			my $string = "Hello, world!";
+			substr($string, 0, 5) = "Goodbye"; #now "Goodbye, world!"
+		substrings don't incur the overhead of the regex engine
+		thus slightly faster
+	Formatting Data with sprintf
+		works like printf, but returns the string instead of printing it
+	Advanced sorting
+		To create a sort by number sub, use the spaceship operator
+		sub by_number { $a <=> $b }
+		sub alpha { $a cmp $b }
+		case insensitive:
+		sub case_insensitive { "\L$a" cmp "\L$b" }
+		to use:
+			my @numbers = sort by_number @unsorted;
+			my @words = sort alpha @unsorted_words;
+		alternately:
+			my @numbers = sort {$a <=> $b} @unsorted;
+			my @words = sort {$a cmp $b} @unsorted_words;
+		to reverse sort
+			my @descending = reverse sort {$a <=> $b} @some_numbers;
+		alternately:
+			my @descending = sort {$b <=> $a} @some_numbers;
+	Sorting a Hash by Value
+		my %score = ("barney" => 195, "fred" => 205, "dino" => 30);
+		my @winners = sort by_score keys $score;
+		sub by_score { $score{$b} <=> $score{$a} }
+	Sorting by multiple keys
+		my %score = (
+			"barney" => 195, "fred" => 205,
+			"dino" => 30, "bamm-bamm" => 195,
+		)
+		my @winners = sort by_score_and_name keys %score;
+		sub by_score_and_name {
+			$score{$b} <=> $score{$a} # by desc numeric score
+				or
+			$a cmp $b	# asciibetically by name
+		}
+		sort can be multi-level:
+			@patron_IDs = sort {
+				&fines($b) <=> &fines($a) or
+				$items{$b} <=> $items{$a} or
+				$family_name{$a} cmp $family_name{$a} or
+				$personal_name{$a} cmp $personal_name{$b} or
+				$a <=> $b
+			} @patron_IDs;
+
+Chapter 14: Process Management
+	The system Function
+		system "date"; # runs the unix 'date' function
+		inherits perl's standard in, out, and error.
+		output goes wherever standard out was pointed
+		shell variables must be single quoted or double quote escaped, as in
+			system 'ls -lh $HOME';
+			system "ls -lh \$HOME";
+		to launch a background process, use &
+			system "long_running_command with parameters &";
+		by default, perl will use /bin/sh
+		shell is whatever was specified when perl was built
+	Avoiding the shell
+		system can be given more than one argument
+		the first argument is assumed to be an executable in PATH
+		second through n arguments are passed directly to that executable
+		shell never gets involved, which means no shell variable expansion
+		usage:
+			my $tarfile = "something*wicked.tar";
+			my @dirs = qw(fred|flintstone <barney&rubble> betty );
+			system "tar", "cvf", $tarfile, @dirs;
+		Not this:
+			system "tar cvf $tarfile @dirs"; # does expansion, messes up redirection via &, <, >
+		Return value of the system operator is based on the exit status of the child process
+		0 exit value from unix means everything is fine, so truth value of system checks must
+		be reversed:
+			unless(system "date") {
+				print "got a date\n";
+			}
+		or
+			!system "rm -rf files_to_delete" or die "something went wrong";
+	The exec Function
+		system creates a child process, while exec causes the perl process to run the command
+		runs the command while the perl process sleeps
+		example:
+			chdir "/tmp" or die "Cannot chdir /tmp: $!";
+			exec "bedrock", "-o", "args1", @ARGV;
+		this is useful in situations where perl is being used to create an environment for
+		another program to run within, since the perl process 'disappears' when the exec runs
+		not common, except in combination with 'fork'
+		nothing should follow 'exec' except error handling:
+			exec "date";
+			die "date couldn't run: $!";
+	The Environment Variables
+		environment variables are available through the %ENV hash
+		keys are variable names
+		at the beginning of the program, %ENV holds the environment vars it has inherited from
+		the parent process
+		modifying the hash changes the environment variables for the program
+		a perl process passes its environment variables on to child processes
+	Using backquotes to capture output
+		Normally, output from system and exec commands goes to whatever STDOUT they inherited
+		to capture the output of the command, run it in backquotes:
+			my $now = `date`;
+			print "The time is now $now";
+		use chomp to remove newline added to unix function output:
+			chomp(my $no_newline_now = `date`);
+			print "a moment ago, it was $no_newline_now, I think.\n";
+		backquoted commands work like the single argument version of system
+		don't use backquoted strings to execute commands when you don't want to capture
+		the output--it's inefficient
+	Using Backquotes in List Context
+		If output of a backquoted command has multiple lines, it's returned as a single
+		long string containing newline characters
+		Using it in a list context produces a list, with one line of output per item
+	Processes as Filehandles
+		Syntax for launching a concurrent(parallel) child process is to put the command as 
+		the "filename" for an open call and to precede or follow the command with a pipe
+		this is called a "piped open"
+			open DATE, "date|" or die "cannot pipe from date: $!";
+			open MAIL, "|mail merlyn" or die "cannot pipe to mail: $!";
+		a handle which had a trailing pipe is opened for reading
+			my $now = <DATE>;
+		a handle with a preceding pipe is opened for writing
+			print MAIL "The time is now $now";
+		a program disconnecting (by ending) from a readhandle will cause the process that
+		connected to the readhandle (like date) to read EOF
+		closing a writehandle will print EOF to the write handle
+		In this case, to send mail:
+			close MAIL;
+			die "mail: non-zero exit of $?" if $?;
+		Using processes as filehandles lets you write to a process based on a computation
+		backquotes may be easier for reads if you don't need to have results as they come in
+		Example:
+			open F, "find / -atime +90 -size +1000 -print|" or die "fork: $!";
+			while(<F>) {
+				chomp;
+				printf "%s size %dK last accessed on %s\n"
+					$_, (1023 + -s $_)/1024, -A $_;
+			}
+	Using fork
+		translation of high level system call:
+			system "date";
+		to low level system call:
+			defined(my $pid = fork) or die "Cannot fork: $!";
+			unless($pid) {
+				#Child process is here
+				exec "date";
+				die "cannot exec date: $!";
+			}
+			#Parent process is here
+			waitpid($pid,0);
+		see perlipc manpage for more
+	Sending and Receiving Signals
+		you can send signals from a perl process to another process, but you have to know the pid
+			kill 2,4201 or die "Cannot signal 4201 wth SIGINT: $!";
+		process probe with a signal of 0 (checks to see if you _can_ send a signal, but does nothing)
+			unless(kill 0,$pid) {
+				warn $pid has gone away!";
+			}
+		If you create a signal handler, you can do cleanup even if a SIGINT is sent
+			my $temp_directory = "/tmp/myprog.$$"; # create files here
+			mkdir $temp_directory, 0700 or die "Cannot create $temp_directory: $!";
+			
+			sub clean_up {
+				unlink glob "$temp_directory/*";
+				rmdir $temp_directory;
+			}
+
+			sub my_int_handler {
+				&clean_up;
+				die "interrupted, exiting...\n";
+			}
+			
+			$SIG{'INT'} = 'my_int_handler';
+			.
+			.		# time psses, the program runs and creates temp
+			.		# files in the temp directory, maybe a SIGINT is sent
+			.
+			# now it's the end of normal execution
+			&clean_up;
+
+		Assigning to the %SIG hash activates the handler until revoked
+		key is the name of the signal without the constant SIG prefix, value is a string
+		naming the subroutine without the ampersand.  If SIGINT is sent, perl jumps to the subroutine
+		to actually use SIGINT to interrupt rather than immediately kill, set a flag:
+			my $int_count;
+			sub my_int_handler { $int_count++ }
+			$SIG{'INT'} = 'my_int_handler';
+			...
+			$int_count = 0;
+			while(<SOMEFILE>) {
+				... some processing that takes a few seconds ...
+				if($int_count) {
+					#interrupt was seen!
+					print "[processing interrupted...]\n";
+					last;
+				}
+			}
+		If an interrupt is sent to the above, it breaks out of the loop after executing current iteration
+		
+Chapter 15: Perl Modules
+	
+			

@@ -1,0 +1,255 @@
+DNS and BIND, Fifth Edition
+By: Cricket Liu; Paul Albitz
+Publisher: O'Reilly Media, Inc.
+Pub. Date: May 26, 2006
+Print ISBN-13: 978-0-596-10057-5
+Print ISBN-10: 0-596-10057-4
+Pages in Print Edition: 648
+
+
+Chapter 1: Background
+
+1.1 A (Very) Brief History of the Internet
+  * 1960s, ARPAnet: sharing files/software, email, joint development
+  * 1980s, TCP/IP suite: became the standard on ARPAnet, incl. in BSD
+  * BSD at universities put lots more boxes on the network
+  * ARPAnet becomes the backbone
+  * 1988, DARPA kills ARPAnet, is replaced by NSFNet
+  * 1995, NSFNet goes away, commercial backbones come in via SBC, Sprint, etc.
+
+1.2 On the Internet and Internets
+  * Capital I = network going back to ARPAnet
+  * Lowercase i = any network made of smaller networks using the same protocols
+
+  1.2.1 The History of the Domain Name System
+    * In the 70s, HOSTS.TXT was the basis of address mapping
+    * Each machine's /etc/hosts was built from HOSTS.TXT
+    * HOSTS.TXT was distributed by SRI's Network Information Center (NIC)
+    * Changes were made by email, distributed weekly.
+    * When ARPAnet went to TCP/IP, the number of hosts grew too fast for HOSTS.
+    * Scaling problems that arose:
+      - Traffic/load
+      - Name collisions
+      - Consistency
+    * ARPAnet's governing bodies started looking for a solution.
+    * Paul Mockapetris at USC designed DNS via RFC 882 and 883
+    * Those were then superseded by RFCs 1034 and 1035, since augmented by others
+
+1.3 The Domain Name System, in a Nutshell
+  * Distributed database, with information available network wide via
+    client/server setups and replication/caching.
+  * Nameserver programs make up the server part of DNS.
+  * Clients are called 'resolvers'
+  * The DNS database is hierarchical, an inverted tree.
+  * Each node has a text label, identifying it relative to its parent
+  * The empty string is reserved for the root node--written as '.'
+  * Each node is also the root of a new subtree, representing a partition in
+    the overall database--a 'domain', which can be subdivided into 'subdomains'.
+  * A domain's 'domain name' identifies its place in the database, and is the
+    sequence of labels from the root of the node to the root of the whole tree.
+  * Names are separated by '.'
+  * Domains can delegate responsibility for their subdomains.
+  * Delegating authority for a domain like 'berkeley.edu' creates a new 'zone'
+  * A zone is an autonomously administered piece of the namespace.
+  * The 'edu' zone is then all non-autonomous names ending in 'edu'
+  * Each time authority is delegated, a new zone is created, and the parent no
+    longer is free to create domain names ending in that subdomain's name.
+  * Domain names are indexes into the DNS database.
+  * Data can be 'attached' in DNS to a domain name.
+  * A domain contains those hosts and subdomains whose domain names are within
+    the subtree of that namespace.
+  * Each host on a network has a domain name, pointing to information about the
+    host like IP address, mail routing, etc.
+  * Hosts can have 'domain name aliases' that point from one name to another,
+    which is the 'canonical' domain name.
+  * Hierarchy avoids name collisions--each sub authority exercises or delegates
+    the power to create and use domain names in their namespace.
+
+1.4 The History of BIND
+  * First implementation of DNS was 'JEEVES', by Paul Mockapetris
+  * Later implementation was BIND, Berkeley Internet Name Domain, written by
+    Kevin Dunlap for BSD 4.3.
+  * BIND is now maintained by the Internet Systems Consortium.
+  * BIND is a standard part of most *nix flavors, and is ported to windows.
+
+1.5 Must I Use DNS?
+  * Sometimes the overhead isn't worth it.
+  * If you're on the Internet, yeah, you have to, though you may not need a zone.
+  * If you've got a TCP/IP internet, you probably do.
+  * If you've got a LAN not connected to a larger network, maybe try using WINS
+    or host tables, or Sun's Network Information Service.
+
+
+Chapter 2: How Does DNS Work?
+  
+2.1 The Domain Namespace
+  * The depth of the inverted tree hierarchy is 127 levels.
+
+  2.1.1 Domain Names
+    * Each node's text label can be up to 63 characters.
+    * Node names other than the root may not be null.
+    * The full domain name of any node is the sequence of labels in its path.
+    * If the root node appears, it looks like the name ends in a period.
+    * If the root is referred to by itself, it's called '.'
+    * Some software takes the trailing dot to mean the name is 'absolute'.
+    * A fully qualified domain name (FQDN) is absolute.
+    * Names without trailing dots are sometimes considered relative.
+    * Sibling nodes must have different text labels.
+
+  2.1.2 Domains
+    * A domain is a subtree of the domain namespace.
+    * The domain name of a domain is the domain name of the node at the very top
+      of that domain.
+    * Any subtree domain name is considered a part of the domain.
+    * The domain names are indices into the DNS database.
+    * Hosts are the domain names pointing to information about individual endpoints.
+    * Hosts are related logically, by geography or organizational affiliation, not
+      by network or address or hardware type.
+    * Don't confuse DNS domains with NIS domains.
+    * Active Directory domains are related to DNS domains.
+    * Domain names at the leaf nodes generally point to individual hosts.
+    * Leaf nodes can point to network addresses, hardware information, and
+      mail routing information.
+    * Interior nodes can name a host and point to information about the domain.
+    * The type of information you get from the DNS db is determined by the context
+      in which you use it. Mail uses mail routing info, ssh uses host info.
+    * Domains can be referred to by 'level'.
+    * A top level domain is a child of the root, a second level is a child of a first
+
+  2.1.3 Resource Records
+    * Data associated with domain names is contained in 'resource records' / 'RR's
+    * RRs are divided into classes, each pertaining to a type of network or software
+    * There is a TCP/IP internetwork class, Chaosnet networks, and Hesiod networks.
+    * Nobody really uses Chaosnet anymore, and Hesiod is almost all at MIT.
+    * Different classes may define different record types.
+
+2.2 The Internet Domain Namespace
+  * No particular meaning is associated with the value of domain names.
+  * The Internet domain namespace has some self imposed structure.
+
+  2.2.1 Top-Level Domains
+    * com -- commercial organizations
+    * edu -- educational
+    * gov -- governmental
+    * mil -- military
+    * net -- network infrastructure, commercial since 1996
+    * org -- noncommercial, freely available since 1996
+    * int -- international organizations like NATO
+    * arpa -- transitional domain for ARPAnet
+
+    2.2.1.1 Country-code TLDs
+      * TLDs were reserved (though not necessarily created) for countries
+      * The names follow ISO 3166, establishing two letter abbreviations for countries
+
+    2.2.1.2 New TLDs
+      * In 2000, ICANN created new TLD space
+      * Some are general, some are 'sponsored' and restricted
+      * New TLDs
+        - aero -- sponsored, for aeronautical industry
+        - biz -- generic
+        - coop -- sponsored, for cooperatives
+        - info -- generic
+        - museum -- sponsored, for museums
+        - name -- generic, for individuals
+        - pro -- generic, for professionals
+      * In 2005, ICANN added
+        - jobs -- for human resources management
+        - travel -- for the travel industry
+        - mobi -- mobile devices
+
+  2.2.2 Further Down
+    * Within the new TLDs, many country ones follow com/org/co/ac, whatever.
+    * .us originally had 50 subdomains for states
+    * When Neustar started managing .us in 2002, they opened it to everybody.
+
+  2.2.3 Reading Domain Names
+    * Examples here.
+
+2.3 Delegation
+  * Each domain can have subdomains, and can delegate responsibility for them.
+  * Not all organizations delegate the entirety of their domain.
+
+2.4 Nameservers and Zones
+  * Programs storing info about domain namespaces are 'nameservers'
+  * They typically have complete info about some part of the namespace, a 'zone'
+  * That nameserver has 'authority' for that zone.
+  * Nameservers can be authoritative for multiple zones.
+  * Each unit of authority delegation is a zone.
+  * A zone contains all domain names the domain with that name contains, EXCEPT
+    for domain names in delegated subdomains.
+  * The zone also contains any non-delegated subdomain names.
+  * Nameservers load zones, not domains, because a domain may contain more info
+    than the nameserver needs since it can contain delegated data.
+
+  2.4.1 Delegating Subdomains
+    * Delegation is the assignment of authority for a subdomain to some nameserver(s)
+    * Your zone's data will contain pointers to those delegated nameservers
+      that are authoritative for the subdomain.
+
+  2.4.2 Types of Nameservers
+    * DNS has two kinds of nameservers: primary masters and secondary masters
+    * A primary master for a zone reads the data for the zone from a file on
+      its host.
+    * A secondary master gets the zone data from another authoritative nameserver
+      for that zone.
+    * That request and response is a 'zone transfer'.
+    * Secondary masters are typically called 'slaves' now.
+    * Both kinds are authoritative for their zone.
+    * The structure exists so you only maintain the data in one place.
+    * A single nameserver can be master for one zone and slave for another.
+
+  2.4.3 Zone Datafiles
+    * 'zone datafiles' or 'datafiles' are the files from which primaries load data
+    * Slaves typically back up their received data to datafiles.
+    * Datafiles contain resource records describing the zone.
+    * Those resource records describe all hosts in the zone and mark any delegation
+      of subdomains.
+    * BIND also lets you include the contents of other datafiles in a zone datafile.
+
+2.5 Resolvers
+  * Clients that access nameservers are resolvers.
+  * Resolver handles: 
+    - querying a nameserver
+    - interpreting responses
+    - returning the information to the programs that requested it
+  * In BIND, the resolver is a set of library routines
+  * Resolvers like that, that put most of the work on the nameserver, a called
+    'stub resolvers'
+
+2.6 Resolution
+  * Retrieving data from a domain namespace is 'name resolution' or 'resolution'
+
+  2.6.1 Root Nameservers
+    * Root nameservers know where the authoritative nameservers for the TLDs are
+    * Given a query about any domain name, root nameservers can give names/addresses
+      of nameservers authoritative for the TLD the name ends in.
+    * Those can provide authoritative nameservers for the second level zone
+    * Each queried nameserver gives info about how to get 'closer' to your target
+    * There are 13 root nameservers around the world.
+    * Traffic to the roots is very high--10k+ queries/s
+
+  2.6.2 Recursion
+    * If possible, a server will send the best answer it has to a query.
+    * If the query results in a referral, the nameserver will issue a recursive
+      query to get what it needs, since stub resolvers can't follow referrals
+    * Queries can be either iterative or recursive
+    * Recursive queries put most of the burden on a single nameserver.
+    * Dumb resolvers issue recursive queries, which cause the server to get the data
+      instead of issuing a referral.
+    * Iterative queries can be answered with referrals.
+    * A server that gets a recursive query and needs to send that on always sends
+      the same query that the resolver sent to it, it never queries higher level domains.
+
+  2.6.3 Iteration
+    * Nameserver gives the best answer it already knows.
+
+  2.6.4 Choosing Between Authoritative Nameservers
+    * Servers are chosen based on roundtrip time (RTT) to choose a nameserver
+    * It keeps count of the RTT for each server it talks to.
+    * Before it queries it, it gives a random RTT value lower than any real value
+    * Consequently it queries all nameservers authoritative for a zone before 
+      going to its 'favorites'
+
+  2.6.5 The Whole Enchilada
+
+  2.6.6 Mapping Addresses to Names

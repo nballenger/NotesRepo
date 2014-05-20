@@ -1,0 +1,251 @@
+Comments:
+
+  // Inline
+  /* Multiline */
+  /**
+   * Javadoc
+   */
+
+Doc Comment Tags
+
+  Tag           Description                 Applies to
+  -------------------------------------------------------------
+  @see          Associated class name       Class, method, variable
+  @author       Author name                 Class
+  @version      Version string              Class
+  @param        Parameter name/desc         Method
+  @return       Desc. of return value       Method
+  @exception    Exception name/desc         Method
+  @deprecated   Obsolete declaration        Class, method, variable
+  @since        Notes API version of item   Variable
+
+Types
+  * Primitive types are fixed elements like literals and numbers
+  * Reference/Class types 'refer to' a large data type passed by reference
+  * Generic types are compositions of class types (and are reference types)
+
+Primitive Types
+
+    Type      Definition
+    -------------------------------------------
+    boolean   true/false
+    char      16-bit Unicode
+    byte      8-bit, signed, two's comp integer
+    short     16-bit, signed, two's comp integer
+    int       32-bit, signed, two's comp integer
+    long      64-bit, signed, two's comp integer
+    float     32-bit, IEEE 754, float
+    double    64-bit, IEEE 754
+
+  Variable Declaration
+    * Declared inside methods and classes
+    * May be initialized on declaration
+
+    int foo;
+    double d1 = 3.14, d2 = 2 * 3.14;
+    boolean isFun = true;
+
+  Default Initializations
+    
+    Type        Default Value
+    ----------------------------
+    numeric     0, sized to type
+    characters  \0 null character
+    boolean     false
+
+  Integer Literals
+
+    int  i = 1230;     // decimal
+    int  j = 01230;    // octal, = 664 decimal
+    int  k = 0xFFFF;   // hex, = 65535 decimal
+
+    long l = 13L;     // using a long int literal
+    long m = 13;      // promoting an int literal to long
+
+  Float literals
+
+    double d = 8.31;
+    double e = 3.00e+8;
+    float  f = 8.31F;
+    float  g = 3.00e+8F;
+
+  Character Literals
+
+    char a = 'a';
+    char newline = '\n';
+    char smiley = '\u263a';
+
+Conditionals
+
+  if (condition)      // Braces optional for single statements
+    statement;
+  [ else
+    statement; ]
+
+  if (condition) {    // Braces required for blocks of statements
+    [ statement; ]
+    [ statement; ]
+    [    ...     ]
+  } else {
+    [ statement; ]
+    [ statement; ]
+    [    ...     ]
+  }
+    
+
+  while (condition)   // simple while
+    statement;
+
+  do
+    statement;
+  while (condition);  // do..while
+
+
+  // simple for
+  for (init; condition; incrementor)
+    statement;
+
+  // 'enhanced' for
+  for (varDeclaration : iterable)
+    statement;
+
+  // enhanced for example
+  int [] arrayOfInts = new int [] { 1,2,3,4 };
+
+  for (int i : arrayOfInts)
+    System.out.println(i);
+    [break/continue;]
+
+
+  switch (expression)
+  {
+    case constantExpression :
+      statement;
+      [break;]
+    [ case constantExpression : statement; break; ]
+    ...
+    [ default :
+      statement; 
+      break; ]
+  }
+
+
+  // Using an enumeration with a switch
+  enum Size { Small, Medium, Large }
+  Size size = ...;
+  switch (size) {
+    case Small:
+    case Medium:
+    case Large:
+  }
+
+
+Arithmetic Operators: ++ -- + - * / % < <= > >=
+Integral:  ~ << >> >>> & ^ |
+Boolean:  ! & ^ | && ||
+Object: instanceof == !=
+String: +
+Primitive: == !=
+Ternary: ?:
+Assignment: =
+Variable/member access: .
+
+
+Exceptions
+
+  try {
+    statement;
+  }
+  catch (IOException e) {
+    // handle read error
+  }
+  catch (Exception e) {
+    // handle generic error
+  }
+  finally {
+    // cleanup which is always executed
+  }
+
+  try {
+    statement;
+  }
+  catch (ExceptionA | ExceptionB e) {
+    // handle A or B
+  }
+
+Stack Trace:
+
+  catch (Exception e) {
+    e.printStackTrace(System.err);
+  }
+
+Throwing Exceptions
+
+  class ParseException extends Exception {
+    ParseException() {
+      super();
+    }
+
+    ParseException(String desc) {
+      super(desc);
+    }
+  }
+
+  throw new ParseException("message");
+
+
+Assertions
+
+  assert false;     // if assertion fails, throws AssertionError
+  assert a > 0 : a;     // shows value of a to user
+  assert foo != null : "foo is null!";  // shows message to user
+
+Enabling Assertions
+
+  java -ea|-enableassertions  // enable all assertions
+  java -ea:com.oreilly.examples.Myclass MyApp // enable MyApp assertions
+  java -da:com.oreilly.examples.text // disable text assertions
+
+
+Arrays
+
+  int [] arrayOfInts;           // primitive types
+  String [] someStrings;        // reference types
+  arrayOfInts = new int [42];   // initialization w length 42
+  double [] someNumbers = new double [20];  // combined declaration/init
+  someNumbers[0] = 1;           // element access
+
+  int [] primes = {2,3,5}       // c style creation
+  primesLen = primes.length;    // getting length public var
+
+  // iteration
+  Button [] keyPad = new Button [10];
+  for (int i=0; i < keyPad.length; i++)
+    keyPad[i] = new Button(Integer.toString(i));
+
+  // Anonymous
+  Dog pokey = new Dog ("gray");
+  Cat boojum = new Cat ("grey");
+  Cat simon = new Cat ("orange");
+  setPets ( new Animal [] { pokey, boojum, simon });
+
+  // Multidimensional
+  Color [][][] rgbCub = new Color [256][256][256];
+  rgbCube[0][0][0] = Color.black;
+
+
+Basic Class Declaration
+
+  class Pendulum {
+    float mass;
+    float length = 1.0f;
+    int cycles;
+
+    float getPosition (float time) {
+      ...
+    }
+    ...
+  }
+
+  Pendulum p;
+  p = new Pendulum();

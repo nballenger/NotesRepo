@@ -1,0 +1,1690 @@
+Chapter 2: Intermediate Foundations
+	List Operators
+		print - takes multiple, comma separated arguments:
+			print "one", "two", "three;
+		sort - returns a list in order:
+			@sorted = sort @unsorted;
+		reverse - returns a reversed list:
+			@rtl = reverse @ltr;
+	List Filtering with grep
+		grep - takes a list of values and a "testing express"
+		places each item in the list into the $_ variable
+		evaluates the test expression in a scalar context
+		if exp evaluates to true, grep passes $_ to output list
+			my @lunch_choices = grep &is_edible($_), @gilligans_possessions;
+		In a list context, grep returns a list of selected items
+		In a scalar context, grep returns the number of selected items
+		example of explicit reference to $_:
+			my @input_numbers = (1,2,4,8,16,32,64);
+			my @bigger_than_10 = grep $_ > 10, @input_numbers;
+		implicit reference:
+			my @end_in_4 = grep /4$/, @input_numbers;
+		complex testing expressions can be put in a subroutine:
+			my @odd_digit_sum = grep digit_sum_is_odd($_), @input_numbers;
+			sub digit_sum_is_odd {
+				my $input = shift;
+				my @digits = split //, $input; #assume no non-digit chars
+				my $sum;
+				$sum += $_ for @digits;
+				return $sum % 2;
+			}
+		block form of grep:
+			my @results = grep {
+				block;
+				of;
+				code;
+			} @input_list;
+		last evaluated expression in the block is the test expression
+	Transforming Lists with map
+		places items temporarily into $_
+		testing expression becomes a mapping expression
+		evaluates expression in a list context
+		(as opposed to grep's scalar context)
+		overall result is list concatenation of all individual results
+		example:
+			my @input_numbers = (1,2,4,8,16,32,64);
+			my @result = map $_ + 100, @input_numbers;
+		not limited to one output per item:
+			my @result = map { $_, 3 * $_ } @input_numbers;
+		could store the result (1,3,2,6,4,12...) into a hash:
+			my %hash = @result;
+		use to select and reject items:
+			my @result = map {
+				my @digits = split //, $_;
+				if($digits[-1] == 4) {
+					@digits;
+				} else {
+					();
+				}
+			} @input_numbers
+		(this outputs the list if the last digit of the individual list item is 4)
+	Trapping errors with eval
+		avoids fatal crashes
+		example:
+			eval { $average = $total / $count };
+		if an error occurs in the eval block, the block is done executing
+		perl continues running the code after the eval block
+		normally perl will immediately check $@ for error messages (empty means no error)
+		example:
+			eval { $average = $total/$count };
+			print "Continuing after error: $@" if $@;
+			eval { &rescue_scheme_42 };
+			print "Continuing after error: $@" if $@;
+	Dynamic code with eval
+		second form of eval, takes a string argument instead of a block
+		compiles and executes code from a string at runtime
+		avoid for security reasons
+		example:
+			eval '$sum = 2 + 2';
+			print "The sum is $sum\n";
+		useful example:
+			foreach my $operator (qw(+ - * /)) {
+				my $result = eval "2 $operator 2";
+				print "2 $operator 2 is $result\n";
+			}
+Chapter 3: Using Modules
+	Using Modules
+		to view module documentation: 'perldoc MODULENAME'
+		to load a module, use 'use':
+			use File::Basename;
+		once a module is loaded, its routines are included in the current package
+	Selecting What to Import
+		to get a partial list, explicitly name the routines to import:
+			use File::Basename ('fileparse','basename');
+		or
+			use File::Basename qw(fileparse basename);
+		to use something not explicitly included in the current package, spell it out:
+			my $dirname = File::Basename::dirname($some_path);
+		specifying nothing to import means to get defaults
+		specifying an empty list () means to get nothing
+	Object-oriented interfaces
+		load the module with use:
+			use File::Spec;
+		doesn't import any subroutines
+		call methods with method syntax:
+			my $filespec = File::Spec->catfile($homedir{gilligan},'web_docs','photos');
+	Typical object oriented model: Math::BigInt
+		example:
+			use Math::BigInt;
+			my $value = Math::BigInt->new(2); # start with 2
+			$value->bpow(1000); # take 2**1000
+			print $value->bstr(),"\n"; # print it out
+	The Comprehensive Perl Archive Network
+		To install a module from CPAN, download it, then change into that directory
+		then, if there is a Makefile.pl:
+			perl Makefile.pl
+			make
+			make test
+			make install
+		if there is a Build.PL file:
+			perl Build.PL
+			perl Build
+			perl Build test
+			perl Build install
+		(the Module::Build module most be installed first)
+	Setting the Path at the Right Time
+		perl finds modules by looking through the @INC array
+		@inc is evaluated at compile time, so you can't modify it at runtime, as with:
+			unshift @INC, '/home/me/perlish'; #broken
+			use Something::InPerlish;
+		you can do the unshift to add to @INC if you put it in a BEGIN block:
+			BEGIN {unshift @INC, '/home/me/perlish'; }
+		however, it's cleaner to do with the lib pragma:
+			use lib '/home/me/perlish';
+			use Something::InPerlish;
+		put this near the top of the file, so that the path can be modified if necessary
+	Handling Module Dependencies
+		CPAN.pm module has an interactive shell
+		perl -MCPAN -e shell
+		cpan> install CGI::Prototype
+		will install the module and recursively install all dependencies
+
+Chapter 4: Introduction to References
+	Taking a Reference to an Array
+		the \ operator can mean pass by reference
+			my $reference_to_skipper = \@skipper;
+		can be copied
+			my $second_reference = $reference_to_skipper;
+		The numeric form of the reference is the memory address of the internal data structure
+		We can pass references into a subroutine:
+			my @skipper = qw(blue_shirt hat jacket preserver sunscreen);
+			check_required_items("The Skipper", \@skipper);
+			
+			sub check_required_items {
+				my $who = shift;
+				my $items = shift;
+				my @required = qw(preserver sunscreen water_bottle jacket);
+				...
+			}
+	Dereferencing the Array Reference
+		use the name of the array reference inside curly braces to get at the real array
+			$array_ref = @items;
+			@{$array_ref} # same as @items itself
+			${$array_ref}[1] # second item in the real array
+		To decouple the code from the data structure, use an array reference:
+			sub check_required_items {
+				my $who = shift;
+				my $items = shift;
+		
+				my @required = qw(preserver sunscreen water_bottle jacket);
+				for my $item(@required) {
+					unless (grep $item eq $_, @{$items}) { #not found in list?
+						print "$who is missing $item.\n";
+					}
+				}
+			}
+	Dereferences without braces
+		if the array reference we want to decouple is a scalar, we can drop the braces:
+			@$items # same as @{$items}
+			$$items[1] # same as ${$items[1]}
+		if the array reference is not a scalar, the braces have to get kept:
+			@{$_[1]}
+	Modifying the Array
+		to add an item onto an array reference:
+			push @$items, @missing; # adds @missing to the end of @$items (or @{$items} )
+	Nested Data Structures
+		a referenced array can itself contain a reference to another array
+			my @skipper = qw(blue_shirt hat jacket sunscree);
+			my @skipper_with_name = ('Skipper', \@skipper);
+			my @professor = qw(sunscreen water_bottle slide_rule batteries radio);
+			my @professor_with_name = ('Professor', \@professor);
+			my @gilligan = qw(red_shirt hat lucky_socks water_bottle);
+			my @gilligan_with_name = ('Gilligan', \@gilligan);
+			
+			my @all_with_names = (
+				\@skipper_with_name;
+				\@professor_with_name;
+				\@gilligan_with_name;
+			);
+	Simplifying Nested Element References with Arrows
+		In the previous code, to get to 'hat' in the skipper array, we'd have to write:
+			${${$all_with_names[0]}[1]}[1]
+		in order to get to the 0 element of the all with names array, which then
+		holds the reference to the @skipper array, whose item we want to access
+		To shorten this, we can use:
+			$all_with_names[0]->[1]->[1]
+		or, even simpler:
+			$all_with_names[0][1][1]
+		however, the arrow can only be dropped between places you'd have used a bracket
+		thus:
+			my $root = \@all_with_names;
+			$root -> [0] -> [1] -> [1]
+		reduces to
+			$root->[0][1][1]
+	References to Hashes
+			my %gilligan_info = (
+				name	=> 'Gilligan',
+				hat	=> 'white',
+				shirt	=> 'red',
+				position => 'First Mate',
+			);
+			my $hash_ref = \%gilligan_info;
+  		dereferencing a hash works similarly to dereferencing an array:
+			my $name = $gilligan_info{'name'};
+			my $name = ${$hash_ref}{'name'};
+		also, for simple scalar values inside the braces, we can simplify:
+			my $name = $$hash_ref{'name'};
+			my @keys = keys %$hash_ref;
+		
+Chapter 5: References and Scoping
+	More than one Reference to Data
+		making a copy of a reference:
+			my @skipper = qw(hat pants shirt);
+			my $reference_to_skipper = \@skipper;
+			my $second_reference_to_skipper = $reference_to_skipper;
+			my $third_reference_to_skipper = \@skipper;
+		perl recycles the memory for the object referenced only when all references to it are gone
+		references can be explicitly dereferenced:
+			my $reference_to_skipper = undef;
+		or can go out of scope:
+			my @skipper = ...;
+			{
+				#naked block
+				...
+				my $ref = \@skipper;
+				...
+				...
+			} # $ref goes out of scope at this point
+		If the original name of an object goes out of scope, but other names remain, you can
+		still access it until it is actually destroyed.
+	Reference Counting and Nested Data Structures
+		Be careful about returning references which then go out of scope
+		If a reference to the data exists, you still have access to the data
+	When Reference Counting Goes Bad
+		Memory leaks can be created by having to arrays which contain reference to each other
+		you create an essentially endless number of ways of accessing the data
+		If you do use circular references, make sure to empty them before they go out of scope
+	Creating an anonymous Array directly
+		This syntax for creating anonymous (gone out of scope) arrays is overly long:
+			my @skipper_with_name;
+			{
+				my @skipper = qw(hat shirt pants);
+				@skipper_with_name = ('The Skipper', \@skipper);
+			}
+		Instead we can use the anonymous array constructor:
+			my $ref_to_skipper_provisions = 
+			[ qw(hat shirt pants) ];
+		The [] anonymous array constructor returns a reference to an anonymous array with the
+		elements provided inside it as the array elements.
+		The above code could be rewritten as:
+			my @skipper_with_name = (
+				'The Skipper',
+				[ qw(hat shirt pants) ]
+			);
+		Additionally, this:
+			my $fruits;
+			{
+				my @secret_variable = ('pineapple', 'papaya', 'mango');
+				$fruits = \@secret_variable;
+			}
+		could be rewritten as this:
+			my $fruits = [ qw(pineapple papaya mango) ];
+		nested anonymous constructors will also work:
+			sub get_provisions_list {
+				return (
+					['The Skipper', [qw(hat shirt pants)]],
+					['The Professor', [qw(hat jacket glasses)]],
+					['Gilligan', [qw(red_shirt, lucky_socks, water_bottle)]],
+				);
+			}
+			my @all_with_names = get_provisions_list;
+	Creating an Anonymous Hash
+		This code:
+			my $ref_to_gilligan_info;
+			{
+				my %gilligan_info = (
+					name 	=> 'Gilligan',
+					hat 	=> 'White',
+					shirt	=> 'Red',
+					position => 'First Mate',
+				);
+				$ref_to_gilligan_info = \%gilligan_info
+			}
+		can be replaced with the anonymous hash constructor:
+			my $ref_to_gilligan_info = {
+				name	=>	'Gilligan',
+				hat		=>	'White',
+				shirt	=>	'Red',
+				position	=>	'First Mate',
+			}
+		the anonymous hash constructer always evaluates contents in a list context, and then creates a hash
+		to specify a hash constructor, use the +{} syntax
+		to specify a naked block, use an empty statement: { ; statement2; }
+	Autovivification
+		Any nonexistent variable, or a variable containing undef, which we dereference while looking for a
+			variable location, is automatically stuffed with the appropriate reference to an empty item
+			and perl allows the operation to proceed
+	Autovivification and Hashes
+
+Chapter 6: Manipulating Complex Data Structures
+	Using the debugger to view complex data
+		invoke perl with -d switch to step through program
+			s		steps one step forward
+			x [dataname]	dumps out data structures: x $blah, x \%blah
+	Viewing Complex data with Data::Dumper
+		use Data::Dumper
+		print Dumper(some data structure);
+		string generated by Dumper is perl code
+		use it to dump a hash, and you can evaluate back to the original hash
+	YAML
+		stands for Yet Another Markup Language
+		provides more readable and compact dump
+		works like Data::Dumper
+		use Dump() in place of Dumper()
+		particularly useful for deeply nested data structures
+	Storing Complex Data with Storable
+		marshaling data is the process of converting it into a form that can be stored to file for later use
+		the Storable module is better at marshaling data than Dumper.
+		produces smaller and faster to process files
+		example (mutually referencing data structures):
+			use Storable;
+			my @data1 = qw(one won);
+			my @data2 = qw(two too to);
+			push @data2, \@data1;
+			push @data1, \@data2;
+			store [\@data1, \@data2], 'some_file';
+		example of getting that data back out with Storable:
+			use Storable;
+			my ($arr1, $arr2) = @{ retrieve 'some_file' };
+			use Data::Dumper;
+			$data::Dumper::Purity = 1;
+			print Dumper(@$result);
+		Using the map and grep operators:
+			Applying a Bit of Indirection
+			example: want to find the items in a list that have odd digit sums, but don't want the items themselves
+			grep the index for each appropriate item:
+				my @input_numbers = (1, 2, 4, 8, 16, 32, 64);
+				my @indices_of_odd_digit_sums = grep {
+					my $number = $input_numbers[$_];
+					my $sum;
+					$sum += $_ for split //, $number;
+					$sum % 2;
+				} 0..$#input_numbers;
+			0,,$#input_numbers is a list of index values for the array
+			Think of the item indexes in an array as a means of identifying the items, without having to take the
+				items out of the array (get a list of keys with map or grep)
+	Selecting and Altering Complex Data
+		Example:
+			my %provisions = (
+				'The Skipper' => [ qw(blue_shirt hat jacket preserver sunscreen) ],
+				'The Professor' => [ qw(sunscreen water_bottle slide_rule radio) ],
+				'Gilligan' => [ qw(red_shirt hat lucky_socks water_bottle) ],
+			);
+			my @packed_light = grep @{ $provisions{$_} } < 5, keys %provisions;
+		$_ is the name of a person, use the name to look up the array reference, dereference that into a scalar context
+			to get the count of the provisions, then compare that to five
+		Example (who brought a water bottle):
+			my @all_wet = grep {
+				my @items = @{ $provisions{$_} };
+				grep $_ eq 'water_bottle', @items;
+			} keys %provisions;
+		uses an inner grep on the list of items to search for an item equal to 'water_bottle'
+		We can also do transformations--this example turns the hash into a lit of array references, each containing two items
+			the first is the original person's name, the second is a reference to an array of that person's provisions:
+		Example:
+			my @remapped_list = map {
+				[ $_ => $provisions{$_} ];
+			} keys %provisions;
+
+Chapter 7: Subroutine References
+	Referencing a Named Subroutine
+		subroutine references allow subs to become part of complex data structures
+		sometimes also called a coderef
+		create a coderef with \&subname
+		Example (everybody greets everybody):
+			sub skipper_greets {
+				my $person = shift;
+				print "Skipper: Hey there, $person!\n";
+			}
+			sub gilligan_greets {
+				my $person = shift;
+				if ($person eq 'Skipper') {
+					print "Gilligan: Sir, yes, sir, $person!\n";
+				} else {
+					print "Gilligan: Hi, $person!\n";
+				}
+			}
+			sub professor_greets {
+				my $person = shift;
+				print "Professor: By my calculations, you must be $person!\n";
+			}
+			my %greets = (
+				Gilligan => \&gilligan_greets,
+				Skipper => \&skipper_greets,
+				Professor => \&professor_greets,
+			);
+			my @everyone = sort keys %greets;
+			for my $greeter (@everyone) {
+				for my $greeted (@everyone) {
+					$greets{$greeter}->($greeted)
+						unless $greeter eq $greeted;
+				}
+			}
+		Anonymous Subroutines
+			You can create an anonymous sub with the following syntax:
+				$subref = sub {
+					some code;
+				}
+				$subref->('somevar');
+			The above could be simplified as:
+				%greets = (
+					Gilligan => sub { code; }
+					Professor => sub { code; }
+				}
+		Callbacks
+			A callback defines what to do when a subroutine reaches a particular place in an algorithim
+			File::Find takes a behavior, defined as a sub, as an argument:
+				use File::Find;
+				sub what_to_do {
+					print "$File::Find::name found\n";
+				}
+				my @starting_directories = qw(.);
+				find(\&what_to_do, @starting_directories);
+		Closures
+			A subroutine that can access all lexical variables that existed at the time it was
+				declared is called a closure.  In perl, a closure is a subroutine that references
+				a lexical variable that has gone out of scope.
+			The closure declaration increases the reference count of the referent, which keeps it alive
+		Returning a subroutine from a subroutine
+			Example:
+				use File::Find;
+				sub create_find_callback_that_counts {
+					my $count = 0;
+					return sub { print ++$count, ": $File::Find::name\n" };
+				}
+				my $callback = create_find_callback_that_counts();
+				find($callback, '.');
+			creating a sub in this way means that, since you return a reference to it, the vars inside
+				the sub are maintained over time.
+			Example usage:
+				print "my bin:\n";
+				find($callback, 'bin');
+				print "my lib:\n";
+				find($callback, 'lib');
+			will print consecutive numbers for bin, then continue the numbering sequence with lib
+			If we were to just invoke create_find_callback_that_counts() twice, we'd get a new
+				numbering sequence, as $count would reinitialize with each use.
+		Closure Variables as Inputs
+			possible to pass in values which will then act as closure vars:
+				use File::Find;
+				sub print_bigger_than {
+					my $minimum_size = shift;
+					return sub { print "$File::Find::name\n" if -f and -s >= $minimum_size };
+				}
+				my $bigger_than_1024 = print_bigger_than(1024);
+				find($bigger_than_1024, 'bin');
+			passed in variable remains available via the coderef for the life of the coderef.
+		Closure Variables as Static Local Variables
+			If a named sub accesses lexical variables, and those variables go out of scope, the named
+				sub retains a reference to the lexicals, as with anonymous subs.
+			Example:
+				{
+					my $count;
+					sub count_one { ++$count }
+					sub count_so_far { return $count }
+				}
+				count_one();	# up to 1
+				count_one();	# up to 2
+				count_one();	# up to 3
+				print count_so_far();	# prints 3
+			$count is not available to anything outside the block it was defined in
+			$count remains a static variable in that local context
+			blocks with local static vars must be declared before their subs are called
+			creation of the variable is done at compile time, but assignment is done at runtime
+			alternately, you can define them inside a BEGIN block
+Chapter 8: Filehandle References
+	The improved way
+		starting in perl 5.6, open can create a filehandle reference in a normal scalar variable
+		example:
+			my $log_fh;
+			open $log_fh, '>> castaways.log' or die "Could not open log: $!";
+		can't put a filehandle ref into a scalar with a value
+		declare the variable in the open statement:
+			open my $log_fh, '>> castaways.log' or die "Could not open log: $!";
+		to print to the filehandle, use it in place of a bareword filehandle:
+			print $log_fh "We have no bananas today!\n";
+		best practices recommendation:
+			print {$log_fh} "We have no bananas today!\n";
+		to create a read filehandle:
+			open my $fh, "castaways.log" or die "Could not open log: $!";
+		to read from it, use the scalar in place of the bareword:
+			while(<$fh>) {...}
+		When the scalar goes out of scope, perl closes the file.
+	The even better way
+		break the second argument, which contains the file and the open mode, into two parts:
+			open $log_fh, '>>', 'castaways.log' or die "Could not open castaways.log: $!";
+	IO::Handle
+		filehandle scalars are really objects
+		don't use IO::Handle directly, unless building a module
+	IO::File
+		subclasses IO::Handle
+		create a filehandle reference with the one argument form of the constructor
+			use IO::File;
+			my $fh = IO::File->new('> castaways.log') or die "Could not create filehandle: $!";
+		or use one of the other ways:
+			my $read_fh = IO::File->new('castaways.log', 'r');
+			my $write_fh = IO::File->new('castaways.log', 'w');
+		or use a bit mask for more granular control:
+			my $append_fh = IO::File->new('castaways.log', O_WRONLY|O_APPEND);
+		to close:
+			$fh->close;
+			undef $fh;
+	Anonymous IO::File Objects
+	IO::Scalar
+		to build up output in a string, rather than a file, use IO::Scalar
+		Example:
+			use IO::Scalar;
+			my $string_log = '';
+			my $scalar_fh = IO::Scalar->new(\$string_log);
+			print $scalar_fh "The Howells' private beach club is closed.\n";
+		To read from:
+			use IO::Scalar;
+			my $string_log = '';
+			my $scalar_fh = IO::Scalar->new(\$string_log);
+			while(<$scalar_fh>) {
+				next unless /Gilligan/;
+				print;
+			}
+	IO::Tee
+		to print to more than one place at a time
+		IO::Tee multiplexes output
+		example:
+			use IO::Tee;
+			$tee_fh = IO::Tee->new($log_fh, $scalar_fh);
+			print $tee_fh "The radio works in the middle of the ocean!\n";
+		if the first argument to tee is an input filehandle, we can use the same teed filehandle
+			to read from input and write to output.
+		Example:
+			use IO::Tee;
+			$tee_fh = IO::Tee->new($read_fh, $log_fh, $scalar_fh);
+			#	Reads from $read_fh
+			my $message = <$tee_fh>;
+			#	prints to $log_fh and $scalar_fh
+			print $tee_fh $message;
+	Directory Handle References
+		To create a directory handle reference:
+			opendir my $dh, '.' or die "Could not open directory: $!";
+			foreach my $file (readdir($dh)) {
+				print "Skipper, I found $file!\n";
+			}
+	IO::Dir
+		object oriented directory handle syntax:
+			use IO::Dir;
+			my $dir_fh = IO::Dir->new('.') || die "Could not open dirhandle! $!\n";
+			while( defined(my $file = $dir_fh->read) ) {
+				print "Skipper, I fould $file!\n";
+			}
+		not necessary to create a new directory handle to go through the list of files again, use rewind:
+			$dir_fh->rewind;
+
+Chapter 9: Practical Reference Tricks
+	Review of Sorting
+	Sorting with Indices
+		If we wanted to sort a list, but also know which items in the original list were in which
+			positions in the sorted list, we could use indirection, to return the sorted indices:
+		example:
+			my @input = qw(Gilligan Skipper Professor Ginger Mary_Ann);
+			my @sorted_positions = sort { $input[$a] cmp $input[$b] } 0..$#input;
+			print "@sorted_positions\n";
+		this gives us the order, but not the comparitive ranks.  thus:
+			my @ranks;
+			@ranks[@sorted_positions] = (0..$#sorted_positions);
+			print "@ranks\n";
+			for (0..$#ranks) {
+				print "$input[$_] sorts into position $ranks[$_]\n";
+			}
+	Sorting Efficiently
+		whenever you are trying to compare, for instance, return values, don't do something like:
+			sort {subroutine($a) <=> subroutine($b)}
+		as it's woefully inefficient.  insteady, try something like
+			for my $item (@list) {
+				@return_values[$item] = subroutine($item);
+			}
+			sort ($return_values[$a] <=> $return_values[$b]);
+	The Schwartzian Transform
+		we can stack all the previous steps together:
+			my @names =
+				map $_->[0],
+				sort { $b->[1] <=> $a->[1] }
+				map [ $_, subroutine($_) ], @castaways;
+		map and sort are RTL, so we read from bottom up
+		Take a list of @castaways, create some arrayrefs by running the subroutine (which returns an
+			arrayref), sort the list of arrayrefs, then extract the names from each arrayref.
+		Generic form:
+			my @output_data =
+				map $_->[0],
+				sort { SORT COMPARISON USING $a->[1] AND $b->[1] }
+				map [ $_, EXPENSIVE FUNCTION OF $_ ],
+				@input_data;
+	Multi-level Sort with the Schwartzian Transform
+		my @output_data =
+			map $_->[0],
+			sort { SORT COMPARISON USING $a->[1] AND $b->[1] or
+					ANOTHER USING $a->[2] AND $b->[2] or
+					YET ANOTHER USING $a->[3] AND $b->[3] }
+			map [ $_, SOME FUNCTION OF $_, ANOTHER, YET ANOTHER ],
+			@input_data
+	Recursively Defined Data
+		recursive algorithims should all have a base case, which is the empty set, or root
+	Building Recursively Defined Data
+		
+Chapter 10: Building Larger Programs
+	The Cure for the Common Code
+		need way to pull reusable code chunks out of your programs
+	Inserting Code with eval
+		you could do it with eval:
+			sub load_common_subroutines {
+				open MORE_CODE, 'navigation.pm' or die "navigation.pm: $!";
+				undef $/;	# enable slurp mode
+				my $more_code = <MORE_CODE>;
+				close MORE_CODE;
+				eval $more_code;
+				die $@ if $@;
+			}
+		but this is cumbersome
+	Using do
+		example:
+			do 'navigation.pm';
+			die $@ if $@;
+		brings the code in navigation.pm into the current program in its own scope block, at the
+			point that it's called
+		allows you to use code in many places, update in one
+		downside--breaking the include breaks all the code
+	Using require
+		do can bring things in multiple times, leading to warnings
+		require only brings something in once
+		any syntax error in the required file causes a die
+		last expression evaluated in teh file must return a true value
+		use 1 as last line of code if concerned
+	require and @INC
+		perl looks for libraries along a library search path
+		./ is part of the search path
+		search path is list of elements in @INC
+		perl -V to see contents of @INC
+		perl -le 'print for @INC' will display just @INC
+		to change @INC, use unshift, as in:
+			unshift @INC, '/new/dir/path';
+		perl will look to the new dir first (it's first in @INC now)
+		wrap it in a BEGIN block so that it happens before anything else
+		there's a pragma for this usage, since it's so common:
+			use lib qw( /new/dir/path);
+		also possible to use the FindBin module, which finds the full path to the script dir
+			use FindBin qw($Bin);
+		this puts the value of the script directory into $Bin
+		so you can now do:
+			use lib $Bin;
+		or
+			use lib "$Bin/lib";
+	Extending @INC with PERL5LIB
+		you can also set the PERL5LIB env var ahead of time to the directory name
+			setenv PERL5LIB /home/me/perl-lib
+		or
+			PERL5LIB=/home/me/perl-lib
+		or
+			export PERL5LIB=/home/me/perl-lib
+		Useful for personal use, but don't rely on this globally across multiple users
+	Extending @INC with -I
+		do something like:
+			perl -I/home/me/perl-lib /home/me/bin/perlprogram.pl
+	The Problem of Namespace Collisions
+		having two subs with the same names is bad
+		rather than name every sub explicitly with a prefix (file1_subroutineA, etc)
+		we can use
+	Packages as Namespace Separators
+		example package:
+			package Navigation;
+			sub turn_toward_heading { code }
+			sub turn_toward_port { code }
+		is, practically speaking, the same as:
+			sub Navigation::turn_toward_heading { code }
+			sub Navigation::turn_toward_port { code }
+		example usage:
+			#!/usr/bin/perl
+			require 'navigation.pm';
+			sub turn_toward_port {
+				Navigation::turn_toward_heading(compute_heading_to_island());
+			}
+			sub compute heading_to_island {
+				code
+			}
+		packages should start with a capital letter
+		package names can have multiple names separated by double colons:
+			Minnow::Navigation
+			Minnow::Food::Storage
+		most scalars, arrays, hashes, subroutines, and filehandle names are prefixed by the current pkg name
+		if you use a variable in a package, like:
+			package Navigation;
+			@homeport = (21.283, -157.842);
+		use it outside the package as:
+			@destination = @Navigation::homeport;
+		to use things in the main program explicitly, call with the main package name:
+			sub main::turn_toward_heading { code }
+	Scope of a Package Directive
+		all scripts act as though started with package main;
+		package directives remain in force until next package directive
+		current package is lexically scoped, similar to my variables
+		most libraries have only one package declaration, at the top of the file
+	Packages and Lexicals
+		lexical variables are not prefixed by the current package--package vars are always global
+		lexical variables are usually temporary and accessible for only a portion of the program
+
+Chapter 11: Introduction to Objects
+		perl object architecture relies heavily on packages, subroutines and references
+	Introducing the Method Invocation Arrow
+		Class->method invokes subroutine method in package Class
+		Basic Example:
+			sub Cow::speak {
+				print "a Cow goes mooo!\n";
+			}
+			sub Horse::speak {
+				print "a Horse goes neigh!\n";
+			}
+			sub Sheep::speak {
+				print "a Sheep goes baaah!\n";
+			}
+			Cow->speak;
+			Horse->speak;
+			Sheep->speak;
+		however, the parts are separable:
+			$beast = 'Cow';
+			$beast->speak;	# invokes the method
+		or as a loop:
+			my @pasture = qw(Cow Cow Horse Sheep Sheep);
+			foreach my $beast (@pasture) {
+				$beast->speak;
+			}
+	The Extra Parameter of Method Invocation
+		the invocation of
+			Class->method(@args)
+		attempts to invoke the subroutine Class::method as:
+			Class::method('Class', @args);
+		since we get the class name as the first parameter, or the only parameter with no args, we can
+		rewrite Sheep's speaking method as:
+			sub Sheep::speak {
+				my $class = shift;
+				print "a $class goes baaah!\n";
+			}
+		the other two methods can be rewritten similarly
+		common structure can be factored out even further
+	Calling a Second Method to Simplify Things
+		we can use a helper method called sound:
+			{	package Cow;
+				sub sound { 'moooo' }
+				sub speak {
+					my $class = shift;
+					print "a $class goes ", $class->sound, "!\n";
+				}
+			}
+			{ 	package Horse;
+				sub sound { 'neigh' }
+				sub speak {
+					my $class = shift;
+					print "a $class goes ", $class->sound, "!\n";
+				}
+			}
+		We can share the definition of speak between Cow and Horse via inheritance
+		A common "Animal" package:
+			{	package Animal;
+				sub speak {
+					my $class = shift;
+					print "a $class goes ", $class->sound,"!\n";
+				}
+			}
+		now we can cause each animal to inherit from Animal:
+			{	package Cow;
+				@ISA = qw(Animal);
+				sub sound { "moooo" };
+			}
+		In this case, when you invoke Cow->speak:
+			--perl constructs the argument list (in this case, just 'Cow')
+			--perl looks for Cow::speak
+			--Cow::speak isn't there, so perl checks for the inheritance array @Cow::ISA
+			--perl checks for speak inside Animal, as Animal::speak
+			--perl invokes Animal::speak with the already frozen argument list, as Animal::speak('Cow');
+	A Few Notes about @ISA
+		pronounced is-a, as in A "is a" B
+		it's an array, which means it can carry multiple values
+		typically, each @ISA has only one element, which provides a good inheritance tree
+		declaring @ISA by itself will generate warnings under use strict
+		good to declare it either as fully part of the package name:
+			@Cow::ISA = qw(Animal);
+		or as an implicitly named package variable:
+			package Cow;
+			use vars qw(@ISA);
+			@ISA = qw(Animal);
+		or, in perl 5.6+, you can use an our declaration:
+			package Cow;
+			our @ISA = qw(Animal);
+		if we're bringing in the class from outside, via an object oriented module, we can change:
+			package Cow;
+			use Animal;
+			use vars qw(@ISA);
+			@ISA = qw(Animal);
+		to just:
+			package Cow;
+			use base qw(Animal);
+		use base will set it at compile time, not runtime, like the other syntaxes
+	Overriding the Methods
+		example:
+			{	package Animal;
+				sub speak {
+					my $class = shift;
+					print "a $class goes ", $class->sound, "!\n";
+				}
+			}
+			{	package Mouse;
+				@ISA = qw(Animal);
+				sub sound { 'squeak' }
+				sub speak {
+					my $class = shift;
+					print "a $class goes ", $class->sound, "!\n";
+					print "[but you can barely hear it!]\n";
+				}
+			}
+		in this case, calling Mouse->speak has the effect of calling the speak sub created in Mouse
+		the sub created in Mouse overrides the sub in Animal
+		in this case, we've duplicated code via cut and paste, but we should have used inheritance
+	Starting the Search from a Different Place
+		you can start your search from a different place in the inheritance chain:
+			{	package Animal;
+				sub speak {
+					my $class = shift;
+					print "a $class goes ", $class->sound, "!\n";
+				}
+			}
+			{	package Mouse;
+				@ISA = qw(Animal);
+				sub sound { 'squeak' }
+				sub speak {
+					my $class = shift;
+					$class->Animal::speak(@_);
+					print "[but you can barely hear it!]\n";
+				}
+			}
+		using this syntax, start with Animal to find speak, and use all of Animal's inheritance chain
+			if not found immediately.  The first parameter is $class, so the found speak method gets
+			Mouse as its first entry and eventual works its way back to Mouse::sound for the details.
+		this is still not the best solution
+	The SUPER way of doing things
+		By changing Animal to SUPER in the invocation, we get a search of all of our superclasses
+			{	package Mouse;
+				@ISA = qw(Animal);
+				sub sound {'squeak'}
+				sub speak {
+					my $class = shift;
+					$class->SUPER::speak;
+					print "[but you can hardly hear it!]\n";
+				}
+			}
+		SUPER::speak means to look in the current package's ISA for speak, invoking the first one found
+	What to do with @_
+		to pass the argument list to the parent function, include @_ as the argument:
+			$class->SUPER::speak(@_);
+	Where we are so far
+		method arrow syntax;
+			Class->method(@args);
+		or equivalent:
+			my $beast = 'Class';
+			$beast->method(@args);
+		which constructs an argument list of
+			('Class', @args)
+		and attempts to invoke:
+			Class::method('Class', @args);
+
+Chapter 12: Objects with Data
+		In perl, an instance must be a reference to one of the built in types
+		an example using a scalar reference:
+			my $name = 'Mr. Ed';
+			my $tv_horse = \$name;
+			bless $tv_horse, 'Horse';
+		the bless operator turns $tv_horse into a reference to the instance specific data of a Horse instance
+		bless follows the reference tofind what variable it points to
+		then, it blesses that variable, turning $tv_horse into a Horse object
+		Now, $tv_horse is an instance of Horse
+		reference is otherwise unchanged, and can be used with traditional dereferencing operators
+	Invoking an Instance Method
+		The method arrow can be used on instances, as with package (class) names:
+			my $noise = tv_horse->sound;
+		to do this, perl:
+			--notes that $tv_horse is a blessed reference (an instance)
+			--constructs an argument list
+			--takes the class in which the instance was blessed (Horse)
+			--uses it to locate and invoke the method
+			--produces the invocation:
+				Horse::sound($tv_horse);
+		The first parameter is the instance, not the class name
+		if perl did not find Horse, it would walk up the @Horse::ISA list to try to find the method
+		The only difference between a class method and an instance method is whether the first parameter
+			is an instance or a class name
+	Accessing the Instance Data
+		Because we get the instance as the first parameter, we can now access instance specific data
+		example (adding a way to get the name):
+			{	package Horse;
+				@ISA = qw(Animal);
+				sub sound { 'neigh' }
+				sub name {
+					my $self = shift;
+					$$self;
+				}
+			}
+		calling for the name:
+			print $tv_horse->name, " says ", $tv_horse->sound, "\n";
+		@_ contains just $tv_horse, which is shifted into $self, then we return the dereferenced $self
+	How to Build a Horse
+		example (let the Horse class build a new horse):
+			{	package Horse;
+				@ISA = qw(Animal);
+				sub sound { 'neigh' }
+				sub name {
+					my $self = shift;
+					$$self;
+				}
+				sub named {
+					my $class = shift;
+					my $name = shift;
+					bless \$name, $class;
+				}
+			}
+		creating a new horse:
+			my $tv_horse = Horse->named('Mr. Ed');
+		bless not only blesses $name, it returns the reference to $name, which then goes into $tv_horse
+		convention is to use a single constructor named 'new'
+	Inheriting the Constructor
+		placing the constructor in a parent, then trying to call it, like
+			my $tv_horse = Horse->named('Mr. Ed');
+			$tv_horse->speak;
+		will result in a debugging value being returned, like
+			SCALAR(0xaca42ac)
+		because Animal::speak expects a class name as its first parameter, not an instance
+	Making a Method Work with Either Classes or Instances
+		need a way to detect whether the method is called on a class or an instance
+		use the ref operator, which returns the class name when used on a blessed reference:
+			sub name {
+				my $either = shift;
+				ref $either
+					? $$either				# it's an instance, return name
+					: "an unnamed $either"; # it's a class, return generic
+			}
+		fixing speak to use this code:
+			sub speak {
+				my $either = shift;
+				print $either->name, ' goes ', $either->sound,"\n";
+			}
+	Adding Parameters to a method
+		adding code to let the animals eat:
+			{	package Animal;
+				sub named {
+					my $class = shift;
+					my $name = shift;
+					bless \$name, $class;
+				}
+				sub name {
+					my $either = shift;
+					ref $either
+						? $$either
+						: "an unnamed $either";
+				}
+				sub speak {
+					my $either = shift;
+					print $either->name, ' goes ', $either->sound,"\n";
+				}
+				sub eat {
+					my $either = shift;
+					my $food = shift;
+					print $either->name, " eats $food.\n";
+				}
+			}
+			{	package Horse;
+				@Horse::ISA = qw(Animal);
+				sub sound { 'neigh' }
+			}
+			{	package Sheep;
+				@Sheep::ISA = qw(Animal);
+				sub sound { 'baaah' }
+			}
+		using that code:
+			my $tv_horse = Horse->named('Mr. Ed');
+			$tv_horse->eat('hay');
+			Sheep->eat('grass');
+		instance method with parameters gets invoked with the instance, then the list of parameters
+		instance methods form the API for an object
+	More Interesting Instances
+		easiest ways to store complex data in an instance is a hash
+		keys of the hash serve as names of parts of the object (instance or member vars)
+		creating a blessed hash reference:
+			my $lost = bless { Name => 'Bo', Color => 'white' }, Sheep;
+		fixing $lost->name to accept a different reference:
+			sub name {
+				my $either = shift;
+				ref $either
+					? $either->{Name}
+					: "an unnamed $either";
+			}
+		fixing $lost->named:
+			sub named {
+				my $class=shift;
+				my $name = shift;
+				my $self = { Name => $name, Color => $class->default_color };
+				bless $self, $class;
+			}
+		in each of the subclasses, define a default color:
+			sub default_color { 'white' }
+		define a backstop method in Animal, in case any of the subs doesn't define a default:
+			package Animal;
+			sub default_color { 'brown' }
+	A horse of a different Color
+		adding a method or two to get and set the color:
+			## in Animal
+			sub color {
+				my $self = shift;
+				$self->{Color};
+			}
+			sub set_color {
+				my $self = shift;
+				$self->{Color} = shift;
+			}
+		changing Mr. Ed's color:
+			my $tv_horse = Horse->named('Mr. Ed');
+			$tv_horse->set_color('black-and-white');
+			print $tv_horse->name, ' is colored ', $tv_horse->color, "\n";
+	Getting our Deposit Back
+		think about what any function that sets a value will return.  common choices:
+			--the updated parameter
+			--the previous value
+			--the object itself
+			--a success/fail code
+	Don't Look Inside the Box
+		it would be possible to get the object's color via $tv_horse->{Color}, but that would
+		break the encapsulation of the object--instance variable should only be accessed via object methods
+		you should keep your API consistent, even if internal methods change
+		create getters and setters, even if it's slower to write
+	Faster Getters and Setters
+		to save some time, you can eliminate the '$either=shift' lines, and replace them with $_[0]
+			sub color { $_[0]->{Color} }
+			sub set_color { $_[0]->{Color} = $_[1] }
+	Getters that Double as Setters
+		you can create a double use method by having it note whether it's gotten any parameters:
+			sub color {
+				my $self = shift;
+				if (@_) {
+					$self->{Color} = shift;
+				} else {
+					$self->{Color};
+				}
+			}
+		now we can say:
+			my $tv_horse = Horse->named('Mr. Ed');
+			$tv_horse->color('black-and-white');
+			print $tv_horse->name, ' is colored ', $tv_horse->color, "\n";
+		complicates the action of the getter, which is frequently called, also makes code potentially confusing
+	Restricting a Method to Class-only or Instance-only
+		ref lets us thrown an exception when a method is called incorrectly (constructor called on an instance)
+		example:
+			use Carp qw(croak);
+			sub instance_only {
+				ref(my $self = shift) or croak "instance variable needed";
+				...use $self as the instance...
+			}
+			sub class_oly {
+				ref(my $class = shift) and croak "class name needed";
+				...use $class as the class...
+			}
+		croak makes the error message look like it came from the spot where we called the method,
+			instead of where we issued the error
+		sample croak error:
+			instance variable needed at their_code line 1234
+		croak is an alternate for die, and carp is a replacement for warn
+
+Chapter 13: Object Destruction
+		an object is destroyed when nothing references it anymore.
+	Cleaning Up after Yourself
+		give objects a DESTROY method to have perl automatically perform cleanup on destruction
+		perl invokes 
+			$object->DESTROY
+		when an object is no longer referenced by anything
+		perl will search the inheritance chain for an appropriate DESTROY method, though not finding
+			one won't cause an error
+		example:	
+			## in Animal
+			sub DESTROY {
+				my $self = shift;
+				print '[', $self->name, " has died.]\n";
+			}
+		at the end of the program, all additional objects are destroyed, with their DESTROY methods run
+	Nested Object Destruction
+		if an object holds another object, perl DESTROYs the containing object first, then the contained
+		example of temp file cleanup:
+			## in Animal
+			use File::Temp qw(tempfile);
+
+			sub named {
+				my $class = shift;
+				my $name = shift;
+				my $self = { Name => $name, Color => $class->default_color };
+				my ($fh, $filename) = $fh;
+				$self->{temp_fh} = $fh;
+				$self->{temp_filename} = $filename;
+				bless $self, $class;
+			}
+			sub DESTROY {
+				my $self = shift;
+				my $fh = $self->{temp_fh};
+				close $fh;
+				unlink $self->{temp_filename};
+				print '[', $self->name, " has died.]\n";
+			}
+	Beating a Dead Horse
+		overriding the parent destructor is possible
+		call using SUPER::
+			## in Horse
+			sub DESTROY {
+				my $self = shift;
+				$self->SUPER::DESTROY;
+				print "[", $self->name, " has gone off to the glue factory.]\n";
+			}
+			my @tv_horses = map Horse->named($_), ('Trigger', 'Mr. Ed');
+			$_->eat('an apple') for @tv_horses;
+			print "End of program.\n";
+		always include a call to $self->SUPER::DESTROY in our destructors, even if no superclass exists
+	Indirect Object Notation
+		arrow syntax sometimes called 'direct object' syntax
+		indirect object syntax would replace this:
+			Class->method(@args);
+			$instance->instance_method(@other);
+		with
+			classmethod Class @args;
+			instancemethod $instance @other;
+		this is a bad practice!  do not do it.
+		the only things this will work with are a bareword, scalars, or braces denoting a block returning either
+			a blessed ref or a class name
+	Additional Instance Variables in Subclasses
+		using a hash as a data structure means subclasses can add data, and the super never needs to know about it
+		creating a RaceHorse class that extends Horse:
+			{	package RaceHorse;
+				our @ISA = qw(Horse);
+				sub named {
+					my $self = shift->SUPER::named(@_);
+					$self->{$_} = 0 for qw(wins places shows losses);
+					$self;
+				}
+			}
+		we pass all parameters to the superclass, returning a Horse object.  We've passed RaceHorse as the class, so
+			we get back a blessed RaceHorse instance.  Then, we add four instance variables, and return the modified RaceHorse
+		problematically, this structure accesses Horse instance variables directly.
+		alternately, we could use composition rather than inheritance to create the derived class (this will be slower)
+		access method examples:
+			{	package RaceHorse;
+				our @ISA = qw(Horse);
+				sub named {
+					my $self = shift->SUPER::named(@_);
+					$self->{$_} = 0 for qw (wins places shows losses);
+					$self;
+				}
+				sub won { shift->{wins}++; }
+				sub placed { shift->{places}++; }
+				sub showed { shift->{shows}++; }
+				sub lost { shift->{losses}++; }
+				sub standings {
+					my $self = shift;
+					join ', ', map "$self->{$_} $_", qw(wins places shows losses);
+				}
+			}
+			my $racer = RaceHorse->named('Billy Boy');
+			# record the outcomes:
+			$racer->won;
+			$racer->won;
+			$racer->won;
+			$racer->showed;
+			$racer->lost;
+			print $racer->name, ' has standings of: ', $racer->standings, ".\n";
+	Using Class Variables
+		say we want to be able to keep track of all the create animal objects--we entend the constructor as follows:
+			## in Animal
+			our %REGISTRY;
+			sub named {
+				my $class = shift;
+				my $name = shift;
+				my $self = { Name => $name, $color => $class->default_color };
+				bless $self, $class;
+				$REGISTRY{$self} = $self; # also returns $self
+			}	
+			sub registered {
+				return map { 'a '.ref($_)." named ".$->name } values %REGISTRY;
+			}
+	Weakening the Argument
+		the %REGISTRY variable also holds a reference to each animal.  If we toss the containing vars, but %REGISTRY
+			remains in scope, the contents do not get destroyed, since they're referenced
+		even if you modify the DESTROY sub, it won't get rid of the references unless explicitly called
+		solution is to use weak references
+		weak references don't count for reference counting (perl 5.6+)
+		need an external interface for the weaken routine, which can be imported from Scalar::Util module (perl 5.8+)
+		update the constructor as follows:
+			## in Animal
+			use Scalar::Util qw(weaken);
+
+			sub named {
+				ref(my $class = shift) and craok 'class only';
+				my $name = shift;
+				my $self = { Name => $name, Color => $class->default_color };
+				bless $self, $class;
+				$REGISTRY{$self} = $self;
+				weaken( $REGISTRY{$self} );
+				$self;
+			}
+		when all non-weakened refs are gone, perl will delete the thingy
+
+Chapter 14: Some Advanced Object Topics
+	UNIVERSAL methods
+		after perl traverses the @ISA tree looking for a method, it will look one more place: the UNIVERSAL class
+		if a method exists in UNIVERSAL, perl will use it, if no other match can be found
+		it is, essentially, the base class from which all objects derive.
+		use mostly as a set of backstop methods, and for debugging
+	Testing Our Objects for Good Behavior
+		UNIVERSAL comes preloaded with two very useful utility methods: isa and can
+		they are available to all objects
+		isa tests to see whether a given class or instance is a member of a given class or a member of a class that
+			inherits from the given class
+		example:
+			if (Horse->isa('Animal')) {		# does Horse inherit from Animal?
+				print "A Horse is an Animal.";
+			}
+			my $tv_horse = Horse->named('Mr. Ed');
+			if ($tv_horse->isa('Animal')) {
+				print $tv_horse->name, " is an Animal.\n";
+				if ($tv_horse->isa('Horse')) {
+					print 'In fact, ', $tv_horse->name, " is a Horse.\n";
+				} else {
+					print "...but it's not a Horse.\n";
+				}
+			}
+		sorting all of a particular type of object out of an array:
+			my @horses = grep $_->isa('Horse'), @all_animals;
+		don't use ref in place of isa unless you really only want that particular class--it won't catch subclasses
+		isa only works on blessed references or scalars that look like class names
+		instead, call like:
+			if (UNIVERSAL::isa($unknown_thing, 'Animal')) {
+				...it's an animal...
+			}
+		which will run without an error
+		alternately run with eval:
+			if (eval ( $unknown_thing->isa('Animal') ) ) {
+				...it's an animal...
+			}
+		can lets your test for acceptable behaviors:
+			if ($tv_horse->can('eat')) {
+				$tv_horse->eat('hay');
+			}
+		robust solution:
+			if (eval ($tv_horse->can('eat') ) ) { ... }
+		any method in universal means that all objects ->can do that method
+	AUTOLOAD as a Last Resort
+		after perl searches the @ISA tree and the UNIVERSAL class, it will look back through the same heirarchy for
+			a method named AUTOLOAD
+		if AUTOLOAD is found, it is called in place of the original method
+		original method name is passed into package variable named $AUTOLOAD
+		one reason to use AUTOLOAD is to defer compilation of a large subroutine
+		example:
+			## in Animal
+			sub AUTOLOAD {
+				our $AUTOLOAD;
+				(my $method = $AUTOLOAD) =~ s/.*:://s; # remove package name
+				if ($method eq 'eat') {
+					## define eat:
+					eval q{
+						sub eat {
+							... long definition goes here...
+						}
+					}
+					die $@ if $@;
+					goto &eat;
+				} else {
+					croak "$_[0] does not know how to $method\n";
+				}
+			}
+	Using AUTOLOAD for Accessors
+		if you have a bunch of getters or setters that are extremely similar, you can set them up in an AUTOLOAD:
+			sub AUTOLOAD {
+				#	set up the element names in an array (these are hash keys for the object's member vars)
+				my @elements = qw(color age weight height);
+				our $AUTOLOAD;
+				#	match the supplied method call against the list
+				if ($AUTOLOAD =~ /::(\w+)$/ and grep $1 eq $_, @elements) {
+					my $field = ucfirst $1;
+					{
+						no strict 'refs';
+						#	glob notation installs a wanted subroutine as defined by the coderef closure
+						#	which fetches the corresponding key from the object hash
+						*{$AUTOLOAD} = sub { $_[0]->{$field} };
+					}
+					goto &{$AUTOLOAD};
+				}
+	Creating Getters and Setters More Easily
+		The CPAN module Class::MethodMaker makes creating getters and setters easier
+		Example simplified animal class:
+			package Animal;
+			use Class::MethodMaker
+				new_with_init => 'new',
+				get_set => [ -eiffel => [ qw(color height name age) ] ],
+				abstract => [ qw(sound) ]
+			;
+			sub init {
+				my $self = shift->new;
+				$self->set_name(shift);
+				$self;
+			}
+			sub speak {
+				my $self = shift;
+				my $food = shift;
+				print $self->name, " eats $food\n";
+			}
+			sub default_color {
+				'brown';
+			}
+	Multiple Inheritance
+		if you put mulitple values into @ISA, perl will traverse them in the order they're supplied in
+		conflicting methods or values among parent classes can cause problems
+
+Chapter 15: Exporter
+	What use is doing
+		perl thinks of the use list as a kind of BEGIN block wrapped around a require and a method call
+		these two statements are equivalent:
+			use Island::Plotting::Maps qw( load_map scale_map draw_map );
+			BEGIN {
+				require Island::Plotting::Maps;
+				Island::Plotting::Maps->import( qw( load_map scale_map, draw_map ) );
+			}
+		:: is converted to the native directory separator
+		perl checks @INC, looking for that directory structure
+		the subs defined in the module's package get into the user's package via a routine called import in the module's package
+		perl passes the entire import list to the import routine
+	Importing with Exporter
+		to put an import routine into your package, use Exporter:
+			use base qw(Exporter);
+		the import call to your package then inherits upwards to the Exporter class
+	@EXPORT and @EXPORT_OK
+		import examines the @EXPORT variable in the module's package to determine which variables it exports by default
+		@EXPORT defines a list of available subs, and provides a default list
+		@EXPORT_OK holds the list of things that are not available in the default, but should be available on ask
+		anything not in those lists must be accessed with a fully qualified method name
+	%EXPORT_TAGS
+		to make functions or variables available as a group, you can use tags
+		on import, tags look like:
+			use Fcntl qw( :flock );		# import all flock constants
+		some things are available automatically:
+			use Blah::Pkg qw(:DEFAULT);
+		results in the same thing as no arguments (@EXPORT list)
+		in our modules, we use the %EXPORT_TAGS hash to define the tags.  hash key is name of the tag, value is anon array of symbols:
+			package Navigate::SeatOfPants;
+			use base qw(Exporter);
+			our @EXPORT		= qw(guess_direction_toward);
+			our @EXPORT_OK	= qw(
+								get_north_from_professor
+								according_to_GPS
+								ask_the_skipper_about
+								);
+			our %EXPORT_TAGS = (
+					all			=> [ @EXPORT, @EXPORT_OK ],
+					gps			=> [ qw (according_to_GPS) ],
+					direction	=> [ qw(
+								get_north_from_professor
+								according_to_GPS
+								guess_direction_toward
+								ask_the_skipper_about
+								) ],
+					);
+	Exporting in a Primarily OO Module
+		typically, an OO module exports nothing, as you'll just instantiate members of a class, or call class methods directly
+		to make sure that a chain of classes has the ability to be imported, make sure that the base class uses Exporter,
+			and that the derived classes use the base class.
+		reserved method names that can't be used by the OO module (reserved via Exporter):
+			export_to_level, require_version, export_fail, unimport
+		we may want to export a named constructor or management routine from an OO module
+	Custom Import Routines
+		example:
+			sub import {
+				no strict 'refs';
+				my $debug = grep { $_ eq 'debug' } @_;
+				my( $package, $file, $line ) = caller;
+				warn "I was called by $package in $file\n" if $debug;
+				for (qw(filename basename fileparse)) {
+					*{$package . "::$_"} = \&$_;
+				}
+			}
+
+Chapter 16: Writing a Distribution
+	There's More Than One Way To Do It
+		a distribution contains:
+			--the module or collection of related modules
+			--all the support files required to document, test, ship and install the module
+		there are a number of module creation systems available, like Module::Starter and ExtUtils::ModuleMaker
+		process is the same:
+			run a perl script that creates a file which pulls together all the info it needs to prep and install the code
+			then we run tests, and then install
+		Module::Build exists as a make replacement (since make may not be available everywhere)
+	Using h2xs
+		h2xs takes a module file, and makes it an installable, with associated support files
+		MANIFEST
+			the MANIFEST file contains the list of files that the distro will contain
+			when we bundle the archive, all the files in MANIFEST go into the archive
+			when the end user unpacks, the module installer checks for all files in MANIFEST
+			h2xs creates a Makefile.PL--which we then run with perl Makefile.PL to give somthing to make to work from
+			invoke make with
+				make tardist
+			once you have a makefile--alternately, do
+				make ziptest
+		README
+			usually contains a brief description, install instructions, and licensing details
+			CPAN archiving tools will pull out README files to be searched
+		Changes
+			changes tracks the evolution of the module
+		META.yml
+			gives the module information in a human-readable form which is also easy to parse
+		Prototype Module Itself
+			starts with package declaration
+			continues with pragmas
+			exporter if applicable
+			inheritance if applicable
+			options for Exporter
+			version number expressed as:
+				our $VERSION = '0.01';
+			three part version string is recommended
+			your code goes here, under # Preloaded methods go here. comment
+			end with a positive return value, like '1;'
+	Embedded Documentation
+		after the mandatory true value at the end of the file, you'll find __END__
+		which stops the perl parser, allowing embedded documentation to follow
+		documentation is in POD format
+		check perlpod manpage for details
+		lines beginning with = switch from perl parser to POD parser, so docs can be interspersed with code
+		a line starting with =cut switches back to perl parser
+	Controlling the Distribution with Makefile.PL
+		h2xs generates a Makefile.PL, which can then be used with make
+		the PREREQ_PM setting holds the names of any non-core modules that your module needs
+	Alternate Installation Locations (PREFIX=...)
+		the makefile will assume that the module will be installed in the system wide perl directory
+		use a PREFIX value on the command line to change the install location:
+			perl Makefile.PL PREFIX=~/testing
+		will install scripts to $PREFIX/bin, manpages in $PREFIX/man, and libraries in $PREFIX/lib/site_perl
+	Trivial make test
+		to test for compilation, use make test
+		what happens in a make test:
+			--the .pm file is copied to the testing staging area
+			--perl that invoked Makefile.PL is called to run the test harness
+			--test harness runs all files in the t subdirectory that end in .t in their natural order
+			--there will be a file called 1.t created by h2xs, which attempts to compile the module
+	Trivial make install
+		make test indicates that the module is able to compile, so you can install it
+		make install installs into the PREFIX directory, and adds a manpage by converting POD code to man
+	Trivial make dist
+		make a single distribution file with make dist
+		make dist will create a .tar.gz file with the $VERSION number included
+	Using the Alternate Library Location
+		you can specify a library location to perl via any of:
+			use lib '/path/to/lib';
+			$ perl -Mlib=/path/to/lib programname
+			$ perl -I /path/to/lib programname
+			$ PERL5LIB=/path/to/lib; export PERL5LIB
+			$ ./programname
+		use lib is preferable, since it requires no additional options at execution
+
+Chapter 17: Essential Testing
+	A Simple Test Script
+		most tests compare the first argument, which is the result we get, to the second, which is what's expected:
+			#!/usr/bin/perl
+			use Test::More tests => 4;
+			ok( 1, '1 is true' );
+			is( 2 + 2, 4, 'The sum is 4' );
+			is( 2 * 3, 5, 'The product is 5' );
+			isnt( 2 ** 3, 6, "The result isn't 6" );
+			like( 'Alpaca Book', qr/aplaca/i, 'I found an alpaca!' );
+	The Art of Testing
+		example test of the sqrt function:
+			#!/usr/bin/perl
+			use Test::More tests => 6;
+			is( sqrt(  0), 0, 'The square root of   0 is   0');
+			is( sqrt(  1), 1, 'The square root of   1 is   1');
+			is( sqrt( 49), 7, 'The square root of  49 is   7');
+			is( sqrt(100),10, 'The square root of 100 is  10');
+			is( sqrt(0.25), 0.5, 'Te square root of 0.25 is 0.5');
+			my $product = sqrt(7) * sqrt(7);
+			ok( $product > 6.999 && $product < 7.001, "The product [$product] is around 7" );
+		test every line of code.
+	The Test Harness
+		makefile uses the Test::Harness module to run tests, watch output, and report results
+		tests live in the 't' directory at the top level of the distribution
+		test files end in '.t'
+		test harness invokes each file separately, so a die or exit only terminates current file
+		print 'bail out' to STDOUT to quit testing
+		first thing a test file announces to the test harness is the number of tests, as a range string 1..N
+		harness uses the number to know whether file is terminating early
+		send to stdout one line per test
+		lines start with 'ok' or 'not ok'
+		test counting, and 'ok' printing come through Test::More
+	Writing Tests with Test::More
+		ok() prints 'ok' or 'not ok' based on the truth of its first argument
+		optional second argument is the test name
+		is() compares two values, first and second args (third arg is name)
+		isnt() also compares two values
+		cmp_ok() tests for values with a variable tolerance:
+			use Test::More 'no_plan';
+			my $divide = 5/3;
+			cmp_ok(abs($divide - 1.666667), '<', 0.001, '5 / 3 should be approx 1.666667');
+		like allows regex comparisons:
+			my $subtract = -3 + 3;
+			like($subtract, qr/^-?0$/, '-3 + 3 = = 0');
+		unlike() also exists
+	Testing Object-Oriented Features
+		for objects, we want to make sure we get an object when we call the constructor:
+			use Test::More 'no_plan';
+			use Horse;
+			my $trigger = Horse->named('Trigger');
+			isa_ok($trigger, 'Horse');
+			isa_ok($trigger, 'Animal');
+			can_ok($trigger, $_) for qw(eat color);
+	A Testing To-Do List
+		you can write tests before the code that will make them work, and label them as TODO:
+			use Test::More 'no_plan';
+			use_ok('Horse');		#	tests for component loading
+			my $tv_horse = Horse->named('Mr. Ed');
+
+			TODO: {
+				local $TODO = 'haven't taught Horses to talk yet';
+				can_ok($tv_horse, 'talk';	# he can talk!
+			}
+			is($tv_horse->name, 'Mr. Ed', 'I am Mr. Ed!');
+	Skipping Tests
+		to skip tests, create a test block and label it with SKIP:
+			SKIP: {
+				skip 'Mac::Speech is not available', 1 unless eval { require 'Mac::Speech' };
+				ok($tv_horse->say_it_aloud('I am Mr. Ed');
+			}
+		only use skip to make tests optional based on parameters which may or may not be available
+		use TODO for things that don't work right yet
+	More Complex Tests (Multiple Test Scripts)
+		you can add multiple test scripts to t/
+		control the test order via the filename, as tests are executed in sort order:
+			01-core.t, 02-basic.t, 03-advanced.t, 04-saving.t...
+Chapter 18: Advanced Testing
+	Testing Large Strings
+		use the is_string function, whose output will show only where the strings compared begin to differ:
+			#!/usr/bin/perl
+			use Test::More 'no_plan';
+			use Test::LongString;
+			is_string(
+					"The quick brown fox jumped over the lazy dog\n" x 10,
+					"The quick brown fox jumped over the lazy dog\n" x 9 .
+					"The quick brown fox jumped over the lazy campe",
+					);
+	Testing Files
+		easy to mess up file tests (! versus straight test)
+		use Test::File, as intention is spelled out in the routine name
+			use Test::More 'no_plan';
+			use Test::File;
+			file_exists_ok( 'minnow.db' );
+			file_not_exists_ok( 'minnow.db' );
+			file_readable_ok( $file );
+			file_min_size_ok( $file, 400 );
+			file_mode_is( $file, 0775);
+	Testing STDOUT or STDERR
+		the STDOUT filehandle is secretly reassigned by Test::More so that output goes to the test harness correctly
+		to use it, you could open STDOUT, print to it, close it
+		easier to use Test::Output:
+			#!/usr/bin/perl
+			use strict;
+			use Test::More "no_plan";
+			use Test::Output;
+			sub print_hello { print STDOUT "Welcome Aboard!\n" }
+			sub print_error { print STDERR "There's a hole in the ship!\n" }
+			stdout_is( \&print_hello, "Welcome Aboard\n");
+			stderr_like( \&print_error, qr/ship/ );
+		all the functions take a coderef as their first argument
+		if the code is short enough, you can skip the sub reference definition and pass an anonymous coderef
+		or use an inline code block
+		additionally, you can use Test::Warn to test warning output:
+			#!/usr/bin/perl
+			use Test::More "noplan";
+			use Test::Warn;
+			sub add_letters { "Skipper" + "Gilligan" }
+			warning_like ( add_letters( ) }, qr/non-numeric/;
+		Test::Warn uses the inline block form for including code to test
+		Test::NoWarnings includes a single test, which watches for warnings and tells you about them, so they stay out of logs
+	Using Mock Objects
+		Test::MockObject module creates "pretend" objects
+		use when you don't want to test object A, but you need to test B, which takes something from A as an arg
+		example:
+			#!/usr/bin/perl
+			use Test::More 'no_plan';
+			use Test::MockObject;
+			# my $Minnow = Real::Object::Class->new( ... );
+			my $Minnow = Test::MockObject->new();
+			$Minnow->set_true( 'engines_on' );
+			$Minnow->set_true( 'has_maps' );
+			$Minnow->set_false( 'moored_to_dock' );
+			ok( $Minnow->engines_on, "Engines are on" );
+			ok( ! $Minnow->moored_to_dock, "Not moored to the dock" );
+			my $Quartermaster = Island::Plotting->new(
+							ship => $Minnow
+							# ...
+							)
+			ok( $Quartermaster->has_maps, "We can find the maps" );
+		if you need a method that returns a more complex value, or that mimics something like a db connection:
+			#!/usr/bin/perl
+			use Test::More 'no_plan';
+			use Test::MockObject;
+			my $db = Test::MockObject->new( );
+			# $db = DBI->connect( ... );
+			$db->mock(
+					list_names => sub { qw( Gilligan Skipper Professor ) }
+					);
+			my @names = $db->list_names;
+			is( scalar @names, 3, 'Got the right number of results' );
+			is( $names[0], 'Gilligan', 'The first result is Gilligan' );
+			print "the names are @names\n";
+	Testing POD
+		ust the Test::Pod module to look for POD errors
+		example:
+			use Test::more;
+			eval "use Test::Pod 1.00";
+			plan skip_all => "Test:: Pod 1.00 required for testing
+
+			POD" if $@;
+			all_pod_files_ok( );
+		if the module fails to install, we skip all tests, if it installs ok, we jump to the POD test
+		with arguments, all_pod_files_ok() will check only specific files
+		If we want to ensure that we documented all of our methods, we can use Test::Pod::Coverage
+		looks at embedded docs and tells us which subroutine names don't have corresponding docs entries
+		example:
+			use Test::More;
+			eval "use Test::Pod::Coverage";
+			plan skip_all => "Test::Pod::Coverage required for testing pod coverage" if $@;
+			plan tests => 1;
+			pod_coverage_ok("Island::Plotting::Maps");
+	Coverage Testing
+		statement coverage tells us how many of the statements in our code we execute during a run
+		branch coverage tells us how many of the decision paths we actually follow
+		read docs in Devel::Coverage::Tutorial for more info
+
+Chapter 19: Contributing to CPAN
+	Getting Prepared
+		to contribute to CPAN, you need:
+			--a module
+			--a Perl Authors Upload Server ID
+		make sure your package names don't collide with other modules
+		look at the list archives at http://lists.perl.org
+	Preparing Your Distribution
+		create a README file
+		make and test a Makefile.PL or Build.PL
+		bring your MANIFEST up to date
+		use a logical distribution version number
+		have lots of tests
+		invoke make disttest
+		basically, be prepared to eat your own dog food
+	Uploading Your Distribution
+		visit the PAUSE upload page at https://pause.perl.org/pause/authenquery?ACTION=add_uri
+	Announcing the Module
+		module will get inserted a bunch of places
+		consider posting to usenet comp.lang.perl.announce
+	Testing on multiple platforms
+		test yourself, but volunteers will test your uploads as well
+	Consider Writing an Article or Giving a Talk
+		

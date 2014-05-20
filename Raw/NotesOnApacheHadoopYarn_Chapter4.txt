@@ -1,0 +1,296 @@
+Apache Hadoop YARN: Moving beyond MapReduce and Batch Processing with Apache Hadoop 2
+By: Arun Murthy; Jeffrey Markham; Vinod Vavilapalli; Doug Eadline
+Publisher: Addison-Wesley Professional
+Last Updated: 02-FEB-2014
+Pub. Date: March 21, 2014 (Estimated)
+Print ISBN-10: 0-321-93450-4
+Print ISBN-13: 978-0-321-93450-5
+Pages in Print Edition: 336
+
+Chapter 4: Function Overview of YARN Components
+  * YARN has three main components:
+    - ResourceManager (RM), arbitrator of all cluster resources, made of:
+      .. A pluggable scheduler
+      .. an ApplicationsManager that manages user jobs on the cluster
+    - NodeManager (NM), per node process that manages user jobs and workflow
+    - ApplicationMaster, manages the user job life cycle
+
+Architecture Overview
+  * The ResourceManager runs as a scheduling daemon on a dedicated machine
+  * RM is the central authority arbitrating resources between competing apps
+  * RM dynamically allocates resource Containers to apps to run on nodes
+  * A Container is a logical bundle of resources (memory, cores, etc), bound
+    to a particular cluster node
+  * To enforce/track assignments, the RM interacts with the node's NodeManager
+  * Communications between RM and NM are heartbeat based for scalability
+  * NM is responsible for local monitoring of resources, faults, and container
+    lifecycle management (starting/killing jobs)
+
+  * User apps are submitted to the RM via a public protocol
+  * Apps go through an admission control phase
+  * Accepted applications are passed to the scheduler to be run
+  * When the scheduler has resources to fulfill the request, the app goes from
+    ACCEPTED state to RUNNING state
+  * Moving to RUNNING state involves allocating a Container for the single
+    ApplicationMaster and spawning it on a node in the cluster
+  * The AM is sometimes called "container 0", and does not itself have 
+    additional resources to dole out--it must request additional containers
+  * The AM is responsible for:
+    - dynamically increasing and decreasing resource consumption (Containers)
+    - managing the flow of execution
+    - handling faults and computation skew
+  * The AM is designed to run arbitrary programming code in any language, since
+    all communication with the RM and NM are encoded in protocol buffers
+  * Typically an AM needs to use processing on several nodes--to do that, it
+    issues resource requests to the RM specifying locality/container props
+  * When a resource is schedule for an AM, the RM generates a lease for the
+    resource, which is acquired by a subsequent AM heartbeat
+  * The AM presents the container lease to the NM
+  * Running containers communicate with the AM through app specific protocols
+
+ResourceManager
+  * In YARN, the RM is primarily limited to scheduling/arbitrating resources
+  * Doesn't do per-application state management
+  * The scheduler only handles an overall resource profile for each app
+  * Doesn't do static assignments of map/reduce slots, because it treats the
+    cluster as a resource pool
+  * Also has the ability to symmetrically request resources back from a 
+    running application
+  * In YARN, ResourceRequests can be strict or negotiable, which gives AMs
+    a lot of flexibility on fulfilling requests
+  * RM failures are significant events, will affect cluster availability
+  * As the RM recovers state after a failure, it will restart running AMs
+  * In contrast to the 1.0 JobTracker, the RM is NOT responsible for:
+    - tracking application execution flow
+    - task fault tolerance
+    - providing access to the application status (servlet)
+    - tracking previously executed jobs (delegated to JobHistoryService)
+
+
+YARN Scheduling Components
+  * Scheduling in YARN is pluggable
+  * You can choose from FIFO, Capacity, or Fair Share schedulers, set in
+    yarn-default.xml/yarn-site.xml
+
+  FIFO Scheduler
+    * from JT in v1, first come first served job queue, no priority or scope
+    * Practical for small workloads
+
+  Capacity Scheduler
+    * Lets multiple groups share a large cluster
+    * Has one or more queues with predetermined fractions of total capacity
+    * Guarantees a minimum resource allocation for each queue
+    * Each queue has strict access control lists
+    * Queue definitions can be changed at runtime by admins
+    * Queues cannot be deleted at runtime, but may be added
+    * Queues can be stopped at runtime, preventing new jobs from adding
+    * Can support memory intensive apps that make higher than normal memory
+      requests. Arbitrated by the scheduler with info from the NodeManagers
+    * Works best when workloads are well known
+    * Each queue should be assigned a minimal capacity that is less than the
+      maximal expected work load.
+    * Within queues, scheduling is largely FIFO
+
+  Fair Scheduler
+    * Currently experimental and under development.
+    * Assigns resources to applications such that all get, on average, and
+      equal share of resources over time.
+
+Containers
+  * A container is a collection of physical resources like RAM, cores, disks,
+    etc on a single node.
+  * There can be multiple containers on a single node.
+  * Every node is considered to be composed of multiple containers of minimum
+    size of memory.
+  * The AM can request any container as a multiple of the minimum memory size
+  * A container represents a resource (memory, CPU) on a single node in a 
+    given cluster, supervised by the NodeManager, scheduled by the RM
+  * Each app starts as an AM (itself a container), which negotiates with the
+    ResourceManager for more containers.
+  * Container requests/releases can be dynamic at runtime--a MR job can
+    request a certain amount of mapper Containers and release them when they
+    finish, then request more reducer containers.
+
+NodeManager
+  * NM is the YARN per-node worker agent
+  * Heartbeats to RM, oversees app container lifecycles, tracks node health,
+    log management, auxillary services
+  * NM registers with RM on startup, sends status messages with heartbeats,
+    waits for instructions. Primary goal is to manage app containers assigned
+    to it by the RM.
+  * YARN Containers are described by a "container launch context" (CLC)
+  * A CLC includes a map of env variables, dependencies in remote storage,
+    security tokens, payloads for NM services, and command necessary to
+    create the process.
+  * When the NM validates the authenticity of the container lease, the NM
+    configures the environment for the container, including init of its
+    monitoring subsystem with the app specified resource constraints
+  * NM will kill containers as directed by the RM
+
+ApplicationMaster
+  * The AM coordinates an app's execution in the cluster
+  * Each app has a unique AM tasked with negotiating resources (containers)
+    from the RM and working with NMs to execute and monitor tasks
+  * After the AM is started as a container, it periodically heartbeats to
+    to the RM to affirm health and update resource demands
+  * The AM builds a model of its requirements, encodes its preferences and
+    constraints in a heartbeat message to the RM
+  * In response to subsequent heartbeats, the AM will get a lease on Containers
+    bound to an allocation of resources
+  * Depending on the containers it gets, the AM may update its execution plan
+
+Client Application Life Cycle
+  * Earlier Hadoop versions had static, predefined Map and Reduce slots
+  * Slots could not be shared.
+  * YARN addresses the inefficiencies of static allocations
+  * Resources are requested as containers, representing non-static attributes
+  * YARN currently has attribute support for RAM and CPU
+  * Only a min and max are defined, and AMs can request containers with values
+    that are multiples of those minimums
+
+  Client Resource Request
+    * A YARN app starts with a client resource request.
+    * Client notifies the RM it wants to submit an application
+    * RM responds with an ApplicationId and info about the cluster capabilities
+
+  Application Master Container Allocation
+    * Client responds with an "Application Submission Context"
+    * The context contains the ApplicationId, user, queue, etc need to start AM
+    * Also a Container Launch Context (CLC) is sent to the RM
+    * CLC provides resource requirements, job files, security tokens, etc
+      that are needed to launch an application Container on a node
+    * Once the app is submitted, the client can request the RM kill the app
+      or give status about the job
+
+    * When the RM gets the submission context, it schedules an available
+      container for the AM (container-0)
+    * If there are no applicable containers, the request waits
+    * If a suitable container is found the RM contacts the appropriate NM and
+      starts the ApplicationMaster
+    * During that step, the AM RPC port and tracking URL are established
+    * The RM sends info about the capabilities of the cluster to the AM
+    * The AM decides how to use the available capabilities, requesting a number
+      of containers.
+    * The container requests can be very specific, with multiples of resource
+      minimums (extra memory or cpu)
+    * The RM will respond based on scheduling policies to the request with 
+      Container resources assigned to the AM
+    * As the job runs, heartbeat and progress info is sent from the AM to RM
+    * During heartbeats, AM can request and release Containers
+    * When job finishes, the AM sends a Finish message to the RM and exits
+
+  Application Master-Container Manager Communication
+    * The RM has handed off control of assigned NMs to the ApplicationMaster
+    * The AM will contact its assigned NMs and provide them with a CLC that
+      includes environment variables, dependencies in remote storage, security
+      tokens, and commands to start the process.
+    * When the container starts, all data files and executables are copied to
+      local storage on the node.
+    * Dependencies are shared between containers running the application.
+    * When all Containers have started, their status can be checked by the AM
+    * The RM is absent from the application process, is free to schedule/monitor
+      other resources
+    * The RM can tell NMs to kill Containers
+    * Kill events can happen when the AM informs the RM of completion, or the
+      RM needs nodes for other apps, or the Container exceeds its limits
+    * On kill, the NM cleans up the local working directory
+    * When a job is done the AM informs the RM the job completed successfully
+    * The RM then tells the NM to aggregate logs and clean up container specific
+      files on the node
+    * The NMs are also instructed to kill remaining containers including the AM
+      if they have not already exited
+
+
+Managing Application Dependencies
+  * YARN apps work by running containers that map to processes on the 
+    underlying OS
+  * Containers have dependencies on files for execution and these files are
+    either required at startup or may be needed during app execution
+  * To launch a java program as a container, you need a jar file, maybe more
+    jar files as dependencies
+  * Rather than force every app to access files remotely every time, or manage
+    files themselves, YARN gives apps the ability to localize the files
+  * When starting a container, an AM can specify all files that a container
+    will require and thus should be localized
+  * Once specified, YARN takes care of the localization
+
+  LocalResources Definitions
+    Localization  
+      -- Process of copying/downloading remote resources to local fs
+    LocalResource
+      -- Represents a file/library required to run a container
+      -- For each LR, Apps can specify the following:
+        URL -- remote location of the LocalResource
+        Size -- in bytes
+        Time Stamp -- last modified time on the remote system
+        LocalResourceType -- type of resource for NM: FILE, ARCHIVE, PATTERN
+        Pattern -- Pattern to extract entries from the archive (type PATTERN)
+        LocalResourceVisiblity -- specific visibility of a localized resource,
+          can be PUBLIC, PRIVATE, or APPLICATION
+      -- A container can request and use any kind of files for localization,
+         as long as they are treated as read only by the container.
+      -- Examples include:
+        Libraries like a jar file
+        Config files for configuring the container once started
+        Static dictionary file
+      -- Bad candidates for LRs:
+        Shared files that external components may update in future
+        Files that apps want to update directly
+        File through wich an app plans to share updated info with external svcs
+    ResourceLocalizationService
+      -- The service inside NodeManager responsible for downloading/distributing
+         /organizing various file resources needed by containers.
+      -- Tries to distribute files across all available disks
+      -- Enforces access control restrictions of the downloaded files and puts
+         usage limits on them.
+    DeletionService
+      -- Service inside the NM that deletes local paths as instructed
+    Localizer
+      -- Thread or process that does localization.
+      -- Two types: PublicLocalizer and ContainerLocalizers
+    LocalCache
+      -- NM maintains/manages several local caches of files downloaded
+
+  LocalResource Time-Stamps
+    * The NM tracks the last modified timestamp of each LocalResource before
+      a container starts.
+    * Before it downloads, the NM checks to see if the file has changed, 
+      ensuring a consistent view of the LocalResources
+    * After copy, the local file loses all connection to the remote other than
+      the URL. Changes to the remote are NOT tracked
+    * YARN will fail containers that depend on modified remote resources, to
+      prevent inconsistencies
+    * The AM specifies the resource time-stamps to a NodeManager while starting
+      any container on that node.
+    * For the container running the AM, the client has to populate the 
+      timestamps for all resources the AM needs
+    * For an MR app, the JobClient determines modification-timestamps of the
+      resources needed by the MR ApplicationMaster
+    * The AM then sets the timestamps for the resources needed by MR tasks
+
+  LocalResource Types
+    * FILE -- A regular file, text or binary
+    * ARCHIVE -- An archive, automatically unarchived by the NM. Can be jar,
+      tar, tar.gz, or zip as of now
+    * PATTERN -- A hybrid of ARCHIVE and FILE types. The original file is 
+      retained, and at the same time part of the file is unarchived on the
+      local filesystem during localization. Pieces to extract determined by
+      the pattern field in the LocalResource spec. Only works for jar files.
+
+  LocalResource Visibilities
+    * PUBLIC -- Accessible for containers of any user.
+    * PRIVATE -- Shared among all apps of the same user on the node.
+    * APPLICATION -- Shared only among containers of the same app on the node
+
+  Specifying LocalResource Visibilities
+    * The AM specifies visibility to a NM when starting the container
+    * The NM doesn't make any decisions about resources or classify them
+    * For the container with the AM, the client has to specify visibilities
+    * For MR, the JobClient decides the resource-type which the AM forwards 
+      to the NM
+
+  Lifetime of the LocalResources
+    * PUBLIC -- not deleted once the container or app finishes, only deleted
+      when there is pressure on each local directory for disk capacity
+    * PRIVATE -- LocalResources follow the same lifecycle as PUBLIC
+    * APPLICATION -- deleted immediately after the application finishes

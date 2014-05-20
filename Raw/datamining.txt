@@ -1,0 +1,598 @@
+Notes on Introduction to Data Mining
+by Pang-Ning Tan, Michael Steinbach, Vipin Kumar
+
+Chapter 2: Data
+    * Topics: type of data, quality of data, preprocessing steps to make the data more
+        suitable for data mining, analyzing data in terms of its relationships
+        
+2.1 Types of Data
+    * A 'data set' is a collection of 'data objects', also termed record, point, vector,
+        pattern, event, case, sample, observation, or entity.
+    * Data objects are described by a number of 'attributes', also termed variable,
+        characteristic, field, feature, or dimension.
+        
+    2.1.1 Attributes and Measurements
+        * 'attribute': a property or characteristic of an object that may vary, either
+            from one object to another or from one time to another.
+        * 'measurement scale': a rule (function) that associates a numerical or symbolic
+            value with an attribute of an object.
+        * 'measurement': application of a measurement scale to associate a value with
+            a particular attribute of a specific object.
+        * The properties of an attribute need not be the same as the properties of the 
+            values used to measure it.
+        * The type of an attribute tells us what properties of the attribute are reflected
+            in the values used to measure it--for instance, you don't average phone numbers.    
+        * You can specify the type of an attribute in reference to the properties of the
+            numbers it holds:
+            - Distinctness: == and !=
+            - Order: <, <=, >, >=
+            - Addition: + and -
+            - Multiplication: * and /
+        * Using those, we get four types of attributes:
+            - Nominal: values are different names (== and !=)
+            - Ordinal: allow ordering of objects (<, >)
+            - Interval: Differences between values are meaningful (+, -)
+            - Ratio: Both differences and ratios are meaningful (*, /)
+        * nominal/ordinal attributes are 'categorical' or 'qualitative' attributes
+        * interval/ratio are 'quantitative' or 'numeric' attributes
+        * Types of attributes can be described in terms of permissible transformations,
+            which are those that do not change the nature of the attribute:
+            - Nominal: one to one mapping / permutation of values
+            - Ordinal: order-preserving change of values, new = f(old) where f is monotonic
+            - Interval: new = a * old + b, where a and b are constants
+            - Ratio: new = a * old
+        * Attributes by number of values they can take:
+            - Discrete: finite or countably infinite set of possible values, can be 
+                numeric or categorical
+            - Continuous: values are real numbers, typically floating point
+        * Asymmetric attributes are those where any non-zero value is important, but zero
+            values probably aren't: if you compare people on what they _don't_ do, every-
+            body seems pretty similar
+        * Asymmetric binary attributes are important for association analysis
+    
+    2.1.2 Types of Data Sets
+        * Three characteristics that apply to many data sets, are important for data mining:
+            - Dimensionality: number of attributes that the objects in the data set possess
+                high-dimensionality data is harder to work with, so dimensionality
+                reduction is important preprocessing work to do
+            - Sparsity: most attributes of a given object in the set equal zero, may be
+                an advantage since only the non-zero values need to be stored/manipulated
+            - Resolution: scale of the dataset
+        * Record data: stored in flat files or relational database, basic entity-attribute
+        * Transaction or Market Basket Data: each record (transaction) involves a set of 
+            items, as in a shopping trip receipt. Collection of sets of items, but it is
+            viewable as a set of records whose fields are asymmetric attributes
+        * Data Matrix: If the data objects all have the same attributes, they can be
+            thought of as points/vectors in multidimensional space
+        * Sparse Data Matrix: data matrix where the attributes are of the same type and
+            are asymmetric (only non-zero values matter).
+        * Graph-Based Data has two cases:
+            - Data with relationships among objects
+            - Data with objects that are graphs
+        * Data with relationships among objects: if the relationships in your data set are
+            important, often it will be shown as a graph where the objects are nodes and
+            the connections represent the relationships
+        * Data with objects that are graphs: If objects have structure (contain subobjects
+            that have relationships), these are also often shown as graphs
+        * Ordered data: 
+            - Sequential or Temporal data: extension of record data to include timestamps
+            - Sequence data: data set that is a sequence of individual entities--positions,
+                but no timestamps
+            - Time series data: set of measurements taken over time
+            - Spatial data: records with positions or areas
+        * If you have non-record data, it's good to use techniques that assume the attributes
+            are statistically independent of each other
+            
+2.2 Data Quality
+    * Data mining often deals with data post-collection, so you can't typically improve
+        methodologies on the collection side of things--you have to do 'data cleaning'
+    
+    2.2.1 Measurement and Data Collection Issues
+        * Measurement error: any problem resulting from the measurement process
+        * error: for continuous attributes, numerical difference of measured and true
+        * data collection error: omitting data objects or attribute values, or incorrectly
+            including a data object
+        * Noise: the random component of measurement error--distortion of values or the
+            addition of spurious objects
+        * artifacts: deterministic distortions of data, like a streak on a camera lens
+            causing a streak on the photos that camera takes
+        * Precision: closeness of repeated measurements to one another, often measured
+            by the standard deviation of a set of values
+        * Bias: systematic variation of measurements for the quantity being measured. Can
+            only be measured for objects whose measured quantity is known by some
+            external means.
+        * Accuracy: closeness of measurements to the true value of the quantity being
+            measured.
+        * Significant digits: number of digits after the decimal to use to indicate what
+            level of precision the data holds.
+        * Outliers: data objects that in some sense have characteristics that are different
+            from most of the other data objects in the data set, OR values of an attribute
+            that are unusual WRT the typical values for that attribute
+        * Anomalous objects or values: another term for outliers
+        * Missing values: objects are often missing one or more attributes, which should
+            be taken into account during analysis
+            - Eliminate data objects or attributes: one means of dealing with missing data
+                is to remove incomplete objects from the analysis set
+            - Estimate missing values: sometimes missing data can be reasonably estimated
+            - Ignore missing values during analysis        
+        * Inconsistent values: mismatches across connected attributes, correct if possible
+        * Duplicate Data: data objects that are duplicates, or very, very similar
+        * Deduplication: removing dupes
+        
+    2.2.2 Issues Related to Applications
+        * "Data is of high quality if it is suitable for its intended use."
+        * General issues:
+            - Timeliness: some data ages rapidly, may be a snapshot of ongoing phenomena
+            - Relevance: data set must contain the data necessary for the application
+            - Knowledge about the data: missing/inaccurate/incomplete documentation or 
+                metadata about a dataset
+                
+2.3 Data Preprocessing
+    * Topics: Aggregation, sampling, dimensionality reduction, feature subset selection,
+        feature creation, discretization and binarization, variable transformation
+    2.3.1 Aggregation
+        * "combining two or more objects into a single object"
+        * requires decisions about what to combine/eliminate, and how
+        * Motivations for aggregation:
+            - smaller memory footprint / faster processing time
+            - can act as a change of scope or scale to give high level views
+            - behavior of groups of objects or attributes is usually more stable than 
+                the behavior of individual instances
+    2.3.2 Sampling
+        * "Selecting a subset of the data objects to be analyzed"
+        * Motivation in data mining is typically to reduce the size of the set to be
+            iterated over, possibly enabling a better but more expensive algorithm
+        * Using a sample will work almost as well as the entire population if the sample
+            is representative of the population
+        * "Representative": has approximately the same property (of interest) as the
+            original set of data--mean of sample approaches mean of population        
+        * Sampling Approaches:
+            - Random sampling: sampling without replacement: as each item is selected, it
+                is removed from the set of all objects constituting the population
+            - Random sampling: sampling with replacement: as each item is selected, it is
+                NOT removed from the set of all objects constituting the population
+            - If the population is widely divergent, randomization may create an 
+                unrepresentative sample. "stratified sampling" starts with prespecified 
+                groups of objects, pulls objects either equally or proportionally from
+                the groups (even though the groups may be of different sizes)
+            - Adaptive or progressive sampling: start with a small sample, increase the
+                sample size until a sample of sufficient size is produced
+    2.3.3 Dimensionality Reduction
+        * Mostly represents creating new, compound attributes from multiple existing ones
+        * The Curse of Dimensionality:
+            - As dimensionality increases, data becomes increasingly sparse in the space
+                that it occupies
+            - Clustering and classification rely on definitions of density and space
+                between points, which become less meaningful at higher dimensionality
+        * Linear Algebra Techniques for Dimensionality Reduction
+            - Project the data from a high-dimensional space into a lower-dimensional space
+            - Principal Components Analysis (PCA) is a linear algebra technique for
+                continuous attributes that finds new attributes (principle components) that:
+                    1.  are linear combinations of the original attributes
+                    2.  are orthogonal (perpendicular) to each other
+                    3.  capture the maximum amount of variation in the data
+            - Singular Value Decomposition (SVD) is related to PCA, is also commonly used
+    2.3.4 Feature Subset Selection
+        * Reduce dimensionality by using only a subset of available features
+        * Redundant features duplicate some or all information in another feature
+        * Irrelevant features have almost no useful info for the task at hand
+        * Best method for finding your subset is to try all subsets and pick the best one
+        * Since that's 2^n subsets for n attributes, there are other approaches:
+            - Embedded approaches: subset selection happens as part of the data mining
+                algorithm, not during preprocessing
+            - Filter approaches: selection happens before mining begins
+            - Wrapper approaches: the algorithm is used as a black box to find the best
+                subset based on results
+        * An Architecture for Feature Subset Selection
+            - Process for both filter and wrapper approaches is in four parts:
+                1.  a measure for evaluating a subset
+                2.  a search strategy that controls the generation of a new subset
+                3.  a stopping criterion
+                4.  a validation procedure
+            - Wrapper methods do subset evaluation via the target data mining algorithm
+            - Filter methods use evaluation techniques distinct from the algorithm
+        * Flowchart of a feature subset selection process:
+        
+             +------------+   Done   +-----------+         +----------+
+             | Selected   |<---------+ Stopping  |<--------+Evaluation|
+             | Attributes |          | Criterion |         |          |
+             +------+-----+          +-----+-----+         +----------+
+                    |                      |                      ^
+                    v                      |                      |
+             +----------+               Not|done                  |
+             |Validation|                  |                      |
+             |Procedure |                  |                      |
+             +----------+                  |                      |
+                                           v                      |
+             +------------+           +----------+        +-------+----+
+             | Attributes +---------->|  Search  +------->|  Subset of |
+             |            |           | Strategy |        | Attributes |
+             +------------+           +----------+        +------------+        
+            
+        * Feature Weighting
+            - Alternative to keeping/eliminating features is to weight them
+    2.3.5 Feature Creation
+        * Feature Extraction
+            - Creation of a new set of features from the original raw data is feature extraction
+            - Process is often very domain specific
+        * Mapping the Data to a New Space
+            - Using something like a Fourier transform to make patterns visible through noise
+            - The wavelet transform is also useful
+        * Feature Construction
+            - Translating the form of an existing feature to a more useful one
+    2.3.6 Discretization and Binarization
+        * Association pattern algorithms want binary attribute
+        * Classification algorithms want categorical attributes
+        * Binarization:
+            - Simple technique: if there are m categorical values, assign each original value
+                to an integer in the interval[0, m-1]. If the attribute is ordinal, order
+                must be preserved. Then convert each of m integers into a binary number.
+                Since n = ceil(log2(m)) binary digits are required to represent the integers,
+                represent the binary numbers using n binary attributes.
+            - If you do that, you need to encode one category per bit, not overlapping bits:
+            
+                Categorical Value   Integer Value       x1  x2  x3  x4  x5
+Do this:        awful               0                   1   0   0   0   0  
+                poor                1                   0   1   0   0   0 
+                ok                  2                   0   0   1   0   0
+                good                3                   0   0   0   1   0
+                great               4                   0   0   0   0   1
+                
+Not this:       awful               0                   0   0   0 
+                poor                1                   0   0   1 
+                ok                  2                   0   1   0 
+                good                3                   0   1   1 
+                great               4                   1   0   0 
+
+            - You get asymmetric binary numbers, but it doesn't matter
+        * Discretization of Continuous Attributes
+            - Involves two subtasks:
+                1.  Deciding how many buckets to have
+                2.  mapping of values to buckets
+            - 1 involves creating n intervals with n-1 split points
+            - in 2, all values in 1 interval are mapped to the same categorical value
+            - Splits/buckets can be represented as intervals or inequalities
+        * Unsupservised Discretization
+            - Basic distinction between methods is whether class information is used (supervised)
+                or not used (unsupervised)
+            - If unsupervised, simple approaches are common:
+                .. equal width approach gives you equal bucket widths
+                .. equal depth/frequency gives you equal bucket content numbers
+            - A clustering mechanism like k-means can also be used
+        * Supervised Discretization
+            - Keeping the end purpose in mind and using class labels often gives
+                better results
+            - "Place the splits in a way that maximizes the purity of the intervals"
+            - Some approaches start with each thing being a bucket, and merging
+                adjacent buckets if they are more than some measure of similarity
+            - Entropy based approaches to discretization are promising
+            - Entropy definition:
+            
+                k   = number of different class labels
+                mi  = number of values in the ith interval of a partition
+                mij = number of values of class j in interval i
+                
+                Entropy of the ith variable:
+                
+                          k
+                    ei = -E  pij log2 pij,                    
+                         i=1
+                         
+                where:
+                
+                pij = mij / mi = probability of class j in the ith interval
+                
+            - Total entropy is the weighted average of the individual interval entropies:
+            
+                          n
+                    e  =  E  wi * ei
+                         i=1
+                         
+                where:
+                
+                m  = number of values
+                wi = mi / m = fraction of values in the ith interval
+                n  = number of intervals
+                
+            - Entropy of an interval is a measure of the purity of the interval
+            - If the interval contains values of one class, entropy is 0
+            - Simple approach for partitioning a continuous attribute starts by
+                bisecting the initial values so that the resulting two intervals
+                give minimum entropy. Splitting process then repeats until a
+                user specified number of intervals is generated.
+        * Categorical attributes with too many values
+            - Ordinal attributes can be reduced in the same way as continuous
+            - Nominal attributes require other techniques: either use domain
+                knowledge to group, or empirical methods
+    
+    2.3.7 Variable Transformation
+        * 'Variable transformation': a transformation applied to all the values 
+            of a variable; for each object, the transformation is applied to the
+            value of the variable for that object
+        * Simple Functions
+            - A simple mathematical function is applied to each value individually
+            - If x is a variable, transformations include x^k, log x, e^x, sqrt(x), etc.
+            - Use caution when transforming values
+        * Normalization or Standardization
+            - The goal of standardization or normalization is to make an entire set
+                of values have a particular property.
+            - Traditional example is standardizing a variable in statistics:
+            
+                if x-bar is the mean of the attribute values and sx is their stddev,
+                    the transform x' = (x - x-bar)/sx creates a new variable with
+                    a mean of 0 and a standard deviation of 1.
+                
+            - Lets you compare/combine two differently scaled attributes
+            - mean and stddev are strongly affected by outliers, so the above
+                transform is often modified to use the median instead of the mean,
+                and to use abs(stddev) instead of stddev.
+            - If x is a variable, then the absolute standard deviation of x is:
+            
+                sigma-A = E from i=1 to m of abs(xi - mu)
+                
+                where:
+                
+                xi = the ith value of the variable
+                m  = the number of objects
+                mu = either the mean or the median
+                
+2.4 Measures of Similarity and Dissimilarity
+    * Important for clustering, nearest neighbor classification, anomaly detection
+    * You can transform a data set to a similarity or dissimilarity space for analysis
+    * 'Proximity': either similarity or dissimilarity; proximity between two objects
+        is a function of the proximity between the corresponding attributes of the
+        two objects, so you first measure the proximity between objects having only
+        one simple attribute, then consider proximity measures for objects with
+        multiple attributes.
+    2.4.1 Basics
+        * Definitions
+            - similarity: numerical measure of the degree to which two objects
+                are alike--higher for objects that are more alike
+            - dissimilarity: numerical measure of the degree to which two objects
+                are different--lower for more similar pairs of objects
+            - distance: synonym for dissimilarity, though often refers to a special
+                class of dissimilarities
+            - dissimilarities often range from 0-1, but also from 0 to +inf
+        * Transformations
+            - Often applied to convert a similarity to a dissimilarity, or vice
+                versa, or to transform a proximity measure to fall within a
+                particular range, like 0-1
+            - Frequently proximity measures are transformed to be in range 0-1
+            - General case similarity transformation to [0,1]:
+            
+                s' = (s - min(s)) / (max(s) - min(s))
+                
+                where:
+                
+                max(s) = maximum similarity value
+                min(s) = minimum similarity value
+                
+            - For dissimilarity:
+            
+                d' = (d - min(d)) / (max(d) - min(d))
+                
+            - If the proximity measure takes values in the [0,+inf] space, a non-
+                linear transformation is required, and values will not have the
+                same relationship to one another on the new scale
+                
+    2.4.2 Similarity and Dissimilarity between Simple Attributes
+        * For nominal attributes, similarity is 1 if the same, else 0; dissimilarity
+            is the inverse
+        * For objects with a single ordinal attribute you have to take order into
+            account, so typically you map them to successive integers, so that
+            
+                d(good,ok) for {poor: 0, fair: 1, ok: 2, good: 3, wonderful: 4}
+                is equal to d(3,2) = 3 - 2 = 1
+                
+                if you want d to fall between 0 and 1, (3-2)/4, which would make
+                s = 1 - d
+                
+        * That assumes equal intervals though--not necessarily true.
+        * For interval or ratio attributes, natural measure of dissimilarity is
+            the absolute difference between two attribute values
+            
+    2.4.3 Dissimilarities between Data Objects
+        * Distances
+            - Euclidean distance, d, between points x and y, is:
+            
+                d(x,y) = sqrt((x1-y1)^2 + (x2-y2)^2 + ... + (xn-yn)^2)
+            
+            - Euclidean distance is generalized by the Minkowski distance metric:
+            
+                          /  n              \
+                d(x,y) = |   E  abs(xk-yk)^r |^(1/r)
+                          \ k=1             /
+                          
+                where r is a parameter
+                
+            - Most common examples of Minkowski distance:
+                1.  r = 1 City block / Manhattan / taxicab / L1 norm distance
+                    common example is the Hamming distance, which is the number
+                        of bits that are different between two objects that have
+                        only binary attributes, ie between two binary vectors
+                2.  r = 2 Euclidean distance / L2 norm
+                3.  r = +inf  Supremum (Lmax or Linf norm) distance. Maximum
+                        difference between any attribute of the objects.
+                        
+            - More formally, Linf distance is:
+            
+                                /  n              \
+                d(x,y) = lim   |   E  abs(xk-yk)^r |^(1/r)
+                        r->inf  \ k=1             /
+                        
+            - Distances such as the Euclidean distance have some well known properties:
+                1.  Positivity
+                    (a) d(x,y) >= 0 for all x and y
+                    (b) d(x,y)  = 0 only if x = y
+                    
+                2.  Symmetry
+                        d(x,y) = d(y,x) for all x and y
+                        
+                3.  Triangle Inequality
+                        d(x,z) <= d(x,y) + d(y,z) for all points x,y,z
+                        
+            - 'Metrics' are measures that satisfy all three properties.
+            - Examples of metrics that don't satisfy: d(1pm, 2pm) = 1 hour, d(2pm, 1pm) = 23 hours
+
+    2.4.4 Similarities between Data Objects
+        * If s(x,y) is the similarity between points x and y, the properties of similarities are:
+            1.  s(x,y) = 1 only if x = y (0 <= s <= 1)
+            2.  s(x,y) = s(y,x) for all x and y (Symmetry)
+            
+    2.4.5 Examples of Proximity Measures
+        * Similarity measures for binary data
+            - 'similarity coefficients': similarity measures between objects that contain
+                only binary attributes, typically valued between 0 and 1
+            - If x and y are objects with n binary attributes, the comparison leads to 
+                four quantities:
+                
+                1.  f00 = the number of attributes where x is 0 and y is 0
+                2.  f01 = the number of attributes where x is 0 and y is 1
+                3.  f10 = the number of attributes where x is 1 and y is 0
+                4.  f11 = the number of attributes where x is 1 and y is 1
+                
+            - Simple Matching Coefficient:
+            
+                SMC = (n matching attribute values / m attributes)
+                
+                which equals
+                
+                (f11 + f00) / (f01 + f10 + f11 + f00)
+                
+            - Jaccard Coefficient:
+            
+                .. Suppose that x and y are data objects representing two rows (transactions)
+                    of a transaction matrix. If each asymmetric binary attribute corresponds
+                    to an item in a store, then a 1 indicates the item was purchased, 0
+                    indicates the product was not purchased. Since the data is mostly 0's,
+                    all transactions will look very similar under SMC. Jaccard coefficient
+                    is used to test similarity of objects with asymmetric binary attributes.
+                
+                J = (n matching presences / m attributes not involved in 00 matches)
+                
+                which equals
+                
+                f11 / (f01 + f10 + f11)
+                
+            - Cosine Similarity
+                .. Documents are often represented as vectors, with each attribute being
+                    the frequency of a word occurring. Documents are sparse datasets in that
+                    they have relatively few non-zero attributes. Similarity should not
+                    depend on shared 0 values.
+                .. Measure must be able to avoid 0-0 matches like Jaccard, but also handle
+                    non-binary vectors. Cosine similarity does this, is common for document
+                    comparison. If x and y are two document vectors, then:
+                    
+                    cos(x,y) = (x . y) / ||x|| * ||y||
+                    
+                    which is
+                    
+                    dot product of xy over len(x) * len(y)
+                    
+                    dot product = E from k=1 to n for xk*yk
+                    vector length = sqrt(E from k=1 to n for xk^2)
+                    
+                    example:
+                    
+                    x = (3,2,0,5,0,0,0,2,0,0)
+                    y = (1,0,0,0,0,0,0,1,0,2)
+                    
+                    x . y = 3*1 + 2*0 + 0*0 + 5*0 + 0*0 + 0*0 + 0*0 + 2*1 + 0*0 + 0*2       = 5
+                    ||x|| = sqrt(3*3 + 2*2 + 0*0 + 5*5 + 0*0 + 0*0 + 0*0 + 2*2 + 0*0 + 0*0) = 6.48
+                    ||y|| = sqrt(1*1 + 0*0 + 0*0 + 0*0 + 0*0 + 0*0 + 0*0 + 1*1 + 0*0 + 2*2) = 2.45
+                    
+                    cos(x,y) = 5 / (6.48*2.45) = 0.31
+                    
+            - Extended Jaccard Coefficient (Tanimoto Coefficient)
+            
+                EJ(x,y) = x . y / (||x||^2 + ||y||^2 - (x . y))
+                
+            - Correlation
+                .. Correlation between two data objects that have binary or continuous
+                    variables is a measure of the linear relationship between the attributes
+                    of the objects.
+                .. Pearson's correlation coefficient between two data objects x and y is:
+                
+                                   covariance(x,y)        Sxy
+                    corr(x,y) = --------------------- = -------
+                                stddev(x) * stddev(y)   Sx * Sy
+                    
+                    
+                    where
+                                             1    n
+                    covariance(x,y) = Sxy = ---   E  (xk - avg(x)) * (yk - avg(y))
+                                            n-1  k=1
+                                            
+                                                   1    n
+                    stddev(x)       = Sx  = sqrt( ---   E (xk - avg(x))^2 )
+                                                  n-1  k=1
+                                                  
+                                                   1    n
+                    stddev(y)       = Sy  = sqrt( ---   E (yk - avg(y))^2 )
+                                                  n-1  k=1
+                                
+            - Bregman Divergence
+                .. family of proximity functions that share some common properties
+                .. possible to construct general data mining algorithms that work with
+                    any Bregman divergence, like K-means clustering
+                .. They're loss or distortion functions. Too much vector calc for me.
+                
+    2.4.6 Issues in Proximity Calculation
+        * different scales and / or correlated data
+        * proximity between objects with different types of attributes
+        * Standardization and Correlation for Distance Measures
+            - How to deal with either correlated or differently scaled attributes?
+            - Use the Mahalanobis distance, which is a generalization of euclidean distance
+            
+            mahalanobis(x,y) = (x-y) E^-1 (x-y)^T
+            
+            where
+            
+            E^-1 is the inverse of the covariance matrix of the data
+            
+        * Combining Similarities for Heterogeneous Attributes
+            - Algorithm for computing an overall similarity between x and y, when x and y
+                have different types of attributes (which are not asymmetric binary attributes):
+                
+                1.  For the kth attribute, compute a similarity, sk(x,y), in the range[0,1]
+                
+                2.  Define an indicator variable, delta-k, for the kth attribute as follows:
+                
+                    delta-k = 0 if the kth attribute is an asymmetric attribute and
+                                both objects have a value of 0, or if one of the objects
+                                has a missing value for the kth attribute
+                                
+                            = 1 otherwise
+                            
+                3.  Compute the overall similarity between the two objects using the following:
+                
+                                        E from 1 to n of delta-k * Sk * (x,y)
+                    similarity(x,y) =   -------------------------------------
+                                        E from 1 to n of delta-k
+                                        
+    2.4.7 Selecting the Right Similarity Measure
+        * Type of measure should fit the data
+        * for sparse data, ignore 0-0 matches
+        * use Jaccard, cosine, extended Jaccard for sparse / asymmetric data
+        
+Chapter 3: Exploring Data
+    * Focuses on preliminary exploration of data to understand specific characteristics
+    * Three major topics:
+        - Summary statistics
+        - Visualization
+        - Online Analytical Processing (OLAP)
+        
+3.1 The Iris Data Set
+    * Covers 150 iris flowers, 50 from each of three species
+    * Five attributes: sepal length, sepal width, petal length, petal width, class
+    
+3.2 Summary Statistics
+    * Quantities that capture various characteristics of a potentially large set of values
+        with a single number or set of numbers
+    3.2.1 Frequencies and the Mode
+        * Given unordered, categorical values, frequency is one of the only stats available
+        * Definition:
+        
+            frequency(Vi) = n objects with attribute value Vi / n objects total
+            
+        * Mode is the value with the highest frequency

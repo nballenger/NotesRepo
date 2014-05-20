@@ -1,0 +1,273 @@
+Notes on Responsive Web Design
+by Ethan Marcotte
+A Book Apart, 2011
+ISBN-13: 978-0-13-285829-8
+
+Chapter 1: Our Responsive Web
+    * Almost all designers start with selection of a 'canvas'--a blank space to work within,
+        that provides boundaries and structure. Designing for the web disallows that, because
+        your canvas boundaries will be at the mercy of users and the media they use to
+        view the content you create.
+    * A common response to that is the impulse to control what you can--fixed pixel sizing,
+        fixed width layouts, etc. Typically the volatility / plasticity of the web will
+        undermine your efforts at control and produce flawed results.
+        
+    Fasten Those Seatbelts
+        * Quotes from John Allsopp's "A Dao of Web Design" (http://alistapart.com/article/dao)
+            
+            "[t]he control which designers know in the print medium, and often desire in 
+            the web medium, is simply a function of the limitation of the printed page. 
+            We should embrace the fact that the web doesn’t have the same constraints, and 
+            design for this flexibility. But first, we must “accept the ebb and flow of things.”
+            
+        * We are designing for more output devices (and consequently resolutions) than
+            ever before.
+        * Attempts to separate "mobile" and "desktop" browsing into different experiences
+            tend to fail in the same ways as previous attempts at exerting control over users.
+            
+    Responsive Architecture
+        * Draws from the interactivity and user-centered themes of "responsive architecture"
+        
+    The Way Forward
+        * "We need to let go.
+        
+            Rather than creating disconnected designs, each tailored to a particular device
+            or browser, we should instead treat them as facets of the same experience."
+            
+        The Ingredients
+            * "Speaking purely in terms of front-end layout, it takes three core ingredients:
+                1.  A flexible, grid-based layout
+                2.  Flexible images and media
+                3.  Media queries, a module from the CSS3 specification"
+                
+            * Introduces the example site he's built:
+            
+                http://responsivewebdesign.com/robot/
+                
+Chapter 2: The Flexible Grid
+    * References work from folks like Jan Tschichold, Emil Ruder, Josef Muller-Brockman,
+        who popularized the idea of a typographic grid. Mentions Khoi Vinh and Mark Boulton,
+        who've helped adapt the idea to web design.
+    * Muller-Brockman, from _Grid Systems in Graphic Design_: the process is "creating a
+        typographic space on the page"--but web designers don't have a "page" per se.
+    * Often we create grid systems by relying on things like:
+    
+        #page {
+            width: 960px;
+            margin: 0 auto;
+        }
+        
+    * Which creates a fixed, bounded space to work in, but offers little flexibility
+    * Necessary to take designs, typically created in tools that _do_ have a notional "canvas",
+        like Photoshop (or paper and pen) and transfer them to something more proportional.
+        
+    Flexible Typesetting
+        * References font sizing markup using a reset stylesheet, base percentage size, and
+            em measurements elsewhere, to make proportional font sizes.
+        * Example:
+        
+            Designer gives you a comp with a heading and a link, the heading text at 24px
+                and the link text at 11px. You create the following html:
+                
+                <h1>Heading Text <a href="#">Read more &raquo;</a></h1>
+                
+            To proportionally size the fonts, you would use a reset stylesheet to make
+                all the text on the page the same size, and set the font size of the body
+                to 100%, which would let you proportionally size other text with ems.
+                
+                body { font-size: 100%; } /* With reset, sets all text to 16px */
+                
+            To get the heading text to 24px, use the following formula:
+            
+                desired result (in ems) = target (in px) / context (in px)
+                
+            Which would give you:
+            
+                24px / 16px = 1.5em
+                
+            And thus:
+            
+                h1 { font-size: 1.5em; }
+                
+            In order to size the a tag, which should be at 11px, you apply the same math
+                again. However, you must now deal with the size of the h1 as the 'context',
+                rather than the size of the body:
+                
+                11px / 24px = 0.4583333333333333em
+                
+            Resist the temptation to round--proportionally it's a correct number, and the
+                browser is capable of dealing with it:
+                
+                h1 a { font-size: 0.458333333333333em; } /* 11px / 24px */
+                
+        From Flexible Fonts to a Flexible Grid
+            * We can use the same target/context=result formula for layout.
+            
+    Creating a Flexible Grid
+        * With the following wireframe layout for a blog page:
+        
+            +----------------------------------------------------------------------+
+            |+--------------------------------------------------------------------+|
+            ||                                                                    ||
+            ||                          SECTION TITLE                             ||
+            ||                                                                    ||
+            |+--------------------------------------------------------------------+|
+            |+--------------------------------------------+ +---------------------+|
+            ||                                            | |                     ||
+            ||                MAIN CONTENT                | |        OTHER        ||
+            ||                                            | |                     ||
+            || +----------------------------------------+ | | +-----------------+ ||
+            || |                                        | | | |                 | ||
+            || |              BLOG ARTICLE              | | | |    RECENT       | ||
+            || |                                        | | | |    ENTRIES      | ||
+            || | +------------------------------------+ | | | |                 | ||
+            || | |                                    | | | | |                 | ||
+            || | |                                    | | | | |                 | ||
+            || | |           Introduction             | | | | |                 | ||
+            || | |                                    | | | | |                 | ||
+            || | |                                    | | | | |                 | ||
+            || | +------------------------------------+ | | | |                 | ||
+            || |                                        | | | |                 | ||
+            || |                  +-------------------+ | | | |                 | ||
+            || |                  |                   | | | | |                 | ||
+            || |                  |     Pullquote     | | | | |                 | ||
+            || |                  |                   | | | | |                 | ||
+            || |                  +-------------------+ | | | |                 | ||
+            || +----------------------------------------+ | | +-----------------+ ||
+            |+--------------------------------------------+ +---------------------+|
+            +----------------------------------------------------------------------+        
+    
+        * We might create a markup structure that looked like this:
+        
+            <div id="page">
+                <div class="blog section">
+                    <h1 class="lede">Recently in <a href="#">The Bot Blog</a></h1>
+                    
+                    <div class="main">
+                    ...
+                    </div><!-- /end .main -->
+                    
+                    <div class="other">
+                    ...
+                    </div><!-- /end .other -->
+                </div><!-- /end .blog.section -->
+            </div><!-- /end #page -->
+            
+        * If we were content with a pixel based grid layout, we might use a 960px wide
+            column, divided into 12 columns, each 69 pixels across with a 12px gutter:
+            
+            #page { margin: 36px auto; width: 960px;   }    
+            .blog { margin: 0 auto 53px; width: 900px; }    
+            .blog .main { float: left; width: 566px;   }
+            .blog .other { float: right; width: 331px; }
+            
+        * That fits the comp, but is inflexible--you get scroll bars at lower viewport sizes.
+        * If we change our sizing from pixels to percentages, we get a grid that resizes
+            with the viewport without compromising the design's proportions:
+            
+            #page { margin: 36px auto; width: 90%; }           /* 90% is an arbitrary choice */
+            .blog { margin: 0 auto 53px; width: 93.75%; }      /* 900px / 960px = 93.75%     */
+            .blog .main { float: left; width: 62.8888889%; }   /* 566px / 900px              */
+            .blog .other { float: right; width: 36.7777778%; } /* 331px / 900px              */
+            
+        * Proportionally the design is intact, but the layout responds to viewport changes.
+        
+    Flexible Margins and Padding
+        * If your gutters are absolute sizes while your content is proportional, you can
+            end up with a pretty unbalanced layout at large and small sizes
+        * Answer is to again use target/context=result formula to get proportional gutters:
+        * The context is different for padding/margins than width:
+            1.  When setting margins, context is the width of the element's container
+            2.  When setting padding, context is the width of the element itself
+            
+        * Addition of flexible padding:
+        
+            .lede { padding: 0.8em; 5.333333333%; }                 /* 48px  / 900px */
+            .recent-entries { margin: 0 auto; width: 69.7885196%; } /* 231px / 331px */
+            .article { padding: 40px 8.48056537%; }                 /* 48px  / 566px */
+            .date { float: left; width: 14.556962%; }               /* 69px  / 474px */
+            
+        * And pulling an element outside its container, proportionally:
+        
+            .date { 
+                float: left; 
+                margin-left: -17.0886076%;  /* 81px / 474px */
+                width: 14.556962%;          /* 69px / 474px */
+            }
+            
+        Moving Forward, Flexibly
+            * "We need to break our habit of translating pixels from Photoshop directly
+                into our CSS, and focus our attention on the proportions behind our designs."
+                
+                
+Chapter 3: Flexible Images
+    Going Back, Back to Markup, Markup
+        * If you include an img tag with proportional width alone, and no constraints on
+            things like overflow, you'll end up having the image break out of its container
+            
+    Fluid Images
+        * If you do this, your image will be constrained to its container:
+        
+            img { max-width: 100%; }
+            
+        * The image will render at whatever size it wants, provided it's narrower than
+            its containing element. If it's wider than its container, max-width will force
+            the image to match the width of its container.
+        * The aspect ration of the image should (in modern browsers) remain intact as it
+            scales to match its container.
+        * The max-width rule can apply to other fixed width elements as well:
+        
+            img, embed, object, video { max-width: 100%; }
+            
+    Because This Job Is Never Easy
+        max-width in Internet Explorer
+            * IE6 and below don't support max-width
+            * If you have to support IE6, use:
+            
+                img, embed, object, video { width: 100%; }
+                
+            * Won't work well for very small images, as width forces the image to match
+                the size of its container, but should be ok for most uses.
+        
+        In Which It Becomes Clear that Windows Hates Us
+            * Windows does a very poor job of scaling images via CSS--lots of artifacts
+            * This problem only effects IE7 and below and FF2 and lower
+            * IE can be fixed via AlphaImageLoader
+            
+        Hail AlphaImageLoader, hte conquering hero
+            * MSoft proprietary CSS filter
+            * Can dramatically increase image quality in IE7 and below
+            * Most usefully used via scripting, see: 
+                http://unstoppablerobotninja.com/entry/fluid-images
+                
+    Flexibly Tiled Background Images
+        * Existing technique from 2004, Dan Cederholm, is to fake a multi-column layout
+            by vertically tiling an image behind content:
+            
+            .blog { background: #F8F5F2 url("blog-bg.png") repeat-y 50% 0; }
+            
+        * Works, but requires a fixed width design and image.
+        * You can rework it for flexibly tiled layout by figuring out the proportions
+            of the columns to their enclosing container
+        * Create extremely wide but quite short background images to tile vertically
+        * Make the background image vertical columns of the number and proportions required
+        * For instance:
+        
+                col 1 bg color/pattern              col2 bg color/pattern
+            |---------------1893px/63.111%-----|-------1161px/36.888%-----|
+            
+            |                       3000px total                          |
+            
+        * Make the giant background image the background of the parent of the columns:
+        
+            .blog { background: #F8F5F2 url("blog-bg.png") repeat-y 63.1111111111% 0; }
+            
+        Fully Flexible Background Images?
+            * There's a CSS3 property, background-size, that lets you create flexible
+                background images, but the browser support isn't great
+            * Scott Robbin's jQuery Backstretch plugin simulates resizable background images
+                on the body element
+            * You could also use media queries to set different background images at different
+                page sizes
+                
+    Learning to Love Overflow

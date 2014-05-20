@@ -1,0 +1,578 @@
+Learning Javascript--Shelly Powers, O'Reilly, Oct 1 2006
+
+Chapter 1: Introduction and First Looks
+	cross-browser implementation issues usually come from differences in DOM between browsers
+	additionally, CSS implementation varies
+	1.4 First Look at Javascript: "Hello World"
+		Example:	
+			<script type="text/javascript">
+				var dt = Date();
+				var msg = 'Hello, World! Today is ' + dt;
+				alert(msg);
+			</script>
+			<body onload="hello();">...
+		script tag defines MIME type	
+		takes type, src, defr and charset attributes
+		defer=defer means script is not going to generate document content (go on parsing rest of page)
+		mostly loaded in <head> sometimes in <body>
+		rules:
+			1. Place javascript in body when it dynamically creates web page content on load of the javascript
+			2. Javascript defined in functions and used for page events should be in the head tag
+		you can place code inside of a script tag inside an XHTML CDATA section--tells XHTML processor not to interpret
+		use //<![CDATA[
+			//]]>
+		to indicate CDATA sections
+		save javascript in files, call with:
+			<script type="text/javascrpt" src="somejavascript.js"></script>
+		comment style is // and /* */
+		Browser Object Model (BOM) is variation on DOM
+		define a function with:
+			function functionName(params) { ... }
+		javascript commonly called from event handlers
+		scope rules:
+			--if a variable is declared with the var keyword in a function, it is local to that function
+			--if a variable is declared without the var keyword in a function, and a global of same name exists, it's the global
+			--if a variable is declared locally with a var keyword but not initialized, it is accessible but undefined
+			--if a variable is declared locally without the var keyword, or explicitly declared globally, but not
+				initialized, it is accessible globally but not defined
+		. is the property operator, as in document.write()
+		statements end with ; or line break (use ;)
+	1.5 The Javascript sandbox
+		javascript is restricted in a number of ways from working outside the browser or outside the site
+	1.6 accessibility
+		use <noscript></noscript> tags to insert content for people without javascript
+
+Chapter 2: Javascript Data Types and Variables
+	three basic data types: string, boolean, and number
+	2.1 Identifying Variables
+		vars have an identifier, scope and data type
+		no required identifier format, must begin with character, $ or _
+		case sensitive identifers
+		keyword restricted
+		2.1.1 Naming Guidelines
+			use meaningful words
+			provide a data type clue, like $strName
+			use a plural for collections of items, like var customerNames = new Array();
+			objects are capitalized, like var firstName = String("Nick");
+			functions and variables start with lowercase letters
+			use camelcase
+		2.1.2 The Prototype Effect and the Newer Naming Conventions
+			_varname usually denotes a private variable of an object
+			prototype library brought in $( ) and $A( ) references to objects
+			class objects start with an uppercase character, variables start with lower, and all use camelcase
+			function names should be verbs, nouns for variables
+			if included in an isolated block of js meant for distribution, functions and globals should have package name prepend
+			iterator vars should be simple, like i,j,k,l...
+	2.2 Scope
+		local scope: var that's defined, initialized and used within a function
+		function terminates, var goes out of scope and is no longer accessible
+		global var: can be accessed anywhere within any js contained within a web page, embedded or imported
+		vars can be created and instantiated in same line of code: var num_value = 3.5;
+	2.3 Simple Types
+		2.3.1 The String Data Type
+			double and single quoted
+			normal escape sequence set
+			escape function encodes entire string into URL encoding:
+				var sOne = escape("http://www.google.com");
+				var sOneDecoded = unescape(sOne);
+			empty string can be used to initialize
+			implicit type conversions happen
+			toString() can convert explicitly:
+				INPUT			Result
+				Undefined		"undefined"
+				Null			"null"
+				Boolean			If true then "true" if false then "false"
+				Number			string representation of number
+				Object			string representation of default representation of object
+		2.3.2 The Boolean Data Type
+			true and false
+			Boolean can convert another value to boolean true or false:
+				INPUT			Result
+				Undefined		false
+				Null			false
+				Boolean			value of value
+				Number			Value of false if 0 or NaN, otherwise true
+				String			Value of false if string is empty, otherwise true
+				Object			true
+		2.3.3 The Number Data Type
+			numbers in js are floating point
+			treated as integers if no fractional/decimal component
+			exponent notation is permitted
+			Infinity and -Infinity are used to represent their respective conditions
+			hex numbers begin with 0x, as in 0xCCFF
+			octal values begin with 0, as in 0526
+			parseInt returns the integer part of a number in a string
+			parseFloat returns teh float point value until a non-numeric character is reached
+			Number function converts numbers:
+				INPUT			Result
+				Undefined		NaN
+				Null			0
+				Boolean			if true: 1, else 0
+				Number			straight value
+				String			
+				Object			Numeric representation of the default representation of the object
+			IsFinite function can return true when something is a number, false when NaN or Infinity
+		2.3.4 Null and Undefined
+			null variables have been defined, but not assigned a value:
+				alert(sValue);  // results in js error because sValue is not declared first
+			undefined variables have been declared but not initialized:
+				var sValue;
+				alert(sValue); // no error, and a window with te word "undefined" is opened
+			A var is not null and not undefined when it is both declared and given an initial value
+			to test for null:
+				if (sValue == null) { ... }
+			if a string or boolean cannot be coerced into a number, it is not null and not undefined, but NaN
+	2.4 Constants: Named but Not Variables
+		create a constant with:
+			const CURRENT_MONTH = 3.5;
+		use primarily in global scope
+
+Chapter 3: Operators and Statements
+	3.1 Format of a Javascript statement
+		lines terminated by newline or ;
+	3.2 Simple statements
+		3.2.1 The Assignment Statement
+			var blah = "value";
+			var blah = someFunction();
+			var blah1 = blah2 = blah3;
+		3.2.2 Arithmetic Statements
+			operators: + - * / %
+			concatenation: +
+		3.2.3 The Unary Operators
+			++, -- - (negative value)
+		3.2.4 Precedence of Operators
+			find a chart if you need to know
+		3.2.5 Handy Shortcut: Assignment with Operation
+			+=  -=  *=  /=  %=
+		3.2.6 Bitwise Operators
+			&		Bitwise AND
+			|		Bitwise OR
+			^		Bitwise XOR
+			~		Bitwise NOT
+	3.3 Conditional Statements and Program Flow
+		3.3.1 if ... else
+			if (expression) { ... } else { ... }
+		3.3.2 switch
+			switch (expression) {
+				case firstlabel:
+					statements;
+					[break;]
+				case secondlabel:
+					statements;
+					break;
+				...
+				case lastlabel:
+					statements;
+					break;
+				default:
+					statements;
+			}
+	3.4 The Conditional Operators
+		3.4.1 The Equality and Identity (string equality) operators
+			==  equality operator
+			===  string equality operator (same value, same data type)
+			!=	not equal
+			!== string not equal
+		3.4.2 Other Relational Operators
+			> >= < <=
+		3.4.3 Ternary Operator
+			var nValue = 1.0;
+			var sResult = (nValue > 0.5) ? "value over 0.5" : "value not over 0.5";
+			general case:
+				condition ? value if true : value if false;
+	3.5 The Logical Operators
+		&&		Logical AND
+		|| 		Logical OR
+		!		Logical NOT
+	3.6 Advanced Statements: The Loops
+		3.6.1 The while Loop
+			var iValue = 0;
+			while (iValue < 10) {
+				iValue++;
+				document.writeln("iValue is " + iValue + "<br \>");
+			}
+		3.6.2 The do ... while Loop
+			do {
+				iValue++;
+				document.writeln("iValue is " + iValue + "<br />");
+			} while (iValue < 10)
+		3.6.3 The for Loops
+			for (initial value; condition; update;) { ... }
+			for (variable in object) { ... }
+
+Chapter 4: The JavaScript Objects
+		objects come from four different domains:
+			javascript builtins
+			Browser Object Model
+			Document Object Model
+			custom objects from the developer
+	4.1 The Object Constructor
+		all objects are based on the Object object
+		to create a new object, use the 'new' keyword:
+			var holdAnswer = new Boolean(true);
+		to access a value, use another Object method:
+			if (holdAnswer.toValue) ...
+		or directly:
+			if (holdAnswer) ...
+	4.2 The Number Object
+		number's methods have to do with conversion, fixed-point representation, and exponential notation
+			var newValue = new Number("34.8896");
+			newValue.toExponential(3);
+			newValue.toPrecision(3);
+			newValue.toFixed(6);
+		also has four constant numeric, directly accessible properties
+			Number.MAX_VALUE;
+			Number.MIN_VALUE;
+			Number.NEGATIVE_INFINITY;
+			Number.POSITIVE_INFINITY;
+	4.3 The String Object
+		create a string object by passing a literal string the the constructor for the String object:
+			var sObject = new String("String string");
+		concatenation occurs via the + operator
+		String properties and methods:
+			Method				Description											Arguments
+			valueOf				Returns the string literal the obj is wrapping		None
+			length				Property with the length of the string literal		Use without parentheses
+			anchor				Creates HTML anchor									String with anchor title
+			big,blink,bold		formats and returns String objects lit. value		None
+			italics,small		as HTML
+			strike, sub sup	
+			charAt,charCodeAt	Returns either char or charcode at position			Int, starting at pos. 0
+			indexOf				Returns starting pos of first occurence of substr	Search substring
+			lastIndexOf			Returns starting pos of last occurence of substr	Search substring
+			link				Returns HTML for link								URL for href attribute
+			concat				Concatenates strings together						Strings to concatenate onto obj.valueOf
+			split				Splits string into tokens based on some operator	Separator and max number of splits
+			slice				Returns a slice from the string						Beginning and ending pos of slice
+			substr				Returns a substring									Beginning and ending location of string
+			match,replace,		Regex match, replace and search						String with regex
+			search
+			toLowerCase,toUpperCase	Converts case									None
+		Formatting methods generate strings that enclose str.valueOf in HTML element tags
+	4.4 Regular Expressions and RegExp
+		4.4.1 The RegExp Methods: test and exec
+			test method determines whether a string passed in as a parameter matches the regex
+				var re = /Javascript rules/;
+				var str = "Javascript rules";
+				if (re.test(str)) document.writeln("I guess they match");
+			case insensitivity with /i
+			add g for global match, m to match over many lines, by passing to the constructor:
+				var searchPattern = new RegExp('+s','g');
+		4.4.2 Working with Regular Expressions
+			\ is the escape character
+			basically, it's PCRE
+	4.5 Purposeful Objects: Date and Math
+		4.5.1 The Date
+				var dtNow = new Date( ); // based on the client machine's date and time
+			dates come in format:
+				Fri Apr 07 2006 21:09:14 GMT-0500 (CDT)
+			create dates:
+				var nowDt = new Date("March 12, 1980 12:20:25");
+				var newDt = new Date(1977,12,23);
+				var newDt = new Date(1977,11,24,19,30,30,30);
+			Date object methods:
+				getFullYear, getHours, getMilliseconds, getMinutes, getMonth, getSeconds, getYear
+			UTC equivalents:
+				getUTCFullYear, getUTCHours, getUTCMilliseconds, getUTCMinutes, getUTCMonth, getUTCSeconds
+			most of the get methods have set equivalents
+			Conversion methods to string:
+				toString
+				toGMTString
+				toLocaleDateString and toLocaleTimeString
+				toLocaleString
+				toUTCString
+		4.5.2 Math
+			Math has a number of properties and methods, all static
+			example:
+				var newValue = Math.SQRT1;
+			Math properties:
+				E				Value of e, the base of the natural logarithms
+				LN10			Natural log of 10
+				LN2				Natural log of 2
+				LOG2E			Approximate reciprocal of LN2
+				LOG10E			Approximate reciprocal of LN10
+				PI				Value of PI
+				SQRT1_2			Square root of 1/2
+				SQRT2			Square root of 2
+		4.5.3 The Math Methods
+			all arguments passed to Math functions are automatically type converted to numbers
+				Math.abs()				Returns absolute value of parameter
+				Math.sin(x)				A specific angle in radians
+				Math.cos(x)				A specific angle, in radians
+				Math.tan(x)				An angle in radians
+				Math.acos(x)			A number between -1 and 1
+				Math.asin(x)			A number between -1 and 1
+				Math.atan(x)			Any number
+				Math.atan2(py,px)		The y and x coordinates of a point
+				Math.ceil(x)			ceiling function
+				Math.floor(x)			floor function
+				Math.round(x)			rounds to nearest integer
+				Math.pow(x,y)			raises x to y
+				Math.min(x,y,z)			returns minimum
+				Math.max(x,y,z)			returns maximum
+				Math.random()			generates a number between 0 and 1
+	4.6 Javascript arrays
+		4.6.1 Constructing Arrays
+				var newArray = new Array('one','two');
+				var newArray = ['one','two'];
+				alert(newArray[0]);
+			arrays can be multi-dimensional
+			access length via the length property:
+				alert(testArray.length);
+			splice allows you to add and remove array elements:
+				var fruitArray = new Array('apple','peach','orange','lemon','lime','cherry');
+				var removed = fruitArray.splice(2,2,'melon,banana');
+			slice slices an array and returns the result:
+				fruitArray.slice(2,4); // returns an array of 3 elements
+			concat concatenates one array onto the end of the other
+				var newFruit = fruitArray.concat(removed);
+			join generates a delimited string:
+				var string = fruitArray.join();
+			reverse reverses the array:
+				fruitArray.reverse();
+		4.6.2 FIFO Queues
+			push, pop, shift, and unshift work here
+	4.7 Associative Arrays: The Arrays that Aren't
+		created using Object instead of array
+			var assocArray = new Object();
+			assocArray["one"] = "one";
+			assocArray["two"] = "two";
+
+Chapter 5: Functions
+		Functions are technically objects
+	5.1 Defining a function: Let Me Count the Ways
+		5.1.1 Declarative Functions
+			declarative / static format
+			begins with the function keyword, followed by name, followed by zero or more args, then function body
+			example:
+				function functionname (param1, param2, ..., paramn) {
+					function statements
+				}
+			parsed on page load, parsed result is used when function is called
+		5.1.2 Function Returns and Arguments
+			Vars based on primitives are passed into functions by value
+			Objects are passed in by reference
+			values are returned from a function by the return statement
+		5.1.3 Anonymous Functions
+			Functions are objects, and can be created with a constructor:
+				var sayHi = new Function("toWhom","alert('Hi ' + toWhom);");
+				sayHi("World!");
+			recreated every time it's called
+			use to create functionality that's only determined at runtime
+		5.1.4 Function Literals
+			var func = function multiply(x,y) { return x * y; }
+			allows you to pass a function as a literal to another function
+		5.1.5 Function Type Summary
+			Declarative Function:
+				A function in a statement of its own, beginning with the keyword 'function.'  Declarative
+				functions are parsed once, static, and given a name for access.
+			Anonymous Function:
+				A function created using a constructor.  It's parsed each time it's accessed and is not
+				given a name specifically.
+			Function Literal or Function Expression:
+				A function created within another statement as part of an expression.  It is parsed once,
+				is static, and may or may not be given a specific name.  If it is named, the name is
+				accessible only from within the function itself.
+	5.2 Callback Functions
+	5.3 Functions and Recursion
+	5.4 Memory Leaks and Closures
+	5.5 Function as Object
+		
+Chapter 6: Catching Events
+		events are related to objects, and are not language intrinsic
+		most events in the browser are related to the DOM
+		events are classed into three types: user interface, logical, and mutation
+		Events and affected objects:
+Event				Description									Object(s)
+abort				When image is prevented from loading		an image element
+blur, focus			When object loses or receives focus			applicable to window and form elements
+change				When selection changes						applicable to form elements where value changes
+click, doubleclick	Clicking or double-clicking					Most page elements
+contextmenu			Clicking with the right mouse button		Web-page document
+error				when page or image can't load				Web-page document and image
+keydown,keyup,		Pressing key or releasing, and act of		Web-page documents and certain form elements
+	keypress			doing both
+load, unload		When image or page is finished loading		Web-page document and image (load only)
+mousedown, mouseup	Pressing down on mouse button, releasing	Most page elements
+mouseover, mouseout	moving mouse over/away from element			Most page elements
+mousemove			mouse moves									most page elements
+reset				form is reset								form
+resize				resize window or frame						window or frame
+select				selecting text								form text area or input
+scroll				when object is scrolled						window frame or element with overflow set to auto
+submit				form is submitted							form
+
+	6.1 The Event Handler at DOM level 0
+		An event handler is a property of an object that has the syntax of: onevent
+		Event handler starts with on-, and event can be load, click, etc
+		code is attached to an object by adding an event handler into the object:
+			<body onload="var i = 23; i *=3; alert(i);">
+		or
+			<body onload="calcNumber( );" >
+		event handlers are all lowercase, though mixed case works for event hanlders as HTML attributes
+		event handlers can be accessed directly as a property on each object:
+			window.onload=calcNumber();
+		to remove, assign the property to null
+		avoid inline event handlers wherever possible
+		if you return false within something called by an event handler, the browser will terminate the event
+		6.1.1 The Event Object
+			two major DOM Level 0 events--netscape/firefox and IE
+			Most interoperability tricks rely on how you access the Event object
+			IE attaches Event as a property of the window object
+				window.event.screenX, window.event.screenY
+			Netscape based browsers obtain the Event object as part of the function
+				function mouseDown (theEvent) {
+					var locString = "X = " + theEvent.screenX + " Y = " + theEvent.screenY;
+					alert(locString);
+				}
+			The following Event properties are compatible across browsers:
+				altKey		Boolean if the Alt key is pressed at time of event
+				clientX		The client X-coordinate of the event
+				clientY		The client Y-coordinate of the event
+				ctrlKey		Boolean if the Ctrl key is pressed at time of event
+				keyCode		The code (number) of the key pressed
+				screenX		The screen X-coordinate of the event
+				screenY		The screen Y-coordinate of the event
+				shiftKey	Boolean if the Shift key is pressed at time of event
+				type		Type of event
+		6.1.2 Event Bubbling
+			In Firefox, event handlers fire from top to bottom
+			in IE, they fire from bottom to top
+		6.1.3 Event handlers and this
+			use this to access the properties of the containing element:
+				window.onload=setupEvents;
+				function setupEvents( ) {
+					alert(this.status);
+				}
+		6.1.4 Generating Events
+			To trigger an event on a web page or page element, it has to be an event that's associated with that type of element
+			Example:
+				<input type="button" name="someButton" value="Some Button" />
+				...
+				document.formname.someButton.click();
+
+Chapter 7: Forms and JiT Validation
+		JiT stands for Just in Time, which refers to form validation that happens as you go through the form
+	7.1 Accessing the Form
+		Forms are accessed through the DOM via the document object
+		access via the forms property on document:
+			var theForm = document.forms[0];
+		access by name:
+			<form name="someform" ...>
+			...
+			var theForm = document.someform;
+	7.2 Attaching Events to Forms: Different Approaches
+		The primary event for a form is submit
+		the event handler is onsubmit
+		attach the event handler to the form with:
+			document.formname.onsubmit=formHandler;
+		When you attach an event handler to the form, incorporate it into a return statement:
+			<form name="someForm" onsubmit="return formHandler( );">
+		to cancel submission, have the event handler function return false
+	7.3 Selection
+		select element has following properties:
+			disabled			Whether the element is disabled
+			form				the containing form
+			length				the number of options in the options array
+			options				array of options
+			selectedIndex		For single select, number of item selected, for multiple, first item
+			type				type of element
+	7.4 Radio Buttons and Checkboxes
+		To access selected checkbox items:
+			var buttons = document.someForm.radiogroup;
+			for (var i = 0; i < buttons.length; i++) {
+				if (buttons[i].checked) {
+					alert(buttons[i].value);
+				}
+			}
+		to disable an option:
+			document.someForm.radiogroup[1].disabled=true;
+		To trap the click event for the group if you want to modify other form elements based on a radio button or checkbox,
+			attach the event handler to the group:
+			
+			document.someForm.radiogroup.onclick=handleClick;
+		7.4.1 The textarea, text, hidden and password Input Elements
+
+Chapter 8: The Sandbox and Beyond: Cookies, Connectivity and Piracy
+	8.2 All About Cookies
+		8.2.1 Storing and Reading Cookies
+			cookies are accessible through the document object
+			to create a cookie you need:
+				a cookie name / key
+				a value
+				an expiration date
+				a path associated with the cookie
+			to access it, you'll access the document cookie and then have to parse the cookie out
+			basic creation syntax--give the document cookie value a string with this format:
+				cookieName=cookieValue; expirationdate; path
+			use simple data types for cookie values
+			expiration date must bein UTC format
+			create a date object and then use the toGMTString method
+			example:
+				function setCookie(key,value) {
+					var cookieDate = new Date(2010,11,10,19,30,30);
+					document.cookie=key + "=" + escape(value) + "; expires=" +cookieDate.toGMTString() + "; path=/";
+				}
+			escape function escapes special characters in value
+
+				
+Chapter 9: The Basic Browser Objects
+	9.1 Browser Object Model Hierarchy:
+		Window---Document----forms
+			   |_navigator |_cookie
+			   |_location  |_links/anchors
+			   |_frames	   |_images
+			   |_screen     embeds/plugins
+			   |_history    all
+	9.2 The Window Object
+		All things which appear to be independent of another object are actually descended from window
+		window is always present, even when not explicitly stated
+		9.2.1 The Dialogs: Alert, Confirm and Prompt
+			Alert:
+				alert("This is an alert!");
+			Confirm creates a dialog with a cancel and OK button set, and returns a value:
+				var result = confirm("Is this ok?");
+			Prompt opens a window with a field for entering text, and cancel and OK buttons
+			takes two parameters: prompt message, and default response:
+				var response = prompt("What's your name?", "Wouldn't you like to know...");
+		9.2.2 Creating Custom Windows
+			use the open method to create a new window
+			window takes several optional parameters: url to open, name of new window, set of window options
+			example:
+				window.open("http://www.oreilly.com","test","width=600,height=400,toolbar=no,location=no");
+			specify a value for all options when opening a window
+		9.2.3 Cross Window Communication
+			to move the current window:
+				self.move(0,0);
+			To reference a window opened from code, you have to capture a reference to it:
+				var newWindow = window.open("http://www.google.com","NewWindow","...options...");
+				newWindow.moveTo(0,0);
+			new window can reference the window that opened it with opener:
+				opener.moveTo(0,0);
+		9.2.4 Modifying the Window
+			once a new window is opened, you can set the focus to that window, or reset focus to next window, with blur
+				newWindow.focus();
+				...
+				newWindow.blur();
+			you can change the size of a window:
+				newWindow.resizeBy(50,50);
+				newWindow.resizeTo(100,100);
+		9.2.5 Timers
+			two types of timers--one that's set once, and one that reoccurs at intervals
+			non-repeating timer with setTimeout
+			takes two parameters--function to fire, and ms of time
+				var tmOut = setTimeout(func,5000,"param1",param2,...,paramn);
+			to clear the timeout:
+				clearTimeout(tmOut);
+			to set an interval timer:
+				var tmOut = setInterval("functionName",5000);
+			to clear:
+				clearInterval(tmOut);
+	9.3 Frames and Location
+		frame object is a subset of the window object
+		each frame can access its frameset via the parent object
+		each frame can access child/sibling frames via the name of the frame
+		9.3.1 More on location
+		9.3.2 Remote scripting with the iframe
+			
+

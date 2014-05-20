@@ -1,0 +1,783 @@
+Notes on OpenGL Programming Guide, from
+http://glprogramming.com/red/
+
+Chapter 1: Introduction to OpenGL
+
+    What is OpenGL?
+        * ~150 commands that specify objects and operations to produce interactive 3d apps on graphics hardware
+        * Hardware independent--no windowing or user I/O commands
+        * No provided high level models--everything built from primitives
+        * Major graphics operations for rendering:
+            - Construct shapes from primitives to create objects
+            - Arrange objects in 3d space and select vantage point
+            - Calculate color of all objects
+            - Convert mathematical description of objs and color info into pixels on screen (rasterization)
+        * OpenGL works on a client-server basis
+        
+    A Smidgen of OpenGL Code
+        * Basic structure of a useful program can be simple: it initializes certain states that control how OpenGL renders, and specifies objects to render.
+        * Terms:
+            'rendering' -- creating images from models
+            'models' -- constructed from primitives (points, lines, polygons) specified by their vertices
+            'bitplane' -- area of memory that holds one bit of information for every pixel on screen
+            'framebuffer' -- collection of bitplanes holding all info that the graphics display needs to control pixels
+        * Example program:
+        
+        #include <whateverYouNeed.h>
+        
+        # Draws a white rectangle on a black background
+        main() {
+            # Non-OpenGL windowing code goes here
+            InitializeAWindowPlease();
+            
+            # Sets the color the window will clear to
+            glClearColor (0.0, 0.0, 0.0, 0.0);
+            # Clears the window
+            glClear (GL_COLOR_BUFFER_BIT);
+            # Sets color for drawing objects
+            glColor3f (1.0, 1.0, 1.0);
+            # Specifies coordinate system
+            glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+            # Defines object to be drawn
+            glBegin(GL_POLYGON);
+                glVertex3f (0.25, 0.25, 0.0);
+                glVertex3f (0.75, 0.25, 0.0);
+                glVertex3f (0.25, 0.75, 0.0);
+            glEnd();
+            # Executes buffered drawing commands
+            glFlush();
+            
+            # Non-OpenGL code to do I/O and windowing
+            UpdateTheWindowAndCheckForEvents();
+        }
+        
+    OpenGL Command Syntax
+        * Everything stats with 'gl'
+        * Commands are camel case
+        * Constants start with 'GL_' and are all caps + underscores
+        * Command suffixes like '3f' indicate things like how many arguments are given, and that they are floats
+        * The following table gives command suffixes and arg types:
+        
+        Suffix  Data Type       OpenGL Type Definition
+        b       8-bit int       GLbyte
+        s       16-bit int      GLshort
+        i       32-bit int      GLint, GLsizei        
+        f       32-bit float    GLfloat, GLclampf
+        d       64-bit float    GLdouble
+        ub      8-bit uint      GLubyte, GLboolean
+        us      16-bit uint     GLushort
+        ui      32-bit uint     GLuint, GLenum, GLbitfield
+        
+        * These all correspond to C data types
+        * If you use the OpenGL defined types, you'll avoid cross-implementation mismatches to C types, since different implementations can have different native matching
+        * Some commands can take a final letter v, which indicates that a command takes a pointer to a vector of values
+        * Vector and nonvector versions of the same command:
+        
+            glColor3f(1.0, 0.0, 0.0);
+            GLfloat color_array[] = {1.0, 0.0, 0.0};
+            glColor3fv(color_array);
+            
+    OpenGL as a State Machine
+        * You put it into various states that persist until changed
+        * State variables are things like current drawing color, viewing and projection transformations, line and polygon stipple patterns, polygon drawing modes, pixel-packing conventions, positions and characteristics of lights, material properties of objects being drawn
+        * Many state variables refer to modes enabled or disabled with glEnable() or glDisable()
+        * Every state var or mode has a default value, and you can always query for the current value
+        * Typically you use one of six commands to do so:
+            glGetBoolenv()
+            glGetDoublev()
+            glGetFloatv()
+            glGetIntegerv()
+            glGetPointerv()
+            glIsEnabled()
+        * You can save state variables on an attribute stack with things like glPushAttrib() or glPushClientAttrib()
+        * You can temporarily modify them, then restore with glPopAttrib() or glPopClientAttrib()
+        
+    OpenGL Rendering Pipeline
+        * Order of operations for rendering pipeline
+        
++--------+
+| Vertex |                      +-------------+
+|  Data  |                      |Per-vertex   |
++--------+                      |operations   |
+    +             +----------+  |and primitive|--+            +-----------+
+    |------------>|Evaluators|->|assembly     |  |            |Framebuffer|
+    |      ^      +----------+  +-------------+  |            +-----------+
+    |  +-------+                                 +               ^        |
+    +->|Display|                     +-------------+  +----------------+  |
+    +->| list  |                     |Rasterization|->|Per-fragment ops|  |
+    |  +-------+                     +-------------+  +----------------+  |
+    |      |                            ^                                 |
+    |      |                    +----------+   +--------+                 |
+    |------+------------------->|Pixel     |-->|Texture |                 |
+    +                    +------|operations|   |assembly|                 |
++--------+               |      +----------+   +--------+                 |
+| Pixel  |               |           ^                                    |
+| Data   |<--------------+           +------------------------------------+
++--------+
+
+        * Geometric data (vertices, lines, polygons) follow the path through the boxes that includes evaluators and per-vertex ops
+        * Pixel data (pixels, images, bitmaps) are treated differently for part of the process.
+        * Both types undergo rasterization and per-fragment operations before the final pixel data is written into the framebuffer
+        
+        * Display lists -- all data can be saved in a display list for current or later use, rather than having to process it in 'immediate mode'
+        * Evaluators -- Evaluators provide a method to derive vertices used to represent the surface from the control points
+        * Per-vertex ops -- vertices are converted into primitives
+        * Primitive assembly -- Clipping is elimination of polygons that fall outside a half-space, defined by a plane.
+        * Pixel operations -- Array of pixels are unpacked, scaled, biased and processed by a pixel map. Results are clamped and then written to texture memory or sent to the rasterization step
+        * Texture Assembly -- texture images are added to geometric objects
+        * Rasterization -- conversion of geometric and pixel data into fragments, where each fragment square corresponds to a pixel in the framebuffer.
+        * Fragment operations -- prior to the framebuffer, operations are performaed that may alter or throw out fragments.
+        
+    OpenGL-Related Libraries
+        * OpenGL Utility Library (GLU) helps set up matrices, perform polygon tesselation, and render surfaces
+        * For every window system, there's a library that supports opengl
+        * OpenGL Utility Toolkit (GLUT) is a window system independent toolkit
+        * OpenInventor is an obj oriented, C++ toolkit for creating interactive 3d graphics applications.
+        
+        Include Files
+            * You always want to include the gl.h header, and typically the GLU, like this:
+            
+                #include <GL/gl.h>
+                #include <GL/glu.h>
+                
+        GLUT, the OpenGL Utility Toolkit
+            * Simplifies opening windows, detecting input, etc
+            * Includes several routines to create more complex 3d objects
+            
+            Window Management
+                * glutInit(int *argc, char **argv)
+                * glutInitDisplayMode(unsigned int mode)
+                * glutInitWindowPosition(int x, int y)
+                * glutInitWindowSize(int width, int size)
+                * int glutCreateWindow(char *string)
+            
+            The Display Callback
+                * glutDisplayFunc(void (*func)(void)) -- all redraw routines
+                
+            Running the Program
+                * glutMainLoop(void) -- shows windows, starts event processing, calls registered display callback
+                
+            Program restructured to use GLUT:
+            
+                #include <GL/gl.h>
+                #include <GL/glut.h>
+                
+                void display(void)
+                {
+                    /* clear all pixels */
+                    glClear (GL_COLOR_BUFFER_BIT);
+                    
+                    /* draw white polygon */
+                    glColor3f (1.0, 1.0, 1.0);
+                    glBegin(GL_POLYGON);
+                        glVertex3f(0.25, 0.25, 0.0);
+                        glVertex3f(0.75, 0.25, 0.0);
+                        glVertex3f(0.75, 0.75, 0.0);
+                        glVertex3f(0.25, 0.75, 0.0);
+                    glEnd();
+                    
+                    glFlush();
+                }
+                
+                void init(void)
+                {
+                    glClearColor (0.0, 0.0, 0.0, 0.0);
+                    glMatrixMode(GL_PROJECTION);
+                    glLoadIdentity();
+                    glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+                }
+                
+                int main(int argc, char** argv)
+                {
+                    glutInit(&argc, argv);
+                    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+                    glutInitWindowSize(250, 250);
+                    glutInitWindowPosition(100, 100);
+                    glutCreateWindow("hello");
+                    init();
+                    glutDisplayFunc(display);
+                    glutMainLoop();
+                    return 0;
+                }            
+        
+            * To compile, you have to add the -lglut flag to gcc
+            
+            Handling Input Events
+                * You can register callback commands for events with 
+                * glutReshapeFunc(void (*func)(int w, int h)) -- window resize
+                * glutKeyboardFunc(void (*func)(unsigned char key, int x, int y))
+                * glutMouseFunc(void (*func)(int button, int state, int x, int y))
+                * glutMotionFunc(void (*func)(int x, int y))
+                
+            Managing a Background Process
+                * You can specify a function to be executed if no other events are pending with glutIdleFunc(void (*func)(void))
+                
+            Drawing Three-Dimensional Objects
+                * Pre-existing routines for drawing three dimensional objects include: cone, cube, dodecahedron, icosahedron, octahedron, sphere, teapot, tetrahedron, torus
+                * You can draw them with:
+                    - void glutWireCube(GLdouble size)
+                    - void glutSolidCube(GLdouble size)
+                    - void glutWireSphere(GLdouble radius, GLint slices, GLint stacks)
+                    - void glutSolidSphere(GLdouble radius, GLint slices, GLint stacks)
+
+    Animation
+        * Film is 24fps, but you have a fully drawn image to start with
+        * CGI is 60-120fps
+        * Most OpenGL implementations provide double buffering -- two complete color buffers, where one displays while the other is being drawn
+        * When drawing is complete, the buffers are swapped
+        * Viewer never sees a partially drawn frame
+        
+        The Refresh that Pauses
+            * If your frames can be drawn in less than 1/60th of a second, you can get 60fps (if your implementation of swap_the_buffers() waits for the current screen refresh period to end before swapping)
+            * If you drop below 1/60th for drawing, you will downgrade to one of 60, 30, 20, 15, 12, etc
+            * If your draw time is close to one of the jumps, you can get an irregular frame rate--better in this instance to downgrade intentionally by inserting a tiny delay
+            
+        Motion = Redraw + Swap
+            * Typically easier to redraw and swap rather than try to figure out what part of the buffer changed from frame to frame
+            
+        Program to spin the square on mouse input:
+        
+            #include <GL/gl.h>
+            #include <GL/glu.h>
+            #include <GL/glut.h>
+            #include <stdlib.h>
+            
+            static GLfloat spin = 0.0;
+            
+            void init(void)
+            {
+                glClearColor (0.0, 0.0, 0.0, 0.0);
+                glShadeModel (GL_FLAT);
+            }
+            
+            void display(void)
+            {
+                glClear (GL_COLOR_BUFFER_BIT);
+                glPushMatrix();
+                glRotatef(spin, 0.0, 0.0, 1.0);
+                glColor3f(1.0, 1.0, 1.0);
+                glRectf(-25.0, -25.0, 25.0, 25.0);
+                glPopMatrix();
+                glutSwapBuffers();
+            }
+            
+            void spinDisplay(void)
+            {
+                spin = spin + 2.0;
+                if (spin > 360.0)
+                    spin = spin - 360.0;
+                glutPostRedisplay();
+            }
+            
+            void reshape(int w, int h)
+            {
+                glViewport (0, 0, (GLsizei) w, (GLsizei) h);
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
+                glOrtho(-50.0, 50.0, -50.0, 50.0, -1.0, 1.0);
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+            }
+            
+            void mouse(int button, int state, int x, int y)
+            {
+                switch (button) {
+                    case GLUT_LEFT_BUTTON:
+                        if (state == GLUT_DOWN)
+                            glutIdleFunc(spinDisplay);
+                        break;
+                    case GLUT_MIDDLE_BUTTON:
+                        if (state == GLUT_DOWN)
+                            glutIdleFunc(NULL);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            
+            int main (int argc, char** argv)
+            {
+                glutInit(&argc, argv);
+                glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
+                glutInitWindowSize(250, 250);
+                glutInitWindowPosition(100, 100);
+                glutCreateWindow(argv[0]);
+                init();
+                glutDisplayFunc(display);
+                glutReshapeFunc(reshape);
+                glutMouseFunc(mouse);
+                glutMainLoop();
+                return 0;
+            }        
+                
+                
+Chapter 2: State Management and Drawing Geometric Objects
+    
+    A Drawing Survival Kit
+        
+        Clearing the Window
+            * It's more efficient to have a single command that can clear drawing buffers, rather than trying to draw over the contents with a "blank" value like a rectangle.
+            * You set the clearing color as a state variable
+            * Clearing looks like
+            
+                glClearColor(0.0, 0.0, 0.0, 0.0);
+                glClearDepth(1.0);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                
+            * You give glClear() a bitwise OR'd list of the buffers to clear
+            * Multiple buffers exist:
+            
+                Color buffer: GL_COLOR_BUFFER_BIT
+                Depth buffer: GL_DEPTH_BUFFER_BIT
+                Accumulation: GL_ACCUM_BUFFER_BIT
+                Stencil:      GL_STENCIL_BUFFER_BIT
+                
+        Specifying a Color
+            * Shape and color are independently described
+            * Drawing an object uses the current coloring scheme
+            * The color is set until changed
+            * To set a color, use glColor3f(), with RGB as float args from 0-1
+
+        Forcing Completion of Drawing
+            * You can use glFlush() to force the client to send a network packet, even if the packet isn't full yet.  In a non-network context, may have no effect
+            * Some commands automatically flush pending commands to the network before they can occur, like those that swap buffers
+            * glFinish() does a network flush, then waits for notification that the drawing is complete in the framebuffer. Useful for syncing tasks.
+            * Graphics process is blocked between issuing glFinish() and receiving notification of the drawing completion
+            
+        Coordinate System Survival Kit
+            * When you open a window or move/resize, window system sends an event
+            * If using GLUT, your registered function via glutReshapeFunc() will run, and must:
+                - Reestablish hte rectangular region that will be the new rendering canvas
+                - Define the coordinate system to which objects will be drawn
+            * Example reshape callback function:
+            
+                # new w and h of window are passed in from GLUT
+                void reshape(int w, int h)
+                {
+                    # sets the whole window as the drawing area
+                    glViewport (0, 0, (GLsizei) w, (GLsizei) h);
+                    glMatrixMode (GL_PROJECTION);
+                    glLoadIdentity();
+                    gluOrtho2D (0.0, (GLdouble) w, 0.0, (GLdouble) h);
+                }
+                
+    Describing Points, Lines and Polygons
+        
+        What are Points, Lines and Polygons?
+            * Point -- represented by a set of floating point numbers called a vertex. All internal calculations are done as if vertices are three-dimensional.
+            * Lines -- refers to a 'line segment', does not extend to infinity as with a mathematical line. Specified in terms of vertices of their endpoints.
+            * Polygons -- areas enclosed by loops of line segments, where the segments are specified by the vertices at their endpoints.
+            * There are some strong restrictions on what constitutes a primitive polygon:
+                - Cannot intersect another polygon
+                - Must be convex--no indentations
+                - Must be drawable with a single closed loop of line segments
+            * Rectangles -- defined with glRect*(), probably optimized over drawing it as a polygon
+            * Curves and Curved Surfaces -- subdividing curves and replacing them with a series of line segments to sub-pixel definition
+            
+        Specifying Vertices
+            * All geometric objects are described as an ordered set of vertices
+            * glVertex*() speficies a vertex
+            * Legal uses of glVertex*():
+                glVertex2s(2, 3);
+                glVertex3d(0.0, 0.0, 3.1415926535898);
+                glVertex4f(2.3, 1.0, -2.2, 2.0);
+                GLdouble dvect[3] = {5.0, 9.0, 1992.0};
+                glVertex3dv(dvect);
+            
+        OpenGL Geometric Drawing Primitives
+            * To create a primitive, sandwich vertex definitions between a call to glBegin() and glEnd(), like this:
+                glBegin(GL_POLYGON);
+                    glVertex2f(0.0, 0.0);
+                    glVertex2f(0.0, 3.0);
+                    glVertex2f(4.0, 3.0);
+                    glVertex2f(6.0, 1.5);
+                    glVertex2f(4.0, 0.0);
+                glEnd();
+                
+            * Table with the possible arguments to glBegin():
+            
+            Value               Meaning
+            GL_POINTS           individual points
+            GL_LINES            pairs of vertices as individual line segments
+            GL_LINE_STRIP       series of connected line segments
+            GL_LINE_LOOP        same, with a segment connecting first and last
+            GL_TRIANGLES        triples of vertices interpreted as triangles
+            GL_TRIANGLE_STRIP   linked strip of triangles
+            GL_TRIANGLE_FAN     linked fan of triangles
+            GL_QUADS            quadruples of vertices as four sided polygons
+            GL_QUAD_STRIP       linked strip of quadrilaterals
+            GL_POLYGON          boundary of a simple, complex polygon
+            
+            * Restrictions on using glBegin() and glEnd(). You can supply vertex info, color info, etc.  List of valid commands to use after glBegin():
+            
+            Command                     Purpose of command
+            glVertex*()                 set vertex coords
+            glColor*()                  set current color
+            glIndex*()                  set current color index
+            glNormal*()                 set normal vector coords
+            glTexCoord*()               set texture coords
+            glEdgeFlag*()               control drawing of edges
+            glMaterial*()               set material properties
+            glArrayElement()            extract vertex array data
+            glEvalCoord*(),             generate coordinates
+              glEvalPoint*()
+            glCallList(), glCallLists() execute display lists
+            
+            * Only OpenGL commands are restricted--other programming language constructs are valid inside the calls.  Example:
+            
+                #define PI 3.1415926535898
+                GLint circle_points = 100;
+                glBegin(GL_LINE_LOOP);
+                for (i = 0; i < circle_points; i++) {
+                    angle = 2 * PI * i/circle_points;
+                    glVertex2f(cos(angle), sin(angle));
+                }
+                glEnd();
+            
+    Basic State Management
+        * Most states are initially inactive, and may have a cost to activate
+        * Turn on and off states with glEnable() and glDisable()
+        * Check for current boolean state with glIsEnabled(), which returns GL_TRUE or GL_FALSE
+        * For non-boolean state variables, you can use
+            - glGetBooleanv()
+            - glGetIntegerv()
+            - glGetFloatv()
+            - glGetDoublev()
+            - glGetPointerV()
+        
+    Displaying Points, Lines and Polygons
+        * By default a point is a pixel, a line is solid and a pixel wide, and polygons are drawn solidly filled in.
+        
+        Point Details
+            * glPointSize() controls the size of a rendered point, in pixels
+            * GL_POINT_SIZE_RANGE gives you the limit of standard, aliased points
+            
+        Line Details
+            * You can control width and stippling
+            
+            Wide Lines
+                * You can set line width with glLineWidth(GLfloat width)
+                * GL_LINE_WIDTH_RANGE gives the limit of non-antialiased lines
+            Stippled Lines
+                * glLineStipple() defines the stipple pattern
+                * glEnable(GL_LINE_STIPPLE) enables stippling
+                * glLineStipple() takes a hex pattern for the stipple order
+                
+        Polygon Details
+            * Typically drawn by filling all pixels enclosed within the boundary
+            * Can be drawn as outlines or vertex points
+            * Can be solidly filled or stippled
+            * Adjacent edges are only drawn once per edge
+            
+            Polygons as Points, Outlines, or Solids
+                * By default, the front and back of a polygon are drawn the same way, but this can be changed with glPolygonMode()
+                * Front faces filled, back faces outlined:
+                
+                    glPolygonMode (GL_FRONT, GL_FILL);
+                    glPolygonMode (GL_BACK, GL_LINE);
+                    
+            Reversing and Culling Polygon Faces
+                * Polygons whose vertices appear in counterclockwise order on screen are front-facing.
+                * Any orientable solid can be made of single facing polygons, forward or backward--mobius strips and klein bottles aren't orientable
+                * If you consistently describe a model of an orientable surface but with the clockwise orientation on the outside, you can swap what opengl sees as the back face with glFrontFace(GL_CCW) or glFrontFace(GL_CW)
+            
+            Stippling Polygons
+                * Drawn with a solid pattern by default
+                * Can be filled with a 32bit by 32bit stipple pattern with glPolygonStipple() and glEnable(GL_POLYGON_STIPPLE)
+                
+            Marking Polygon Boundary Edges
+                * You can subdivide a nonconvex polygon into triangles
+                * When you do so, you can tell OpenGL when each vertex precedes a boundary edge, so that it can not draw non-boundary edges
+                * glEdgeFlag*() lets you control that setting
+                * Example:
+                    
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+                    glBegin(GL_POLYGON);
+                        glEdgeFlag(GL_TRUE);
+                        glVertex3fv(V0);
+                        glEdgeFlag(GL_FALSE);
+                        glVertex3fv(V1);
+                        glEdgeFlag(GL_TRUE);
+                        glVertex3fv(V2);
+                    glEnd();
+                    
+    Normal Vectors
+        * A normal vector, or 'normal', is a vector that points in a direction perpendicular to a surface.
+        * You can specify a normal for each polygon or each vertex
+        * You can only assign normals at vertices
+        * An object's normals define the orientation of its surface in space
+        * You define normal vectors for an object at the same time you define its geometry
+        * you use glNormal*() to set the current normal to the value of the argument passed in.
+        * Example of surface normals at vertices:
+        
+            glBegin (GL_POLYGON);
+                glNormal3fv(n0);
+                glVertex3fv(v0);
+                glNormal3fv(n1);
+                glVertex3fv(v1);
+                glNormal3fv(n2);
+                glVertex3fv(v2);
+            glEnd();
+            
+        * At any single point on a surface, there are two vectors that are perpendicular to the surface, but the normal is by convention the one to the outside of the object.
+        * Vectors indicate direction, not length
+        * Normal vectors remain normalized as long as model transformations only include rotations and translations
+        
+    Vertex Arrays
+        * Function calls can have a lot of overhead, and if you're making one call per vertex, that's a lot of function calls
+        * Redundant vertices shared between polygons don't have to be processed twice, but they may be if you don't use vertex arrays
+        * Three steps to using vertex arrays to render geometry:
+            1) Activate up to six arrays, each to store a different type of data: vertex coordinates, RGBA colors, color indices, surface normals, texture coordinates, or polygon edge flags
+            2) Put data into the array or arrays.
+            3) Draw geometry with the data.
+            
+        Step 1: Enabling Arrays
+            * Call glEnableClientState() with an enumerated parameter, to activate a chosen array.
+            * Choices are GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_INDEX_ARRAY, GL_NORMAL_ARRAY, GL_TEXTURE_COORD_ARRAY, GL_EDGE_FLAG_ARRAY
+            * If you use lighting, you may want to define a surface normal ofor every vertex.
+            * Call glDisableClientState() to to turn off activated arrays
+            
+        Step 2: Specifying Data for the Arrays
+            * There are six routines to specify arrays, and a command to specify multiple client-space arrays at once from an interleaved array
+            * They are:
+                - glVertexPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer)
+                - glColorPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer)
+                - glIndexPointer(GLenum type, GLsizei stride, const GLvoid *pointer)
+                - glNormalPointer(GLenum type, glsizei stride, const GLvoid *pointer)
+                - glTexCoordPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer)
+                - glEdgeFlagPointer(GLsizei stride, const GLvoid *pointer)
+            * Example code for enabling and loading vertex arrays:
+            
+                static GLint vertices[] = {25, 25,
+                                           100, 325,
+                                           175, 25,
+                                           175, 325,
+                                           250, 25,
+                                           325, 325};
+                static GLfloat colors[] = {1.0, 0.2, 0.2,
+                                           0.2, 0.2, 1.0,
+                                           0.8, 1.0, 0.2,
+                                           0.75, 0.75, 0.75,
+                                           0.35, 0.35, 0.35,
+                                           0.5, 0.5, 0.5};
+                glEnableClientState (GL_COLOR_ARRAY);
+                glEnableClientState (GL_VERTEX_ARRAY);
+                
+                glColorPointer (3, GL_FLOAT, 0, colors);
+                glVertexPointer (2, GL_INT, 0, vertices);
+                
+            * Using a stride of zero requires that the array be tightly packed, and homogeneous
+            * A non-zero stride value is useful for interleaved data
+            * This is an array of GLfloats, with six vertices, each three color values interleaved with the x,y, z coords:
+            
+                static GLfloat intertwined[] =
+                    {1.0, 0.2, 1.0, 100.0, 100.0, 0.0,
+                     1.0, 0.2, 0.2, 0.0, 200.0, 0.0,
+                     1.0, 1.0, 0.2, 100.0, 300.0, 0.0,
+                     0.2, 1.0, 0.2, 200.0, 300.0, 0.0,
+                     0.2, 1.0, 1.0, 300.0, 200.0, 0.0,
+                     0.2, 0.2, 1.0, 200.0, 100.0, 0.0};
+                    
+            * To reference only the color values, you'd use this call to jump ahead six times the size of one data chunk:
+            
+                glColorPointer (3, GL_FLOAT, 6 * sizeof(GLfloat), intertwined);
+                
+            * To get the vertices, you start from further in the array:
+            
+                glVertexPointer(3, GL_FLOAT, 6 * sizeof(GLfloat), &intertwined[3]);
+                
+        Step 3: Dereferencing and Rendering
+            * Until the vertex arrays are dereferenced, the arrays remain on the client side, and their contents can be changed
+            * There are three ways to obtain data:
+                1) from a single array element (indexed location)
+                2) from a sequence of array elements
+                3) from an ordered list of array elements
+            
+            Dereference a Single Array Element
+                * You use glArrayElement(GLint ith) to obtain the data of one vertex for all currently enabled arrays
+                * Typically called between glBegin() and glEnd()
+                * Example that draws a triangle using the third, fourth and sixth vertices from enabled vertex arrays:
+                
+                    glEnableClientState(GL_COLOR_ARRAY);
+                    glEnableClientState(GL_VERTEX_ARRAY);
+                    glColorPointer(3, GL_FLOAT, 0, colors);
+                    glVertexPointer(2, GL_INT, 0, vertices);
+                    
+                    glBegin(GL_TRIANGLES);
+                        glArrayElement(2);
+                        glArrayElement(3);
+                        glArrayElement(5);
+                    glEnd();
+                    
+                * If the array contents are changed between glBegin() and glEnd(), there's no guarantee that you'll get original data or changed data for a requested element.
+                
+            Dereference a List of Array Elements
+                * Where glArrayElement() lets you hop around your arrays, glDrawElements() does so in a more orderly way.
+                * Has the same general effect as:
+                
+                    int i;
+                    glBegin(mode);
+                    for (i = 0; i < count; i++)
+                        glArrayElement(indices[i]);
+                    glEnd();
+                    
+                * Using glDrawElements() to render a cube:
+                
+                    static GLubyte frontIndices = {4, 5, 6, 7};
+                    static GLubyte rightIndices = {1, 2, 6, 5};
+                    static GLubyte bottomIndices = {0, 1, 5, 4};
+                    static GLubyte backIndices = {0, 3, 2, 1};
+                    static GLubyte leftIndices = {0, 4, 7, 3};
+                    static GLubyte topIndices = {2, 3, 7, 6};
+                    
+                    glDrawElements(GL_QUADS, 4, GL_UNSIGNED_BYTE, frontIndices);
+                    glDrawElements(GL_QUADS, 4, GL_UNSIGNED_BYTE, rightIndices);
+                    glDrawElements(GL_QUADS, 4, GL_UNSIGNED_BYTE, bottomIndices);
+                    glDrawElements(GL_QUADS, 4, GL_UNSIGNED_BYTE, backIndices);
+                    glDrawElements(GL_QUADS, 4, GL_UNSIGNED_BYTE, leftIndices);
+                    glDrawElements(GL_QUADS, 4, GL_UNSIGNED_BYTE, topIndices);
+                    
+                * Or, alternately:
+                
+                    static GLubyte allIndices = {4, 5, 6, 7, 1, 2, 6, 5, 0, 1, 5, 4, 0, 3, 2, 1, 0, 4, 7, 3, 2, 3, 7, 6};
+                    glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, allIndices);
+                    
+                * glDrawElements() doesn't go inside glBegin() and glEnd()
+                
+            Dereference a Sequence of Array Elements
+                * glDrawArrays() plows through arrays instead of hopping through them
+                * Effect is the same as:
+                
+                    int i;
+                    glBegin(mode);
+                    for (i = 0; i < count; i++)
+                        glArrayElement(first + i)
+                    glEnd();
+                    
+        Interleaved Arrays
+            * glInterleavedArrays() lets you specify multiple vertex arrays at once
+            * does not support edge flags
+            * has 14 different interleaving states
+            
+    Attribute Groups
+        * You can save and restore values of a collection of related state variables with a single command
+        * Related state variables are grouped into an attribute group
+        * Some variables are in more than one group
+        * You can use glPushAttrib() and glPopAttrib() to access them
+        * There are two attribute stacks: the original, server state variables, and a client state variable stack
+        * The two client attribute groups can be saved and restored with glPushClientAttrib() and glPopClientAttrib()
+        * The special mask, GL_ALL_ATTRIB_BITS, is used to save and restore all state variables in all the attribute groups
+        
+    Some Hints for Building Polygonal Models of Surfaces
+        * Keep polygon orientations consistent in terms of clockwise/counter clockwise
+        * When you subdivide a surface, watch out for any nontriangular polygons.
+        * Keep in mind the tradeoff between image quality and display speed
+        * For HQ images, subdivide more on the silhouette edges than in the interior
+        * Try to avoid T intersections between polygons, they can cause cracks in the model
+        * If you're constructing a closed surface, make sure to use exactly the same numbers for coordinates at the beginning and end of a closed loop, or rounding errors will create gaps and cracks
+        
+    An Example: Building an Icosahedron
+    
+
+Chapter 3: Viewing
+    * Three operations convert an object's 3d coordinates to pixel positions on screen:
+        1) Transformations -- represented by matrix multiplication, including modeling, viewing, and projection operations. Those include rotation, translation, scaling, reflecting, orthographic projection, and perspective projection.
+        2) Clipping -- Objects that lie outside the window must be clipped by throwing out objects on one side of a clipping plane.
+        3) Viewport Transformation -- a correspondence has to be established between the transformed coordinates and screen pixels.
+        
+    Overview: The Camera Analogy
+        * Computer viewing of a rendered image is analogous to:
+            - Positioning the viewing volume ("camera") in the world
+            - Positioning the model in the world / finding the thing to photograph
+            - Determining the shape of the viewing volume / lensing the scene
+            - Creating a viewpoint / viewing a photograph
+        * The order in which operations occur on the computer:
+            Object Coordinates are a Vertex, which
+            goes through the Modelview Matrix, where eye coordinates are produced, which
+            go through the Projection Matrix, where clip coords are produced, which
+            go through Perspective Division, where normalized device coords are produced, which
+            go through Viewport Transformation, producing window coordinates
+        
+    A Simple Example: Drawing a Cube
+        * Code:
+        
+            #include <GL/gl.h>
+            #include <GL/glu.h>
+            #include <GL/glut.h>
+            
+            void init(void)
+            {
+                glClearColor (0.0, 0.0, 0.0, 0.0);
+                glShadeModel (GL_FLAT);
+            }
+            
+            void display(void)
+            {
+                glClear (GL_COLOR_BUFFER_BIT);
+                glColor3f (1.0, 1.0, 1.0);
+                glLoadIdentity(); /* clear the matrix */
+                /* viewing transformation */
+                gluLookAt (0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+                glScalef (1.0, 2.0, 1.0) /* modeling transformation */
+                glutWireCube (1.0);
+                glFlush();
+            }
+            
+            void reshape(int w, int h)
+            {
+                glViewport (0, 0, (GLsizei) w, (GLsizei) h);
+                glMatrixMode (GL_PROJECTION);
+                glLoadIdentity();
+                glFrustum (-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
+                glMatrixMode (GL_MODELVIEW);
+            }
+            
+            int main(int argc, char** argv)
+            {
+                glutInit(&argc, argv);
+                glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+                glutInitWindowSize (500, 500);
+                glutInitWindowPosition (100, 100);
+                glutCreateWindow (argv[0]);
+                init();
+                glutDisplayFunc(display);
+                glutReshapeFunc(reshape);
+                glutMainLoop();
+                return 0;
+            }   
+            
+        The Viewing Transformation
+            * Analogous to positioning and aiming a camera
+            * glLoadIdentity() sets the current matrix to the identity matrix
+            * if you don't clear it, you end up combining with previous matrices
+            * args to gluLookAt() indicate where the camera is, where it is aimed, and which way is up.
+            
+        The Modeling Transformation
+            * Positions and orients the model
+            * gScalef() changes how scaling happens along the three axes
+            
+        The Projection Transformation
+            * Like choosing a lens for the camera
+            * Determins the field of view or viewing volume, and therefore what objects are inside it and somewhat how they look
+            * Determines how objects are projected onto the screen
+            * Two basic kinds of projectsions in OpenGL: perspective and orthographic
+            * Perspective projection is specified with glFrustum()
+            * Orthographic projection maps objects directly onto the screen without affecting their relative size.
+            * Before glFrustum() can be called, you have to call glMatrixMode(GL_PROJECTION), which indicates that the current matrix specifies the projection transformation--calls after that affect the projection matrix
+            
+        The Viewport Transformation
+            * With the projection transformation, determines how a scene gets mapped onto the computer screen
+            * Where the projection transformation specifies the mechanics of how the mapping should occur, the viewport indicates the shape of the available screen area into which the scene is mapped.
+            * Arguments to glViewport() describe the origin of the available space within the window and the width and height of the available screen area, measured in pixels on screen.
+            * Needs to be called within reshape()--if the window changes size, the viewport needs to change size too
+        
+        Drawing the Scene
+            * When the transformations are done, you can draw the scene
+            * As the scene is drawn, each vertex is transformed with the modeling and viewing transformations, and then transformed by the projection transformation and clipped it if lies outside the viewing volume
+            * Then the remaining transformed vertices are divided by w and mapped onto the viewport
+            
+    General-Purpose Transformation Commands
+        * glLoadMatrix*() and glMultMatrix*() let you specify any transformation matrix directly and then multiply the current matrix by that specified one
+        * You have to state whether you want to modify the modelview or the projection matrix before supplying a transformation command
+        * You choose the matrix with glMatrixMode() with one of GL_MODELVIEW, GL_PROJECTION or GL_TEXTURE
+        * glLoadIdentity() clears the currently modifiable matrix

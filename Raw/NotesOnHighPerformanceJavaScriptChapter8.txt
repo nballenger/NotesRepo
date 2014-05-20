@@ -1,0 +1,246 @@
+Notes on High Performance JavaScript
+
+Chapter 8: Programming Practices
+
+8.1 Avoid Double Evaluation
+    * You can run a string as arbitrary code, from within running code, in four ways:
+        - eval()
+        - the Function() constructor
+        - setTimeout()
+        - setInterval()
+        
+    * Examples:
+    
+        var num1 = 5,
+            num2 = 6,
+            
+            result = eval("num1 + num2"),
+            
+            sum = new Function("arg1", "arg2", "return arg1 + arg2");
+            
+        setTimeout("sum = num1 + num2", 100);
+        setInterval("sum = num1 + num2", 100);
+        
+    * Evaluating JS from within Javascript incurs a double evaluation penalty: first the
+        code is evaluated as normal, then while executing, another evaluation happens to
+        execute the code contained in a string.
+    * A new interpreter/compiler instance is created every time eval() is called.
+    * Function(), setTimeout(), and setInterval() all trigger the same problem
+    * Avoid eval() and Function() calls whenever possible
+    * For setTimeout() and setInterval(), pass a function as the first arg instead of a string:
+    
+        setTimeout(function() { sum = num1 + num2; }, 100);
+        setInterval(function() { sum = num1 + num2; }, 100);
+        
+8.2 Use Object/Array Literals
+    * No faster method for creating objects and arrays than literals
+    * Literals take up less space in code and evaluate faster
+    
+8.3 Don't Repeat Work
+    * Repeating work every time you call a function is costly, so do stuff like:
+    
+    8.3.1 Lazy Loading
+        * No work is done until the information is necessary
+        * Bad versions of code that run checks on every call:
+        
+            function addHandler(target, eventType, handler) {
+                if (target.addEventListener) {  // DOM2 Events
+                    target.addEventListener(eventType, handler, false);
+                }
+                else {  // assume IE
+                    target.attachEvent("on" + eventType, handler);
+                }
+            }
+            
+            function removeHandler(target, eventType, handler) {
+                if (target.removeEventListener) { // DOM2 Events
+                    target.removeEventListener(eventType, handler, false);
+                }
+                else {  // assume IE
+                    target.detachEvent("on" + eventType, handler);
+                }
+            }
+            
+        * Better versions, that overwrites itself on the first call:
+        
+            function addHandler(target, eventType, handler) {
+                // overwrite the existing function
+                if (target.addEventListener) {      // DOM2 Events
+                    addHandler = function(target, eventType, handler) {
+                        target.addEventListener(eventType, handler, false);
+                    };
+                }
+                else {  // assume IE
+                    addHandler = function(target, eventType, handler) {
+                        target.attachEvent("on" + eventType, handler);
+                    };
+                }
+                // call the new function
+                addHandler(target, eventType, handler);
+            }
+            
+            function removeHandler(target, eventType, handler) {
+                // overwrite the existing function
+                if (target.removeEventListener) {   // DOM2 Events
+                    removeHandler = function(target, eventType, handler) {
+                        target.addEventListener(eventType, handler, false);
+                    };
+                }
+                else {  // assume IE
+                    removeHandler = function(target, eventType, handler) {
+                        target.detachEvent("on" + eventType, handler);
+                    };
+                }
+                // call the new function
+                removeHandler(target, eventType, handler);
+            }|
+            
+    8.3.2 Conditional Advance Loading
+        * Do the detection up front while the script is loading, instead of waiting for a
+            function call to happen:
+            
+            var addHandler = document.body.addEventListener ?
+                             function(target, eventType, handler) {
+                                target.addEventListener(eventType, handler, false);
+                             }:
+                             function(target, eventType, handler) {
+                                target.attachEvent("on" + eventType, handler);
+                             };
+                            
+
+8.4 Use the Fast Parts
+    8.4.1 Bitwise Operators
+        * All JS numbers are stored in IEEE-754 64-bit format
+        * For bitwise ops, the number is converted to a signed 32-bit representation
+        * Each operator works directly on the 32-bit representation
+        * Incredibly fast compared to other mathematical and Boolean ops in JS
+        * You can convert any number to a binary representation by using toString(2):
+        
+            var num1 = 25,
+                num2 = 3;
+                
+            console.log(num1.toString(2));      // "11001"
+            console.log(num2.toString(2));      //    "11"                            
+            
+        * Note the omission of leading zeroes
+        
+        * There are four bitwise JS operators:
+        
+            - Bitwise AND: &
+                Returns a number with a 1 in each bit where both numbers have a 1
+                
+            - Bitwise OR: |
+                Returns a number with a 1 in each bit where either number has a 1
+                
+            - Bitwise XOR: ^
+                Returns a number with a 1 in each bit where exactly one number has a 1
+                
+            - Bitwise NOT: ~
+                Returns 1 in each position where the number has a 0 and vice versa
+                
+        * Usage example:
+        
+            // AND:
+            var result1 = 25 & 3;               // 1
+            console.log(result.toString(2));    // "1"
+            
+            // OR:
+            var result2 = 25 | 3;               // 27
+            console.log(result2.toString(2));   // "11011"
+            
+            // XOR:
+            var result3 = 25 ^ 3;               // 26
+            console.log(result3.toString(2));   // "11010"
+            
+            // NOT:
+            var result4 = 25 ~ 3;               // -26
+            console.log(result4.toString(2));   // "-11010"
+            
+        * Couple of ways to use bitwise ops to speed up your JS
+        * One is to use bitwise ops instead of purely mathematical operations
+        * Row coloring with modulo:
+        
+            for (var i = 0, len=rows.length; i < len; i++) {
+                if (i % 2) {
+                    className = "even";
+                }
+                else {
+                    className = "odd";
+                }
+                // apply class
+            }
+            
+        * A number is even if its first bit is zero:
+        
+            for (var i = 0, len=rows.length; i < len; i++) {
+                if (i & 1) {
+                    className = "odd";
+                }
+                else {
+                    className = "even";
+                }
+                // apply class
+            }
+
+        * Second version is up to 50% faster
+        
+        * You can also use bitwise ops in bitmasking
+        * Lets a number of options be present at the same time
+        * Each option is a value equivalent to a power of 2:
+        
+            var OPTION_A = 1;
+            var OPTION_B = 2;
+            var OPTION_C = 4;
+            var OPTION_D = 8;
+            var OPTION_E = 16;
+            
+            // A single number containing multiple settings:
+            var options = OPTION_A | OPTION_C | OPTION_D;
+            
+            // is option A in the list?
+            if (options & OPTION_A) {
+                // do something
+            }
+            
+            // is option B in the list?
+            if (options & OPTION_B) {
+                // do something
+            }
+            
+        * If there are a number of options that are being saved together and checked
+            frequently, bitmasks can help speed up the overall approach
+            
+    8.4.2 Native Methods
+        * Your code will never be faster than the parts of JS that are actually written
+            in a lower level language.
+        * Always use the Math methods before writing something yourself
+        * Constants:
+        
+            Math.E          Base of the natural logarithm
+            Math.LN10       Natural log of 10
+            Math.LN2        Natural log of 2
+            Math.LOG2E      Base 2 log of E
+            Math.LOG10E     Base 10 log of E
+            Math.PI         Value of pi
+            Math.SQRT1_2    Value of square root of 1/2
+            Math.SQRT2      Square root of 2
+            
+        * Methods:
+            
+            Math.abs(num)           absolute value of num
+            Math.exp(num)           Math.E^num
+            Math.log(num)           Log of num
+            Math.pow(num, power)    num^power
+            Math.sqrt(num)          Square root of num
+            Math.acos(x)            Arc cosine of x
+            Math.asin(x)            Arc sine of x
+            Math.atan(x)            Arc tangent of x
+            Math.atan2(y,x)         Arc tangent of y/x
+            Math.cos(x)             Cosine of x
+            Math.sin(x)             Sine of x
+            Math.tan(x)             Tangent of x
+            
+        * The Selectors API is also very fast for selecting things based on CSS--faster
+            than jQuery.
+        * querySelector() and querySelectorAll() complete on average in 10% of the time
+            it takes to do JS based CSS querying

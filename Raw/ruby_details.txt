@@ -1,0 +1,661 @@
+Chapter 3: Conditional Love
+
+If
+
+    # Simple if
+    if 1 == 1 then
+        print "True!"
+    end
+    
+    # Variable comparison
+    x = 256
+    if x == 256
+        puts "x equals 256"
+    end
+    
+    # Oneliners
+    if x == 256 then puts "x equals 256" end
+    puts "x equals 256" if x == 256
+    if x == 256: puts "x equals 256" end
+
+Logical operators
+    && || !
+    and or not
+    
+Comparison operators:
+    == != > < >= <=
+    
+Else and elsif
+
+    # Simple if else
+    if queue
+        pr = true
+    else
+        pr = false
+    end
+    
+    # If elsif
+    lang = :es
+    if lang == :en
+        print "dog"
+    elsif lang == :es
+        print "perro"
+    elsif langu == :fr
+        print "chien"
+    elsif lang == :de
+        print "Hund"
+    else
+        puts "No language set"
+    end
+    
+    # Using colons:
+    
+    if lang == :en: print "dog"
+    elsif lang == :es: print "perro"
+    elsif langu == :fr: print "chien"
+    elsif lang == :de: print "Hund"
+    else puts "No language set"
+    end
+    
+Ternary
+    
+    # Simple example
+    label = length == 1 ? " argument" : " arguments"
+    
+The case statement
+
+    # Simple case
+    lang = :fr
+    dog = case lang
+        when :en: "dog"
+        when :es: "perro"
+        when :fr: "chien"
+        when :de: "Hund"
+        else      "dog"
+    end
+    
+    # Range tests
+    scale = 8
+    case scale
+        when    0: puts "lowest"
+        when 1..3: puts "medium-low"
+        when 4..5: puts "medium"
+        when 6..7: puts "medium-high"
+        when 8..9: puts "high"
+        when   10: puts "highest"
+        else       puts "off scale"
+    end
+    
+The while loop
+
+    # simple while
+    i = 0
+    breeds = ["quarter", "arabian", "appalosa", "paint"]
+    puts breeds.size # => 4
+    temp = []
+    
+    while i < breeds.size do
+        temp << breeds[i].capitalize
+        i += 1
+    end
+    
+    temp.sort!
+    breeds.replace(temp)
+    p breeds # => ["Appalosa", "Arabian", "Paint", "Quarter"]
+    
+    
+    # different form of the loop:
+    while i < breeds.size
+        temp << breeds[i].capitalize
+        i += 1
+    end
+    
+
+    # another form
+    temp = 98.3
+    begin
+        print "Your temp is " + temp.to_s + " Fahrenheit. "
+        puts "I think you're okay."
+        temp += 0.1
+    end while temp < 98.6
+    
+    puts "Your temperature is " + temp.to_s + " Fahrenheit. Are you okay?"
+
+    
+    # As a statement modifier
+    cash = 100_000.00
+    sum = 0
+    cash += 1.00, sum while cash < 1_000_000.00
+    
+    
+Break statement
+
+    while i < breeds.size
+        temp << breeds[i].capitalize
+        break if temp[i] == "Arabian"
+        i += 1
+    end
+    p => temp
+    
+Unless/until
+
+    # Simple unless
+    unless lang == "de"
+        dog = "dog"
+    else
+        dog = "Hund"
+    end
+
+    
+    # Inline form
+    puts age += 1 unless age > 29
+
+    
+    # Like do/while
+    weight = 150
+    begin
+        puts "Weight: " + weight.to_s
+        weight += 5
+    end until weight == 200
+
+    
+    # As statement modifier:
+    puts age += 1 until age > 28
+    
+The loop method
+    
+    # runs continuously until break, comes from Kernel
+    loop do
+        print "Type something: "
+        line = gets
+        break if line =~ /q|Q/
+        puts line
+    end
+    
+The for loop
+
+    # simple example
+    for i in 1..5 do
+        print i, " "
+    end
+    
+    # alternately
+    for i in 1..5
+        print i, " "
+    end
+    
+    # one liner
+    for i in 1..5 do print i, " " end
+    
+    # using 'times'
+    10.times { |i| print i, " " }
+    
+    # using 'upto'    
+    1.upto(10) { |i| print i, " " }
+    
+    # using 'downto'
+    5.downto(1) { |i| print i, " " }
+    
+BEGIN and END blocks
+
+    BEGIN { puts "Date and time: " + Time.now.to_s }
+    def bmi(w, h)
+        703.00*(w.to_f/(h.to_f**2))
+    end
+    
+    my_bmi = bmi(196,73)
+    
+    puts "Your BMI is: " + x = sprintf("%0.2f", my_bmi)
+    
+    END { puts "Blah blah blah." }
+    
+    
+    
+Chapter 4: Strings
+
+Creating strings
+    
+    # Instantiation and basic tests
+    title = String.new
+    title.empty? # true
+    title.length # 0
+    title.size # 0
+    title = String.new("Much Ado About Nothing")
+    title.empty? # false
+    
+    # Instantiation without new
+    x = "a"  # interprets escaped characters
+    x = 'b'  # preserves escaped characters
+    
+    # General Delimited Strings
+    comedy  = %!As You Like It!
+    history = %[Henry V]
+    tragedy = %(Julius Caesar)
+    
+    # Heredocs
+    sonnet = <<29
+    a
+    bbbb
+    c c c c
+    29
+    
+    # delimiter specific heredocs
+    x = <<thing         # same as double quoted string
+    x = <<"thing"       # same as double quoted string
+    x = <<'thing'       # same as single quoted string
+    x = <<`thing`       # same as backticks
+    x = <<-thing        # for indentation
+    
+Concatenating Strings
+
+    # Simple--adjacent strings are concatenated
+    "Hello," " " "World!"
+    
+    # Plus sign
+    "Hello," + " " + "World!"
+    
+    # << chaining
+    "Hello," << " " << "World!"
+    
+    # .concat method, no chaining allowed
+    "Hello, ".concat "World!"
+    
+    h = "Hello, "
+    w = "World!"
+    h.concat(w)
+    
+    # make string immutable with .freeze:
+    x = "Hello, World!"
+    x.freeze
+    x.concat('!') # generates error
+    x.frozen? # true
+    
+Accessing Strings
+    [] is an alias for slice method
+    
+    # example strings
+    line    = "A horse! a horse! my kingdom for a horse!"
+    cite    = "Act V, Scene IV"
+    speaker = "King Richard III"
+    
+    # search--will return string if found (else nil):
+    speaker['King']  # => 'King'
+    
+    # Getting character code of item at location
+    line[7]     # => 33
+    line[7].chr # => "!"
+    
+    # Offset and length
+    line[18,23] # => "my kingdom for a horse!"
+    
+    # Range with ..
+    cite[0..4] # => "Act V"
+    
+    # Range with ...
+    cite[0...4] # => "Act "
+    
+    # with regex
+    line[/horse!$/] # => "horse!"
+    
+    # finds substring with index
+    line.index("k") # => 21
+    
+Comparing Strings
+    == is string equality test, complete equality test
+    eql? returns true if two strings are equal in length and content
+    <=> compares character code values of the strings, returns -1, 0, 1
+    casecmp does case insensitive version of <=>
+    
+Manipulating Strings
+    # * repeats a string by an integer factor
+    
+    # insert method:
+    "Be carful".insert 6, "e"
+    
+    # []= does alteration in place, like slice!
+    x["AAA"]= "BBB"
+    
+    # chop/chop! removes last char
+    # chomp/chomp! removes last record separator
+    
+    # delete removes characters from a string
+    "ABCDEF".delete "C"
+    
+    # gsub/gsub! replaces a substring with a replacement
+    "ABCDEF".gsub "ABC", "XYZ"
+    
+    # replace replaces an entire string, remains same object
+    x = "ABC"
+    x.replace "DEF"
+    
+    # reverse:
+    "ABCDEF".reverse
+    palindrome.reverse!
+    
+    # split to an array
+    "ABCDEF".split      # => ["ABCDEF"]
+    "ABCDEF".split(//)  # => ["A","B","C","D","E","F"]
+    
+Case Conversion
+    # capitalize/capitalize! does ucfirst
+    
+    # splitting by lines
+    "A\nB\nC\nD".each { |item| puts item.capitalize }
+    
+    # splitting by bytes
+    "ABCD".each_byte { |b| print b, "/" }
+    
+    # case changes: downcase, upcase, swapcase
+    
+Managing Whitespace
+    x = "ABCDEF"
+    x.size # synonym for length
+
+    x.ljust 10 # adds right padding
+    x.rjust 10 # adds left padding
+    x.ljust(20, '-') # pads with string
+    
+    x.center 30
+    x.center 30, "-"
+    
+    x.lstrip
+    x.rstrip
+    x.strip
+    
+Incrementing Strings
+    # next/succ methods increments the rightmost character
+    "a".next    # => "b"
+    "aa".succ   # => "ab"
+    
+Converting Strings
+    # you can convert strings to floats or ints
+    "200".class         # => String
+    "200".to_f          # => 200.0
+    "200".to_f.class    # => Float
+    
+    "100".to_i          # => 100
+    
+    # String to symbol with to_sym or intern
+    "name".intern       # => :name
+    "name".to_sym       # => :name
+    
+Regular Expressions
+    # searching with Enumerable module's grep method
+    x.grep(/abc/)
+    
+
+Chapter 5: Math
+
+    Important classes/modules for numbers
+        
+        Numeric
+        Integer
+        Float
+        Fixnum
+        Bignum
+        Math
+        Precision
+        Rational
+        Complex
+        Matrix
+        
+    Hierarchy:
+    
+        Object
+            Matrix
+            Numeric
+                Integer
+                    Fixnum
+                    Bignum
+                    Rational
+                    Complex
+                    
+Class Hierarchy and Included Modules
+    # classname.ancestors gives inheritance as array
+    Fixnum.ancestors # => [Fixnum, Integer, Precision, Numeric, 
+                     #     Comparable, Object, Kernel]
+                     
+    # included_modules tells you what modules a class uses
+    Object.included_modules     # [Kernel]
+    
+Converting Numbers
+    # Use the Integer method from Kernel module
+    Integer(1.4)            # 1 from float
+    Integer("256")          # 256 from string
+    Integer("0b11110010")   # 242 from binary
+    Integer(0177)           # 127 from octal
+    Integer(0x20)           # 32 from hex
+    Integer(?z)             # 122 from char code
+    
+    # Use Float from Kernel to convert to float
+    Float(167)
+    Float("77")
+    Float(?a)
+    
+Basic Math Operations
+    Operators: + - * / ** %
+    Unary: + -
+    Named: .div .modulo .divmod .quo .remainder
+    
+    Integer division results in truncated Int result
+    .div returns only integral part, truncates decimal part
+    
+    Equality tests: == .eql? <=>
+        
+    Comparison ops: < > <= >=
+    
+    Assignment ops: = += -= *= **= %=
+    
+    Bitwise ops: ~ | & ^ << >>
+    
+    Bitwise assignment ops: &= ^= ||=
+    
+Ranges
+    ..  open range op
+    ... closed range op
+    
+    === tests for inclusion in a range
+    
+    (1..25) === 10 # true
+    
+    (1..9).to_a # [1,2,3,4,5,6,7,8,9]
+    
+Inquiring about Numbers
+    op = 0
+    op.zero?    # true
+    op.nonzero? # false
+    
+    .finite?
+    .infinite?
+    .nan?
+    .inspect
+    
+    # iteration with times
+    10.times { |i| print i, " " }
+    
+More Math Methods
+    .abs
+    .ceil
+    .floor
+    .round
+    .next
+    .chr
+    
+Math Functions
+    Math.constants # => ["E", "PI"]
+    Math.exp(1) # Euler to the power of x
+    Math.sqrt
+    Math.log(Math::E) # => 1.0
+    Math.log(1)
+    
+Rational Numbers
+    Rational class gives support, must be required
+    
+    Example:
+    
+        require 'rational'
+        require 'mathn'
+        
+        rat = Rational(25/100)
+        
+        rat + Rational(1/4)
+        rat + 1/4
+        
+        rat - Rational(1/8)
+        rat - 1/8
+        
+        rat * 3
+        rat / 2
+        
+        rat % Rational(1/2)
+        
+        rat**2
+        
+Prime Numbers
+    mathn library has a Prime class that lets you successively generate primes
+    Prime has four methods: new, next/succ, each
+    
+    Example:
+    
+        require 'mathn'
+        
+        prime_number = Prime.new
+        prime_number.next
+        prime_number.succ
+        
+        puts "The next prime is " + prime_number.next.to_s + "."
+        
+        
+Chapter 6: Arrays
+
+Creating Arrays
+    months = Array.new
+    months.empty? # true
+    months = Array.new(12) # fills with nil
+    months.size
+    month = Array.new(12, "month") # fills with 'month'
+    month.clear
+    
+    num = Array.new(10) { |e| e = e * 2 }
+    
+    month_abbrev = Array.[]("jan", "feb", "mar")
+    
+    month_abbrev = Array["jan", "feb", "mar"]
+    
+    month_abbrev = ["jan", "feb", "mar"]
+    
+    months = %w[ January February March ]
+    
+Accessing Elements
+    x[0]
+    x[-1]
+    x[0,3]
+    x.slice(0,3)
+    x.first
+    x.last
+    x.at(0)
+    x.include? 'A'
+    
+Concatenation
+    x + y
+    x << y
+    x.concat(y)
+    
+Set Operations
+    & intersection
+    - difference
+    | union
+    
+Unique Elements
+    x.uniq
+    x.uniq!
+    
+Blow Your Stack
+    x.pop
+    x.push('a')
+    
+Comparing Arrays
+    == <=> eql?
+    
+Changing Elements
+    months.insert(0, nil)
+    months[5..7] = "a", "b", "c" # range
+    months[5, 3] = "a", "b", "c" # start and length
+    x.shift
+    x.unshift('a')
+    
+Deleting Elements
+    months.delete "a"
+    months.delete_at(1)
+    
+Arrays and Blocks
+    months.each { |e| print e.capitalize + " " }
+    
+    # map returns new array
+    months.map { |e| print e.capitalize + " " }
+    
+Sorting Things and About Face
+    x.sort
+    x.sort!
+    x.reverse
+    
+Multidimensional Arrays
+    x = [["a", 1], ["b", 2], ["c", 3]]
+    x.flatten
+    x.transpose # returns [["a","b","c"], [1,2,3]]
+    
+
+Chapter 7: Hashes
+    
+Creating Hashes
+    months = Hash.new
+    months.empty?
+    months.length
+    months.size
+    
+    months = Hash.new("month") # sets a default value
+    months = Hash.new "month"
+    
+    christmas_carol = Hash[ :name, "Scrooge", :partner, "Jacob" ]
+    christmas_carol = Hash[ :name => "Scrooge", :partner => "Jacob" ]
+    
+    month_a = { "jan" => "January", "feb" => "February" }
+    
+Accessing Hashes
+    zip = { 82442 => "Ten Sleep", 83025 => "Teton Village", 83127 => "Thayne }
+    zip.has_key? 82442 # true
+    zip.has_value? "Ten Sleep"
+    zip[82442]
+    
+    zip.keys
+    zip.values
+    zip.values_at 82084
+    zip.values_at 82442, 82443
+    zip.index "Thayne"
+    
+    zip.select { |key,val| key > 83000 } # returns elements meeting block
+    
+Iterating over Hashes
+
+    zip.each { |k,v| puts "#{k}/#{v}" }
+    
+Changing Hashes
+    months_a['Jun']= "June"
+    
+    hash_a.merge hash_b
+    
+    hash.sort # sorts by key
+    
+    hash.delete(5)
+    hash.delete(6) { |key| puts "not found" } # block runs if key not found
+    
+    hash.delete_if { |k,v| k < 3 }
+    
+    hash_a.replace(hash_b)
+    
+    hash_c.clear
+    
+Converting Hashes to Other Classes
+    use to_s, to_a, to_hash
+    
+    

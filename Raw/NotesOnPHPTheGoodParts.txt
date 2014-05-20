@@ -1,0 +1,500 @@
+Notes on PHP: The Good Parts
+
+Chapter 1: The Good Parts
+
+1.1 Why PHP?
+    1.1.1 A Brief History of PHP
+    1.1.2 PHP's Place in the World
+    1.1.3 What is PHP?
+        * Scripting language, mostly server side, that generates HTML dynamically
+        * Called by the webserver (IIS or Apache usually) to interpret code and return text
+        * Has DB integration with a bunch of different db engines
+        
+    1.1.4 What has been accomplished with PHP?
+        * A bunch of stuff. Blah blah blah.
+        
+1.2 Basic PHP Setup
+    * Pretty much a LAMP stack.
+    
+Chapter 2: Casing the Joint
+    
+2.1 Whitespace, Comments, and Basic Syntax
+    * Stuff inside php tags is executable:
+    
+        <?php
+            # a single comment line
+            /*
+            *   multi line
+            *   comment block
+            */
+            
+            echo "Blah";    // an inline comment
+        ?>
+        
+    * Whitespace is inconsequential past the first space.
+    
+2.2 Variables: Data Types, Loose Typing, and Scope
+    * Rules for defining a variable:
+    
+        - Variable names start with $
+        - Variables are case sensitive
+        - First character must be letter or underscore
+        - $this is reserved for use in Object Oriented PHP
+        
+    * PHP data types:
+    
+        Boolean (scalar)                TRUE or FALSE
+        Integer (scalar)                Whole numbers, including negatives
+        Float (scalar)                  Decimal part numbers
+        String (scalar)                 Ordered sequence of alphanumeric chars
+        Array (compound)                Ordered, numerically keyed pairs
+        Object (compound)               Basis for class definitions and OOP
+        NULL (special)                  Variable with no value--like undef
+        Resource (special)              Reference to functions, databases, files, other
+                                            outside resources.
+                                            
+    * Values can be assigned by value or reference:
+    
+        <?php
+            $firstname = "Peter";           // by value
+            $fname = &$firstname;           // by reference
+            echo $fname . "<br />";         // Peter is displayed
+            $fname = "Dawn";                // change referenced value
+            echo $firstname . "<br />";     // Dawn is displayed
+        ?>
+        
+    * PHP is loosely/dynamically typed
+    * By default, PHP has file wide scope
+    * Variables defined in functions have function level scope
+    
+2.3 Defined Constants
+    * Constants are globally scoped and immutable
+    * When defining a function, you must:
+        - use define() to set up the constant
+        - start the (case sensitive) name with a letter or underscore
+        - only store scalar data
+        
+    * Example:
+        
+        define("name of constant", value of constant, [case insensitive])
+        
+    * Last thing is a false by default flag
+    
+2.4 Expressions
+    * Stuff that does something / returns something. Blah semantics blah.
+    
+2.5 Decisions, Decisions (Flow control)
+    2.5.1 If...Else...
+        * Forms:
+        
+            if (1 == '1') echo "true";
+
+            if (1 === '1') echo "true"
+                else echo "false";
+
+            if (1 == '1') {
+                echo "true";
+            }
+            
+            if (1 === '1') {
+                echo "true";
+            }
+            else {
+                echo "false";
+            }
+            
+            if ($x == 1) {
+                // stuff
+            }
+            elseif ($x == 2) {
+                // other stuff
+            }
+            else {
+                // default case
+            }
+            
+        * Ternary op: condition ? if_true : if_false;
+        
+    2.5.2 Switch...Case...
+        * Forms:
+        
+            switch (value) {
+            case first_possible_value:
+                // code
+                [break;]
+            case second_possible_value:
+                // code
+                [break;]
+            default:
+                // blah blah blah
+            }
+            
+    2.5.3 While...
+        * Forms:
+        
+            $repeat = 1;
+            while ($repeat <= 25) {
+                echo "counter: " . $repeat . "<br />";
+                $repeat++;
+            }
+            
+            $repeat = 0;
+            do {
+                $repeat++;
+                echo "counter: " . $repeat . "<br />";
+            } while ($repeat <= 25);
+            
+    2.5.4 For
+        * Forms:
+        
+            for ($i = 0; $i <= 25; $i++) {
+                echo "counter: " . $i . "<br />";
+            }
+            
+2.6 Integration with Web Pages
+    * Blah blah blah, php runs on a server
+    
+    2.6.1 Cookies
+        * Setting two cookies:
+        
+            $data = "this will be in the cookie";
+            setcookie("CookieName", $data);
+            setcookie("AnotherCookieName", $data, time()+60*60*24*30);
+            
+        * Cookies are examples of "superglobals", of which there are a number
+        * Retrieving cookie:
+        
+            $newData = $_COOKIE["AnotherCookieName"];
+            
+    2.6.2 Sessions
+        * Stored in unique files on the server in a folder location set by the php.ini
+            directive session.save_path
+        * Example for starting a session and storing a value:
+        
+            session_start();
+            $today = date("Y-m-d");
+            $_SESSION['today'] = $today;
+            $_SESSION['login_name'] = "Peter";
+            
+        * For PHP's purposes, multiple tabs in the same browser are the same session.
+        * Retrieving data from an active session:
+        
+            $loginName = $_SESSION['login_name'];
+            echo $loginName . " is now logged in";
+            
+    2.6.3 $_GET
+        * Holds key value pairs of the URL query string
+        
+    2.6.4 $_POST
+        * Holds key value pairs available from HTTP POST
+        
+    2.6.5 $_REQUEST
+        * All inclusive array of $_COOKIE, $_GET, $_POST
+        * To use this, make sure keys are unique across those three
+        
+Chapter 3: Functions (Doing it once)
+    * Functions come in two categories: those that return a value, those that don't
+    * Sample function def and call:
+    
+        function MyFunction() {
+            echo "Some stuff.";
+        }
+        
+        MyFunction();
+        
+3.1 Parameter Passing
+    * Example:
+    
+        function MyList ($first, $second, $third) {
+            echo "first: " . $first;
+            echo "second: " . $second;
+            echo "third: " . $third;
+        }
+        
+3.2 Default Parameters
+    * Example:
+    
+        function AddThese($first = 5, $second = 10, $third = 15) {
+            $answer = $first + $second + $third;
+            return $answer;
+        }
+        
+3.3 Passing by Value Versus Passing By Reference
+    * By value:
+    
+        function displayit($text) {
+            echo $text;
+        }
+        $message = "hello";
+        displayit($message);
+        
+    * By reference:
+    
+        function displayit(&$text) {
+            $text .= ", you";
+        }
+        $message = "hello";
+        displayit($message);
+        echo $message;
+        
+3.4 Include and Require
+    * Technically control flow functions, because they pull in code from an external file
+    * include will not cause a fatal error if it can't find the named file, require will
+    * Example:
+    
+        File a.php:
+            
+            function displayit(&$text) {
+                $text .= ", and stuff";
+            }
+            
+        File b.php:
+            
+            include "a.php";
+            $message = "hello";
+            displayit($message);
+            echo $message;
+            
+    * PHP looks for files in the location in include_path in php.ini, then in the present
+        directory of the currently executing code
+        
+    * Additionally, you can use include_once() and require_once() to avoid multiple
+        compilations of the same code segments
+        
+3.5 Built-in Functions Versus UDFs
+    * UDFs are 'user defined functions'
+    
+Chapter 4: Strings
+
+4.1 What is a String?
+    * ordered collection of characters, duh
+    * Difference between echo and print is that print returns 1 on success, takes 1 param
+    * Inserting text can be done with either:
+    
+        <?php echo "some text"; ?>
+        <?= "some text"; ?>
+        
+4.2 You Can Quote Me
+    * Single quotes are literals, double quotes do interpolation
+    * \ is the escape character
+    * HEREDOC syntax is:
+    
+        $string = <<< MyHereDoc
+        I am the very model
+        of a
+        modern major general
+        MyHereDoc;
+        
+4.3 String Functions (Best of)
+    4.3.1 String Trimmings
+        * Functions: ltrim, rtrim, trim
+    4.3.2 Character Case Management
+        * Functions: ucwords, strtoupper, strtolower, ucfirst, lcfirst
+    4.3.3 String Content Searching
+        * Functions: strlen, str_word_count, strstr, stristr, strpos, str_replace, substr
+    4.3.4 String Modification
+        * Functions: strip_tags, addslashes, stripslashes, htmlentities, html_entity_decode,
+            str_shuffle, MD5
+            
+Chapter 5: Arrays
+    
+5.1 Indexed Arrays
+    * Arrays with numeric keys
+    * Creating arrays:
+    
+        // Method one:
+        $myArray[0] = 1;
+        $myArray[1] = 2;
+        
+        // Method two:
+        $myArray = array(0 => 1, 1 => 2);
+        
+        // Method three:
+        $a = array();
+        $b = array(1,2,3);
+        
+5.2 Associative Arrays
+    * Arrays with string keys
+    * Creating:
+    
+        // Method one:
+        $myArray['first'] = 1;
+        $myArray['second'] = 2;
+        
+        // Method two:
+        $myArray = ('first' => 1, 'second' => 2);
+        
+5.3 Arrays from Another Dimension
+    * Multidimensional arrays:
+    
+        $myArray['first'] = array('1','2','3');
+        echo $myArray['first'][0];
+        
+5.4 Arrays Can Be Dynamic
+    * Adding to the end of an array:
+    
+        $myArray = array(1,2,3);
+        $myArray[] = 4;
+        
+    * Note that appending to an associative array will add numeric keys starting with 0
+    * Removing from an array:
+    
+        $myArray = array(1,2,3);
+        array_splice($myArray, 1); // removes '2'
+        
+        unset($myArray[0]);
+        
+    * Copying out an array or sub array:
+        
+        $myArray = array(1,2,3);
+        $subArray = array_splice($myArray, 1,2);
+        
+5.5 Traversing Arrays
+    * With a foreach loop:
+    
+        $myArray = array(1,2,3);
+        foreach ($myArray as $key => $value) {
+            echo $key . ': ' . $value . "<br />";
+        }
+        
+        // Values only:
+        foreach ($myArray as $value) {
+            echo $value . "<br />";
+        }
+        
+        // Keys only:
+        foreach(array_keys($a) as $key) { ... }
+        
+5.6 Array Functions (Best of)
+    5.6.1 Sorting arrays
+        * Functions (all do sort in place):
+            - sort          Sorts based on values
+            - rsort         Reverse sorts on values
+            - asort         Sorts on values, retains key value pairings
+            - arsort        Does that in reverse
+            - ksort         Sorts on keys
+            - krsort        Reverse sorts on keys
+            
+    5.6.2 Math-Type Functions
+        * Functions: array_sum, count
+        
+    5.6.3 Array Potpourri
+        * Functions: 
+            - in_array          value search, boolean return value
+            - array_search      value search, returns found value
+            - shuffle           randomizes in place
+            - array_rand        random key or keys
+            - extract           pulls each key-value pair out into a variable/value
+            - compact           converts variables/values into an array--takes 
+                                    variable names without $
+            - array_merge       merges two arrays, returns new array
+            - array_walk        equivalent to map, takes an array variable and a string 
+                                    that's the name of the function to map
+                                    
+
+Chapter 6: Objects
+    * Terms: Classes, Objects, Methods, Properties, Polymorphism, Encapsulation, Inheritance
+    
+6.1 Putting It Into Practice
+    * Example code for an html class:
+    
+        class html {
+            // class properties
+            private $tag;
+            
+            // class methods
+            function __construct($title="") {
+                $this->tag = "<html> <head><title>$title</title></head><body>";
+                echo $this->tag;
+                return;
+            }
+            
+            function page_end() {
+                $this->tag = "</body></html>";
+                return $this->tag;
+            }
+            
+            function RawText($textString, $textColor="black", $bgcolor='', 
+                             $fontSize='', $fontWeight='normal') {
+                $this->tag = "<span style='color: $textColor; background-color: $bgcolor; font-size: $fontSize; font-weight: $fontWeight'>";
+                $this->tag .= "$textString";
+                $this->tag .= "</span>";
+                return $this->tag;
+            }
+            
+            function Image($source, $title='', $height='', $width='', $align='center', 
+                           $border='0', $valign='middle', $class='', $id='', $name='', 
+                           $onType1='', $onAction1='', $onType2='', $onAction2='',
+                           $onType3='', $onAction3='') {
+                $this->tag = '<img src="' . $source . '" ';
+                if ($name) $this->tag .= 'name="' . $name . '" ';
+                // here follows a ton of really bad string concatenation code, ugh
+                [...]
+                return $this->tag;
+            }
+            
+            // couple other shitty functions
+        }
+        
+6.2 Magic Methods
+    * __construct() will be triggered on instantiation
+    * __destruct() will be triggered when the object goes out of scope(?)
+    
+6.3 $this
+    * Refers to the instantiated object
+    
+6.4 Objects in Action
+    * Shitty, shitty code. Builds a page with string concatenation.
+    
+6.5 Public, Protected, and Private
+    * Public scoped variables are available outside the class def
+    * Protected scope variables is only available in the class or inheriting classes
+    * Private variables are only available in the class
+    
+6.6 Getters and Setters
+    * More shitty code.
+    
+Chapter 7: Database Interaction
+
+7.1 MySQLi Object Interface
+    * Built into the PHP environment as long as it's activated
+    * Usage:
+    
+        $mydb = new mysqli('localhost', 'dbuser', 'dbpassword', 'dbname');
+        
+        // Oh my god, this has no security layer. Are you kidding me?
+        $sql = "INSERT INTO guests (fname) VALUES ('$_POST[fname]')";
+        
+        if ($mydb->query($sql) == TRUE) {
+            echo "Yep.";
+        }
+        else {
+            echo "Nope.";
+        }
+        
+        $mydb->close();
+        
+7.2 Retrieving Data for Display
+    * Example:
+    
+        $result = $mydb->query($sql);
+        
+        while($row = $result->fetch_assoc()) {
+            echo $row['fname'];
+        }
+        
+        $result->close();
+        
+        $mydb->close(); 
+        
+7.3 PHP Data Objects
+    * Bunch of other db interfaces though PDO
+    
+7.4 PDO Prepared Statements
+    * Don't care.
+    
+7.5 Data Management on the Cheap
+    * Lookie lookie, it's SQLite.
+    
+7.6 File Management as a Database Alternative
+    * Walkthrough of the file features--why is this in the database section? WTF?

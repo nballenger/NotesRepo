@@ -1,0 +1,291 @@
+Notes on Digital Color Management: Encoding Solutions, 2nd Ed.
+
+Part I: Fundamentals
+
+    * "The assessment of color quality will be made according to the judgments of 
+        human observers."
+    
+1: Measuring Color
+    Light Sources:
+        * Observed color is reflected light.
+        * "In order to measure color, then, it first is necessary to measure the 
+            characteristics of the light source providing the illumination."
+        * You have to measure the "spectral power distribution" of the light source
+        * There can be a number of different light sources in a single digital image system
+        * Example: "An original scene is photographed on a color-slide film, and the 
+            slide is projected and also scanned. The scanned image is temporarily displayed
+            on the monitor of a computer workstation, and a scan printer is used to
+            expose a photographic paper to produce a reflection print that is then viewed."
+        * Six different light sources:
+            - light illuminating the original scene
+            - light used to project the slide for direct viewing
+            - light in the slide-film scanner
+            - computer monitor phosphors
+            - scan printer light source
+            - light source illuminating the reflection print for viewing
+            
+    Objects:
+        * Light that hits an object is absorbed, reflected, or transmitted, and the ratio
+            of those three things is determined by the chemical makeup of the object,
+            among other factors.
+        * For color measurement, the variation is described in terms of 'spectral
+            reflectance' or 'spectral transmittance' characteristics, whcih describe the
+            fraction of the incident power reflected or transmitted as a function of wavelength.
+        * The reflectance/transmittance can be off from what the human eye perceives--
+            the human visual system has quirks in relation to wavelength perception.
+            
+    Color Stimuli:
+        * A 'color' to be viewed or measured is a 'color stimulus'
+        * Color stimuli always consist of light, sometimes broadcast, usually reflected 
+            from or transmitted through various objects
+        * The spectral power distribution of a stimulus (light shining on an apple) is the
+            product of the spectral power distribution of the flourescent source and the
+            spectral reflectance characteristic of the apple. Calculated by multiplying
+            the power of the light source by the reflectance of the object at each wavelength.
+        * For a reflective or trasmissive object, the color stimulus results from both
+            the object and the light source--if a different light source is used, the 
+            stimulus will change.
+        * Representing color images in numeric form is the process of giving every spatial
+            point in a scene or image an associated spectral power distribution.
+            
+    Human Color Vision:
+        * Human color vision derives from the responses of three types of photoreceptors
+            (cones) in the retina, each with different spectral sensitivities.
+        * Sensitivity rapidly decreases above 650nm, and below 400nm
+        * Curves representing the estimated spectral sensitivities (β / beta for blue, 
+            gamma / Ɣ for green, rho / 𝝆 for red)
+        * Plotting the spectral reflectance of an object / light source across the HVS
+            curves shows you the perceived color stimuli
+        * Combination of photoreceptors lets humans distinguish ~10M color sensations
+        * Two color stimuli having very different spectral power distributions can have
+            identical color--a 'metameric pair', generally called 'metamerism'
+        * Because of metamerism, it isn't necessary to record or reproduce the actual
+            spectral power distribution of an original color stimulus--just a visual 
+            equivalent to it.
+        * Metamerism involves the matching of stimuli, not objects or light sources
+        
+    Colorimetry:
+        * Scientific foundation of color science, basis for predicting metamerism
+        * Gives methods for specifying a color stimulus by relating the measurement of its
+            spectral power to the trichromatic responses of a defined standard observer.
+        * Two stimuli producing the same trichromatic responses are metameric by definition
+        * Founded on a series of color matching experiments, where a color was half 
+            illuminated by a test lamp, and half by RGB primary lamps--the amounts of
+            the primaries required to match the test lamp color are the 'tristimulus values'
+            of the test color, for that set of color primaries.
+        * Sequential runs of the experiment give curves: 'color matching functions'
+        * Color matching functions represent the tristimulus values needed to match a
+            defined amount of light at each spectral wavelength.
+        * Some of the tristimulus values are negative--this is because some colors cannot
+            be matched by any combination of the three primaries, but can be matched by
+            using two primaries and adding an amount of the third to the test lamp.
+        * "The color-matching functions for _any_ set of physically realizable primaries 
+            will have _some_ negative values."
+        * The number of possible sets of primary colors is unlimited, and consequently so
+            is the number of color matching functions.
+        * However, they're all linear combinations of one another, so a matrix operation
+            can be used to transform one set of color matching functions to another
+            
+    CIE Colorimetry
+        * Commision Internationale de ''Eclairage (International Commision on Illumination)
+        * CIE adopted (1931) a set of color matching functions to define a 'Standard
+            Colorimetric Observer' representing the non-colorblind human population
+        * zbar = blue/beta, ybar = green/gamma, xbar = red/rho
+        * CIE standard colorimetric observer color matching functions let you calculate
+            CIE tristimulus values X, Y, and Z
+        * "The X, Y, and Z tristimulus values for a given object (characterized by its 
+            spectral reflectance or transmittance) that is illuminated by a light source
+            (characterized by its spectral power distribution) can be calculated for the
+            CIE standard colorimetric observer (characterized by CIE color-matching functions
+            by summing the products of these distributions over the wavelength range of
+            380 to 780nm, usually at 5nm intervals."
+            
+                  780
+            X =  k E       S(lambda) R(lambda) xbar(lambda)
+               lambda=380
+                           
+                  780
+            Y =  k E       S(lambda) R(lambda) ybar(lambda)
+               lambda=380
+
+                  780
+            Z =  k E       S(lambda) R(lambda) zbar(lambda)
+               lambda=380
+               
+        * Where X, Y, and Z are CIE tristimulus values, S(lambda) is the spectral power
+            distribution of a light source, R(lambda) is the spectral reflectance of a
+            reflective object (or the transmittance of a transmissive object);, xbar(lambda),
+            ybar(lambda) and zbar(lambda) are the color matching functions of the CIE
+            Standard Colorimetric Observer, and k is a normalizing factor.
+        * k usually is determined such that Y = 100 when the object is perfect white.
+        * A 'perfect white' is an ideal, nonflourescent, isotropic diffuser with a 
+            reflectance or transmittance equal to unity throughout the visual spectrum
+        * Isotrpic means incident light is reflected or transmitted equally in all
+            directions, so brightness is independent of viewing direction.
+        * The color matching functions for the CIE Standard Colorimetric Observer have no
+            negative regions--they are composed of 'imaginary primaries' corresponding to
+            hypothetical illuminants having negative amounts of power at some wavelengths.
+        * The primaries aren't physically realizable, but are useful mathematically, and
+            let you construct colorimeters that directly measure XYZ values
+        * Y corresponds directly to the measurement of 'luminance', which is an important
+            correlate to the subjective perception of 'brightness'
+        * Ceteris parabis, a stimuli with a higher luminance will appear brighter
+        * The following normalizations and definitions specifically relate to the 
+            measurement of luminance values:
+            
+            - The normalization may be such that Y tristimulus values are evaluated on
+                an absolute basis and expressed in units of luminance, typically candelas
+                per square meter (cd/m^2).
+            - When the normalization is such that the Y tristimulus value for a perfect
+                white object is 1.0, normalized Y values are called luminance-factor values
+            - When the normalization is such that the Y tristimulus value for a perfect
+                white object is 100, normalized Y values are called percent luminance-
+                factor values.
+                
+        * X and Z have no direct perceptual correlates, but are used in the calculation of
+            chromaticity coordinates x, y, and z:
+            
+            x = X / (X+Y+Z)
+            y = Y / (X+Y+Z)
+            z = Z / (X+Y+Z)
+            
+        * The plot of y vs x is a 'chromaticity diagram'
+        * The horseshoe shaped outline is the 'spectrum locus', a line connecting the points
+            representing the chromaticities of the spectrum colors
+        * The ends of the spectrum locus are connected by a straight line: the 'purple boundary'
+        * All physically realizable color stimuli lie within the spectrum locus/purple boundary
+        * The points within the spectrum locus representing the real RGB primaries form
+            a triangle, within that triangle are all stimuli that can be matched using
+            non-negative amounts of the real primaries
+        * The points of the triangle formed by the imaginary XYZ primaries encloses the
+            entire spectrum locus, so you can form all color stimuli from those.
+        * CIE has recommended the use of other color-coordinate systems derived from XYZ:
+            - CIE 1976 u', v' Metric Chromaticity Coordinates
+            - CIE 1976 L*a*b* (CIELAB)
+            - CIE 1976 L*u*v* (CIELUV)
+        * All the CIE coordinate systems are good for finding color differences, though
+            none of them indicate the perception (appearance) of the stimuli
+        * CIE coordinate systems DO NOT represent color appearance
+        
+    Other Color Measurements
+        * Applications involving hard copy media are concerned with 'optical density'
+        * optical density is measured with densitometers
+        * Optical densities are measured using three channel or four channel densitometers
+        * Densitometers are different from colorimeters
+        * Most scanners are densitometers
+        
+
+2: Color-Imaging Systems
+    * All imaging systems must perform three basic functions:
+        - image capture
+        - signal processing
+        - image formation
+        
+    Image Capture
+        * Detecting light from each original color stimulus, and producing a detectable
+            signal from that light.
+        * Accurate color reporduction requires trichromatic image capture
+        * As part of the capture process, the spectral content of original color stimuli
+            must be separated to form three distinguishable color signals
+        * Occasionally more than three color channels are captured, and trichromatic signals
+            are derived from those inputs
+        * Capture is sometimes done with overlaid sensors, sometime with mosaiced rgb sensors
+        * In video cameras, a beam splitting prism redirects light to three sensors
+        * Photographic film uses different range sensitive layers on the film base
+        * The individual color responses, called exposures, produced by a given set of 
+            spectral responsivities can be calculated using the following equations:
+            
+
+                Rexp = kcr E S(lambda) R(lambda) rc(lambda)
+                         lambda
+                         
+                Gexp = kcg E S(lambda) R(lambda) gc(lambda)
+                         lambda
+                         
+                Bexp = kcb E S(lambda) R(lambda) bc(lambda)
+                         lambda                                                  
+                         
+        * Where Rexp, Gexp and Bexp are red/green/blue exposure values, S(lambda) is the
+            spectral power distribution of the light source, R(lambda) is the spectral
+            reflectance or transmittance of the object, rc(lambda), gc(lambda), bc(lambda)
+            are the red/green/blue spectral responsivities of the image-capture device or
+            medium, and kcr, kcg, kcb are normalizing factors.
+        * The normalizing factors are usually determined such that Rexp, Gexp, Bexp = 1.0
+            when the object is a perfect white.
+        * It's the equivalent of doing a white balance adjustment on a digital camera.
+        
+    Signal Processing
+        * Modifies image signals produced in image capture to make them suitable for 
+            producing a viewable image
+        * Typically includes linear and nonlinear transformations operating on the
+            individual color signals
+        * Used to create linear and nonlinear interactions (crosstalk) among the individual
+            color signals. Modified red signal might be formed by taking portions of the
+            green and blue signals and adding or subtracting them from the original red.
+        * Can also include things like compression, sharpening, noise reduction, etc.
+        
+    Image Formation
+        * Producing a viewable image--processed signals are used to control the color-
+            forming elements of the output medium or device.
+        * Almost all methods are either additive color or subtractive color
+        * Additive color: processed image signals are used to directly control the 
+            intensitities of primary colored lights that make up the displayed image.
+            Colors are produced by additive mixing.
+        * Subtractive color: processed signals control the amount of three or more
+            colorants that selectively absorb light of specific wavelength regions.
+        * An image formed by subtractive colorants is an 'object', requiring a light
+            source for viewing.
+            
+    Complete Color-imaging systems
+        * "Any combination of devices and/or media capable of performing all three basic
+            functions described here."
+            
+
+3: The Human Color-Imaging System
+    * Context: an original and a reproduction, to be viewed by a human observer, who
+        will judge the quality of the reproduction.
+    * You can't substitute a system like XYZ or L*a*b* for the HVS to judge reproduction, 
+        because the HVS is actually comparing the end products of the mental visual process.
+    * "Psychological signal processing" includes effects due to color memory, which is
+        generally not colorimetrically accurate, and color preference, as well as various
+        cognitive effects that cause the observer to perceive colors according to
+        expectations and experience.
+    * "Psychophysical signal processing" includes effects due to both physiological and
+        mental processes.
+                
+    Adaptation
+        * Process by which the visual mechanism adjusts to the conditions under which the
+            eyes are exposed to radiant energy.
+        * Three adaptation effects of particular importance to color-imaging media/systems:
+            - General-brightness adaptation: adjustments of the visual mechanism in response
+                to the overall level of the stimulus to which the eyes are exposed. HVS is
+                a relative system, not absolute, works under a wide range of conditions. 
+                However, absolute luminance levels cause a difference in 'luminance contrast',
+                where the light and dark differences between stimuli of higher and lower
+                luminances are less apparent.
+            - Lateral-brightness adaptation: sensitivity of a particular receptor may be
+                influenced by the amount of light received by neighboring receptors. Helps
+                make edges more apparent. Makes the apparently luminance contrast of an image
+                lower when areas immediately surrounding it are relatively dark.
+            - Chromatic adaptation: adjustments of the visual mechanism in response to the
+                average chromaticity of the stimulus to which the eyes are exposed. Essentially
+                this describes a white balance shift that occurs in the image processing system.
+                
+    Colorimetry and Human Vision
+        * Standard CIE colorimetry emulate the image capture (trichromatic response) stage
+            of the human visual system
+        * Therefore colorimetry can be used to determine if two stimuli will produce the
+            same trichromatic values, and this will predict whether those stimuli will
+            match if they are viewed under identical conditions.
+        * By itself, CIE colorimetry does not emulate the signal processing or image-
+            formation functions of the HVS
+            
+Part II: The Nature of Color Images
+    * Color images are the end product of color-imaging systems, and a source of input in
+        digital imaging systems.
+    * Images are often reused despite being from very different color contexts.
+    * To deal with that, you have to be aware of the colorimetric profiles of systems.
+    
+4: Electronic Displays
+    
+    

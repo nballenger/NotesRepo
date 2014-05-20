@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Notes on JavaScript Enlightenment, by Cody Linley</title>
+        <style type="text/css">
+      
+/*ResetbasedonEricMeyer'swork,revistedforHTML5http://meyerweb.com/eric/tools/css/reset/v2.0b1|201101*/html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;outline:0;font-size:100%;font:inherit;vertical-align:baseline;}/*HTML5display-roleresetforolderbrowsers*/article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block;}body{line-height:1;}ol,ul{list-style:none;}blockquote,q{quotes:none;}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none;}/*remembertodefinevisiblefocusstyles!:focus{outline:?????;}*//*remembertohighlightinsertssomehow!*/ins{text-decoration:none;}del{text-decoration:line-through;}table{border-collapse:collapse;border-spacing:0;}
+        </style>
+        <style type="text/css">
+        article.book-notes {
+            font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            padding: 1em;
+            line-height: 1.3em;
+        }
+        article.book-notes pre {
+            font-family: 'Andale Mono', Courier, monospace;
+            white-space: pre-wrap;                 /* CSS3 browsers  */
+            white-space: -moz-pre-wrap !important; /* 1999+ Mozilla  */
+            white-space: -pre-wrap;                /* Opera 4 thru 6 */
+            white-space: -o-pre-wrap;              /* Opera 7 and up */
+            word-wrap: break-word;                 /* IE 5.5+ and up */
+            /* overflow-x: auto; */                /* Firefox 2 only */
+            /* width: 99%; */		       /* only if needed */       
+            background-color: #002B36;
+            color: #DDDDDD;
+            padding: 1em;     
+            margin-top: 0.8em;
+            margin-bottom: 0.8em;
+            width: 80%;
+            padding-left: 2.4em;
+        }
+        article.book-notes header {
+            text-align: center;
+            margin-bottom: 1em;
+        }
+        article.book-notes > header h1 {
+            font-size: 200%;
+            line-height: 100%;
+        }
+        article.book-notes header h2 {
+            font-size: 140%;
+            line-height: 100%;
+        }
+        article.book-notes section.chapter {
+            border: 1px solid black;
+            padding: 1em;
+        }
+        article.book-notes section.chapter header {
+            text-align: left;
+        }
+        article.book-notes section.chapter header h1 {
+            font-size: 160%;
+            line-height: 160%;
+        }
+        article.book-notes section.chapter header h2 {
+            font-size: 140%;
+            line-height: 140%;
+        }
+        article.book-notes section.chapter section.section {
+               
+        }        
+        article.book-notes section.chapter section.section header {
+            text-align: left;        
+        }
+        article.book-notes section.chapter section.section header h1 {
+            font-size: 120%;  
+            line-height: 120%;      
+        }
+        article.book-notes section.chapter section.section ul {
+            list-style-type: disc;   
+            padding-left: 3em;
+            margin-top: 0.4em;
+            margin-bottom: 0.8em;
+        }
+        article.book-notes section.chapter section.section ul li {
+        }
+        article.book-notes section.chapter section.section ol {
+            list-style-type: decimal;
+            padding-left: 3em;
+            margin-top: 0.4em;
+            margin-bottom: 0.8em;
+            
+        }
+        </style>
+    </head>
+    <body>
+<article class="book-notes">
+    <header>
+        <hgroup>
+            <h1>Notes on JavaScript Enlightenment</h1>
+            <h2>By Cody Linley, published by O'Reilly Media, 2013</h2>
+        </hgroup>
+    </header>
+    <section class="chapter" id="chapter_001">
+        <header>
+            <h1>Chapter 1: JavaScript Objects</h1>
+        </header>
+        <section class="section">
+            <header>
+                <h1>Creating Objects</h1>
+            </header>
+            <ul>
+                <li>Objects are containers for properties, which are key-value pairs</li>
+                <li>In JS, methods are properties that contain a Function() object intended to operate on the object the function is contained within.</li>
+                <li>Majority of values (other than primitives like string literals, numbers, and booleans) are objects in JavaScript</li>
+                <li>Some constructors (Object, String, etc) are native--a custom constructor might look like:
+<pre>var Person = function(living, age, gender) {
+    this.living = living;
+    this.age = age;
+    this.gender = gender;
+    this.getGender = function() { return this.gender; }
+};
+        
+var x = new Person(true, 33, 'male');</pre>
+                </li>        
+                <li>Creating objects with Object() vs Person() only really has prototype implications--otherwise the resulting object will be functionally the same.</li>
+                        </ul>
+    </section>
+    <section class="section">
+        <header>            
+            <h1>JavaScript Constructors Construct and Return Object Instances</h1>
+        </header>
+        <ul>
+            <li>A constructor is nothing more than a function, except when invoked with 'new'</li>
+            <li>With 'new', the value of 'this' is set to the new object, and 'this' is returned by default<br />
+                ( Explanation from elsewhere that I prefer:
+                <ol>
+                    <li>New, anonymous object is created, with its prototype set to the constructor's prototype</li>
+                    <li>'this' is set to point at the new, anonymous object</li>
+                    <li>The constructor function is run (you can use 'this' or not in the function body)</li>
+                    <li>'this' or the explicit return value of the constructor is returned )</li>
+                </ol>
+            </li>
+            <li>Objects created from constructors are 'instances' that are 'instantiated'</li>
+        </ul>
+    </section>
+    <section class="section">
+        <header>
+            <h1>The JavaScript Native/Built-In Object Constructors</h1>
+        </header>
+        <ul>
+            <li>The nine native object constructors of JavaScript:
+<pre>Number()
+String()
+Boolean()
+Object()
+Array()
+Function()
+Date()
+RegExp()
+Error()</pre>
+            </li>    
+            <li>The Math object is a static object rather than a constructor function--really it's an object namespace for math functions, not a prototype itself.</li>
+        </ul>
+    </section>
+    <section class="section">
+        <header>
+            <h1>User-Defined/Non-Native Object Constructor Functions</h1>
+        </header>
+        <ul>
+            <li>Multiple objects can be instantiated from a single constructor function</li>
+            <li>Best practice is to make the first character of the constructor name uppercase</li>
+            <li>If you call a constructor without 'new', 'this' refers to the global object</li>
+        </ul>
+    </section>
+    <section class="section">
+        <header>       
+            <h1>Instantiating Constructors Using the new Operator</h1>
+        </header>
+        <ul>
+            <li>You can instantiate an object instance from any of the native constructor functions:
+<pre>var myNumber    = new Number(23),
+    myString    = new String('male'),
+    myBoolean   = new Boolean(false),
+    myObject    = new Object(),
+    myArray     = new Array('a','b'),
+    myFunction  = new Function('x','y', 'return x*y'),
+    myDate      = new Date(),
+    myRegExp    = new RegExp('\bt[a-z]+\b'),
+    myError     = new Error('Oh no!');</pre>
+            </li>
+        </ul>
+    </section>
+    <section class="section">
+        <header>
+            <h1>Creating Shorthand/Literal Values from Constructors</h1>
+        </header>
+        <ul>        
+            <li>In most cases, you can use a literal syntax for constructing new objects, with the result being the same as using the 'new' operator</li>
+            <li>Exceptions are Number(), String(), and Boolean()</li>
+            <li>Examples of literal equivalents:
+<pre>var myNumberLiteral     = 23,       // primitive number, not an object
+    myStringLiteral     = 'male',   // primitive string, not an object
+    myBooleanLiteral    = false,    // primitive boolean, not an object
+    myObjectLiteral     = {},
+    myArrayLiteral      = ['a','b'],
+    myFunctionLiteral   = function(x,y) { return x*y },
+    myRegExpLiteral     = /\bt[a-z]+\b/;</pre>
+            </li>
+    
+            <li>For strings, numbers, and booleans, a complex object is not created until and unless the value is treated as an object. If you attempt to use methods or properties of the constructor, a wrapper object is created around the primitive value, and then that wrapper is discarded after the method is called.</li>
+        </ul>
+    </section>
+        
+    <section class="section">
+        <header>
+            <h1>Primitive (aka Simple) Values</h1>
+        </header>
+        <ul>
+            <li>Values like: 5, 'foo', true, false, null, undefined are primitive because they are
+            'irreducible'--they are not values that can be made up of other values.</li>
+            <li>"Primitive values represent the lowest form (i.e. simplest) of datum/information
+            avaialbe in JavaScript."</li>
+        </ul>
+    </section>
+        
+    <section class="section">
+        <header>
+            <h1>The Primitive Values null, undefined, "string", 10, true, and false are Not Objects</h1>
+        </header>
+        <ul>
+            <li>"null and undefined are such trivial values that they do not require a constructor function,
+            nor the use of the new operator to establish them as a JavaScript value."
+            <li>Primitive strings, numbers, and booleans are returned from constructor functions, but
+            are not themselves objects.
+            <li>Code demonstrating the difference between primitives and native JS objects:
+        
+<pre>var primitiveString1  = 'foo',
+    primitiveString2  = String('foo'),
+    primitiveNumber1  = 10,
+    primitiveNumber2  = Number('10'),
+    primitiveBoolean1 = true,
+    primitiveBoolean2 = Boolean('true');
+    
+console.log(typeof primitiveString1, typeof primitiveString2);
+    // logs 'string,string'
+console.log(typeof primitiveNumber1, typeof primitiveNumber2);
+    // logs 'number,number'
+console.log(typeof primitiveBoolean1, typeof primitiveBoolean2);
+    // logs 'boolean,boolean'
+    
+var myNumber    = new Number(23),
+    myString    = new String('male'),
+    myBoolean   = new Boolean(false),
+    myObject    = new Object(),
+    myArray     = new Array('a','b'),
+    myFunction  = new Function('x','y', 'return x*y'),
+    myDate      = new Date(),
+    myRegExp    = new RegExp('\bt[a-z]+\b'),
+    myError     = new Error('Oh no!');
+
+// logs 'object object object object function object function object'
+console.log(        
+    typeof myNumber,
+    typeof myString,
+    typeof myBoolean,
+    typeof myObject,
+    typeof myArray,
+    typeof myFunction,      // typeof returns 'function' for all function objs
+    typeof myDate,
+    typeof myRegExp,        // typeof returns 'function' for RegExp()
+    typeof myError
+);</pre>
+            </li>
+        </ul>
+    </section>
+            
+    <section class="section">
+        <header>
+            <h1>How Primitive Values are Stored/Copied in JavaScript</h1>
+        </header>
+        <ul>
+            <li>'primitive values are stored and manipulated at "face value." [...] 
+            if I store the string value "foo" in a variable called myString, the value "foo"
+            is literally stored in memory as such.'</li>
+            <li>Primitive values are copied literally--if you change the original value, the copy
+            is unchanged:
+            
+<pre>var myString     = 'foo',       // create a primitive string object
+    myStringCopy = myString,    // copy its value to a new variable
+    myString     = null;        // manipulate the value in myString
+
+// This will log 'null foo':
+console.log(myString, myStringCopy);</pre>
+            </li>
+            
+            <li>Primitive values are stored and manipulated as values--referring to them transfers 
+            their value, in constrast to complex objects.</li>
+        </ul>
+    </section>
+            
+    <section class="section">
+        <header>
+            <h1>Primitive Values Are Equal By Value</h1>
+        </header>
+        <ul>
+            <li>Contrast of comparing primitive numbers and a complex number object:
+        
+<pre>var price1 = 10,
+    price2 = 10,
+    price3 = new Number('10'),
+    price4 = price3;
+    
+console.log(price1 === price2);     // logs true
+console.log(price1 === price3);     // logs false--1 is a primitive, 3 is an obj
+console.log(price4 === price3);     // logs true--equal by reference, not value
+
+// update price4 to contain a primitive:
+price4 = 10;
+
+console.log(price4 === price3);     // logs false--price4 is now primitive</pre>
+            </li>
+            <li>Primitives, when compared, will check to see if the expressed values are equal
+            <li>When a string, number, or boolean is created with 'new', the value is no longer primitive</li>
+        </ul>
+    </section>
+        
+    <section class="section">
+        <header>
+            <h1>The String, Number, and Boolean Primitive Values Act Like Objects When Used Like Objects</h1>
+        </header>
+        <ul>
+            <li>On calling a method or property, a primitive is briefly converted to an object, then
+            is set back to primitive when the wrapper object is discarded.</li>
+        </ul>
+    </section>
+            
+    <section class="section">
+        <header>
+            <h1>Complex (a.k.a. Composite) Values</h1>
+        </header>
+        <ul>
+            <li>"The native object constructors Object(), Array(), Function(), Date(), Error(), and 
+            RegExp() are complex because they contain one or more primitive or complex values."</li>
+            <li>"It could be said that complex objects have an unknown size in memory because complex
+            objects can contain any value and not a specific known value."</li>
+        </ul>
+    </section>
+            
+    <section class="section">
+        <header>
+            <h1>How Complex Values Are Stored/Copied in JavaScript</h1>
+        </header>
+        <ul>
+            <li>Complex values are stored and manipulated by reference.</li>
+            <li>A variable containing a complex object stores the value in memory at an address</li>
+            <li>A reference to a complex object, you're using its name to retrieve the memory address</li>
+            <li>Consequently, 'copying' an object is actually creating a new variable with the same memory pointer--objects are not copied at all.</li>
+            <li>When String(), Number(), and Boolean() objects are created with 'new', the values continue to be stored/copied by value.</li>
+        </ul>
+    </section>
+    
+    <section class="section">
+        <header>
+            <h1>Complex Objects Are Equal By Reference</h1>
+        </header>
+        <ul>
+            <li>The comparison operators do not test for property values, just memory pointers:
+        
+<pre>var objectA = {same: 'same'},
+    objectB = {same: 'same'},
+    objectC = {'a': 1},
+    objectB = objectC;
+    
+console.log(objectA === objectB);   // false--different objects with same values
+console.log(objectC === objectD);   // true--same memory address, so same object</pre>
+            </li>
+        </ul>
+    </section>
+            
+    <section class="section">
+        <header>
+            <h1>Complex Objects Have Dynamic Properties</h1>
+        </header>
+        <ul>
+            <li>A complex object can be referenced as many times as you want, and the references
+            will always refer to the same object, even as it changes.</li>
+        </ul>
+    </section>
+            
+    <section class="section">
+        <header>
+            <h1>The typeof Operator Used on Primitive and Complex Values</h1>
+        </header>
+        <ul>
+            <li>Can be used to return the type of value you are dealing with, but its return values
+            may not exactly be consistent or logical:
+            
+<pre>// primitives:
+var myNull              = null,
+    myUndefined         = undefined,
+    primitiveString1    = 'string',
+    primitiveString2    = String('string'),
+    primitiveNumber1    = 10,
+    primitiveNumber2    = Number('10'),
+    primitiveBoolean1   = true,
+    primitiveBoolean2   = Boolean('true');
+    
+console.log(typeof myNull);             // logs object <== NOTE
+console.log(typeof myUndefined);        // logs undefined
+console.log(typeof primitiveString1, primitiveString2);
+    // logs string string
+console.log(typeof primitiveNumber1, primitiveNumber2;
+    // logs number number
+console.log(typeof primitiveBoolean1, typeof primitiveBoolean2);
+    // logs boolean boolean
+    
+// complex values:
+var myNumber    = new Number(23),
+    myString    = new String('male'),
+    myBoolean   = new Boolean(false),
+    myObject    = new Object(),
+    myArray     = new Array('a','b'),
+    myFunction  = new Function('x','y', 'return x*y'),
+    myDate      = new Date(),
+    myRegExp    = new RegExp('\bt[a-z]+\b'),
+    myError     = new Error('Oh no!');
+
+console.log(typeof myNumber);           // logs object
+console.log(typeof myString);           // logs object
+console.log(typeof myBoolean);          // logs object
+console.log(typeof myObject);           // logs object
+console.log(typeof myArray);            // logs object
+console.log(typeof myFunction);         // logs function <== NOTE
+console.log(typeof myDate);             // logs object
+console.log(typeof myRegExp);           // logs function <== NOTE
+console.log(typeof myError);            // logs object</pre>
+            </li>
+        </ul>
+    </section>
+    <section class="section">
+        <header>
+            <h1>Dynamic Properties Allow for Mutable Objects</h1>
+        </header>
+        <ul>
+            <li>User defined objects, and most of the native objects, can be mutated--updated or changed at any time.</li>
+            <li>You can augment the basic behavior of the language by changing the native objects</li>
+            <li>Don't do that though, it sucks.</li>
+            <li>You can store properties on native constructors and add new methods to native objects
+            by making additions to their prototype objects.</li>
+            <li>Example of mutating String() and String.prototype:
+        
+<pre>// Augment the String constructor with augmentedProperties property:
+String.augmentedProperties = [];
+
+if (!String.prototype.trimIT) {     // if the prototype has no trimIT, add it
+    String.prototype.trimIT = function() {
+        return this.replace(/^\s+|\s+$/g, '');
+    }
+    
+    // now add trimIT string to the augmentedProperties array
+    String.augmentedProperties.push('trimIT');
+}
+
+var myString = '  trim me  ';
+console.log(myString.trimIT());                 // logs 'trim me'
+console.log(String.augmentedProperties.join()); // logs 'trimIT'</pre>
+            </li>
+        </ul>
+    </section>
+            
+    <section class="section">
+        <header>
+            <h1>All Constructor Instances Have Constructor Properties that Point to Their Constructor Function</h1>
+        </header>
+        <ul>
+            <li>All objects are instantiated with a 'constructor' property that points to the constructor
+            function that created the object:
+            
+<pre>var foo = {};
+console.log(foo.constructor === Object);    // logs true
+console.log(foo.constructor);               // points to the Object() constructor function</pre>
+            </li>
+            
+            <li>Instances of the pre-configured objects built into JavaScript (Number, String, Boolean,
+            Object, Array, Function, Date, RegExp, Error) all have constructor properties that
+            point to the correct constructors, even when created with literal syntax rather than new:
+            
+<pre>var myNumber  = new Number('23');               // constructor
+var myNumberL = 23;                             // literal
+console.log(myNumber.constructor  === Number);  // logs true
+console.log(myNumberL.constructor === Number);  // logs true</pre>
+            </li>
+            <li>Constructor property also works on user defined constructor functions:
+        
+<pre>var CustomConstructor = function CustomConstructor() { return 'Wow!'; };
+var instanceOfCustomObject = new CustomConstructor();
+
+// logs true:
+console.log(instanceOfCustomObject.constructor === CustomConstructor);
+
+// returns a reference to CustomConstructor() function, 
+// returns 'function() { return 'Wow!'; };'
+console.log(instanceOfCustomObject.constructor);</pre>
+            
+            <li><strong>NOTE:</strong> "If you would like the constructor property to log the actual name of the constructor
+            for user-defined function expressions, you have to give the constructor function expressions
+            an actual name (e.g. var Person = function Person(){};)."</li>
+        </ul>
+    </section>
+            
+    <section class="section">
+        <header>
+            <h1>Verify that an Object Is an Instance of a Particular Constructor Function</h1>
+        </header>
+        <ul>
+            <li>The 'instanceof' operator returns boolean for whether an object is an instance of
+            a particular constructor function:
+            
+    <pre>console.log(instanceOfCustomObject instanceof CustomConstructor);   // logs true</pre>
+            </li>
+            
+            <li>Note that instanceof will always return true if you ask if an object is an instance
+            of Object, since everything inherits from Object()</li>
+            <li>Will return false when dealing with primitives that otherwise use object wrappers--
+            only really works with complex objects / instances created from constructor functions
+            that return objects.</li>
+        </ul>
+    </section>
+        
+    <section class="section">
+        <header>
+            <h1>An Instance Created From a Constructor Can Have Its Own Independent Properties (Instance Properties)</h1>
+        </header>
+        <ul>
+            <li>Objects are mutable and can be augmented at any time:
+        
+<pre>var myArray = new Array();
+myArray.prop = 'test';
+console.log(myArray.prop);  // logs 'test'</pre>
+            </li>
+            <li>Note that besides their own properties, instances can have properties inherited from the
+            prototype chain, or properties added to the constructor after instantiation.</li>
+        </ul>
+    </section>
+        
+            
+    <section class="section">
+        <header>
+            <h1>The Semantics of "JavaScript Objects" and "Object() Objects"</h1>
+        </header>
+        <ul>
+            <li>The term "JavaScript objects" refers to the notion of objects in JavaScript</li>
+            <li>"Object() objects" are a very specific type of value expressed in JavaScript</li>
+            <li>The Object() constructor function produces an empty generic object, referred to as an 'Object() object', just like Array() produces an 'Array() object'</li>
+            <li>Any time 'JavaScript object' is used in this text, it refers to the general case.</li>
+        </ul>
+    </section>
+</section>
+    <section class="chapter">
+        <header>
+            <h1>Chapter 2: Working with Objects and Properties</h1>
+        </header>
+        
+    <section class="section">
+        <header>
+            <h1>Complex Objects Can Contain Most of the JavaScript Values as Properties</h1>
+        </header>
+        <ul>
+            <li>A complex object can hold any permitted JavaScript value</li>
+            <li>Anything you can nominally express in JavaScript can be contained in an object</li>
+        </ul>
+    </section>
+        
+    <section class="section">
+        <header>
+            <h1>Encapsulating Complex Objects in a Programmatically Beneficial Way</h1>
+        </header>
+        <ul>
+            <li>Object(), Array(), and Function() objects can contain other complex objects:
+        
+<pre>var object1 = {
+    object1_1: {
+        object1_1_1: { foo: 'bar' },
+        object1_1_2: {}
+    },
+    object1_2: {
+        object1_2_1: {},
+        object1_2_2: {}
+    }
+};
+
+var myArray = [[[]]]; // empty array, nested three deep</h1>
+
+var myFunction = function() {
+    // empty
+    var myFunction = function() {
+        //empty
+        var myFunction = function() {
+            // empty
+        };
+    };
+};</pre>
+            </li>
+        </ul>
+    </section>        
+    <section class="section">
+        <header>
+            <h1>Getting/Setting/Updating an Object's Properties Using Dot Notation or Bracket Notation</h1>
+        </header>
+        <ul>
+            <li>Dot notation syntax:
+            
+<pre>var x = new Object();
+x.prop = value;</pre>
+    
+    <li>Bracket notation syntax:
+    
+<pre>var x = new Object();
+x['prop'] = value;</pre>
+        </li>    
+        <li>Bracket syntax is useful when you need to access a property name stored in a variable:
+    
+<pre>var x = new Object();
+x.foo = 'bar';
+var y = 'foo';
+console.log(x[y]);  // logs 'bar'</pre>
+            </li>
+            <li>You can mix dot and bracket notation in a single object reference.</li>
+            <li>Invoking a method is as simple as appending () to the object reference.</li>
+        </ul>
+    </section>
+        
+    <section class="section">
+        <header>
+            <h1>Deleting Object Properties</h1>
+        </header>
+            <li>The 'delete' operator can completely remove properties from an object:
+        
+<pre>var x = {bar: 'bar'};
+delete x.bar;</pre>
+            </li>        
+            <li>Will not delete properties found on the prototype chain.</li>
+            <li>Only way to remove a property from an object--setting to undefined or null will only
+            change the value of the property.</li>
+        </ul>
+    </section>
+            
+    <section class="section">
+        <header>
+            <h1>How References to Object Properties Are Resolved</h1>
+        </header>
+        <ul>
+            <li>Attempting to access a property not found in an object will involve the prototype chain.</li>
+            <li>The resolution goes:
+                <ol>
+                    <li>The object itself</li>
+                    <li>The prototype of the constructor function that created the object</li>
+                    <li>The prototype of the constructor's constructor, repeatedly</li>
+                </ol>
+            </li>
+            <li>Since all prototype properties are objects, the final link in the chain is Object.prototype</li>
+        </ul>
+    </section>
+        
+    <section class="section">
+        <header>
+            <h1>Using hasOwnProperty, Verify That an Object Property Is Not From the Prototype Chain</h1>
+        </header>
+            <li>hasOwnProperty() can check an object for a property not in the prototype chain</li>
+            <li>Usage:
+        
+<pre>var myObject = {foo: 'value'};
+console.log(myObject.hasOwnProperty('foo'));        // true
+console.log(myObject.hasOwnProperty('toString'));   // false</pre>
+            
+    <section class="section">
+        <header>
+            <h1>Checking If an Object Contains a Given Property Using the 'in' Operator</h1>
+        </header>
+        <ul>
+            <li>Used to verify (true or false) if an object contains a given property, through the
+            prototype chain.</li>
+            <li>Usage:
+        
+<pre>var myObject = {foo: 'value'};
+console.log('toString' in myObject);    // true</pre>
+            </li>
+        </ul>
+    </section>
+            
+    <section class="section">
+        <header>
+            <h1>Enumerate (Loop Over) an Object's Properties using the for in Loop</h1>
+        </header>
+            <li>Usage:
+        
+<pre>var x = {
+    a: 1,
+    b: 2
+};
+
+for (var key in x) {
+    // avoid properties inherited from the prototype chain
+    if (x.hasOwnProperty(key)) {
+        console.log(key);
+    }
+}</pre>
+            
+            <li>for in will enumerate over all attributes in the entire prototype chain</li>
+            <li>You can put an if(hasOwnProperty(x)) inside the loop, to skip inherited props</li>
+            <li>Only properties that are enumerable will show up in the for in loop--you can check
+            which properties with the propertyIsEnumerable() method</li>
+        </ul>
+    </section>        
+            
+    <section class="section">
+        <header>
+            <h1>Host Objects versus Native Objects</h1>
+        </header>
+            <li>The browser environment typically contains 'host objects' that are not part of the
+            ECMAScript standard, but are available as objects during execution</li>
+            <li>The window/head object and all its containing objects are host objects</li>
+            <li>The DOM is a host object</li>
+        </ul>
+    </section>
+        
+    <section class="section">
+        <header>
+            <h1>Enhancing and Extending Objects with Underscore.js</h1>
+        </header>
+            <li>Underscore.js provides the following functionality when dealing with objects and arrays:<br />
+            <code>each(), map(), reduce(), reduceRight(), detect(), select(),<br />
+            reject(), all(), any(), include(), invoke(), pluck(), max(),<br />
+            min(), sortBy(), sortIndex(), toArray(), size()</code>
+            </li>
+            <li>For just objects:<br />
+            <code>keys(), values(), functions(), extend(), clone(), tap(),<br />
+            isEqual(), isEmpty(), isElement(), isArray(), isArguments,<br />
+            isFunction(), isString(), isNumber, isBoolean, isDate, isRegExp,<br />
+            isNaN, isNull, isUndefined</code>
+            </li>
+        </ul>
+    </section>
+</article>

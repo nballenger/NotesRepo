@@ -1,0 +1,1357 @@
+Notes on LIS 510 B
+
+Class 1 Course Introduction
+
+* What is information?
+    pyramid:
+        data > information > knowledge > wisdom
+        
+* Information Behavior is the "sum of activities through which information becomes useful." Robert S. Taylor 1991
+
+* Information Behavior is "the totality of human behavior in relation to sources and channels of info, including both active and passive info-seeking, and info use." TD Wilson (1999)
+
+* Or the study of how individuals need, seek, manage, give & use information in different contexts, such as the workplace, school, and everyday living. Pettigrew, Fidel & Bruce 2001
+
+* How do people and information find each other?
+
+* What information behaviors did you recognize?
+    - Information needs
+    - Information seeking
+    - Information management
+    - Information giving
+    - Information use
+    
+* What else?
+    - Barriers to Information
+    - Access
+    - Avoiding Information
+    
+* Equal Access to Information
+* Losing information and services
+* Dynamic Information Services after Disasters
+    - What roles did libraries and telectenters play after the earthquake?
+    - What information needs did people have throughout this extreme event?
+    - What role did knowledge workers play during this catastrophe?
+    
+For next class:
+    Read Case Chapters 1 & 2
+    Read Wilson, TD (2000) Human Information Behavior. Informing Science, 3,2
+    
+
+
+Class 2 Introduction to Information Behavior
+
+* Agenda
+    - Introductions
+    - A brief history of libraries and LIS
+    - Introduction to information behavior
+
+* Earliest libraries: Ugarit, Nineveh
+* Library of Alexandria
+* Library at Monticello
+* First LIS textbook: Advice on Establishing a Library, Gabriel Naude
+* First US LIS textbook: Manual of Library Economy
+* 5 laws of librarianship (SR Ranganathan):
+    - Books are for use
+    - Every reader, his book
+    - Every book its reader
+    - Save the time of the reader
+    - The library is a growing organism
+        
+* Lee Pierce Butler: An Introduction to Library Science
+* Michael Gorman: Our Enduring Values
+    - Stewardship
+    - Service
+    - Intellectual Freedom
+    - Privacy
+    - Rationalism
+    - Commitment to Literacy and Learning
+    - Equity of Access
+    - Democracy
+    
+* Intro to information behavior, repeat of Pettigrew slide
+* Dervin's 10 Myths
+    - Only "objective" information is valuable
+    - More information is always better
+    - Objective information can be transmitted out of context
+    - Information can only be acquired through formal sources
+    - There is relevant info for every need
+    - Every need situation has a solution
+    - It is always possible to make info available or accessible
+    - Function units of info, such as books or tv programs, always fit the needs of individuals
+    - Time and space can be ignored in info seeking and use
+    - People make easy, conflict free connections between external info and their internal reality
+    
+* Characteristics of Info Needs
+    - Stage of Development
+    - Generated (self vs. external vs. LIMB)
+    - Importance (immediate vs deferred)
+    - Frequency (recurring vs new)
+    - Predictability (anticipated vs unexpected)
+    - Complexity (easily resolved vs difficulty)
+    - Others?
+    
+* Chart going through these aspect for multiple situations:
+    - Seekers and situation
+    - Main motivation
+    - Sources of information
+    - Time pressure
+    - Degree of thoroughness
+    
+* Information Behavior Models
+    - Belkin's ASK
+    - Bates' Berrypicking
+    - Wilson's General Model
+    - Dervin's Sense-making
+    - Kulthau's Information Search Process
+    - Goffman's Face Threat
+    - Csikszentmihalyi's Flow Theory
+    - Chatman's Information Poverty
+    - Savolainen's Everyday Life
+    - Zipf's Least Effort
+    
+* Information Grounds
+    - Information:
+        .. Significance
+        .. Frequency discussed
+        .. How created/shared
+        .. Topics
+    - People:
+        .. Membership Size
+        .. Membership Type
+        .. Familiarity
+        .. Actor Roles and social types
+        .. motivation
+    - Place
+        .. focal activities
+        .. conviviality
+        .. creature comfort
+        .. location and permanence
+        .. privacy
+        .. ambient noise
+        
+* Information Behavior: Needs | Giving | Seeking | Use
+* Information Ground
+    - Context rich
+    - Temporal setting
+    - Instrumental purpose
+    - social types
+    - social interaction
+    - informal and formal info flow
+    - alternative forms of info
+    - sub-contexts create grand contexts
+    
+* Information Worlds
+    - Scholars (humanities, social science)
+    - k-12 students
+    - college students
+    - scientists
+    - engineers
+    - doctors
+    - nurses
+    - k-12 teachers
+    - lawyers
+    - visual artists
+    - performing artists
+    - hobbyists
+    - journalists
+    - it professionals
+    - small business owners
+    - unemployed
+    - stay at home parents
+    - social service professionals
+    - athletes
+    - professional chefs
+    - clergy
+    - homeless
+    - new immigrants
+    - seniors
+    - people long-term / critically ill
+    - people facing disasters
+    - other
+    
+* Next class:
+    Case chapter 3
+    bates, M 2006, fundamental forms of information, journal of the american society for info science and technology
+    
+    
+Class 3: Information & Information Needs
+* "Information seems to be everywhere. We talk of its being encoded in the genes...Disseminated by media of communication...Exchanged in conversation...Contained in all sorts of things...Libraries are overflowing with it, instituations are bogged down by it, and people and overloaded with it...[yet] no one seems to know exactly what information is."  Christopher Fox 1983, p3
+
+* Defining Information
+* The Information Lifecycle
+    Creation & Dissemination >
+    Gathering of the Objects of Creation >
+    Organization of Objects >
+    Seeking & Retrieving Objects >
+    Using Objects
+    
+* Five issues defining Information
+    - Utility
+    - Physicality
+    - Structure/Process
+    - Intentionality
+    - Truth
+    
+* Information as Thing, Michael Buckland
+    - Info as Process   > Telling
+    - Info as Knowledge > Told
+    - Info as Thing     > Evidence
+    
+* Fundamental Forms of Information, Marcia Bates
+    - Information 1: The pattern of organization of matter and energy
+    - Information 2: Some pattern of organization of matter and energy given meaning by a living being
+    
+    - Embedded Info
+    - Embodied info
+    - Encoded info
+    - Enacted info
+    - Experienced info
+    - Exosomatic info
+    - Expressed info
+    - Genetic info
+    - Genotype
+    - Knowledge
+    - Natural Info
+    - Neural-cultural info
+    - Phenotype
+    - Recorded info
+    - Represented info
+    - Trace information
+    
+* What is information?  How should we define information in this class?
+
+* Information Needs
+
+* Info needs, Chen & Hernon 1982
+    - "Arise whenever individuals find themselves in a situation requiring knowledge to deal with the situation as they see fit. In all aspects of everyday life: the home, the office, in relations with family or friends or the insurance company, out of idle curiosity, or as a requirement of work."
+    
+* Info needs, some definitions
+    - Conceptual incongruity in which a person's cognitive structure is not adequate to a task (Ford, 1980)
+    - When a person recognizes something wrong in his/her state of knowledge (Belkin, 1978; ASK)
+    - When the state of possessed knowledge is less than needed (Krikelas, 1983)
+    - When internal sense runs out (Dervin, 1977, 1980)
+    
+* Some elements of info needs
+    - Need is necessarily instrumental
+    - Needs are usually contestable
+    - Need has a strong relationship with necessity
+    - No necessary psychological element in a need
+    
+* 3 Key Distinctions
+    - Information Demand
+    - Information Want
+    - Information need
+    - What are the differences among these concepts?
+    
+* The Affair of Homer
+    - Homer is signing up for next year's courses. He's hoping that his instructors are good. He asks his advisor if he knows anything about Dr. Brees in the history department and then asks for a list of courses he teaches
+    
+* Scenario 1
+    - Demand: What classes does Dr. Brees teach?
+    - Want: Is Dr. Brees a good prof?
+    - Need: Is he an easy grader?
+    
+* Scenario 2
+    - Demand: What classes does Dr. Brees teach?
+    - Want: Is Dr. Brees a good prof?
+    - Need: Is Dr. Brees going to be a demanding yet inspiring teacher and mentor?
+    
+* Where do needs "live"?
+    - The "physical" view: Traditional approach to serving capacity, delivering objects, meeting demand
+    - The "cognitive" view: Based on people's knowledge structures, examples are Taylor, Dervin
+    - The "social" view: Effects of others and contextual factors in shaping/constructing info needs, examples are ELIS, info grounds
+    
+* Characteristics of info needs
+    - Stage of Development (in Taylor's sense)
+    - Generated (self vs external vs LIMB)
+    - Importance (immediate vs deferred)
+    - Frequency (recurring vs new)
+    - Predictability (anticipated vs unexpected)
+    - Complexity (easily resolved vs difficulty)
+    - Others?
+    
+* Types of Need Generators
+    - Self Need: a need generated by the person who is looking for answers
+    - Proxy need: a need generated by another person, aka an imposed need
+    - LIMB: Lay Information Mediary seek information on behalf or because of others, without necessarily being asked to do so or engaging in follow up
+    
+* Info need development
+    - Taylor's stages of development
+        .. Visceral: a sense of uneasiness
+        .. Conscious: ill defined area of indecision, expressed mentally
+        .. Formalized: describes area in concrete terms, making the need as explicit as possible; expressed verbally
+        .. Compromised: need as translated into the system's language
+        
+* Known Item Need: The answer that is required is a certain, known item
+* Subject need: The answer that is required is information on a particular subject
+
+* Known item vs Subject needs?
+    - The user asks if you know of a resource
+    
+* Larger Q's about Info need
+    - How are info needs created
+    - what motivates people to seek info
+    - why do people sometimes avoid info
+    - how do people express info needs
+    - how is relevance considered
+    - How should info be organized and managed to be respond and anticipate people's needs
+    - how should we organize and plan for the expression of info need
+    
+Next class:
+    Case, 4 & 5
+    Morris, RCT (1999) Toward a User-Centered Information Service, Journal of the American Society for Information Science and Technology
+    
+Class 4: Info Behavior Take 2
+
+* Info behavior, post-need
+    - Information seeking: how an individual goes about obtaining information
+    - Information evaluating: how users decide if the information they obtained is relevant to their need or, alternately, if it can resolve their need
+    - Information use: the outcome of information seeking
+    - Information giving: the act of disseminating messages
+    
+* Information seeking
+    - Info seeking is not always motivated by need to "solve problems" or "make decision"
+    - Sometimes and perhaps usually people simply want more info, stimulation or assurance
+    - Serious leisure
+    
+* Info seeking: levels of purpose
+    - Searching: purposely looking for information to resolve a particular info need
+    - Surfing: browsing through a source of info, just to see what it has, without a particular info need
+    - Encountering: bumping into info that can resolve a particular info need when doing other things. might include looking for info on another topic
+    
+* Example domains vs distinction made (well defined, semi defined, poorly defined, undefined)
+
+* Formal vs informal serach
+    - Informal searches: examine few sources, simple learning with narrow limits
+    - Formal searches: more effort and more sources, tied to impending decisions/actions
+    
+* Factors affecting info seeking
+    - Seeker's awareness of need and sources
+    - Seeker's past experiences, professional practice
+    - Source characteristics
+        .. Formal (book) vs informal (conversation
+        .. Internal vs external
+        .. oral vs written
+        .. format/presentation
+        .. timeliness
+        .. accessibility
+        .. cost
+        .. trustworthiness
+        .. security
+    
+* Info seeking search strategies
+    - Analytical strategy
+    - browsing strategy
+    - empirical strategy
+    - similarity strategy
+    - known site (or item) strategy
+    
+    - Tripod of Strategic Analysis | Strategic Choice | Strategy Implementation
+    
+* Information seeking-search methods (David Ellis)
+    - Starting: Looking for info in a new area or on a new topic by means of identifying key sources
+    - Chaining: Searching by following citation connections between materials
+    - Differentiating: selecting info sources based on their topic, orientation, quality or prestige, and intended audience
+    - Browsing: identifying potentially relevant sources (such as important journals) and combing through them
+    - Monitoring: the continuous following of developments in a field of study by examining particular sources over time
+    - Extracting: going through a particular source selectively identifying relevant material from that source
+    
+* Surfing
+    - Browsing through a source of information just to see what it has, with no particular information need in mind
+    
+* Encountering
+    - Also called: Accidental discovery of info, incidental info acquisition
+    
+* The dark side: avoiding information
+
+* Barriers to info acquisition / catalysts for info avoidance
+    - attitudes
+    - beliefs
+    - values
+    - domain|accuracy|breadth of knowledge
+    - family socialization
+    - community identity, connectedness
+    - socioeconomic status
+    - ethnic/racial/linguistic group stratification
+    - behaviors
+    - media use
+    - media exposure
+    
+* Information Overload
+    - State of individuals or systems in which excessive inputs cannot be processed
+    - Breakdown of filtering mechanisms
+    
+    1.  Omission
+    2.  Error
+    3.  Queuing
+    4.  Filtering
+    5.  Approximation
+    6.  Multiple Channels
+    7.  Escaping
+    
+* Information anxiety
+    - When adjustment to info overload is not possible and defense mechanisms fail
+    - Many possible outcomes
+    
+* Info evaluating
+    - One of the core concepts of info science - Cranfield experiments in the 1960s
+        .. Recall: the capability of retrieving all relevant docs
+        .. Precision: the capability of retrieving only relevant docs
+    - Both measures are quantitative
+    
+* What is relevance?
+    - Users evaluate info when they decide whether it can resolve their need, that is, whether it is relevant or not
+    - Example: user is looking for an introduction to programming in java. What kind of work would be relevant?
+    - Patrick wilson: relevance refers to "the best textual means to an end"
+    
+* Info evaluating and relevance judgments
+    - Factors affecting relevance: topicality, utility
+    - Levels of relevance: relevant, non-relevant, partially relevant
+    - Subjective and situation specific: user's background knowledge, urgency of need, envisioned use, changes over time
+    
+* Information use
+    - People's behavior upon receiving info and how they perceive that info helped or did not help in dealing with a situation
+    - Outcomes of info seeking:
+        .. Action (satisfy immediate info need)
+        .. Change state of knowledge (make new sense)
+        .. Confirm what one already knows
+        .. Suggest alternative solutions
+        .. Store for future use
+        .. Create new info need through feedback
+        .. Pass it on to someone else
+        
+* Information Giving
+    - The act of disseminating messages
+    - Triggers for giving:
+        .. Questions
+        .. Topics
+        .. Behavior
+        .. Expectations
+        
+* Information Gigivn Strategies
+    - Tailoring
+    - Planting a nugget
+    - Pushing
+    - Presenting
+    
+
+Class 5: Information Grounds
+
+* Why study "place"?
+
+* Characteristics of a Third Place
+    1.  Neutral Ground
+    2.  Leveler
+    3.  Conversation is Main Activity
+    4.  Accessibility and Accomodation
+    5.  The Regulars
+    6.  A low profile
+    7.  The mood is playful
+    8.  home away from home
+    
+* Information Grounds
+    - "Environment temporarily created by the behavior of people who come together to perform a given task, but from which emerges a social atmosphere that fosters the spontaneous and serendipitous sharing of information."
+    
+* IG Propositions, Fisher, Durance & Hinton 2004
+    1.  IGs can occur anywhere, in any type of temporal setting and are predicated on the presence of individuals
+    2.  People gather at IGs for a primary, instrumental purpose other than info sharing
+    3.  IGs are attended by different social types, most if not all of whom play expected and important, albeit different roles in info flow.
+    4.  Social interaction is a primary activity at IGs such that info flow is a byproduct
+    5.  People engage in formal and informal info sharing, and info flow occurs in many directions
+    6.  People use info obtained at IGs in alternative ways, and benefit along physical, social, affective and cognitive dimensions
+    7.  Many sub-contexts arise within an IG and are based on people's perspectives and physical factors; together these sub-contexts form a grand context 
+    
+* What are the IGs of college students?
+    - church, campus, bar, bus, etc
+    
+* Info Grounds People-Place-Information Trichotomy
+                    - Information:
+        .. Significance
+        .. Frequency discussed
+        .. How created/shared
+        .. Topics
+    - People:
+        .. Membership Size
+        .. Membership Type
+        .. Familiarity
+        .. Actor Roles and social types
+        .. motivation
+    - Place
+        .. focal activities
+        .. conviviality
+        .. creature comfort
+        .. location and permanence
+        .. privacy
+        .. ambient noise
+        
+* Findings to date
+    - Everyone has at least one IG
+    - Spontaneous vs routine
+    - Popular for general public: church, workplace lunchroom
+    - Broad range of other settings; looking for mingable places; sometimes anonymity
+    - "Hostage" phenomena -> when people are stuck together in waiting rooms, lines, ferries, buses, etc
+    - Importance of physical factors
+    - Frequency != favorite or best IG
+    
+* Information Grounds: what's yours? why?
+
+* How can we utilize IGs for disseminating info?
+
+
+Class 8: Theories and Paradigms in Information Behavior
+
+* Marrying Methodology and Theory
+    - Methodology
+        .. isn't concerned with substantive assumptions about what is being studied
+        .. the techniques and tools we use to study phenomena of interest
+    - Theory
+        .. Address basic assumptions we make about the nature of reality
+        .. The meaning of a word is a matter of agreement or socially constructed
+        
+* Marrying Methodology and Theory
+    - Methodology is a toolbox, theory is a flashlight
+    
+* Philosophy, really?
+    - Ontology
+    - Axiology
+    - Epistemology
+    - Methodology
+    - Quantitative vs Qualitative
+    - Positivistic vs Naturalistic
+    - Empirical vs Interpretive
+    - Subjective vs Objective
+    
+* Paradigms and LIS
+    - Kuhn, structure of scientific revolutions
+    - Meanings:
+        .. For social scientists, refers to a "world view" or "general perspective"
+        .. Also refers to commitments, beliefs, values, methods, outlooks, etc. shared across a discipline (Schwandt, 1997)
+        .. Also according to Bates 1999, a core body of theory and methodology of a field, along with an associated world view regarding the phenomena of interest to the field
+        
+* Metatheories, Theories, and Models
+    - Model: mini-theory, a tentative proposed set of relationships, which can then be tested for validity
+    - Theory: a system of assumptions, principles, and relationships that explains a specified set of phenomena
+    - Metatheory: a theory concerned with investigation, analysis or description of theory itself; the philosophy behind theory
+    
+* What is a model?
+    - Simplified version of reality, often reflecting a theory about how some part of the world operates
+    - Typically expressed as diagrams depicting variables and their connections
+    - Causal models use arrows to depict time and influence among variables
+    - Needed as our bounded rationality does not permit us to take into account all possible variables (case 2012)
+    
+* Metatheories, Theories and Models
+    - From a mdoel to a theory
+    
+        description     -->     prediction   --> explanation
+                   \           /                      |        
+                    \         /                       v
+                       model                        theory
+                       
+* Models to metatheories: an example
+    - Our interviews with engineers at Boeing suggest that they won't use formal info systems and prefer personal contacts, even when the info they get isn't as up to date or accurate
+    - There isn't anything 'special' about Boeing engineers, so we predict engineers at Microsoft are similar; and, they are.
+    - So we have a model
+    - Further research suggests that engineers are anything special, either; they exemplify a general human tendency to put as little effort into info seeking as possible, leading us to... Zipf's principle of least effort, our theory
+    
+* Metatheories in LIS
+    - Idiographic approaches:
+        .. Historical
+        .. Constructivist
+        .. Constructionist or discourse-analytical
+        .. Philosophical-analytic
+        .. Critical theory
+    - Nomothetic approaches
+        .. Cognitive
+        .. Bibliometric
+        .. Physical
+        .. Engineering
+        .. User-centered design
+        .. Evolutionary
+    - Mixed approaches
+        .. Ethnographic
+        .. Socio-cognitive/CWA
+        
+* Fundamental Questions
+    - Theories differ not only in terms of their findings, but in terms of their universe of discourse: what is the nature of the entities they examine?
+    - What is a user?
+    - What is an information system?
+    - What is information?
+    
+* A comparison of metatheories
+    - Information Transfer
+        .. User focus: The ghost in the machine / user in the system
+        .. Information: Whatever decreases uncertainty
+    - Constructivism
+        .. User focus: Individual sense-making operations
+        .. Information: The outcome of interpretation and experience
+    - Constructionism
+        .. User focus: Individuals in different discourse communities/social contexts
+        .. Information: Determined by the interaction of contexts/roles/tasks
+        
+* Information Retrieval
+    - Document -> Document Representation -> match?
+    - information need -> query -> match?
+    
+    - recall = cardinality of the intersection of relevant and retrieved documents divided by the cardinality of the set of relevant documents
+    - precision = cardinality of the intersection of relevant and retrieved documents divided by the cardinality of retrieved documents
+    
+* DePaulo's stepwise Help-seeking Model
+    1.  Help-seeking is triggered by help-seeker's recognition of need for help
+    2.  Help-seeker decides whether to seek help
+    3.  Selects an appropriate source of help
+    4.  Help-seeker initiates and executes request
+    5.  Help-seeker reacts to helper's response
+    
+* Wilson's IB Model
+    
+                          +------------------+
+                          | Information User |
+                          +--------+---------+
+                                   |
++-----------------+                v
+| Satisfaction or |           +--------+
+| Nonsatisfaction |           |  Need  |
++-----------------+           +----+---+
+          ^                        v
+          |               +----------------+
+ +--------+-+             |   Information  |
+ | Info Use |             |Seeking Behavior|                 +-------------+
+ +--+-------+             +-+------------+-+                 | Information |
+    |     ^                 |            |                   |  Exchange   |
+    |     |                 v            v                   +------+------+
+    |     |    +------------------+  +-------------------+          |
+    |     |    |    Demands On    |  | Demands on other  |          |
+    |     |    |Information System|  |Information sources|          |
+    |     |    +----+------------++  +----+----+---------+          |
+    |     |         |            |        |    |                    v
+    |     |         v      <--------------+    v             +------------+
+    |     |         +---------+  |     +-------+             |Other people|
+    v     +---------+ Success |  +---->|Failure|             +------------+
+ +---------------+  +---------+        +-------+                    ^
+ | Info Transfer +--------------------------------------------------+
+ +---------------+
+
+
+* Bystrom and Jarvelin 1995
+    - Task perception
+    - Affecting Factors
+    - Choice of action
+    - Evaluation
+    
+* The Johnson Model 1993
+    
+  Antecedents            Info Carrier            Info Seeking
+                           Factors                 Actions
+
++--------------+
+| Demographics +--+    +---------------+
++--------------+  |    |Characteristics+---+
+                  |    +-------+-------+   |
++--------------+  |            |           |
+| Experience   +--+            |           |      +--------+
++--------------+  |            |           +----->|Actions |
+                  |            v           |      +--------+
++--------------+  |    +---------------+   |
+|Salience      +--+--->|   Utilities   +---+
++--------------+  |    +---------------+
+                  |
++--------------+  |
+|Beliefs       +--+
++--------------+
+
+* The 2nd Wilson Model 1999
+
++----------------+     +----------+     +------------+     +----------+      +------------+
+|  Context of    +---->|Activating+---->|Intervening +---->|Activating+----->|Info-seeking|
+|Information need|     |Mechanism |     |  Variables |     |Mechanism |      | behavior   |
++-----------+----+     +------+---+     +-----+------+     +----+-----+      +-----+------+
+            |                 |               |                 |                  |
++-----------+-----+   +-------+-----+         |           +-----+-------+          v
+|Person-in-context|   |Stress/coping| +-------+---------+ | Risk/reward |    +-------------+
++-----------------+   |   theory    | | +-------------+ | |   theory    |    |+-----------+|
+           ^          +-------------+ | |Psychological| | +-----+-------+    ||  Passive  ||
+           |                          | +-------------+ |       |            || Attention ||
+           |                          | | Demographic | |+------+----------+ |+-----------+|
+           |                          |+---------------+|| Social learning | ||  Passive  ||
+           |                          ||Role-related or|||    theory       | ||   Search  ||
+           |                          ||Interpersonal  |||                 | |+-----------+|
+           |                          |+---------------+||+---------------+| ||  Active   ||
+           |                          || Environmental |||| self-efficacy || ||   Search  ||
+           |                          |+---------------+||+---------------+| |+-----------+|
+           |                          || Source Charac-||+-----------------+ || Ongoing   ||
+           |                          ||  teristics    ||                    ||  Search   ||
+           |                          |+---------------+|                    |+-----------+|
+           |                          +-----------------+                    +------+------+
+           |                                                                        |
+           |                                                                        |
+           |                           +---------------+                            |
+           |                           |Info processing|                            |
+           +--------------------------+|   and use     |<---------------------------+
+                                       +---------------+
+
+* Zipf's Principle of Least Effort
+    - Each individual will adopt a course of action that will involve the expenditure of the probable least average of his work
+
+Next class
+    TIB Chapters: 2 Belkin and 5 Bates
+    Bates, mJ 2007 What is browsing really? A model drawing from behavioral science research. Information Research 12, 4
+    
+    
+Class 9: Information Behavior Models (Take 1)
+
+* Agenda
+    - Belkin's Anomalous State of Knowledge
+    - Bate's Berrypicking & Browsing
+    - Dervin's Sensemaking
+    
+* Nick Belkin 1997 Anomalous State of Knowledge
+
+* Information Retrieval:
+
+
+ +----------+   +--------------+  |  |  +-------+    +------------+
+ | Document +-->| Document     |__|  |__| Query |<---+Information |
+ |          |   |Representation|  |  |  |       |    |   Need     |
+ +----------+   +--------------+  |  |  +-------+    +------------+
+
+                                    ^
+                                    |
+                                    |
+
+                                  Match
+                                  
+                                  
+* Belkin: Anomalous State of Knowledge
+    - The anomalous state of knowledge is when knowledge is inadequate WRT ability to resolve problematic situation
+    - Similar to Taylor's "unconscious need" or Dervin's "gaps"
+    - ASK is a critique of traditional IR constructions of information behavior
+    - Communications oriented model
+    - Cognitive focus
+    - Historically significant
+    - Also of use in user services
+    
+* Belkin's ASK: Cognitive Viewpoint (1980)
+
++-----------+                                           +-------------+
+|Generator's|    +------+                 +--------+    |User's Image |
+|Image of   |    | Text |                 |Request,|    |Of the world,|
+|the world  |    +------+                 |Query   |    |Problematic  |
++----+------+       ^                     +--------+    |Situation    |
+     |              |                         ^         +--------+----+
+     |              |    +---------------+    |              ^   |
+     |              |    |Linguistic     |    |              |   |
+     |              |<---+pragmatic      +--->|              |   |
+     |              |    |transformations|    |              |   |
+     v              |    +---------------+    |              |   v
++----------+        |                    +----+-----+     +--+-------+
+|Conceptual|    +---+-------+            |Anomalous +---->|Conceptual|
+|State of  +--->|Information|<---------->|State of  |     |State of  |
+|Knowledge | ^  +-----------+            |Knowledge |<----+Knowledge |
++----------+ |                           +----------+  ^  +----------+
+             |                                         |
+         +---+----------+                         +----+---------+
+         |Belief, intent|                         |Realization of|
+         |knowledge of  |                         |"need" or     |
+         |intended      |                         |anomaly       |
+         |recipient     |                         +--------------+
+         +--------------+
+        
+* ASK and it shall (not) be given
+    - No "best matches" -- many info needs don't make it to the "compromised" stage
+    - Non-specificability
+        .. Cognitive component
+        .. Linguistic component
+          + User's language
+          + System's language
+          
+* The ASK and systems design
+    - Need/ASK representation more important than document representation
+    - Imperative to capture user's knowledge/language
+    - Importance of associative networks
+    - Capturing individual queries not as important
+    
+* What would an ASK-based IR system do?
+    1.  Caputer user's unstructured problem statements (ASK)
+    2.  Perform a structural analysis of problem statements
+    3.  Select retrieval strategy according to type of ASK
+    4.  Present info to user
+    5.  Evaluate results based on retrieval strategy, relevance of info, and new state of users' need
+    6.  Revise/retry query as appropriate
+    7.  Do it all algorithmically
+    
+* ASK in teh real world
+    - Google search
+    - UW library search
+    
+    
+* Marcia Bates: Berrypicking
+
+* A critique of the classic IR model, from the direction of user search practices
+    - Traditional IR too linear
+    - No room for discussing how search process changes
+    - Models need to reflect "evolving search"
+    
+* Bate's map of classic IR
+
+ +----------+   +--------------+  |  |  +-------+    +------------+
+ | Document +-->| Document     |__|  |__| Query |<---+Information |
+ |          |   |Representation|  |  |  |       |    |   Need     |
+ +----------+   +--------------+  |  |  +-------+    +------------+
+
+                                    ^
+                                    |
+                                    |
+
+                                  Match
+                                  
+* What's missing?
+
+* Berrypickign defined
+    - "A bit at a time retrieval"
+    - "(when) a query is satisfied not by a single final retrieved set, but by a series of selections of individual references and bits of info at each stage of the ever-modifying search"
+    
+* The Foundations of Berrypicking: Capabilities that need to be supported by info system:
+    - Footnote chasing (backward chaining)
+    - Citation search (forward chaining)
+    - Journal run
+    - Area scanning/location searching
+    - Subject searches in bibliographies and abstracting and indexing services
+    - author searching
+    
+* Rambling in the berry patch
+    
+    Q = query
+    T = thought
+    D = document(s) and information
+    E = exit
+    
+    Q0 -> Da -> Q1 -> T -> Db -> Q2 -> T -> Q3 -> Dc -> T -> Dd -> Q4 -> T ->
+        De -> Q5 -> E
+        
+    along a circuitous route
+    
+* Mapping the berry patch
+    
+    The set K of all knowledge has within it the set I, the "universe of interest"
+    The berry patch is the set I, the path through that being Q->T->D->Q->D->E etc
+    
+* Questions
+    - Does berrypicking happen?  and when?
+    - What's the most important characteristic of berrypicking?
+    - Where does it typically happen?
+    - What are the factors that influence the course of berrypicking?
+    
+* Bates: So, what is browsing, really?
+
+* Browsing consists of four steps:
+    1.  Glimpsing a field of vision,
+    2.  Selecting or sampling a physical or informational object within the field of vision
+    3.  Examining the object,
+    4.  Acquiring the object (conceptually and/or physically) or abandoning it
+    
+* What do we do when we browse?
+    - We sense
+        .. See
+        .. Listen
+        .. Smell
+    - We examine
+        .. touch
+        .. physically manipulate
+    - We judge
+        .. relevance
+        .. attractiveness
+    - We select/sample
+    
+* Selecting vs. sampling (balance scale between them)
+    
+    Select                              Sample
+    
+    based on likes, interests           re-examine to re-judge
+    may repeat                          1 item represents others
+    
+* Does browsing == berrypicking?
+    - Berrypicking
+        .. entire info search process
+        .. goal changes during process
+        .. gathering bits of info
+        
+* Brenda Dervin: Sensemaking
+    
+    
+           Situation <-----------+
+              ^                  |
+              |                  |
+              v                  v
+            Use <-------------> Gap
+            
+* Dervin's critique of IR
+    - Exclusively focuses on interaction between user and system
+    - Posits that information, information needs, users, and systems are static entities (rather than discontinuous)
+    - Doesn't account for information seeking and use as a communicative and interpretive sense-making process
+    
+* Sense-making
+    - A generalizable approach to thinking about and studying human sense-making and sense-unmaking
+    - Primarily focuses on Information Seeking
+    - Sense-making's fundamental terms: time, space, horizon, gap, bridge, movement, power, constancy, change
+    
+* Sense-making: metaphor and methodology
+    - Triangle of Situations, gaps, uses
+    - Gaps:
+        .. What's missing in your understanding?
+        .. What are you trying to find out?
+        .. What would you like to know?
+    - Situations:
+        .. What happened?
+        .. What got you stopped?
+        .. What are you working on?
+        .. What brought you here today?
+    - Uses:
+        .. What would help you?
+        .. How do you plan to use this?
+        .. What are you trying to do?
+        
+* The metaphor: another view
+
+    Context:    
+        - power structures / dynamics
+        - domain knowledge systems
+        - cultures / communities
+        
+    Situation
+        - history
+        - experience
+        - horizons
+        - constraints
+        - barriers
+        - habits/skills
+        
+    Gaps:   
+        - questions/confusions
+        - muddles/riddles
+        - angst
+        
+    Sense-making and unmaking:
+        - verbings
+        - procedurings
+        - strategies/tactics
+        
+    Bridges:
+        - ideas/cognitions/thoughts
+        - attitudes/beliefs/values
+        - feelings/emotions/intuitions
+        - memories/stories/narratives
+        
+    Outcomes in situations:
+        - helps/facilitations
+        - hurts/hindrances
+        - consequences/impacts/effects
+        
+    Relevances:
+        - Criteria/attributes used to evaluate how ___ served or impeded movement
+        - questions
+        - answers
+        - information
+        - information designs
+        - sources
+        - channels
+        
+    Sources:
+        - channels
+        - media
+        - people
+        - institutions
+        
+    A person, moving forward in space and time, encounters gaps in their world. Those gaps exist between their situation and the outcomes that they might seek. The bridges that are built between the situation and outcomes are built from the process of sense making on relevances and sources
+    
+* The (research) method
+    1.  Identify a moment of discontinuity (as defined in user's perception)
+    2.  "Determine how the user interprets and bridges this moment":
+        - How did s/he define it?
+        - How did s/he conceptualize the gap and its bridge
+        - How did s/he move to bridge the gap?
+        - What happened after that?
+    3.  Attend to the uniqueness of the situation and the user
+    4.  Keep process at center of inquiry and system design
+    
+* The (research) method: Situations
+    - The contexts in qhich IB takes place
+        - mostly cognitive and/or psychological
+        - can have some domain-specific elements
+    - are whatever the user defines them to be
+    
+* The (research) method: Gaps or stops
+    - Synonymous with "discontinuity"
+    - Types of stop:
+        .. individual
+        .. system limitations
+        .. social
+    - Again, are defined by users
+    
+* The (research) method: Helps
+    - Not just "what helped" but how it helped and why it helped
+    - leads to new situations
+    - determined by the user
+        .. can constitute external info or resources
+        .. but not necessarily
+        
+* Sense-Making Updated
+    - Information Enabling Characteristics: problem solving, connecting, comparing, promoting, explaining, describing, verifying, directing, trusting, relating
+    
+    - CI Needs: health, housing, business, parenting, education, local news, local events, employment, volunteerism, social services, financial support, local information, government/civic, recreation/hobbies, computer/technical, organizations/groups, local history/genealogy, library operations/services, sale/exchange/donation of goods, other people
+    
+    - Barriers to digital CIS (community information systems) in the CI gap: information overload, poor interface, poor organization, inaccurate info, missing info, dead links, english only, info too general, unidentified authority, non-anticipatory systems
+    
+    - General barriers in the CI gap: economic, geographic, technological, search skill, cognitive, psychological
+    
+    - Helps: expanded social interaction, decreased transaction costs, employment/educational gains, increased information exchange, greater skill/confidence building, increased knowledge of community, increased access to quality information, ability to identify / share trusted information
+    
+    - Helps categories: personal, family, neighborhood, community
+    
+Next class:
+    37 Krikelas, 38 Kulthau, 25 Leckie
+    Kuhlthau, Inside the search process: information seeking from the users' perspective 1991
+    
+
+Class 10: Models of IB Take 2
+
+* Today:
+    - Dervin's sense-making
+    - Krikelas' info seeking
+    - Kuhlthau's info search process
+    - Leckie's model of professionals' info seeking
+    
+* Sense making triangle
+* Dervin's Critique of IR, repeated
+
+* Krikelas's model of info-seeking
+
+    +-----------+       +-----------------+        +-----------+
+ +--+Information+------>|  Need-Creating  |<-------+Information|
+ |  |Gathering  |       |Event/Environment|        |Giving     |
+ |  +-----------+       +-----------------+        ++----------+
+ |              ^       |                 |         |
+ |              |       v                 v         v
+ |             ++---------+            +------------+
+ |             |   Needs  |            |    Needs   |
+ |             |(Deferred)|      +-----+(Immediate) |
+ |             +----------+      |     +------------+
+ |                               v
+ |                         +----------+
+ |                         |   Source |
+ |          +--------+<----+Preference+---->+--------+
+ |     +----+Internal|     +----------+     |External|
+ |     |    +-----+--+                      ++------++
+ |     v          |                          |      |
+ |  +------+      v                          v      |
+ +->|Memory|    +------------+ +---------------+    v
+ |  +------+    |   Direct   | |    Direct     | +------------+
+ |     ^        |(Structured)| |(Interpersonal)| |Recorded    |
+ |     |        |Observations| |    Contact    | |(Literature)|
+ |  +--+-----+  +------------+ +---------------+ +------------+
+ |  |Personal|
+ +->|  Files |
+    +--------+
+    
+* What drives Info behavior?
+    - Belkin: From ASK to CSK
+    - Dervin: Sense-making and gap-bridging
+    - Kuhlthau: uncertainty, fear, and their brethren
+    
+* Kuhlthau's ISP
+    - Based on a series of 5 studies
+    - Oriented towards imposed or proxy needs
+    - 6 stages in the info search process (ISP)
+    - Incorporated in 3 realms:
+        .. Affective: feelings
+        .. Cognitive: thoughts
+        .. Phyiscal: actions
+        
+* Kuhlthau's ISP: Basic Principles
+    - Centrality of user's emotional as well as cognitive state and active processes
+        .. uncertainty
+        .. complexity
+        .. closure
+        
+* Stages
+    1.  Initiation
+        .. Feelings: uncertainty
+        .. Thoughts: general or vague
+        .. Actions: seeking background info
+        .. Tasks: recognize problem
+    2.  Selection
+        .. Feelings: optimism
+        .. Thoughts: Weighing alternatives
+        .. Actions: Conferring, preliminary searches
+        .. Tasks: identify topic
+    3.  Exploration
+        .. Feelings: confusion, frustration, doubt
+        .. Thoughts: Becoming oriented
+        .. Actions: seeking relevant info
+        .. Tasks: Investigate topic
+    4.  Formulation
+        .. Feelings: Clarity
+        .. Thoughts: Narrowed and clear
+        .. Actions: Construct hypothesis
+        .. Tasks: Formulate thesis or response
+    5.  Collection
+        .. Feelings: Sense of direction and confidence
+        .. Thoughts: increased interest
+        .. Seeking relevant and focused info
+        .. Tasks: gathering
+    6.  Presentation
+        .. Feelings: relief, satisfaction or disappointment
+        .. Thoughts: clearer and/or focused
+        .. Actions: Presenting
+        .. Tasks: completing
+        
+* Kuhlthau's ISP: 
+    Initiation: The first awareness of a lack of knowledge or understanding
+    Selection: Identifying the general topic or the approach to be pursued
+    Exploration: Investigating info on the general topic, to improve orientation sufficiently to form a focus for resolving the problem
+    Formulation: Forming a focus for the information encountered
+    Collection: Extends and supports the focus and selects information pertaining specifically to the focus
+    Presentation: Completing the search and preparing to present or otherwise use the findings
+    
+* Gloria J. Leckie: Key Concepts
+    - Professionals' IB
+    - Role/task distinction
+    - Source/awareness distinction
+    - Comprehensive view of "outcomes"
+    
+                    +------------+
+                    | WORK ROLES |
+                    +--+-+-+-+---+
+                       v v v v
+                      +-------+
+                      | TASKS |
+                      +-+-+-+-+
+                        | | |
+                        v v v
+        +--------------------------------------+
+        | Characteristics of Information Needs |
+        +--------------------------------------+
+                          ^
+ +--------------+         |           +--------------+
+ |  Sources of  |         |           | Awareness of |
+ | Information  +-------> | <---------+  Information |
+ +--------------+         |           +--------------+
+       ^                info is                 ^
+       |       +----->  sought   <--+           |
+    +--+-----+ |          |         |    +------+-+
+    |Feedback| |          |         |    |Feedback|
+    +--------+ |          v         |    +--------+
+        ^      |     +----------+   |         ^
+        +------+-----+ Outcomes +---+---------+
+                     +----------+
+                     
+* Role/task distinction
+    - Roles (aka dimensions): responsibilities you assume or "hat" you wear
+    - Tasks: specific activities you perform to accomplish or fulfill roles
+    
+* The roles of a professor
+    Teaching | Research | Service | Mentoring
+    
+* The tasks of a college instructor:
+    - Teaching role:
+        .. Preparing courses: select readings, design assignments, construct syllabi, publish syllabi
+        .. Preparing classes: reread basic readings, examine supplemental readings, etc
+        .. Administering course
+        
+* Sources and awareness
+    - Sources: where professionals can locate information
+        .. Formal: official sources, information systems
+        .. Informal: social networks, gleaning/browsing
+    - Awareness: more than just PR
+        .. Where does one expect to find info?
+        .. Where does one expect to find relevant info?
+        .. "Environmental factors": Time, accessibility, validity, utility
+        
+* Outcomes
+    - What do users do with the information / how do they use it?
+    - What are the overall consequences of information seeking and use?
+    
+Next Class:
+    TIB Part II Theories 8 and Theories 9 (Chatman), 22 (Savolainen), 24 (Csikszentmihalyi's flow theory)
+    Dill & Janke, "New shit has come to light"
+    
+    
+Class 11 Information Behavior Models, Take III
+
+* IB Models today:
+    - Granovetter's Strength of Weak Ties
+    - Csikszentmihalyi's Flow Theory
+    - Chatman's Info Poverty, Life in the round, and Normative behavior
+    - Savolainen's Everyday Life Information Seeking (ELIS)
+    - Zipf's least effort
+    
+* Mark Granovetter - SWT, Strength of Weak Ties
+    - Proposed SWT based on his phd research at harvard on how people learned about their last job
+    
+* Granovetter's Strength of Weak Ties
+    - Social nets comprise strong ties (STs, people with whom you're close) and weak ties (WTs, people with whom you aren't close, friends of friends)
+    - STs have same info: know same people, see all regularly
+    - WTs likely have new info: out mixing with other people
+    - STs play important listening or validating role: people confer with STs before acting on info received from WTs
+    
+* Csikzenthmihalyi Flow Theory
+    - Mental state occurs when person becomes intensely engaged and absorbed in activity
+    - People in this mental state experience feelings of great enjoyment and fulfillment
+    - This theory helps improve human experience and increase engagement in activities
+    
+* Flow Chart
+    - x axis is skills
+    - y axis is challenges
+    - high challenge / low skill = anxiety
+    - low challenge / high skill = boredom
+    - "flow channel" exists around the x=y line
+    
+* Conditions of flow
+    - Clear goals and immediate feedback
+    - Equilibrium between the level of challenge and personal skill
+    - Merging of action and awareness
+    - Focused concentration
+    - Sense of potential control
+    - Loss of self consciousness
+    - Altered state of time
+    - Experience becoming self rewarding
+    
+* Applications in info science
+    - System use and design
+    - Human computer interaction
+    - Users' flow experiences while surfing the web
+    - Information systems and effect on quality of life
+    - Understanding IB in everyday contexts
+    
+* Elfreda Chatman, 1943-2002
+    - Three theories of IB:
+        1.  Information poverty
+        2.  Life in the round
+        3.  Normative behavior
+    - Emphasis on anomalies / counter examples
+    - Addresses info avoidance, non-use
+    - Set within small worlds
+    
+* Social Network Theory
+    - SNT examines how individuals create and enter into relationships with others to form networks
+    - Frequently used to map patterns of info flow and interaction in organizations and communities
+    
+* Chatman's anomalies
+    - SNT theory holds that:
+        1.  Social networks serve to facilitate the transfer and exchange of information
+        2.  Most social networks contain individuals who serve as opinion leaders or "information brokers"
+        3.  Individuals will seek out information that can improve their situation or that address critical worries or concerns
+        
+* Small World Phenomenons
+    - Everyday happenigns occur with some degree of predictability
+    - Legitimized others
+    - Share a physical and or conceptual space within a common landscape of cultural meaning
+    - Place narrow boundaries around the possibilities of info behaviors
+    - Shape and modify info according to worldview
+    
+* What makes a small world small?
+    - Closed social universes:
+        .. People know each other and their places
+        .. Those "places" are social roles and positions (which may be defined by institutional spaces)
+        .. Most members share situation and life experiences
+        .. Most will share "common landscape of cultural meaning" (a "world-view") that defines acceptable and unacceptable behavior
+    - Element of compulsion
+    
+* Theory #1 Information Poverty
+    - Based on studies of working poor (diffusion theory), janitors (alienation theory) and retired women (social net theory)
+    - Info poverty != economic poverty / digital divide
+    - How people define life to survive in a world of extreme distrust
+    - IP occurs when potentially helpful info is ignored despite its need
+    - to keep their world together, people engage in self-protective behaviors
+    - When people know valuable and relevant info is available, but view it as too costly to pursue or just figure, "Why bother?"
+    
+* Theory #2 Life in the Round (LIR)
+    - Female inmates, maximum security prison
+    - Focus on:
+        .. social norms, self-protective behaviors, and worldview
+        .. life with enormous imprecision but surprisingly, accepted levels of uncertainty
+    - LIR has negative effect on info seeking: for everyday purposes, people will NOT seek info if no need to do so
+    - People ignore info because world is working without it
+    - "Ain't broke, don't fix it"; Pleasantville
+    
+* LIR Propositions
+    1.  Legitimized others (mostly "insiders") set behavior boundaries
+    2.  Social norms force private behvaior to undergo public scrutiny
+    3.  Common worldview--language, values, meanings, symbols and context that holds worldview within temporal boundaries
+    4.  Worldview played out as LIR: life taken for granted because works most of the time with enough predictability that, unless critical problem arises, no point in seeking info
+    5.  Individuals will cross boundaries only if (1) info is perceived as critical, 2) have collective expectation that info is relevant, and 3) perceived that LIR life is no longer functioning
+    
+* Small World Living
+    - Social norms
+        .. Provide boundaries
+        .. Individual's actions "redefined" by opinion of others
+    - Location
+        .. Determines how everyday things should be prioritized
+        .. Things nearby are most relevant
+    - Knowledge
+        .. Areas of interest or disinterest determined by others
+        
+* TNB Concepts
+    - social norms: standard that dictate "rightness" or "wrongness" in social appearances
+    - worldview: collective/common perception members of social world hold regarding things deemed important or trivial/unimportant
+    - social types: absolute definition given to members of social world, which pertains to classification of a person(s)
+    - info behavior: state in which one may/may not act on info received
+    
+* TNB Propositions
+    1.  Social norms: standards members of social world comply to exhibit desirable expressions of public behavior
+    2.  Members choose compliance because it's a way to affirm what is normative for this context at this time
+    3.  Worldview: shaped by normative values that influence how members think about ways of the world: collective taken-for-granted attitude that sensitizes members to be responsive to certain events and ignore others
+    4.  Everyday reality says members show enough interest to influence behavior; process of placing persons in ideal categories of lesser/greater quality is social typification
+    5. IB: construct for approaching everyday reality. Appropriate actions based on what members believe support normative way of life
+    
+* Reijo Savolainen: interested in how socio-economic factors affect information behavior
+ 
+* Everyday Life Info Seeking
+    - Developed in mid 1990s
+    - Built on Bourdieu's critical sociology
+    - Holistic framework of social and cultural factors affecting people's everyday IB
+    - Motivated by need to elaborate:
+        .. terminological issues of IB studies
+        .. ELIS vs job related IB
+        
+* Way of Life
+    - Central point of the ELIS model
+    - Defined as "order of things"
+        .. things: various activities taking place in the daily life world
+        .. order: preferences given to activities
+    - Major factors used to operationalize the concept:
+        .. structures of time budget
+        .. models of consumption of goods and services
+        .. nature of hobbies
+        
+* Mastery of life
+    - Mastery of life == active care
+    - Info seeking --> central component
+    - Eliminate dissonance between perceptions of "how things are" and "how they should be"
+    - Four major types of mastery of life:
+        .. optimistic-cognitive
+        .. pessimistic-cognitive
+        .. defensive-affective
+        .. pessimistic-affective
+        
+* George Kingsley Zipf
+    - Each individual will adopt a course of action that will involve the expenditure of the probable least average of his or her work--the least effort
+    
+* Principle of least effort
+    - Derived from Zipf's work in linguistics: 20% of the words in most languages are used 80% of the time
+    - Often demonstrated by examining the regularity in the distribution of city sizes
+    - Populations of cities in almost any country follows a harmonic distribution
+        .. most commn value, x
+        .. second most, 2/3 x
+        .. third most, 1/2 x
+        .. frequently called the 80/20 distribution
+
+* Quality vs Quantity in PLE
+    - People accept lower quality info, if it's easier to access
+    - High quality info is not important
+    - Comparison of info quality is not important
+    - Focused on short-term timeline
+    
+    
+    
+

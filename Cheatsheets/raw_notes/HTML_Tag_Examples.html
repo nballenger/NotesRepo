@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>HTML5 Tag Examples</title>
+        <style type="text/css">
+        pre { background-color: #082832; padding: 10px; color: #FFFFFF; }
+        span.tag { color: #268BD2; }
+        span.comment { color: #93A1A1; }
+        span.attribute { color: #D33682; }
+        </style>
+    </head>
+    <body>
+        <h1>HTML5 Tag Examples</h1>
+<pre><span class="tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html&gt;</span>
+    <span class="tag">&lt;head&gt;</span>
+        <span class="tag">&lt;title&gt;</span>Title<span class="tag">&lt;/title&gt;</span>
+        <span class="tag">&lt;meta <span class="attribute">charset</span>="UTF-8" /&gt;</span>
+        <span class="tag">&lt;meta <span class="attribute">name</span>="author" content="author's name" /&gt;</span>
+        <span class="tag">&lt;meta http-equiv="Content-Type" content="text/html" /&gt;</span>
+        <span class="tag">&lt;link <span class="attribute">rel</span>="stylesheet" href="stylesheet.css" type="text/css" media="screen" /&gt;</span>
+        <span class="tag">&lt;base <span class="attribute">target</span>="_self" /&gt;</span> 
+        <span class="tag">&lt;base <span class="attribute">href</span>="http://www.example.com" /&gt;</span>
+        <span class="tag">&lt;style <span class="attribute">type</span>="text/css" media="screen"&gt;</span>
+            /* style rules */
+        <span class="tag">&lt;/style&gt;</span>
+        <span class="tag">&lt;script <span class="attribute">type</span>="text/javascript" src="external.js" async&gt;</span><span class="tag">&lt;/script&gt;</span>
+        <span class="tag">&lt;script <span class="attribute">type</span>="text/javascript"&gt;</span>
+            // js content
+        <span class="tag">&lt;/script&gt;</span>
+    <span class="tag">&lt;/head&gt;</span>
+    <span class="tag">&lt;body&gt;</span>
+        <span class="tag"><span class="comment">&lt;!-- Logical Sections, sectioning content model --&gt;</span></span>
+        <span class="tag">&lt;article&gt;</span><span class="tag"><span class="comment">&lt;!-- content meant to be excerpted as a whole --&gt;</span></span>
+            <span class="tag">&lt;header&gt;</span><span class="tag"><span class="comment">&lt;!-- introductory content --&gt;</span></span>
+                <span class="tag">&lt;hgroup&gt;</span><span class="tag"><span class="comment">&lt;!-- puts headers together for TOC purposes --&gt;</span></span>
+                    <span class="tag">&lt;h1&gt;</span><span class="tag"><span class="comment">&lt;!-- Main heading --&gt;</span></span><span class="tag">&lt;/h1&gt;</span>
+                    <span class="tag">&lt;h2&gt;</span><span class="tag"><span class="comment">&lt;!-- Sub heading --&gt;</span></span><span class="tag">&lt;/h2&gt;</span>
+                    <span class="tag">&lt;h3&gt;</span><span class="tag"><span class="comment">&lt;!-- Sub heading --&gt;</span></span><span class="tag">&lt;/h3&gt;</span>
+                    <span class="tag">&lt;h4&gt;</span><span class="tag"><span class="comment">&lt;!-- Sub heading --&gt;</span></span><span class="tag">&lt;/h4&gt;</span>
+                    <span class="tag">&lt;h5&gt;</span><span class="tag"><span class="comment">&lt;!-- Sub heading --&gt;</span></span><span class="tag">&lt;/h5&gt;</span>
+                    <span class="tag">&lt;h6&gt;</span><span class="tag"><span class="comment">&lt;!-- Sub heading --&gt;</span></span><span class="tag">&lt;/h6&gt;</span>
+                <span class="tag">&lt;/hgroup&gt;</span>                
+                <span class="tag">&lt;nav&gt;</span>
+                    <span class="tag"><span class="comment">&lt;!-- navigation information --&gt;</span></span>
+                <span class="tag">&lt;/nav&gt;</span>
+            <span class="tag">&lt;/header&gt;</span>
+            <span class="tag">&lt;section&gt;</span>
+                <span class="tag"><span class="comment">&lt;!-- thematically related content --&gt;</span></span>                
+            <span class="tag">&lt;/section&gt;</span>
+            <span class="tag">&lt;aside&gt;</span>
+                <span class="tag"><span class="comment">&lt;!-- tangential, supporting content --&gt;</span></span>
+            <span class="tag">&lt;/aside&gt;</span>
+            <span class="tag">&lt;footer&gt;</span>
+                <span class="tag"><span class="comment">&lt;!-- author info, licensing, supplemental nav --&gt;</span></span>
+            <span class="tag">&lt;/footer&gt;</span>
+        <span class="tag">&lt;/article&gt;</span>
+        
+        <span class="tag"><span class="comment">&lt;!-- Meaningful tags for content markup, sectioning content model --&gt;</span></span>
+        <span class="tag">&lt;p&gt;</span><span class="tag"><span class="comment">&lt;!-- paragraph content --&gt;</span></span><span class="tag">&lt;/p&gt;</span>
+        
+        <span class="tag">&lt;blockquote <span class="attribute">cite</span>="http://www.example.com"&gt;</span>
+            <span class="tag">&lt;p&gt;</span><span class="tag"><span class="comment">&lt;!-- quoted content inside block level children --&gt;</span></span><span class="tag">&lt;/p&gt;</span>
+        <span class="tag">&lt;/blockquote&gt;</span>
+        
+        <span class="tag">&lt;address&gt;</span>
+            <span class="tag"><span class="comment">&lt;!-- Byline / attribution for those responsible for content --&gt;</span></span>
+        <span class="tag">&lt;/address&gt;</span>
+        
+        <span class="tag">&lt;pre&gt;</span>
+            <span class="tag"><span class="comment">&lt;!-- preformatted text, preserves whitespace --&gt;</span></span>
+        <span class="tag">&lt;/pre&gt;</span>
+        
+        <span class="tag">&lt;hr /&gt;</span><span class="tag"><span class="comment">&lt;!-- horizontal rule, void, replaced element --&gt;</span></span>
+        
+        <span class="tag">&lt;div&gt;</span>
+            <span class="tag"><span class="comment">&lt;!-- semantically neutral, general purpose content division --&gt;</span></span>
+        <span class="tag">&lt;/div&gt;</span>
+        
+        <span class="tag">&lt;figure&gt;</span>
+            <span class="tag"><span class="comment">&lt;!-- image, video, quotation, code listing, or other content --&gt;</span></span>
+            <span class="tag"><span class="comment">&lt;!-- self contained, may be referenced from content as a single unit --&gt;</span></span>
+            <span class="tag">&lt;figcaption&gt;</span>
+                <span class="tag"><span class="comment">&lt;!-- Caption or legend for other contents of parent figure element --&gt;</span></span>
+            <span class="tag">&lt;/figcaption&gt;</span>
+        <span class="tag">&lt;/figure&gt;</span>
+        
+        <span class="tag">&lt;iframe <span class="attribute">src</span>="otherpage.html" height="100" width="100"&gt;</span>
+            <span class="tag"><span class="comment">&lt;!-- Inline / floating frame, displaying separate content --&gt;</span></span>
+        <span class="tag">&lt;/iframe&gt;</span>
+        
+        <span class="tag"><span class="comment">&lt;!-- List content, sectioning content model --&gt;</span></span>
+        <span class="tag">&lt;ul&gt;</span>
+            <span class="tag">&lt;li&gt;</span><span class="tag"><span class="comment">&lt;!-- list item content --&gt;</span></span><span class="tag">&lt;/li&gt;</span>
+        <span class="tag">&lt;/ul&gt;</span>
+        
+        <span class="tag">&lt;ol <span class="attribute">type</span>="a"&gt;</span>
+            <span class="tag">&lt;li&gt;</span><span class="tag"><span class="comment">&lt;!-- list item content --&gt;</span></span><span class="tag">&lt;/li&gt;</span>
+        <span class="tag">&lt;/ol&gt;</span>
+        
+        <span class="tag">&lt;dl&gt;</span>
+            <span class="tag">&lt;dt&gt;</span><span class="tag"><span class="comment">&lt;!-- term --&gt;</span></span><span class="tag">&lt;/dt&gt;</span>
+            <span class="tag">&lt;dd&gt;</span><span class="tag"><span class="comment">&lt;!-- data --&gt;</span></span><span class="tag">&lt;/dd&gt;</span>
+        <span class="tag">&lt;/dl&gt;</span>
+        
+        <span class="tag"><span class="comment">&lt;!-- Phrasing Elements --&gt;</span></span>
+        
+        <span class="tag">&lt;em&gt;</span><span class="tag"><span class="comment">&lt;!-- emphasized content --&gt;</span></span><span class="tag">&lt;/em&gt;</span>
+        <span class="tag">&lt;strong&gt;</span><span class="tag"><span class="comment">&lt;!-- strongly emphasized content --&gt;</span></span><span class="tag">&lt;/em&gt;</span>
+        <span class="tag">&lt;time <span class="attribute">datetime</span>="2012-05-05T15:35:42-07:00"&gt;</span>Saturday, May 5, 2012, 3:35 pm Pacific<span class="tag">&lt;/time&gt;</span>
+        <span class="tag">&lt;mark&gt;</span><span class="tag"><span class="comment">&lt;!-- marks a passage of interest within a section --&gt;</span></span><span class="tag">&lt;/mark&gt;</span>
+        <span class="tag">&lt;cite&gt;</span><span class="tag"><span class="comment">&lt;!-- Name of source, other citation info --&gt;</span></span><span class="tag">&lt;/cite&gt;</span>
+        <span class="tag">&lt;q&gt;</span><span class="tag"><span class="comment">&lt;!-- short, inline quotation --&gt;</span></span><span class="tag">&lt;/q&gt;</span>
+        <span class="tag">&lt;dfn&gt;</span><span class="tag"><span class="comment">&lt;!-- The defining instance of a term, especially one that reoccurs --&gt;</span></span><span class="tag">&lt;/dfn&gt;</span>
+        <span class="tag">&lt;abbr <span class="attribute">title</span>="The Expanded Form"&gt;</span><span class="tag"><span class="comment">&lt;!-- Shortened form of a word or phrase --&gt;</span></span><span class="tag">&lt;/abbr&gt;</span>
+        <span class="tag">&lt;small&gt;</span><span class="tag"><span class="comment">&lt;!-- Side note or fine print --&gt;</span></span><span class="tag">&lt;/small&gt;</span>
+        <span class="tag">&lt;span&gt;</span><span class="tag"><span class="comment">&lt;!-- Generic phrase element --&gt;</span></span><span class="tag">&lt;/small&gt;</span>
+        <span class="tag">&lt;code&gt;</span><span class="tag"><span class="comment">&lt;!-- computer code --&gt;</span></span><span class="tag">&lt;/code&gt;</span>
+        <span class="tag">&lt;kbd&gt;</span><span class="tag"><span class="comment">&lt;!-- text or commands for the user to enter --&gt;</span></span><span class="tag">&lt;/kbd&gt;</span>
+        <span class="tag">&lt;samp&gt;</span><span class="tag"><span class="comment">&lt;!-- sample output of a program or script --&gt;</span></span><span class="tag">&lt;/samp&gt;</span>
+        <span class="tag">&lt;var&gt;</span><span class="tag"><span class="comment">&lt;!-- programming variable or argument --&gt;</span></span><span class="tag">&lt;/var&gt;</span>
+        <span class="tag">&lt;del <span class="attribute">cite</span>="url_of_change_info" datetime="change time"&gt;</span><span class="tag"><span class="comment">&lt;!-- deleted text --&gt;</span></span><span class="tag">&lt;/del&gt;</span>
+        <span class="tag">&lt;ins <span class="attribute">cite</span>="url_of_change_info" datetime="change time"&gt;</span><span class="tag"><span class="comment">&lt;!-- inserted text --&gt;</span></span><span class="tag">&lt;/ins&gt;</span>
+        
+        <span class="tag"><span class="comment">&lt;!-- Offset Text --&gt;</span></span>
+        <span class="tag">&lt;i&gt;</span><span class="tag"><span class="comment">&lt;!-- word or phrase in an alternate voice --&gt;</span></span><span class="tag">&lt;/i&gt;</span>
+        <span class="tag">&lt;b&gt;</span><span class="tag"><span class="comment">&lt;!-- calls attention to a word or phrase --&gt;</span></span><span class="tag">&lt;/b&gt;</span>
+        <span class="tag">&lt;u&gt;</span><span class="tag"><span class="comment">&lt;!-- underlines text, marks it visually --&gt;</span></span><span class="tag">&lt;/u&gt;</span>
+        <span class="tag">&lt;s&gt;</span><span class="tag"><span class="comment">&lt;!-- text that is no longer accurate or relevant --&gt;</span></span><span class="tag">&lt;/s&gt;</span>
+        
+        <span class="tag">&lt;sup&gt;</span><span class="tag"><span class="comment">&lt;!-- superscripted --&gt;</span></span><span class="tag">&lt;/sup&gt;</span>
+        <span class="tag">&lt;sub&gt;</span><span class="tag"><span class="comment">&lt;!-- subscripted --&gt;</span></span><span class="tag">&lt;/sub&gt;</span>
+        
+        <span class="tag"><span class="comment">&lt;!-- Text Annotations --&gt;</span></span>
+        <span class="tag">&lt;ruby&gt;</span><span class="tag"><span class="comment">&lt;!-- pronunciation guide in logographic language --&gt;</span></span><span class="tag">&lt;/ruby&gt;</span>
+        <span class="tag">&lt;rp&gt;</span><span class="tag"><span class="comment">&lt;!-- word or phrase with annotation --&gt;</span></span><span class="tag">&lt;/rp&gt;</span>
+        <span class="tag">&lt;rt&gt;</span><span class="tag"><span class="comment">&lt;!-- Actual annotation text --&gt;</span></span><span class="tag">&lt;/rt&gt;</span>
+        
+        <span class="tag"><span class="comment">&lt;!-- Bidirectional Text --&gt;</span></span>
+        <span class="tag">&lt;bdi&gt;</span><span class="tag"><span class="comment">&lt;!-- Bidirectional isolate, isolates a piece of text --&gt;</span></span><span class="tag">&lt;/bdi&gt;</span>
+        <span class="tag">&lt;bdo <span class="attribute">dir</span>="rtl"&gt;</span><span class="tag"><span class="comment">&lt;!-- Bidirectional override, explicitly reverses from main --&gt;</span></span><span class="tag">&lt;/bdo&gt;</span>
+        
+        <span class="tag"><span class="comment">&lt;!-- Line Breaks --&gt;</span></span>
+        <span class="tag">&lt;br /&gt;</span><span class="tag"><span class="comment">&lt;!-- Explicit line break --&gt;</span></span>
+        <span class="tag">&lt;wbr /&gt;</span><span class="tag"><span class="comment">&lt;!-- Line break opportunity --&gt;</span></span>
+    <span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></pre>
+    </body>
+</html>

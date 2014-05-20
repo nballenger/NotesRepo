@@ -1,0 +1,499 @@
+Notes on The Not So Short Introduction to LaTeX2e
+by Tobias Oetiker, Hubert Partl, Irene Hyna and Elisabeth Schlegl
+
+Chapter 1: Things You Need to Know
+    1.1 The Name of the Game
+        1.1.1 TeX
+    1.2 Basics
+        1.2.1 Author, Book Designer and Typesetter
+            * LaTeX is the "book designer" and TeX is the typesetter
+            * Author has to provide additional information to specify the logical structure of the work
+            * That structure is written in LaTeX commands
+        1.2.2 Layout Design
+            * Formatting errors are prevented by declaring the logical structure of the document
+        1.2.3 Advantages and Disadvantages
+            * Advantages:
+                - Handles a lot of stuff like math
+                - Looks real good like
+                - Has a bunch of packages
+            * Disadvantages:
+                - Time consuming
+                - Hard to write unstructured docs
+    1.3 LaTeX Input Files
+        * Plain text files are the input
+        1.3.1 Spaces
+            * White space is ignored beyond one space
+        1.3.2 Special Characters
+            * Following are reserved:
+                # $ % ^ & _ { } ~ \
+            * Escaped by backslash prefix
+            * \\ is not escaped backslash, use \textbackslash instead
+        1.3.3 LaTeX Commands
+            * Start with a backslash
+            * Names are letters only, terminated by a space, number or non-letter character, OR
+            * They are a backslash and exactly one non-letter
+            * Many commands exist in a 'starred' variant where a star is appended to the command name
+            * Insert a {} after a command to add whitespace, else the whitespace following the command is factored out
+            * Some commands take required parameters inside curly braces
+            * Some have optional parameters inside brackets
+        1.3.4 Comments
+            * From a percent sign to carriage return + leading white space of next line is a comment
+            * Longer comments can be created with the comment environment provided by the verbatim package:
+                
+                \usepackage{verbatim}
+                \begin{comment} blah blah blah \end{comment}
+                
+    1.4 Input File Structure
+        * A document structure is expected
+        * Files start with \documentclass{...}
+        * Then come commands to influence the style of the whole doc or load packages
+        * Then \begin{document}
+        * End is at \end{document}
+
+    1.5 A Typical Command Line Session
+        * Very simple document:
+            
+            \documentclass{article}
+            \begin{document}
+            Small is beautiful.
+            \end{document}
+            
+        * To compile your input file:
+            - Create the input file as plain text, extension .tex
+            - run 'latex filename.tex', which will give you a .dvi file
+            - View the dvi file with xdvi foo.dvi & (with x11)
+            - Convert the dvi file to PostScript with 'dvips' -Pcmz foo.dvi -o foo.ps
+            - Convert to pdf with 'dvipdf foo.dvi'
+    
+    1.6 The Layout of the Document
+        1.6.1 Document Classes  
+            * \documentclass[options]{class}
+            * Classes:
+                - article, proc, minimal, report, book, slides
+            * Options:
+                - font size, paper size, fleqn (formulae is left aligned), leqno (numbering of formulae is on left instead of right), titlepage/notitlepage, onecolumn/twocolumn, twoside/oneside, landscape, openright/openany (whether a chapter can start on the right or either side)
+            * Example declaration:
+                
+                \documentclass[11pt,twoside,a4paper]{article}
+                
+        1.6.2 Packages
+            * \usepackage[options]{package}
+            * texdoc will let you access package documentation
+            * Some packages:
+                - doc, excale, fontenc, ifthen, latexsym, makeidx, syntonly, inputenc
+        
+        1.6.3 Page Styles
+            * \pagestyle{style}
+            * Supports three predefined header/footer combinations, the style parameter sets which to use
+            * Choices are plain, headings, and empty
+            * Single page style can be set with \thispagestyle{style}
+        
+    1.7 Files You Might Encounter
+        * .tex is a latex input file
+        * .sty is a Latex macro package, for use with \usepackage
+        * .dtx is documented tex, which when processed gives you documented macro code for a package contained in the .dtx file
+        * .inx is the installer for files contained in a .dtx
+        * .cls is a class file defining what your document looks like
+        * .fd is a font description file
+        
+        * .dvi is a Device Independent File, and is the main result of running a latex compile on a source file
+        * .log gives a detailed account of what happened during the last compiler run
+        * .toc stores all your section headers
+        * .lof is like .toc but for the list of figures
+        * .lot is the same but for tables
+        * .aux is for shunting info from one compiler run to the next
+        * .idx is an index for your document, processed with makeindex
+        * .ind is the processed form if .idx
+        * .ilg is a logfile telling what makeindex did
+        
+    1.8 Big Projects
+        * If you want to split the input file into several parts, you can use the \include{filename} command
+        * It will insert the contents of the named file at that point in the document
+        * A new page will be started before processing the new file
+        * In the preamble you can use \includeonly{filename, filename,...} to tell latex to only include some files
+        * \input{filename} lets you insert content without a page break being used
+        * To quickly check document syntax, do this:
+        
+            \usepackage{syntonly}
+            \syntaxonly
+            
+Chapter 2: Typesetting Text
+    2.1 The Structure of Text and Language
+        * blah blah blah, paragraphs are great
+    2.2 Line Breaking and Page Breaking
+        2.2.1 Justified Paragraphs
+            * To force a line break, use \\ or \newline (which will not start a new paragraph, and thus will not indent)
+            * \\* will prohibit a page break after the forced line break
+            * \newpage will insert a page break
+            * \linebreak[n], \nolinebreak[n], \pagebreak[n], \nopagebreak[n] all suggest places where a break may happen, with n being between 0 and 4, leaving it up to latex
+            * You can tell latex to lower standards by using \sloppy, and raise them again with \fussy
+        2.2.2 Hyphenation
+            * Latex will hyphenate when necessary
+            * You can use \hyphenation{word list} to tell latex that the words listed in the argument should be hyphenated only at the points marked with a - character
+        
+    2.3 Ready-Made Strings
+        * There are special text strings you can get for free:
+            \today  current date
+            \TeX    tex name, formatted
+            \LaTeX  latex name, formatted
+            \LaTeXe current version of latex
+            
+    2.4 Special Characters and Symbols
+        2.4.1 Quotation Marks
+            * You can get curly quotes with:
+            
+                 `blah blah blah'   single
+                ``blah blah blah''  double
+                
+        2.4.2 Dashes and Hyphens
+            * Four kinds of dashes:
+                blah-blah-blah      single dash
+                pages 13--67        endash
+                yes---or no?        emdash
+        
+        2.4.3 Tilde
+            * use \~{} for a high up tilde
+            * use $\sim$ for a lower, bigger tilde character
+            
+        2.4.4 Slash
+            * To set a slash between two words but maintain their separateness as 'words' for latex's purposes, do word\slash word
+        
+        2.4.5 Degree Symbol
+            * $-30\, ^{\circ}\mathrm{C}$
+            * \textcelsius{}
+            * \textdegree{}
+            
+        2.4.6 The Euro Currency Symbol
+            * \usepackage{textcomp}
+            * \texteuro
+            or
+            * \usepackage[official]{eurosym} for the official one
+            * \usepackage[gen]{eurosym} for one matching your font
+            
+        2.4.7 Ellipsis
+            * \ldots
+            
+        2.4.8 Ligatures
+            * use \mbox{} between letters to prohibit a ligature
+            
+        2.4.9 Accents and Special Characters
+            * Example:
+            
+                H\^otel, n\"\i ve, \'el\'\`eve,\\
+                
+    2.5 International Language Support
+        * You need to set automatically generated text strings
+        * You can use the babel package for a lot of this
+        * you have to set the hyphenation rules
+        * you have to set the language specific typographic rules
+        
+    2.6 The Space Between Words
+        * Normal assumption about sentence endings is that it will be a lower case letter followed by a period, question mark or exclamation point
+        * Exceptions have to be specified
+        * \@ in front of a period indicates it terminates a sentence even if it follows an upper case letter
+        * additional spaces after periods can be disabled with \frenchspacing
+        
+    2.7 Titles, Chapters and Sections
+        * The following are available from the article class:
+        
+            \section{...}
+            \subsection{...}
+            \subsubsection{...}
+            \paragraph{...}
+            \subparagraph{...}
+            
+        * To split the document without influencing the section or chapter numbering:
+        
+            \part{...}
+            
+        * The report and book classes also have
+        
+            \chapter{...}
+            
+        * To change the chapter numbering to letters:
+        
+            \appendix
+            
+        * To insert a table of contents (requires double compilation):
+            
+            \tableofcontents
+            
+        * All sectioning commands also have starred versions
+        * Generates section headings that do not show up in the table of contents, and are not numbered;
+        
+            \section*{Help}
+            
+        * To give specific text for the TOC version:
+        
+            \chapter[Title for use in the TOC]{A longer title that wouldn't fit in the TOC}
+            
+        * The title of the whole document is generated with \maketitle
+        * Contents of the title have to be defined with the following:
+        
+            \title{...}, \author{...}, \date{...}
+            
+        * After which you call \maketitle
+        
+        * Additional commands for use with the book class:
+            - \frontmatter immediately follows \begin{document}, and will switch page numbering to roman numerals
+            - \mainmatter comes right before the first chapter
+            - \appendix marks the start of additional material
+            - \backmatter goes right before the very last parts, like the bibliography and index
+            
+    2.8 Cross References
+        * \label{marker} sets a mark
+        * \ref{marker} creates a link to the mark
+        * \pageref{marker} prints the page number of the mark
+        
+    2.9 Footnotes
+        * \footnote{footnote text} prints a footnote on the current page
+        
+    2.10 Emphasized Words
+        * \underline{text}
+        * \emph{text}
+        
+    2.11 Environments
+        * \begin{environment} text \end{environment}
+        * environments can be nested
+        
+        2.11.1 Itemize, Enumerate and Description
+            * itemize is for simple lists
+            * enumerate for enumerated lists
+            * description for descriptions
+            * example:
+            
+                \flushleft
+                \begin{enumerate}
+                \item This is numbered
+                \begin{itemize}
+                \item This is bulleted
+                \item[-] This has a dash
+                \end{itemize}
+                \item Back to numbering
+                \begin{description}
+                \item[Word] definition of the word
+                \end{description
+                \end{enumerate}
+                
+        2.11.2 Flushleft, Flushright and Center
+            * Environments that generate paragraphs that are aligned one way or another
+            
+        2.11.3 Quote, Quotation and Verse
+            * quote is useful for quotes, phrases and examples
+            * quotation is for longer quotes, and indents each para
+            * verse is for poems where line breaks are important
+            
+        2.11.4 Abstract
+            * Usually used with the article class
+            * used like
+                
+                \begin{abstract}
+                The abstract abstract.
+                \end{abstract}
+                
+        2.11.5 Printing Verbatim
+            * Anything in \begin{verbatim} \end{verbatim} will be directly printed, as if on a typewriter
+            * Inside a para, use the \verb+text+ command to do pre-type formatting for a span
+            
+        2.11.6 Tabular
+            * tabular environment can be used to set tables with optional horizontal and vertical lines
+            * width of the columns is determined automatically
+            * begins with:
+            
+                \begin{tabular}[pos]{table spec]
+                
+            * The table spec part defines the format of the table:
+                - l is a column of left-aligned text
+                - r is right alined text
+                - c is centered text
+                - p{width} for a column justified with line breaks
+                - | for a vertical line
+            * The positional argument gives the vertical position of the table relative to the baseline of the surrounding text, and is one of:
+                - t for top
+                - b for bottom
+                - c for center
+            * & jumps to the next column
+            * \\ starts a new line
+            * \hline inserts a horizontal line
+            * partial lines can be added with \cline{i-j} where i and j are column numbers the line should extend over
+            * Examples:
+            
+                \begin{tabular}{|r|l|}
+                \hline
+                7CO & hexadecimal \\
+                3700 & octal \\ \cline{2-2}
+                11111000000 & binary \\
+                \hline \hline
+                1984 & decimal \\
+                \hline
+                \end{tabular}
+                
+                \begin{tabular}{|p{4.7cm}|}
+                \hline
+                Welcome to Boxy's paragraph.
+                We sincerely hope you'll all enjoy the show.\\
+                \hline
+                \end{tabular}
+                
+            * Column separator can be defined with @{...}
+            * That kills the inter-column space and replaces it with whatever is between the curly braces
+            * You can use it to deal with alignment or leading space
+            * Material typeset with the tabular environment always stays together on one page
+            * To set long tables, use the longtable environments
+            * To increase the spacing of the tables, you can use \arraystretch and \tabcolsep:
+            
+                \begin{tabular}{|l|}
+                \hline
+                The lines\\\hline
+                are tight\\\hline
+                \end{tabular}
+                
+                {\renewcommand{\arraystretch}{1.5}
+                \renewcommand{\tabcolsep}{0.2cm}
+                \begin{tabular}{|l|}
+                \hline
+                less cramped\\\hline
+                table layout\\\hline
+                \end{tabular}}
+                
+    2.12 Floating Bodies
+        * To avoid breaking figures and tables across pages or leaving big blocks of open space, you can float a figure or table to the next available page
+        * Commands for floats:
+        
+            \begin{figure}[placement specifier]
+            \begin{table}[...]
+            
+        * The placement specifier tells latex about which locations the float is allowed to be moved to
+        * It's written as a string of float-placing permissions
+        * The float placing permissions are
+            - h  here at the point where it occurs
+            - t  at the top of a page
+            - b  at the bottom of a page
+            - p  on a special page with only floats
+            - !  without considering most parameters which would stop the float from being placed
+        * The \caption{caption text} command will add a caption to a float, and a running number or string will be added
+        * You can use \caption[Short]{looooong}
+        * Use \label and \ref to create a reference to a float within the text
+        * \label must come after \caption, since \label will reference \caption
+        * Example:
+        
+            Figure~\ref{white} is an example of Pop-Art.
+            \begin{figure}[!hbtp]
+            \makebox[\textwidth]{\framebox[5cm]{\rule{0pt}{5cm}}}
+            \caption{Five by Five in Cintemetres.\label{white}}
+            \end{figure}
+            
+        * \clearpage or \cleardoublepage will immediately place all floats in the current queue and go to a new page
+        
+    2.13 Protecting Fragile Commands
+        * Some commands, like \footnote and \phantom, are 'fragile' and cannot be used in the argument of \section-like commands
+        * You can protect them with \protect, which will let them work normally even in moving arguments
+        * Example:
+        
+            \section{I am considerate
+                \protect\footnote{and protect my footnotes}}
+                
+        
+        
+Chapter 6: Customizing Latex
+    6.1 New Commands, Environments and Packages
+    6.2 Fonts and Sizes
+        6.2.1 Font Changing Commands
+            * To set the font and font size by hand, use the commands
+            
+            * Fonts:
+                \textrm{...}    roman
+                \texttt{...}    typewriter
+                \textmd{...}    medium
+                \textup{...}    upright
+                \textsl{...}    slanted
+                \emph{...}      emphasized
+                \textsf{...}    sans serif
+                \textbf{...}    bold face
+                \textit{...}    italic
+                \textsc{...}    small caps
+                \textnormal{...}    document font
+                
+            * Font Sizes:
+                \tiny           tiny font       
+                \scriptsize     very small
+                \footnotesize   quite small
+                \small          small
+                \normalsize     normal
+                \large          large
+                \Large          larger
+                \LARGE          very large
+                \huge           huge
+                \Huge           largest
+                
+            * You can use the size changing commands as arguments to a section, like:
+            
+                \begin{Large}
+                Blah blah blah
+                \end{Large}
+                
+        6.2.2 Danger, Will Robinson, Danger
+            * You can use \newcommand to defined a 'logical wrapper command' for the font changing command:
+            
+                \newcommand{\oops}[1]{%
+                 \textbf{#1}}
+                Do not \oops{enter} this room,
+                it's occupied by \oops{machines}
+                of unknown origin and purpose.
+                
+            * Basically lets you define a style that you can reset later, rather than having to go through and find and redefine each usage of \textbf
+        
+    6.3 Spacing
+        6.3.1 Line Spacing
+            * To change the large inter-line spacing in a document, change its value with \linespread{factor} in the preamble of the document
+            * \linespread{1.3} would give one and a half, \linespread{1.6} for double
+            * default spread factor is 1
+            * To set the spread on a smaller scale, use
+            
+                {\setlength{\baselineskip}%
+                           {1.5\baselineskip}
+                blah blah blah
+                \par}
+                
+        6.3.2 Paragraph Formatting
+            * There are two parameters influencing paragraph layout
+            * Example from doc preamble:
+            
+                \setlength{\parindent}{0pt}
+                \setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+        
+            * Those commands increase the space between two paragraphs while setting the para indent to zero
+            * The plus and minux tell latex it can compress and expand the inter-para skip by the amount specified, if necessary
+            * To indent a para that is not indented, use \indent at the beginning
+            * To unindent a para, use \noindent
+            
+        6.3.3 Horizontal Space
+            * To add horizontal space, use \hspace{length}
+            * If the space should exist even at the beginning or end of a line, use \hspace*
+            * length is a number and a unit
+            * \stretch{n} generates a stretchable space, will take up all remaining space on a line
+            * Units:
+                mm      millimeter
+                cm      centimeter
+                in      inch
+                pt      point
+                em      width of an M
+                ex      width of an x
+                
+        6.3.4 Vertical Space
+            * You can add \vspace{length}
+            * To preserve it at top or bottom of a page, use \vspace*
+            * \stretch with \pagebreak can set text on the last line of a page, or center text vertically:
+            
+                Some text \ldots
+                \vspace{\stretch{1}}
+                This goes onto the last line of the page.\pagebreak
+                
+            * With \\[length] you can put space between lines
+            * With \bigskip and \smallskip you can put in a predefined set of vertical space
+            
+        6.4 Page Layout
+        6.5 More Fun With Lengths
+        6.6 Boxes
+        6.7 Rules
+                

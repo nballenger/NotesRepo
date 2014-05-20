@@ -1,0 +1,420 @@
+Notes on High Performance Javascript
+
+Chapter 1: Loading and Execution
+    * Any time a browser encounters a script tag in rendering, it has to stop rendering for the
+        script to complete, since the script could change the structure of the loading elements
+    * Happens whether the script is inline or sourced via an src attribute
+    
+1.1 Script Positioning
+    * Traditional positioning was to have all linked assets in the head
+    * Introduces severe performance lag while those assets load and run
+    * More modern browsers allow parallel downloading of JS files (IE8, FF3.5, Safari 4, Chrome 2)
+    * Recommended to place all script tags as close to the bottom of <body> as possible
+    * Script downloads in the body will block each other, but not other page assets
+    
+1.2 Grouping Scripts
+    * Helpful to limit the number of round trip network requests made
+    * Concatenate files into a single source file, pull that in rather than multiple files
+    * YUI has a combo handler that lets you pull multiple js files in one request, dynamically
+    
+1.3 Nonblocking Scripts
+    * Pulling a big script in one block will just lock up the browser
+    * You want to pull scripts incrementally after the page loads--after window's load event
+    
+    1.3.1 Deferred Scripts
+        * HTML4 has a 'defer' attribute to the script tag
+        * Indicates the script will do no DOM modifications, so execution can be deferred
+        * Not cross browser safe (IE and FF only)
+        * Code will start downloading from the point the script tag is placed, execution happens later
+        
+    1.3.2 Dynamic Script Elements
+        * You can create a script tag by manipulating the DOM
+        * A dynamically included script tag will run non-blocking
+        * Add them to the head rather than the body
+        * There are cross browser implementations defined in this section
+        
+    1.3.3 XMLHttpRequest Script Injection
+        * Create an XHR object, get the js file, inject the code into the page
+        * Example:
+        
+            var xhr = new XMLHttpRequest();
+            xhr.open("get", "file1.js", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    if (xhr.status >= 200 && xhr.status < 300 || xhr.status == 304) {
+                        var script = document.createElement("script");
+                        script.type = "text/javascript";
+                        script.text = xhr.responseText;
+                        document.body.appendChild(script);
+                    }
+                }
+            };
+            xhr.send(null);
+            
+        * Not workable in large scale applications, because you have to download from the same domain
+            and not from a CDN
+            
+    1.3.4 Recommended Nonblocking Pattern
+        * Two step process: 1) include the code to dynamically load JS, 2) load the rest of the JS for page init
+        * Since the first part of the code is very small, it downloads and executes quickly
+        * Example, placed just before body close tag:
+        
+            <script type="text/javascript" src="loader.js"></script>
+            <script type="text/javascript">
+                loadScript("the-rest.js", function() {
+                    Application.init();
+                });
+            </script>
+            
+        * Another option is to embed loadScript() into the page, avoiding another HTTP request:
+        
+            <script type="text/javascript">
+                function loadScript(url, callback) {
+                    var script = document.createElement("script");
+                    script.type = "text/javascript";
+                    
+                    if (script.readyState) { // IE
+                        script.onreadystatechange = function() {
+                            if (script.readyState == "loaded" ||
+                                    script.readyState == "complete") {
+                                script.onreadystatechange = null;
+                                callback();
+                            }
+                        };
+                    }
+                    else {  // others
+                        script.onload = function() {
+                            callback();
+                        };
+                    }
+                    
+                    script.src = url;
+                    document.getElementsByTagName("head")[0].appendChild(script);
+                }
+                
+                loadScript("the-rest.js", function() {
+                    Application.init();
+                });
+            </script>
+            
+        * That approach should be minified before deployment
+        
+        1.3.4.1 The YUI 3 Approach
+        1.3.4.2 The LazyLoad library
+            * More powerful function of the loadScript() function
+            * Can be passed an array of filenames to pull and execute in order
+        1.3.4.3 The LABjs library
+            * Open source library, gives fine grained control over the loading process
+            * Tries to download as much in parallel as possible
+            * Can manage dependencies via a wait() function
+            
+1.4 Summary
+    * Put all script tags at the bottom of the page, just inside the closing body tag
+    * Group scripts together and concatenate them
+    * Download and execute your JS in a nonblocking manner: 
+        use the defer attribute in script tags where appropriate
+        dynamically create script elements to download and execute code
+        download the code using an XHR object, then inject the code into the page
+        
+Chapter 2: Data Access
+    * Four basic places from which data can be accessed in JS:
+        - Literal values -- any value that's just itself, not stored anywhere in particular
+        - Variables -- developer defined location for storing data created with the var keyword
+        - Array items -- numerically indexed location within an Array object
+        - Object members -- string indexed location within a JS object
+    * Each has different read/write costs
+    * Performance difference between most variables and literals is negligible
+    * Array and Object access is more expensive, mostly comparable
+    
+2.1 Managing Scope
+    2.1.1 Scope Chains and Identifier Resolution
+        * Every function in JS is an instance of Function
+        * Function objects have public and internal properties, one of which is [[Scope]]
+        * [[Scope]] contains a collection of objects representing the scope in which the fn was created
+        * That's the object's 'scope chain', determines the data the function can access
+        * Each obj in the scope chain is called a 'variable object'
+        * Each variable object contains entries for variables in the form of key value pairs
+        * Consider this example:
+        
+            function add(num1, num2) {
+                var sum = num1 + num2;
+                return sum;
+            }
+            
+        * When that's created, the scope chain for the add Function object has a single variable object,
+            the global object representing all variables that are globally defined
+        * Global object has entries for window, navigator, document, etc.
+        * Assume this code is executed:
+        
+            var total = add(5,10);
+            
+        * That triggers an 'execution context', which defines the environment in which a function is being executed
+        * Each execution context is particular to one execution of the function--destroyed on completion
+        * The execution context has its own scope chain used for identifier resolution, pulled from [[Scope]]
+        * Once they're copied to the execution context scope chain, an 'activation object' is created for the ex context
+        * That acts as the variable object for the execution, and contains entries for all local variables,
+            named arguments, the arguments collection, and 'this'
+        * That object is then pushed to the front of the scope chain--also destroyed when the execution context is destroyed
+        * Every time a variable is encountered during execution, identifier resolution takes place
+        * During that, the execution context's scope chain is searched for an identifier with the same name
+        * Search begins at the front of the scope chain, in the activation object
+        * If found there, it's used, if not, search continues to the next object in the scope chain
+        * If not found, the identifier is deemed undeclared
+        * The search process for identifiers is what effects performance
+        
+    2.1.2 Identifier Resolution Performance
+        * The deeper into a scope chain an identifier exists, the more overhead to do reads or writes
+        * Local variables are always the fastest to access inside a function, globals are slowest
+        * Globals always exist in the last variable object of the scope chain, so always furthest to resolve
+        * Advisable to use local variables wherever possible
+        * Always store out of scope values in local variables if they're used more than once in a function:
+        
+            // BAD version:
+            function initUI() {
+                var bd = document.body,
+                    links = document.getElementsByTagName("a"),
+                    i = 0,
+                    len = links.length;
+                    
+                while (i < len) {
+                    update(links[i++]);
+                }
+                
+                document.getElementById("go-btn").onclick = function() {
+                    start();
+                };
+                
+                bd.className = "active";
+            }
+            
+            // BETTER version:
+            function initUI() {
+                var doc = document,
+                    bd = doc.body,
+                    links = doc.getElementsByTagName("a"),
+                    i = 0,
+                    len = links.length;
+                
+                while (i < len) {
+                    update(links[i++]);
+                }
+                
+                doc.getElementById("go-btn").onclick = function() {
+                    start();
+                };
+                
+                bd.className = "active";
+            }
+            
+    2.1.3 Scope Chain Augmentation
+        * Generally, an execution context's scope chain doesn't change
+        * However, two statements can temporarily augment the scope chain while it is being executed
+        * 'with' is used to create variables for all of an object's properties
+        * Could rewrite the above function to be:
+        
+            // 'with' version:
+            function initUI() {
+                with (document) {       // avoid!
+                    var bd = body,
+                        links = getElementsByTagName("a"),
+                        i = 0,
+                        len = links.length;
+                        
+                    while (i < len) {
+                        update(links[i++]);
+                    }
+                    
+                    getElementById("go-btn").onclick = function() {
+                        start();
+                    };
+                    
+                    bd.className = "active";
+                }
+            }
+            
+        * Creates a performance problem:
+            - When the code execution flows into a with statement, the scope chain is temporarily augmented
+            - A new variable object is created containing all the properties of the specified object
+            - That object is pushed to the front of the scope chain
+            - Displaces all the function's local variables to second place in the scope chain
+        * MUCH better to store 'document' in a local variable than to use with to augment the scope chain
+        * The catch clause of a try catch statement also augments the scope chain
+        * When an error occurs in the try block, execution flows to the catch, and the exception
+            object is pushed into a variable object that is then placed at the front of the scope chain
+        * That makes all variables local to the function second in the scope chain inside the catch block
+        * Don't completely avoid using try catch, but never use it as a solution to a JS error
+        * Handle as little code as possible inside the catch block--delegate:
+        
+            try {
+                methodThatMightCauseAnError();
+            } catch (ex) {
+                handleError(ex);
+            }
+            
+    2.1.4 Dynamic Scopes
+        * with, catch, and a function containing eval() are all 'dynamic scopes'
+        * A dynamic scope only exists through execution of code, and cannot therefore be determined
+            simply by static analysis.  Example:
+            
+            function execute(code) {
+                eval(code);
+                
+                function subroutine() {
+                    return window;
+                }
+                
+                var w = subroutine();
+                
+                // what value is w?
+            };
+            
+        * The value of w is totally dependent on the execution of the code inside the eval
+        * Having that happens means that optimizers inside the browser can't speed up identifer resolution
+        
+    2.1.5 Closures, Scope, and Memory
+        * Closures let a function access data outside its local scope
+        * There's a performance impact to using them.  Consider:
+        
+            function assignEvents() {
+                var id = "xdi9592";
+                
+                document.getElementById("save-btn").onclick = function(event) {
+                    saveDocument(id);
+                };
+            }
+            
+        * Assigns an event handler to a single DOM event, and that handler is a closure
+        * In order to have the closure access the value of id, a scope chain must be created
+        * When assignEvents() is executed, an activation object is created taht contains the id variable
+        * That's the first object in the execution context's scope chain, then the global object
+        * When the closure is created, its [[Scope]] property is initialized with both those objects
+        * Since the closure's [[Scope]] contains references to the same objects as the execution context's
+            scope chain, the activation context isn't destroyed when the execution context is, so there's
+            memory overhead to store the persistent activation context--can cause memory leaks in IE
+        * Primary mitigation is to store frequently used out of scope variables in local vars
+        
+2.2 Object Members
+    * Object member access is generally slower than variable or literal access
+    
+    2.2.1 Prototypes
+        * Prototypes are the basis of JS inheritance, not classes--they're objects themselves
+        * Objects are tied to their prototypes by an internal property, which some browsers show as __proto__
+        * Any object of a built in type other than Object has Object as its prototype
+        * Objects can have two types of members: instance members ('own' members) and prototype members
+        * Instance members exist on the object, prototype members are inherited
+        * Example:
+        
+            var book = {
+                title: "High Performance Javascript",
+                publisher: "Yahoo! Press"
+            };
+            
+            alert(book.toString());     // "[object Object]"
+            
+        * toString is a prototype member, since it's not defined in book itself
+        * Resolving an object member is very like resolving a variable--search begins on the instance, 
+            proceeds to the prototype
+        * hasOwnProperty() will tell you whether an object has an instance member
+        * The 'in' operator will tell you if a member of a specific name is in an object
+        
+            var book = {
+                title: "High Performance Javascript",
+                publisher: "Yahoo! Press"
+            };
+
+            alert(book.hasOwnProperty("title"));            // true
+            alert(book.hasOwnProperty("toString"));         // false
+            alert("title" in book);                         // true
+            alert("toString" in book);                      // true
+            
+    2.2.2 Prototype Chains
+        * You can create a prototype of another type by defining and using a constructor:
+        
+            function Book(title, publisher) {
+                this.title = title;
+                this.publisher = publisher;
+            }
+            
+            Book.prototype.sayTitle = function() {
+                alert(this.title);
+            };
+            
+            var book1 = new Book("ABC", "DEF");
+            var book2 = new Book("UVW", "XYZ");
+            
+            alert(book1 instanceof Book);           // true
+            alert(book1 instanceof Object);         // true
+            
+            book1.sayTitle();                       // "ABC"
+            alert(book1.toString());                // "[object Object]"
+            
+        * The Book constructor has Book.prototype as its prototype, which sayTitle is part of
+        * Book.prototype has Book.prototype.prototype as its prototype, which is Object
+        * When that's the case, toString has to be found two layers in, not one layer in
+        * The deeper in a prototype chain, the slower to retrieve
+        
+    2.2.3 Nested Members
+        * Using things like window.location.href causes a member resolution process for each dot operator
+    
+    2.2.4 Caching Object Member Values
+        * Use object members only when necessary--no reason to read the value of an object member more
+            than once within a single function
+        * Store them to a local variable if you're going to use them more than once, particular for
+            nested object members
+        * Watch out for namespaced projects like YAHOO.util.Dom.hasClass(), copy the member to a local var
+        * Don't do that for object methods, since they may use 'this' to determine their context, and storing
+            a method in a local variable causes 'this' to bind to 'window'
+            
+2.3 Summary
+    * Literal values and local variables can be accessed very quickly, array items and member vars less so
+    * Local vars are faster than out of scope variables, and the further in a scope chain the slower
+    * Avoid the use of 'with' since it bumps local scope to the second position in the scope chain
+    * Minimize use of nested object calls by copying to local variables
+    * The deeper into the prototype chain a property or method is, the slower it is to access
+    * Speed gains can come from copying frequently used object members, array items, and out of scope
+        variables into local variables
+        
+
+Chapter 3: DOM Scripting
+    * Common performance bottleneck in rich web apps
+    * Three categories of problems: accessing and modifying DOM objects, modifying the styles of 
+        DOM elements and causing repaints and reflows, and handling user interactions through DOM events
+        
+3.1 DOM in the Browser World
+    * The DOM is a language independent API for working with XML and HTML documents
+    * In browsers the interface to it is implemented in JS
+    * Most browsers keep the DOM implementation separate from the JavaScript implementation
+    
+    3.1.1 Inherently Slow
+        * DOM and JS are separate pieces, and every transaction between them has a cost
+        * The more you use JS to work with DOM, the more you pay in performance
+        * Try to stay within ECMAScript as much as possible
+        
+3.2 DOM Access and Modification
+    * Accessing a DOM element is expensive, and changing them even more so due to potentially recalculating
+        the page's geometry
+    * Looping over HTML collections is the worst case for this--example:
+        
+        function innerHTMLLoop() {
+            for (var count = 0; count < 15000; count++) {
+                document.getElementById('here').innerHTML += 'a';
+            }
+        }
+        
+    * Better version that uses a local variable:
+    
+        function innerHTMLLoop2() {
+            var content = '';
+            for (var count = 0; count < 15000; count++) {
+                content += 'a';
+            }
+            document.getElementById('here').innerHTML += content;
+        }
+        
+    * The more you access the DOM, the slower your code is
+    
+    3.2.1 innerHTML versus DOM methods
+        * You should use innerHTML to append a string, because the DOM access is so much slower
+        * But in newer WebKit browsers using the DOM methods is actually faster
+        
+    3.2.2 Cloning Nodes

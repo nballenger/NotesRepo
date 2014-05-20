@@ -1,0 +1,187 @@
+Chapter 13: Graph Algorithms
+
+13.1 Graphs
+    * graph - way of representing relationships between pairs of objects
+    * A graph G is a set V of vertices and a collection E of pairs of
+      vertices from V, called edges. Vertices may also be termed nodes,
+      and edges may be called arcs.
+    * Edges are either directed or undirected. An edge is directed if it
+      is comprised of an ordered pair (u,v), with u preceding v.
+    * Symmetric relationships are represented by undirected edges, and
+      asymmetric rel's are represented by directed edges.
+    * If all edges in a graph, it is undirected.
+    * A directed graph or 'digraph' is a graph whose edges are directed.
+    * A graph with directed and undirected edges is 'mixed.
+    * Two vertices joined by an edge are the 'end vertices'/'endpoints' of
+      that edge.
+    * For a directed graph, the first endpoint of an edge is its origin,
+      and the second is the destination.
+    * Two vertices u and v are adjacent if there is an edge whose endpoints
+      are u and v.
+    * An edge is incident on a vertex if the vertex is one of the edge's
+      endpoints.
+    * 'Incoming' edges of a vertex are directed edges whose destination is
+      that vertex, while 'outgoing' edges leave that vertex.
+    * The degree of a vertex is the number of incident edges it has.
+    * The 'in-degree' and 'out-degree' are the number of in and out vertices.
+    * A graph is a collection, not a set, so you can have two or more edges
+      that share the same endpoints, called 'parallel' or 'multiple' edges.
+    * A 'self-loop' is an edge, directed or undirected, whose endpoints
+      are the same vertex.
+    * A graph with no parallel edges or self loops is 'simple', and can treat
+      its edges as a set of vertex pairs rather than a collection.
+
+    Proposition 13.6: If a graph G has m edges, then
+
+        &Sigma; deg(v) = 2m
+        v in G
+
+    --the total contribution of the edges to the degrees of the vertices
+      is twice the number of edges.
+
+    Proposition 13.7 If a directed graph G has m edges, then
+
+        &Sigma; indeg(v) = &Sigma; outdeg(v) = m
+        v in G             v in G
+
+    --the total in and out edge contributions will equal m.
+
+    Proposition 13.8 Let G be a simple graph with n vertices and m edges.
+      If G is undirected, then m <= n(n-1)/2, and if G is directed, then
+      m <= n(n-1).
+
+    * A path is a sequence of alternating vertices and edges that starts at
+      a vertex and ends at a vertex such that each edge is incident to its
+      predecessor and successor vertex.
+    * A cycle is a path with at least one edge that has the same start and
+      end vertices.
+    * A path is simple if each vertex in the path is distinct.
+    * A cycle is simple if each vertex in the cycle is distinct except for
+      the first and last one.
+    * A directed path is a path such that all edges are directed and
+      traversed along their direction.
+    * A directed cycle is a cycle defined the same way.
+    * A subgraph H of G is a graph whose vertices and edges are subsets of
+      the vertices and edges of G.
+    * A spanning subgraph of G contains all the vertices of the graph G.
+    * A graph is connected if for any two vertices there is a path
+      between them.
+    * If G is not connected, its maximal connected subgraphs are the
+      'connected components' of G.
+    * A forest is a graph with no cycles.
+    * A tree is a connected forest--a connected graph with no cycles.
+    * A tree with a root vertex is a 'rooted tree', while one without a
+      root vertex is a 'free tree'.
+    * A spanning tree of a graph is a spanning subgraph that is a free tree.
+
+    Proposition 13.11 Let G be an undirected graph with n vertices and
+      m edges.
+        - If G is connected, then m >= n-1
+        - If G is a tree, then m = n-1
+        - If G is a forest, then m <= n-1
+
+    13.1.2 The Graph ADT
+        * As an ADT, a graph is a collection of elements stored in the
+          graph's positions--its vertices and edges.
+        * Two base types, Vertex and Edge, and two list types, VertexList
+          and EdgeList.
+        * A Vertex object u supports:
+            operator*() -- return the element associated with u
+            incidentEdges() -- return an edge list of edges incident to u
+            isAdjacentTo(v) -- tests whether u and v are adjacent
+        * An Edge object e supports:
+            operator*() -- return the element associated with e
+            endVertices() -- a vertex list of e's end vertices
+            opposite(v) -- return the end vertex of edge e distinct from
+                           vertex v; an error occurs if e is not incident
+                           on v.
+            isAdjacentTo(f) -- tests whether e and f are adjacent
+            isIncidentOn(v) -- tests whether e is incident on v
+        * The full graph ADT consists of the following operations:
+            vertices() -- return a vertex list of all vertices of the graph
+            edges() -- return an edge list of all edges of the graph
+            insertVertex(x) -- insert and return a new vertex storing x
+            #insertEdge(v,w,x) -- insert and return a new undirected edge
+                                  with end vertices v,w, storing x
+            eraseVertex(v) -- remove vertex v and all its incident edges
+            eraseEdge(e) -- remove edge e
+
+13.2 Data Structures for Graphs
+    * Three ways of representing graphs, edge list, adjacency list, and
+      adjacency matrix, which all use collections to store the vertices.
+      The edge list and adjacency list store the edges in the graph, while
+      the adjacency list matrix stores a placeholder for every pair of
+      vertices whether or not there is an edge between them.
+
+    13.2.1 The Edge List Structure
+        * In an edge list representation of a graph G, a vertex v of G
+          storing an element x is explicitly represented by a vertex object.
+          All such vertex objects are stored in a collection V, such as a
+          vector or node list.
+
+      13.2.1.1 Vertex Objects
+        * The vertex object v storing x has member variables for a copy of
+          x and the position of the vertex object in collection V.
+        * An edge e of G storing x is represented by an edge object.
+        * Edge objects are stored in a collection E.
+
+      13.2.1.2 Edge Objects
+        * The edge object e storing x has member variables for a copy of
+          x, the vertex positions associated with the endpoint vertices
+          of e, and the position of the edge in collection E.
+
+      13.2.1.3 Visualizing the Edge List Structure
+        * To search for specific objects associated with edges, we may wish
+          to implement E with a dictionary whose entries store the element
+          as the key and the edge as the value.
+        * Main feature of the edge list structure is that it gives direct
+          access from edges to the vertices they are incident upon, which
+          makes e.endVertices() and e.opposite(v) easy to define.
+
+      13.2.1.4 Performance of the Edge List Structure
+        Where n is the number of vertices and m is the number of edges:
+
+        vertices                            O(n)
+        edges                               O(m)
+        endVertices, opposite               O(1)
+        incidentEdges, isAdjacentTo         O(m)
+        isIncidentOn                        O(1)
+        insertVertex, insertEdge, eraseEdge O(1)
+        eraseVertex                         O(m)
+
+    13.2.2 The Adjacency List Structure
+        * Adds extra information to the edge list structure that supports
+          direct access to the incident edges of each vertex.
+        * Includes all structural components of the edge list structure plus:
+          - A vertex object v holds a reference to a collection l(v), called
+            the incidence collection of v, whose elements store references to
+            the edges incident on v.
+          - The edge object for an edge e with end vertices v and w holds
+            references to the positions (or entries) associated with edge e
+            in the incidence collections l(v) and l(w).
+        * Provides direct access both from the edges to the vertices and from
+          the vertices to their incident edges.
+
+      13.2.2.1 Performance of the Adjacency List Structure
+        * All edge list functions that are O(1) remain O(1) here.
+        * Some others are better:
+
+        v.incidentEdges()                   O(deg(v))
+        v.isAdjacentTo(w)                   O(min(deg(v),deg(w))
+        eraseVertex(v)                      O(deg(v))
+
+    13.2.3 The Adjacency Matrix Structure
+        * Also extends the edge list structure with an additional component.
+        * Adds to the edge list a matrix A that allows determination of 
+          adjacencies between pairs of vertices in constant time.
+        * We think of the vertices as being the integers in the set 
+          {0,1,...,n-1}, and the edges as being pairs of those integers.
+          That lets you store references to edges in the cells of a 2d
+          n x n array A. 
+        * Extends the edge list structure by:
+            - A vertex object v stores a distinct integer i in the range
+              0,1,...,n-1, called the index of v.
+            - We keep a two dimensional n x n array A such that the cell
+              A[i,j] holds a reference to the edge(v,w), if it exists, where
+              v is the vertex with index i and w is the vertex with index j.
+              If there is no such edge, then A[i,j] is null.

@@ -1,0 +1,137 @@
+SVG CSS2 Properties
+
+General Notes:
+    <funciri>:  An IRI reference to another graphical object within the same SVG document 
+                fragment which will be used as the clipping path. If the IRI reference is 
+                not valid (e.g it points to an object that doesn't exist or the object is 
+                not a ‘clipPath’ element) the ‘clip-path’ property must be treated as if 
+                it hadn't been specified.
+                
+                Example: Define a gradient, use it as a fill elsewhere:
+                
+                    <linearGradient xml:id="MyGradient">...</linearGradient>
+                    
+                    <rect fill="url(#MyGradient)"/>
+
+Font properties:
+                font: [ 
+                        [ <'font-style'> || <'font-variant'> || <'font-weight'> ]?
+                        <'font-size'> [ / <'line-height'> ]? 
+                        <'font-family'> 
+                        ] | caption | icon | menu | message-box 
+                          | small-caption | status-bar | inherit
+
+         font-family: [[ <family-name> | <generic-family> ],]* 
+                      [<family-name> | <generic-family>] | inherit
+
+           font-size: <absolute-size> | <relative-size> 
+                      | <length> | <percentage> | inherit
+
+    font-size-adjust: <number> | none | inherit
+
+        font-stretch: normal | wider | narrower | ultra-condensed | extra-condensed 
+                      | condensed | semi-condensed | semi-expanded | expanded 
+                      | extra-expanded | ultra-expanded | inherit
+
+          font-style: normal | italic | oblique | inherit
+
+        font-variant: normal | small-caps | inherit
+
+         font-weight: normal | bold | bolder | lighter | 100 | 200 | 300
+                      | 400 | 500 | 600 | 700 | 800 | 900 | inherit
+
+Text properties:
+          direction: ltr | rtl | inherit
+          
+     letter-spacing: normal | <length> | inherit
+     
+    text-decoration: none | [ underline || overline || line-through || blink ] | inherit
+
+       unicode-bidi: normal | embed | bidi-override | inherit
+
+       word-spacing: normal | <length> | inherit
+
+Other properties for visual media:
+    /* clip is only applicable to outermost svg element. */
+          clip: <shape> | auto | inherit
+    
+    /* color is used to provide a potential indirect value (currentColor) 
+       for the fill, stroke, stop-color, flood-color and lighting-color properties. */
+         color: <color> | inherit
+    
+        cursor: [ 
+                    [<funciri> ,]* [ auto | crosshair | default | pointer 
+                                    | move | e-resize | ne-resize | nw-resize | n-resize 
+                                    | se-resize | sw-resize | s-resize | w-resize
+                                    | text | wait | help ] 
+                ] | inherit
+    
+       display: inline | block | list-item |
+                run-in | compact | marker |
+                table | inline-table | table-row-group | table-header-group |
+                table-footer-group | table-row | table-column-group | table-column |
+                table-cell | table-caption | none | inherit
+    
+    /* overflow is only applicable to elements which establish a new viewport. */
+      overflow: visible | hidden | scroll | auto | inherit
+    
+    visibility: visible | hidden | collapse | inherit
+
+The following SVG properties are not defined in CSS2. 
+The complete normative definitions for these properties are found in this specification:
+
+Clipping, Masking and Compositing properties:
+    clip-path: <funciri> | none | inherit
+
+    clip-rule: nonzero | evenodd | inherit
+
+         mask: <funciri> | none | inherit
+
+      opacity: 
+
+Filter Effects properties:
+    enable-background
+    filter
+    flood-color
+    flood-opacity
+    lighting-color
+
+Gradient properties:
+    stop-color
+    stop-opacity
+
+Interactivity properties:
+    pointer-events
+
+Color and Painting properties:
+    color-interpolation
+    color-interpolation-filters
+    color-profile
+    color-rendering
+    fill
+    fill-opacity
+    fill-rule
+    image-rendering
+    marker
+    marker-end
+    marker-mid
+    marker-start
+    shape-rendering
+    stroke
+    stroke-dasharray
+    stroke-dashoffset
+    stroke-linecap
+    stroke-linejoin
+    stroke-miterlimit
+    stroke-opacity
+    stroke-width
+    text-rendering
+    Text properties:
+    alignment-baseline
+    baseline-shift
+    dominant-baseline
+    glyph-orientation-horizontal
+    glyph-orientation-vertical
+    kerning
+    text-anchor
+    writing-mode

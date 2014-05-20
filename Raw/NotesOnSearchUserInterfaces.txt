@@ -1,0 +1,473 @@
+Notes on Search User Interfaces
+
+Chapter 1: The Design of Search User Interfaces
+
+1.1 Keeping the Interface Simple
+    * Summary: Users don't know shit about search.
+
+1.2 A Historical Shift in Search Interface Design
+    * Summary: The internet has a lot of idiots on it.
+
+1.3 The Process of Search Interface Design
+    * Usability, as defined by Shneiderman and Plaisant (2004):
+        Learnability, Efficiency, Memorability, Errors, Satisfaction
+
+    * Iterative, user-centered design, with needs analysis, etc.
+
+1.4 Design Guidelines for Search Interfaces
+    * Schneiderman 1997 gives criteria:
+        - Offer informative feedback
+        - Support user control
+        - Reduce short-term memory load
+        - Provide shortcuts for skilled users
+        - Reduce errors; offer simple error handling
+        - Strive for consistency
+        - Permit easy reversal of actions
+        - Design for closure
+
+1.5 Offer Efficient and Informative Feedback
+    1.5.1 Show Search Results Immediately
+    1.5.2 Show Informative Document Surrogates; Highlight Query Terms
+    1.5.3 Allow Sorting of Results by Various Criteria
+    1.5.4 Show Query Term Suggestions
+    1.5.5 Use Relevance Indicators Sparingly
+    1.5.6 Support Rapid Response
+
+1.6 Balance User Control with Automated Actions
+    * Opaque system control vs. transparent user control
+    1.6.1 Rank Ordering in Web Search 
+        * Game-able search engines need opacity, users need transparency
+    1.6.2 Query Transformations
+        * Changes like eliminating stopwords, using stemming, etc.
+
+1.7 Reduce Short-Term Memory Load
+    * Show users relevant information rather than require them to remember
+        or keep track of it.
+    1.7.1 Suggest the Search Action in the Entry Form
+        * 'Search' vs 'Search These Results'
+    1.7.2 Support Simple History Mechanisms
+        * In one study, 40% of search results clicks were pages the user
+            had visited at least once before, 71% generated with identical
+            search criteria.
+    1.7.3 Integrate Navigation and Search
+        * A browsable information structure is also a set of search prompts
+        * Categories can be flat, hierarchical, or faceted
+        * Categories derived from faceted metadata are 'hierarchical faceted'
+
+1.8 Provide Shortcuts
+    * Give alternative interface mechanisms to repeat/power users.
+    * In search, provide targeted hints about where to go next.
+    * Sitelinks/deep links are useful this way (links below domain root)
+    * Recommendations
+
+1.9 Reduce Errors
+    1.9.1 Avoid Empty Results Sets
+        * Spelling correction and term expansion
+        * Query previews
+        * Faceted interface makes it easy to get 0 results, previews help
+    1.9.2 Address the Vocabulary Problem
+        * Searchers may phrase a description differently than a resource
+            owner/creator. Term expansions help with this, as do card sorting
+            exercises for categorization.
+
+1.10 Recognize the Importance of Small Details
+    * Small interface details can make huge differences.
+    * Bigger search form means people enter  longer search queries
+    * Composition/ordering of document surrogates change scanability
+
+1.11 Recognize the Importance of Aesthetics in Design
+    * Efficiency suffers as design gets worse
+    * Aesthetic impressions play a large role in user acceptance
+
+1.12 Conclusions
+    
+Chapter 2: The Evaluation of Search User Interfaces
+    * Search interfaces are normally evaluated on:
+        Effectiveness: Accuracy and completeness of completing user goals
+        Efficiency: Resources expended in relation to accuracy and 
+            completeness with which users achieve goals
+        Satisfaction: Freedom from discomfort, and positive attitudes towards
+            the use of the product.
+
+2.1 Standard Information Retrieval Evaluation
+    * Most common evaluation methods for assessing ranking algorithms in
+        ad-hoc relevance tests are:
+        - Precision: number of relevant documents retrieved divided by the
+            number of documents retrieved
+        - Recall: number of relevant documents retrieved divided by number
+            of documents known to be relevant
+        - F-measure: Balance between precision and recall. Weighted mean
+            of the two measures, computed as (2 * P * R)/(P + R)
+        - Mean Average Precision (MAP): The average of a set of average
+            precisions, each encompassing multiple trials.
+    * Algorithmic evaluation doesn't take interface interactions into account
+    * 'Discounted Cumulative Gain': measurement of whether highly relevant
+        documents appear earlier or later in returned results
+    * 'Immediate accuracy': the proportion of queries for which the 
+        participant has found at least one relevant document by the time
+        they have looked at k documents selected from the result set.
+        IA of '80% by second selection' means that 80% of users have found
+        a relevant document by their second document inspected.
+
+2.2 Informal Usability Testing
+    * User-centered design involves interviewing or observing users before
+        you begin designing, then following a repeating cycle of design,
+        assessment with potential users, analysis of results, and subsequent
+        redesign and reassessment.
+    * Common to start with low fidelity mockups to get user feedback
+    * Paper prototyping is recommended, with one person acting as 'computer',
+        one as host, and a third recording participant information.
+    * Studies indicate users will be more likely to suggest changes to a
+        paper interface than to a 'finished' computer interface.
+    * Studies indicate somewhere from 5 to 15 participants are necessary
+        to identify design issues.
+    * 'Heuristic evaluation' is basically a crit session among designers
+    * 'Field studies' observe the participant in their normal usage
+
+2.3 Formal Studies and Controlled Experiments
+    * Typically tests are somewhat artificially constrained.
+    2.3.1 Techniques Employed in Formal Studies
+        * Conducted in a lab with a two way mirror or quiet room
+        * Participants are recorded or filmed
+        * User behavior recorded by screen tracking, eye tracking, notes
+        * Get users to do warmup tasks before tackling actual research task
+        * Possible to do remotely, and get largely similar results
+
+    2.3.2 Balancing Condition Ordering Effects
+        * Compute your stats taking time into effect, to account for the
+            order users learned about the task in, how tired they were, etc.
+        * Try to shorten and simplify tests where possible.
+        * A participant should never see the same query or topic in
+            two different conditions, to prevent learning.
+        * Expect users to be more correct the longer they use a tool
+        * Having a user interact with a good and a bad interface can 
+            artificially make the bad one worse or the good one 
+            better by contrast.
+        * Choose your dependent/independent variables carefully.
+        * Control for the difficulty of tasks conducted on diff interfaces
+        * Use a latin square matrix to mix tests and subjects
+
+    2.3.3 Obtaining Participants
+    
+    2.3.4 Measuring Participants' Preferences
+        * Use Likert scaled questionnaires to gather subjective impressions
+        * Likert scale is selecting a point in a qualitative range
+        * Ad-hoc questionnaires are less reliable and have greater variability
+        * Have participants assess each interface in isolation before they
+            compare them directly.
+        * Studies indicate that a) the visual appeal of a web site affects
+            participants' enjoyment and perception of ease of use, and b)
+            viewers persevere longer in a search task on sites whose design
+            appeals to them.
+        * Objective and subjective measurements are sometimes only loosely
+            correlated if at all--important to know. An aesthetic interface
+            might be preferred to a faster one, even when the participant
+            acknowledges the faster one is objectively 'better'.
+
+2.4 Longitudinal Studies
+    * Great if you can sustain them.
+
+2.5 Analyzing Search Engine Server Logs
+    2.5.1 Identifying Session Boundaries
+        * To infer behavior across a series of steps, you need to identify
+            which steps belong to a particular session.
+        * You can bound sessions by absolute time window, relative time
+            window, cookie age, and query reformulation patterns
+    2.5.2 Issues Surrounding Search Identity
+        * IP is correlated to users, but not absolutely
+        * Handle user data carefully if you don't want to get nailed publicly.
+
+2.6 Large-Scale Log-Based Usability Testing (Bucket Testing)
+    * Terms: bucket testing, A/B testing, split testing, parallel flights
+    * Highly effective at resolving disputes about design decisions
+    * You can only run them effectively short term, as your user base
+        adapts to the 'new' interface
+
+2.7 Special Concerns with Evaluating Search Interfaces
+    2.7.1 Avoid Experimenter Bias
+        * Make sure experimenters don't leak information about their
+            personal (or group) preferences for one design or another.
+        * Use neutral language: "These two interfaces." not "this new 
+            interface and this old one."
+    2.7.2 Encourage Participant Motivation
+        * Studies indicate a motivated participant will be inventive and
+            try alternative avenues in a way that a bored person will not.
+        * Allow people to search for information they are interested in.
+        * Match participants to the task at hand at recruiting time.
+    2.7.3 Account for Participants' Individual Differences
+        * Some of the largest measured effects can actually be due to
+            individual differences between participants. 
+        * Factors to consider: participants' experience as searchers, their
+            familiarity with the task domain, their cognitive differences.
+    
+        2.7.3.1 Participants' Domain and Task Knowledge
+            * Important to ask in advance if participants already know the
+                answer to the question or have knowledge of the topic, and
+                consider removing those data points from analysis.
+        2.7.3.1 Participants' Search Experience
+            * Studies indicate that experience and comfort level can effect
+                participant behavior, but does not actually correlate to
+                effectiveness. A participant's evaluative skills and their
+                meta-cognition were more predictive of success, regardless
+                of experience level.
+        2.7.3.3 Participants' Cognitive Abilities
+            * More cognitively skilled participants generally fare better
+                than less cognitively skilled ones.
+            * Attempt to balance the participants in different conditions
+                when using a small number of participants.
+    2.7.4 Account for Differences in Tasks and Queries
+        * Test tasks should be chosen to be as representative as possible
+            of the uses to which the system will be put in the field.
+        2.7.4.1 Account for the Effects of Task Variability
+            * In machine testing, task variation typically produces a more
+                measurable differentiation between tasks and across systems.
+            * Adding human participants increases sensitivity to task
+                variation, so plan accordingly.
+            * The number of participants doesn't appear to effect the number
+                of issues found with an interface, but the number of tasks
+                does. Make sure to differentiate between query types in
+                creating tasks. 
+        2.7.4.2 Control for Variation in Expression of the Query
+            * May be possible to use pre-assigned query terms.
+        2.7.4.3 Avoid Bias in Query and Task Selection
+            * Tests should be meaningful to a user--not "Which interface
+                allows the user to say how many documents have K instance
+                of term A?"
+    2.7.5 Control Test Collection Characteristics
+        * Make sure your corpus is big enough and diverse enough to
+            exercise your interfaces.
+        * Make sure your interfaces are operating on the same underlying
+            collections of data.
+    2.7.6 Account for Differences in the Timing Response Variable
+        * Comparing interfaces based on time to complete tasks can fail
+            to take into account variations in task difficulty, participant
+            experience, and query knowledge.
+        * A deeper search session in which the user is free to iterate
+            search strategies and interact with content may prove more
+            useful in some cases.
+    2.7.7 Compare Against a Strong Baseline
+        * Don't compare against an unrealistically bad baseline case.
+        * Make all cases equally aesthetically pleasing for participants.
+
+2.8 Conclusions
+
+Chapter 3: Models of the Information Seeking Process
+
+3.1 The Standard Model of Information Seeking
+    * Marchionini 1989:
+        "Information-seeking is a special case of problem solving. It includes
+        recognizing and interpreting the information problem, establishing a
+        plan of search, conducting the search, evaluating the results, and
+        if necessary, iterating through the process again."
+    * Sutcliffe and Ennis's 1998 info seeking process model:
+        - Problem identification
+        - Articulation of information need(s)
+        - Query formulation
+        - Results evaluation
+    * Shneiderman 1997:
+        - Query Formulation
+        - Action (running the query)
+        - Review of Results
+        - Refinement
+    * Marchionini and White 2008:
+        - Recognizing a need for information
+        - Accepting the challenge to take action to fulfill the need
+        - Formulating the problem
+        - Expressing the information need in a search system
+        - Examination of the results
+        - Reformulation of the problem and its expression
+        - Use of the results
+    * Broder 2002:
+
+        Task -> Info Need -> Verbal form -> Query -> Search Engine
+        Corpus -> Search Engine
+        Search Engine -> Results
+        Results -> Query Refinement -> Query
+
+3.2 Cognitive Models of Information Sharing
+    * Cognitive models typically invoke the notion of 'mental models'
+    * Norman divides actions into execution and evaluation
+    * Calls gap between intention and achievement "the gulf of execution"
+    * Norman's model provides cognitive underpinning to standard model
+
+3.3 The Dynamic (Berry-Picking) Model
+    * Observational studies indicate users' info needs change as they search
+    * Bates 1989 proposed 'berry picking' model:
+        - In the process of learning from info encountered in the search
+            process, the searcher's info needs shift, and so do their queries
+        - Searchers' info needs are not satisfied by a single, final
+            retrieved set of documents, but by a series of selections and
+            bits of information found along the way.
+
+3.4 Information Seeking in Stages
+    * Kuhlthau 1991, six stages of info seeking:
+        - Initiation
+            The task is to recognize a need for information. Searches relate
+            to general background knowledge. As the participant becomes aware
+            of their lack of understanding, feelings of uncertainty and
+            apprehension are common. Thoughts center on comprehending the
+            task and relating the problem to prior experience.
+        - Selection
+            The task is to select the general topic or the approach to pursue.
+            Thoughts are general and undifferentiated, and center on
+            requirements, time constraints, and which topic or approach will
+            yield the best outcome. Feelings of uncertainty often give way
+            to optimism after the selection is made.
+        - Exploration
+            The task is to investigate information on the general topic in
+            order to extend understanding. At this stage, an inability to
+            express what information is needed degrades the participant's
+            ability to formulate queries and judge relevance of retrieval
+            results. Information encountered at this stage often conflicts
+            with pre-existing knowledge and information from different sources
+            can seem contradictory and incompatible. This phase is
+            characterized by feelings of confusion, uncertainty, and doubt,
+            and participants may feel discouraged or inadequate, or may feel
+            frustrated with the information access system itself.
+        - Formulation
+            This phase marks the turning point in the process, in which a
+            focused perspective on the topic emerges, resolving some of the
+            conflicting information. Searches may be conducted to verify the
+            working hypotheses. A change in feelings is experienced, with
+            uncertainty reducing and confidence growing. Unfortunately, half
+            of the study participants did not show evidence of successfully
+            reaching a focused perspective at any time during their process.
+        - Collection
+            At this stage the search system is most productively used for the
+            participant, since the task is to gather information related to
+            a focused topic. Searches are used to find information to define,
+            extend, and support the focus. Relevance judgments become more
+            accurate and feelings of confidence continue to increase.
+        - Presentation
+            In this phase, the final searches are done; searches should be
+            returning information that is either redundant with what has been
+            seen before or of diminishing relevance. The participants commonly
+            experience feelings of relief and satisfaction if the search went
+            well or disappointment if not.
+
+3.5 Information Seeking as a Strategic Process
+    * Marchionini 2000: "search is an interplay of analytical and interactive
+    problem solving strategies."
+
+    3.5.1 Strategies as Sequences of Tactics
+        * Bates 1979 proposes you can look at search behavior in terms of
+            strategies, which are made up of search tactics.
+        * Categories of search tactics, from Bates:
+            - Term tactics
+                Adjusting words and phrases within the current query.
+            - Information structure tactics
+                Moving through information or link structures to find sources
+                of information within sources.
+            - Query reformulation tactics
+                Things like narrowing by adding more specific terms, or
+                reworking your Boolean operators
+            - Monitoring tactics
+                Keeping track of a situation as it unfolds, by doing things
+                like making a cost-benefit analysis, continuously comparing
+                the current state with the original, recognizing patterns
+                across common strategies, recording incomplete paths for later
+        * O'Day and Jeffries 1993 defined 'triggers' that motivate a seeker
+            to switch from one strategy to another.
+        * Triggers include:
+            - The completion of one step and beginning of the next step
+            - Encountering something interesting that provides a new way of
+                thinking about a topic of interest, or a new, interesting
+                angle to explain a topic or problem.
+            - Encountering a change or violation of previous expectations
+                that requires further investigation
+            - Encountering inconsistencies with or gaps in previous
+                understanding that requires further investigation.
+        * O'Day and Jeffries also identified some stop conditions:
+            - No more compelling triggers
+            - An 'appropriate' amount of material was found
+            - There was a specific inhibiting factor
+
+    3.5.2 Cost Structure Analyses and Information Foraging Theory
+        * Russell et al 1993 assumed a cost structure analysis that assumes
+            that at any point in the search process, the user is pursuing
+            the strategy that has the highest expected utility.
+        * That was expanded into 'information foraging strategy' by Pirolli
+            and Card 1999, which takes an evolutionary stance toward the
+            bases of our search behavior.
+
+    3.5.3 Browsing vs Search as an Information Seeking Strategy
+        * Recognition is easier than recall--seeing something to trigger you
+            is easier than remembering enough about it to find it from scratch
+        * Searches tend to produce new, ad hoc collections of information
+        * Browsing typically reveals predefined collections
+        * Searching is a more analytically demanding process
+
+    3.5.4 Information Scent for Navigating Information Structures
+        * Card 2005 talks about information scent as being cues that provide
+            searchers with concise information about content that is not
+            immediately perceptible.
+        * Pirolli 2007: Small perturbations in the accuracy of information
+            scent can cause qualitative shifts in the cost of browsing.
+        * "The detection of diminishing information scent is involved in
+            decisions to leave an information patch."
+        * Furnas 1997 proposes that a target has scent at a link if the
+            associated outlink information would lead an information
+            navigator to take that link in pursuit of the given target.
+        * 'Navigability proposition': for a target to be findable by
+            navigation from anywhere in the information structure, the path
+            to that target must have good scent at every link.
+
+    3.5.5 Orienteering and Other Incremental Strategies
+        * Throwing out a quick, hastily formulated query to get your bearings
+        * Typically followed by incrementally improving the query
+        * Users can be too focused on their starting strategy
+
+3.6 Sensemaking
+    * An iterative process of formulating a conceptual representation of a
+        large volume of information.
+    * Pirolli and Card 2005: sensemaking consists of seeking, filtering,
+        reading, and extracting information, with iterative development of
+        a mental model.
+    * Web browsers alone are only a part of the sensemaking process
+    * Most search interfaces don't really support sensemaking
+
+3.7 Information Needs and Query Intent
+    3.7.1 Web Log-Based Query Taxonomies
+        * Broder 2002 created a taxonomy of search goals from web logs
+        * Identified three types of "need behind the query":
+            - Navigational
+            - Informational
+            - Transactional
+        * Rose and Levinson 2004 expanded 'transactional' to 'resources',
+            meaning information artifacts that users consume in some manner
+            other than simply reading for information.
+
+    3.7.2 Web Log Based Query Topic Classification
+        * Spink and Jansen (2006, various) algorithmically derived categories
+            from web logs, the used a voting mechanism to combine data
+            from several sources.
+
+    3.7.3 Web Log-Based Analysis of Query Ambiguity
+        * The diversity of clicks for a given query can tell you how
+            ambiguous it is as a descriptor
+
+    3.7.4 Web Log-Based Analysis of Re-access Patterns
+        * People use search engines as refinding instruments
+
+    3.7.5 Classifying Observed Search Behavior
+        * Kellar 2006 developed a task type taxonomy for web searches
+        * Five main categories:
+            - Fact Finding
+            - Information Gathering
+            - Browsing
+            - Transactions
+            - Other
+
+3.8 Conclusions
+
+Chapter 4: Query Specification
+    * The searcher expresses an information need by converting their
+        internalized, abstract concepts into language, and then converting
+        that expression of language into a query format that the search
+        system can use.
+    * Two main dimensions for this process:
+        1)  The kind of information the searcher supplies
+        2)  The interface mechanism the user interacts with to supply info
+
+4.1 Textual Query Specification
+    4.1.1 Searches Over Surrogates vs. Full Text

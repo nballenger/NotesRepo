@@ -1,0 +1,948 @@
+Chapter 6: Association Analysis: Basic Concepts and Algorithms
+
+Basic Terminology
+    market basket data
+        * Data where each record represents a transaction involving one or more
+          items purchased by a customer.
+        
+    association analysis
+        * Methodology for discovering relationships hidden in large data sets.
+        
+    association rules
+        * Relationships uncovered by association analysis.
+        
+    binary representation
+        * Representation of market basket data in this format:
+        
+        TID | Bread | Milk | Diapers | Beer | Eggs | Cola
+         1  |   1   |  1   |    0    |  0   |  0   |  0
+         2  |   1   |  0   |    1    |  1   |  1   |  0
+         3  |   0   |  1   |    1    |  1   |  0   |  1
+         4  |   1   |  1   |    1    |  1   |  0   |  0
+         5  |   1   |  1   |    1    |  0   |  0   |  1
+         
+    asymmetric binary data
+        * Dataset where most binary values are 0
+        
+    itemset
+        * A collection of zero or more items.
+        * A set containing k items is a k-itemset
+        * null itemset is empty
+        
+    transaction width
+        * The number of items present in a transaction
+        * A transaction tj contains itemset X if X is a subset of tj
+        
+    support count
+        * The number of transactions containing a particular itemset
+        * Denoted &sigma;(X) for an itemset X:
+        
+            &sigma;(X) = |{ti | X is a subset of ti, ti is a member of T}|
+            
+    association rule
+        * An implication expression of the form X --> Y, where X and Y are
+          disjoint itemsets, X intersect Y = null set
+          
+    support
+        * How often an association rule is applicable to a given data set.
+        
+            s(X --> Y) = &sigma;(X union Y) / N
+        
+        * A rule with very low support may simply occur by chance.
+        * A low support rule probably isn't interesting from a business perspective
+        * Often used as a metric to eliminate uninteresting rules.
+        * The support of a rule X --> Y depends on the support of its
+          corresponding itemset, X union Y (since for a rule to be true, all
+          elements of X must appear in the same transaction as all elements of Y).
+          Given that, the support for rules involving subsets of X U Y all have
+          the same support as X U Y:
+          
+            If X U Y = {a,b,c}, these rules all have the same support:
+                {a,b} --> {c}, {a,c} --> {b}, {b,c} --> {a}
+                {a} --> {b,c}, {b} --> {a,c}, {c} --> {a,b}
+        
+    confidence
+        * How frequently items in Y appear in transactions that contain X
+        
+            c(X --> Y) = &sigma;(X union Y) / &sigma;(X)
+            
+        * Measures the reliability of the inference made by a rule.
+        * The higher the confidence, the more likely for Y to be present in
+          transactions containing X.
+        * Provides an estimate of the conditional probability of Y given X.
+        
+    association rule discovery
+        * Given a set of transactions T, find all the rules having support >= minsup
+          and confidence >= minconf, where minsup and minconf are the support
+          and confidence thresholds.
+        * The total number of rules discoverable from a dataset with d items is:
+        
+            R = 3^d - 2^d+1 + 1
+            
+          so brute force approaches are not recommended.
+          
+    frequent itemset generation
+        * A decomposed part of association rule mining.
+        * Find all itemsets that satisfy the minsup threshold. These are called
+          frequent itemsets.
+          
+    rule generation
+        * A decomposed part of association rule mining.
+        * Extract all the high-confidence rules from the frequent itemsets. These
+          are called strong rules.
+          
+Frequent Itemset Generation
+
+    lattice structure
+        * Tool for enumerating the list of all possible itemsets.
+        * Graph of all subsets of k items, from the null set, to single itemsets,
+          up to an itemset of all k items:
+          
+                           null
+                        
+              a      b      c       d      e
+          
+          ab  ac  ad  ae  bc  bd  be  cd  ce  de
+          
+          abc abd abe acd ace ade bcd bce bde cde
+          
+             abcd   abce   abde   acde    bcde
+          
+                          abcde
+                          
+        * Will contain 2^k - 1 possible itemsets, which makes it an exponentially
+          large search space.
+          
+    candidate itemset
+        * One possible itemset that is a subset of k items.
+        
+    brute force comparison of candidate itemsets to transactions
+        * Getting the count of each occurrence of a candidate itemset in a set
+          of transactions.
+        * Requires O(N M w) comparisons, where N is the number of transactions,
+          M = 2^k - 1 candidate itemsets, and w is the maximum transaction width.
+          
+    reducing the complexity of frequent itemset generation
+        1.  Reduce the number of candidate itemsets (M), using the Apriori principle
+        2.  Reduce the number of comparisons. Don't match every candidate itemset
+            against every transaction, use a better matching algorithm or data
+            storage system, or both.
+            
+    the Apriori principle
+        * If an itemset is frequent, all of its subsets must also be frequent.
+        * If an itemset is infrequent, all of its supersets must also be infrequent.
+        
+    support-based pruning
+        * Removing candidate itemsets up or down a lattice based on the Apriori
+          principle.
+          
+    anti-monotone property
+        * Support for an itemset never exceeds the support for its subsets.
+        
+    monotonicity property
+        * Let
+            I be a set of items
+            J = 2^I, the power set of I
+            f = monotone (upward closed) measure if
+            
+                for all X,Y in J: (X is a subset of Y) --> f(X) <= f(Y)
+                
+        * Which means that if X is a subset of Y, then f(Y) must not exceed f(X)
+        * Any measure that has an anti-monotone property can be used to prune
+          the exponential search space of item candidates.
+          
+    Apriori strategy for frequent itemset generation
+        * Set a support threshold.
+        * Consider every item as a candidate 1-itemset.
+        * Discard all candidate-1 itemsets that don't meet the support threshold.
+        * Generate candidate-2 itemsets based on the remaining candidate-1 itemsets.
+        * Iterate up to the max transaction width.
+        
+    Apriori pruning algorithm
+        * Let
+            Ck  = the set of candidate k-itemsets
+            Fk  = the set of frequent k-itemsets
+            
+          1: k = 1
+          2: Fk = { i | i in I and &sigma;({i}) >= N * minsup}  {frequent 1-sets}
+          3: repeat
+          4:   k = k + 1
+          5:   Ck = apriori-gen(F<sub>k-1</sub>)     {generate candidate itemsets}
+          6:   for each transaction t in T do
+          7:     Ct = subset(Ck,t)      {identify all candidates belonging to t}
+          8:     for each candidate itemset c in C do
+          9:       &sigma;(c) = &sigma;(c) + 1  { increment support count }
+         10:     end for
+         11:   end for
+         12:   Fk = { c | c in Ck and &sigma;(c) >= N * minsup} {extract frequent}
+         13: until Fk = null set
+         14: Result = series-union(Fk)
+         
+    level-wise algorithm
+        * Apriori pruning is level-wise because it traverses the candidate lattice
+          one level at a time, from 1-itemsets to the max size of frequent itemsets.
+          
+    generate-and-test strategy
+        * At each iteration, new candidate itemsets are generated from the frequent
+          itemsets found in the previous iteration.
+          
+Candidate Generation and Pruning
+    
+    two operations in Apriori generation
+        1.  Candidate generation: generates new candidate k-itemsets based on the
+            frequent (k-1)-itemsets found in the previous iteration.
+        2.  Candidate pruning: eliminates some of the candidate k-itemsets using
+            the support based pruning strategy.
+            
+    requirements for an effective candidate generation procedure:
+        1.  Should avoid generating too many unnecessary candidates. A candidate
+            itemset is unnecessary if at least one of its subsets is infrequent.
+            Such a candidate is guaranteed to be infrequent according to the
+            anti-monotone property of support.
+        2.  Must ensure that the candidate set is complete, ie no frequent
+            itemsets are left out by the candidate generation procedure. To
+            ensure completeness, the set of candidate itemsets must subsume the
+            set of all frequent itemsets, ie for all k: Fk is a subset of Ck
+        3.  Should not generate the same candidate itemset more than once. For
+            example, the candidate itemset {a,b,c,d} can be generated in many
+            ways, by merging {a,b,c} with {d}, {b,d} with {a,c}, etc.
+            Generation of duplicate candidates leads to wasted computations
+            and thus should be avoided for efficiency reasons.
+            
+Candidate Generation Procedures
+    
+    brute-force method
+        * Consider every k-itemset as a potential candidate and then apply the
+          candidate pruning step to remove any unnecessary candidates.
+          
+    Fk-1 x F1 Method
+        * Extend each frequent (k-1)-itemset with other frequent items.
+        * Complete, but doesn't prevent the same set from being generated
+          multiple times.
+        * That can be avoided by making sure the items in each frequent itemset
+          are kept sorted in lexicographic order. Each frequent (k-1)-itemset X
+          is then extended with frequent items that are lexicographically larger
+          than the items in X.
+        * Better than brute force, but still makes lots of unnecessary candidates
+        
+    Fk-1 x Fk-1 Method
+        * Let
+            A = {a1,a2,...,ak-1}
+            B = {b1,b2,...,bk-1}
+          be a pair of frequent (k-1)-itemsets. A and B are merged iff
+          
+            ai = bi (for i = 1,2,...,k-2) and ak-1 != bk-1
+            
+          so 2-candidates {a,b} and {a,c} are merged to form {a,b,c}, because
+          the items before k-1 are the same and the last are different.
+        * Each candidate is obtained by merging a pair of frequent (k-1)-itemsets,
+          so an additional pruning step is needed to ensure that the remaining
+          k-2 subsets of the candidate are frequent.
+          
+Support Counting
+    * Brute force approach is to compare each transaction with each candidate 
+      itemset, and update the support counts of candidates involved in the
+      transaction.
+    * Alternative is to enumerate the itemsets contained in each transaction
+      and use them to update the support counts of their respective candidate
+      itemsets.
+    * Taking a transaction t = {1,2,3,5,6}, and assuming all candidate itemsets
+      will be listed in lexicographic order, a 3-itemset that is a subset of that
+      transaction will (for instance) have to start with a 1, 2, or 3.
+    * Systematic way of enumerating subsets of three items from a five item
+      transaction, without creating duplicate sets:
+      
+      T:                 ---------------[1 2 3 5 6]---------------
+                        |                    |                    |
+     L1:      -----1[2 3 5 6]--          2[3 5 6]--             3[5 6]
+             |          |      |          |        |              |
+     L2: 1 2[3 5 6]  1 3[5 6]  1 5[6]  2 3[5 6]  2 5[6]         3 5[6]
+            |          |       |          |        |              |     
+       /   123        135     156        235      256            356
+     L3:   125        136                236
+       \   126  
+           
+    * If an enumerate itemset matches a candidate, increment the support count
+      of that candidate.
+      
+Support Counting using a Hash Tree
+    * In Apriori, candidate itemsets are partitioned into different buckets and
+      stored in a hash tree. In support counting, itemsets contained in each
+      transaction are also hashed into their appropriate buckets.
+    * Put your candidates into leaf nodes of a hash tree, then look them up to
+      increment them
+      
+Computational Complexity
+    * Factors effecting the complexity of the Apriori algorithm:
+        
+        Support threshold
+            * The lower the threshold, the more itemsets will be declared frequent.
+            
+        number of items / dimensionality
+            * More items means more space to store support counts
+            
+        number of transactions
+            * The algorithm makes repeat passes over the dataset, so run time goes
+              up as the total number of records increases.
+              
+        average transaction width
+            * Max size of frequent itemsets tends to increase as the average
+              transaction width increases, so more candidate itemsets have to
+              be examined during generation and support counting.
+            * As transaction width increases more itemsets are contained in the
+              transaction, which increases the number of hash tree traversals
+              during support counting.
+              
+Time complexity for Apriori algorithm
+
+    Generation of frequent 1-itemsets
+        * For each transaction, update the support count for every item in the
+          transaction. Assuming w as a average transaction width, this gives
+          O(N w) time, where N is the total number of transactions.
+          
+    Candidate generation
+        * To generate candidate k-itemsets, pairs of frequent (k-1)-itemsets are
+          merged to determine whether they have at least k-2 items in common.
+          Each merge operation requires at most k-2 equality comparisons.
+        * Best case, every merging step produces a viable candidate k-itemset.
+        * Worst case, algorithm must merge every pair of frequent (k-1)-itemsets
+          found in the previous iteration.
+        * Overall cost of merging frequent itemsets:
+        
+               w                                     w
+            &Sigma; (k-2)|Ck| < Cost of merging < &Sigma; (k-2)|Fk-1|^2
+              k=2                                   k=2
+              
+        * Cost to populate the hash tree with candidate itemsets:
+        
+                 w
+            O(&Sigma; k|Ck|)
+                k=2
+                
+        * Cost to look up candidates in a hash tree during pruning:
+        
+                 w
+            O(&Sigma; k(k-2)|Ck|)
+                k=2
+                
+    Support Counting
+        Each transaction of length |t| produces (|t| choose k) itemsets of size k
+        That's also the number of hash traversals for each transaction, so the
+        cost for support counting is
+        
+            O(N &Sigma;k (w choose k) &alpha;k)
+            
+        where w is the max transaction width and &alpha;k is the cost for updating
+        the support count of a candidate k-itemset in the hash tree.
+        
+        
+Rule Generation
+    * Each frequent k-itemset, Y, can produce up to 2^k - 2 association rules,
+      ignoring rules with empty antecedents or consequents.
+    * A rule can be extracted by partitioning the itemset Y into two non-empty
+      subsets, X and Y-X, such that X-->Y-X satisfies the confidence threshold.
+      
+    confidence-based pruning
+        * Confidence does not have any monotone property.
+        * If we compare rules generated from the same frequent itemset Y, the
+          following theorem holds for the confidence measure:
+          
+            If a rule X-->Y-X does not satisfy the confidence threshold, then
+            any rule X'-->Y-X', where X' is a subset of X, must not satisfy the
+            confidence threshold as well.
+            
+    rule generation in the Apriori algorithm
+        * Apriori approach starts with high confidence rules with one item in
+          the rule consequent, which are then used to generate additional
+          candidate rules.
+        * Looking at candidate rules as a lattice, if a rule is low confidence,
+          then candidate rules in the subgraph of that rule can be discarded.
+        * Rule generation algorithm of the Apriori algorithm:
+        
+            1: for each frequent k-itemset f<sub>k</sub> k &ge; 2 do
+            2:   H<sub>1</sub> = { i | i &isin; f<sub>k</sub> } {1-item consequents}
+            3:   call ap-genrules(f<sub>k</sub>,H<sub>1</sub>)
+            4: end for
+            
+        * Algorithm for procedure ap-genrules(f<sub>k</sub>, H<sub>m</sub>)
+        
+            1: k = |f<sub>k</sub>| { size of frequent itemset }
+            2: m = |H<sub>m</sub>| { size of rule consequent }
+            3: if k &gt; m + 1 then
+            4:   H<sub>m+1</sub> = apriori-gen(H<sub>m</sub>)
+            5:   for each h<sub>m+1</sub> &isin; H<sub>m+1</sub> do
+            6:     conf = &sigma;(f<sub>k</sub>) / &sigma;(f<sub>k</sub> - h<sub>m+1</sub>)
+            7:     if conf &ge; minconf then
+            8:       output the rule (f<sub>k</sub> - h<sub>m+1</sub>) &rarr; h<sub>m+1</sub>
+            9:     else
+           10:       delete h<sub>m+1</sub> from H<sub>m+1</sub>
+           11:     end if
+           12:   end for
+           13:   call ap-genrules(f<sub>k</sub>, H<sub>m+1</sub>)
+           14: end if
+           
+6.4 Compact Representation of Frequent Itemsets
+
+    6.4.1 Maximal Frequent Itemsets
+    
+        maximal frequent itemset
+            * A frequent itemset for which none of its immediate supersets are
+              frequent
+            * The smallest set of itemsets from which all frequent itemsets
+              can be derived.
+            * Only useful if you have an efficient algorithm for finding the
+              maximal frequent itemsets without enumerating all children.
+            * Do not contain the support information of their subsets.
+    
+    6.4.2 Closed Frequent Itemsets
+        * Minimal representation of itemsets without losing their support info.
+    
+        closed itemset
+            * An itemset X is closed if none of its immediate supersets has
+              exactly the same support count as X.
+            * Not closed if an immediate superset has the same support count.
+        
+        closed frequent itemset
+            * An itemset is a closed frequent itemset if it is closed and its
+              support is greater than or equal to minsup.              
+        
+        algorithm: support counting using closed frequent itemsets
+
+            1: Let C denote the set of closed frequent itemsets.
+            2: Let k<sub>max</sub> denote the max size of closed frequent itemsets
+            3: F<sub>k<sub>max</sub></sub> = { f | f &isin; C, |f| = k<sub>max</sub> } { find all frequent itemsets of size k<sub>max</sub> }
+            4: for k = k<sub>max</sub> - 1 downto 1 do
+            5:   F<sub>k</sub> = { f | f &sub; F<sub>k+1</sub>, |f| = k } { find all frequent itemsets of size k }
+            6:   for each f &isin; F<sub>k</sub> do
+            7:     if f &notin; C then
+            8:       f.support = max{f'.support | f' &isin; F<sub>k+1</sub>, f &sub; f' }
+            9:     end if
+           10:   end for
+           11: end for
+        
+6.5 Alternative Methods for Generating Frequent Itemsets
+    * Apriori is good because it successfully prunes the huge problem space, but
+      it's still got a lot of IO overhead since it makes several passes over the
+      transaction data set.
+    * Also, Apriori can be hard to run on dense itemsets because of large
+      transaction widths.
+    * Following are high level overviews of some alternatives.
+
+    traversal of itemset lattice
+        * Search for frequent itemsets can be viewed as a traversal on the
+          itemset lattice. The search strategy is dictated by the algorithm,
+          and some are better than others:
+    
+        general to specific versus specific to general
+            * Apriori is general to specific, where pairs of frequent k-1-itemsets
+              are merged to obtain candidate k-itemsets. Good until a frequent
+              itemset starts to be really wide.
+            * A specific-to-general strategy looks for more specific frequent
+              itemsets first, then looks for more general ones. Useful for finding
+              maximal frequent itemsets in dense transactions, where the frequent
+              itemset border is located near the bottom of the lattice.
+            * You can also combine g-to-s and s-to-g strategies into a bidirectional
+              approach. Requires more space to store the candidate itemsets, but
+              can help rapidly identify the frequent itemset border.
+        
+        equivalence classes
+            * You can also think of the traversal as first partitioning the
+              lattice into disjoint groups of nodes (or equivalence classes).
+              A frequent itemset generation algorithm searches for frequent
+              itemsets within a particular equivalence class first before moving
+              to another equivalence class. Equivalences can be split lots of
+              ways--you can think of Apriori's levelwise approach as a set of
+              levelwise equivalence classes.
+            * Can split on prefix/suffix of size k.
+        
+        breadth-first versus depth-first
+            * Apriori goes breadth-first, but you can traverse depth first as well.
+            * You can start at a node, count support, if it is frequent drill
+              down into next level of nodes split off from the first node, until
+              an infrequent node is reached, when it will backtrack and reroute.
+            * Often used for finding maximal frequent itemsets, because it allows 
+              the frequent itemset border to be detected more quickly than a 
+              breadth-first approach.
+        
+    representation of a transaction data set
+        * Lots of ways to represent a data set, choices you make will have
+          implications for IO costs when computing candidate itemsets.
+          
+        horizontal data layout
+        
+            Transaction ID  Items
+            ---------------------
+            1               a,b,e
+            2               b,c,d
+            3               c,e
+            4               a,c,d
+            5               a,b,c,d
+            6               a,e
+            7               a,b
+            8               a,b,c
+            9               a,c,d
+           10               b
+           
+        vertical data layout
+        
+            a   b   c   d   e
+            -----------------
+            1   1   2   2   1
+            4   2   3   4   3
+            5   5   4   5   6
+            6   7   8   9
+            7   8   9
+            8  10
+            9
+            
+            
+    
+6.6 FP-Growth Algorithm
+    * Algorithm with a radically different approach to discovering frequent
+      itemsets. Encodes the data set using a compact data structure called an
+      FP-tree and extracts frequent itemsets directly from this structure.
+
+    6.6.1 FP-Tree Representation
+        * Compressed representation of the input data.
+        * Made by reading the data one transaction at a time and mapping each
+          transaction onto a path in the FP-tree. Different transactions with
+          overlapping items will have overlapping paths. The more paths overlap
+          with each other, the more compression we can achieve using the structure.
+        * If the FP-tree can fit into memory, we can pull frequent itemsets
+          directly from that in memory instead of making passes over the data
+          stored on disk.
+        * Each node in a tree contains the label of an item along with a counter
+          that shows the number of transactions mapped onto the given path.
+          
+        * Initially the tree contains the root node, which is null. Then:
+        
+        1.  The data set is scanned once to determine the support count of each
+            item. Infrequent items are discarded, while frequent items are sorted
+            in decreasing support counts.
+        2.  The algorithm makes a second pass over the data to construct the FP-tree.
+            After reading the first transaction, {a,b}, the nodes labeled as a
+            and b are created. A path is then formed from null -> a -> b to encode
+            the transaction. Every node along the path has a frequency count of 1.
+        3.  After reading the second transaction, {b,c,d}, a new set of nodes is
+            created for items b, c, and d. A path is then formed to represent the
+            transaction by connecting the nodes null -> b -> c -> d. Every node
+            along this path also has a frequency count equal to one. Although
+            the first two transactions share an item, b, their paths are disjoint
+            because the transactions do not share a common prefix.
+        4.  The third transaction, {a,c,d,e}, shares a common prefix item, a,
+            with the first transaction. As a result, the path for the third 
+            transaction, null -> a -> c -> d -> e, overlaps with the path for the
+            first transaction, null -> a -> b. Because of the overlap, the count
+            for node a is incremented to two, while the frequency counts for the
+            created nodes, c,d,e, are set to 1.
+        5.  This process continues until every transaction has been mapped onto
+            one of the paths given in the FP-tree.
+    
+    6.6.2 Frequent Itemset Generation in FP-Growth Algorithm
+        * FP-growth is an algorithm that generates frequent itemsets from an 
+          FP-tree by exploring the tree in a bottom up fashion.
+        * Since every transaction is mapped onto a path in the FP-tree, we can
+          derive the frequent itemsets ending with a particular item by
+          examining only the paths containing that item's node.
+        * FP-growth finds all the frequent itemsets ending with a particular
+          suffix by employing a divide and conquer strategy to split the problem
+          into smaller subproblems. Mapreduce, essentially.
+        * A concrete example, finding the frequent itemsets ending with item e:
+        
+          1. Gather all paths containing node e, called 'prefix paths.'
+          2. Derive the support count for e by adding the support counts associated
+             with node e. Determine whether sup(e) meets minsup.
+          3. If {e} is frequent, need to look at subproblems of finding frequent
+             itemsets ending in de, ce, be, ae. To do so, must first convert the
+             prefix paths into a 'conditional FP-tree', obtained by:
+             
+             a) Update the support counts along the prefix paths, to disagregate
+                counts that reflect transactions which did not include e, like {b,c}
+             b) Truncate the prefix paths by removing the nodes for e, since this
+                conditional FP-tree represents the subproblem of {e,?,...} sets.
+             c) Determine in the conditional tree which items are frequent.
+                Non-frequent items may be ignored in further analysis, because if
+                {b} is infrequent in the conditional tree, necessarily {b,e} is
+                infrequent in the larger data set.
+                
+          4. Use the conditional tree for e to find the frequent itemsets ending
+             in de, ce, ae (be being discarded). Recurse to find the conditional
+             FP-trees for {d,e}, {c,e}, {a,e}, until you run out of subproblems.
+   
+        * FP-growth can outperform Apriori by several orders of magnitude, 
+          depending on the transaction set. The run time performance of FP-growth
+          depends on the 'compaction factor' of the data set. If the resulting
+          conditional FP-trees are very bushy, performance degrades significantly
+          because it has to generate many subproblems and merge results many times.
+    
+6.7 Evaluation of Association Patterns
+
+    objective interestingness measure
+        * Supported by statistics derived from the data.
+        * Includes measures like support, confidence, and correlation.
+        
+    subjective measures
+        * {bread} -> {butter} is obvious, {diapers} -> {beer} is non-obvious.
+        * Requires a lot of domain knowledge.
+    
+        visualization
+            * Lets the domain experts interact with the data mining system by
+              interpreting and verifying discovered patterns.
+    
+        template-based approach
+            * Lets users constrain the types of patterns extracted by the
+              mining algorithm--only rules matching the template(s) are returned.
+    
+        subjective interestingness measure
+            * Can be defined based on domain information like concept hierarchy
+              or profit margin, and then the measure can be used as a filter.
+    
+    6.7.1 Objective Measures of Interestingness
+        * Domain independent, data-driven measures, requiring minimal user input.
+        * Typically found using a 'contingency table', which looks like:
+        
+                 B    ^B
+              +-----+-----+-----+
+            A | f11 | f10 | f1+ | <-- support count for A
+           ^A | f01 | f00 | f0+ |
+              +-----+-----+-----+
+              | f+1 | f+0 |  N  | <-- combined support of {A,B}
+              +-----+-----+-----+
+                 ^
+         support count for B
+              
+            where 
+                A = 'presence of item A'
+               ^A = 'absence of item A'
+           
+        * The drawback of support is that potentially interesting patterns may
+          be discarded because they don't meet minsup.
+        * The drawback of confidence is demonstrated in this example:
+        
+            Looking at the relationship of people who drink coffee and tea:
+            
+                 Coffee ^Coffee
+                +------+-------+------+
+            Tea |  150 |   50  |  200 |
+           ^Tea |  650 |  150  |  800 |
+                +------+-------+------+
+                |  800 |  200  | 1000 |
+                +------+-------+------+
+                
+            Examine the rule {Tea} --> {Coffee}. It may look like people who drink
+            tea tend to drink coffee, because the rule's support (15%) and 
+            confidence (75%) values are reasonably high. However, the fraction of
+            people who drink coffee, regardless of whether they drink tea, is 80%,
+            while the tea drinkers who drink coffee is 75%. So in fact, knowing
+            that a person is a tea drinker actually _decreases_ their chances
+            of being a coffee drinker from 80% to 75%. So {Tea}-->{Coffee} is
+            misleading, despite having high confidence.
+            
+        * 'Lift' is the ratio between the rule's confidence and the support of
+          the itemset in the rule consequent:
+          
+                   c(A --> B)
+            Lift = ----------
+                      s(B)
+                      
+        * Lift for binary variables is 'interest factor':
+        
+                        s(A,B)      N f11
+            I(A,B) = ----------- = -------
+                     s(A) x s(B)   f1+ f+1
+                     
+          which compares the frequency of a pattern against a baseline frequency
+          computed under the statistical independence assumption.
+          
+        * The baseline frequency for a pair of mutually independent variables is:
+        
+            f11   f1+   f+1                      f1+ * f+1
+            --- = --- x ---       OR       f11 = ---------
+             N     N     N                           N
+             
+             
+        * which follows from using the fractions as estimates of the probabilities.
+          f11/N estimates P(A,B), f1+/N estimates P(A), f+1 estimates P(B)
+          
+          If A and B are statistically independent, P(A,B) = P(A) x P(B), so:
+          
+                     | = 1, if A and B are independent
+            I(A,B) = | > 1, if A and B are positively correlated
+                     | < 1, if A and B are negatively correlated
+        
+        * Limitations of Interest Factor--I don't really understand this example.
+        
+        * Correlation Analysis: for continuous variables, Pearson's correlation
+          coefficient is used, for binary variables, the phi-coefficient, which is:
+          
+                     f11 * f00 - f01 * f10
+            phi = ---------------------------
+                  sqrt(f1+ * f+1 * f0+ * f+0)
+        
+          phi ranges from -1 (perfect negative correlation) to +1 (perfect positive
+          correlation), with 0 being statistical independence.
+          
+        * Limitations of Correlation Analysis: Gives equal importance to the presence
+          or absence of a factor, so it's better for symmetric binary variables.
+          
+        * IS Measure: alternative measure for asymmetric binary variables:
+        
+                                                    s(A,B)
+            IS(A,B) = sqrt(I(A,B) x s(A,B)) = -----------------
+                                              sqrt(s(A) * s(B))
+            
+          IS is large when the interest factor and support of the pattern are large.
+          Mathematically equivalent to the cosine measure for binary variables.
+          
+        * Limitations of IS Measure: may not accurately represent independence.
+        
+        * Alternative Objective Interesting Measures: two categories, symmetric
+          and asymmetric measures. A measure M is symmetric if 
+          
+            M is symmetric if M(A --> B) = M(B --> A)
+            
+          Interst factor is symmetric, confidence is asymmetric
+          
+        * Symmetric objective measures for itemset {A,B}:
+        
+            Measure (Symbol)            Definition            
+           
+                                     f11 * f00 - f01 * f10
+            Correlation(phi)      ---------------------------
+                                  sqrt(f1+ * f+1 * f0+ * f+0)
+            
+            
+            Odds ratio (alpha)       (f11 * f00) / (f10 * f01)
+            
+                                N*f11 + N*f00 - f1+ * f+1 - f0+ * f+0
+            Kappa (kappa)       -------------------------------------
+                                     N^2 - f1+ * f+1 - f0+ * f+0
+                                     
+            Interest (I)        (N*f11) / (f1+ * f+1)
+            
+            Cosine (IS)         (f11) / (sqrt(f1+ * f+1))
+            
+                                     f11     f1+ * f+1
+            Piatetsky-Shapiro (PS)   ---  -  ---------
+                                      N         N^2
+                                      
+                                           f11 + f00           N - f1+ * f+1 - f0+ * f+0
+            Collective Strength (S)  ---------------------  x  -------------------------
+                                     f1+ * f+1 * f0+ * f+0           N - f11 - f00
+                                     
+                                     
+            Jaccard (?)              f11 / (f1+ + f+1 - f11)
+            
+                                        | f11   f11 |
+            All-confidence (h)       min| --- , --- |
+                                        | f1+   f+1 |
+
+
+        * Asymmetric objective measures for the rule A --> B
+        
+        
+            Goodman-Kruskal (gamma)
+            Mutual Information (M)
+            J-Measure (J)
+            Gini Index (G)
+            Laplace (L)
+            Conviction (V)
+            Certainty Factor (F)
+            Added Value (AV)
+            
+            
+        * Properties of Objective Measures
+            Inversion property - flipping a bit vector. If a measure is invariant
+              under inversion, its value for the vector pair (C,D) should be identical
+              to the value for (A,B).
+              
+              A measure M is invariant under inversion if its value remains the 
+              same when exchanging the frequency counts f11 with f00 and f01 with f10.
+              
+              Measures invariant under inversion include phi, odds ratio, kappa, 
+              and collective strength. They may not be suitable for analyzing
+              asymmetric binary data.
+              
+              Measures noninvariant under inversion include interest factor, IS, 
+              PS, and Jaccard.
+              
+            Null Addition property - Adding unrelated data to a given data set.
+              A measure M is invariant under null addition if it is not affected
+              by increasing f00, while all other frequencies in the contingency
+              table remain static.
+              
+              Applications like document or market basket analysis want measures
+              that are invariant under null addition.
+              
+              Measures invariant under null addition include cosine, Jaccard.
+              
+              Measures noninvariant under null addition include interest factor,
+              PS, odds ratio, and phi coefficient.
+              
+            Scaling Property - Remaining constant despite changes in sampling rate.
+              A measure M is invariant under the row/column scaling operation if
+              M(T) = M(T'), where T is a contingency table with frequency counts
+              [f11; f10; f01; f00], T' is a table with scaled frequency counts
+              [k1*k3*f11; k2*k3*f10; k1*k4*f01; k2*k4*f00], where k1-k4 are
+              positive constants.
+              
+              Only the odds ratio (alpha) is invariant under row and column scaling.
+              All other measures change their values when the rows and columns of 
+              the contingency table are rescaled.
+            
+    6.7.2 Measures beyond Pairs of Binary Variables
+        
+    
+    
+    6.7.3 Simpson's Paradox
+    
+6.8 Effect of Skewed Support Distribution
+
+
+Chapter 7: Association Analysis: Advanced Concepts
+    * When you handle data that is not asymmetric binary, you have to adjust
+      your algorithms to handle the data structures.
+
+7.1 Handling Categorical Attributes
+    * Binarize the categories, creating one "item" for each key/value pair.
+    * Issues to consider:
+        1. Some attribute values may not be frequent enough to surface patterns.
+           Consider categorization--regions instead of states, for instance. This
+           may be effective where lowering the support threshold would not, since
+           that would exponentially increase the number of frequent itemsets,
+           while including spurious associations.
+        2. Some attributes may have much higher frequencies than others, and
+           binarization may create redundant patterns. Because high frequency
+           'items' post-binarization often correspond to the 'normal' values of
+           an object, they don't usually carry new information helpful to 
+           understanding a pattern. You may want to remove these items before
+           analysis, or use the techniques from section 6.8 on skewed support
+           distribution.
+        3. Computation time increases as you widen the dataset with binarization,
+           which you can reduce by not generating itemsets with combinations of
+           values from the same attribute (since they will have a support of 0).
+
+7.2 Handling Continuous Attributes
+    * Rules that contain continuous attributes are 'quantitative association rules.'
+
+    7.2.1 Discretization-Based Methods
+        * Discretization is grouping adjacent values of a continuous attribute
+          into a finite number of intervals.
+        * Can be performed with any of a number of discretization techniques.
+        * You then map the discrete intervals onto asymmetric binary attributes.
+        * Choosing the correct number of intervals to break each attribute into
+          is a crucial step, and has associated issues:
+          
+            1. If the interval is too wide, we lose patterns because of lack of
+               confidence.
+            2. If the interval is too narrow, we lose patterns because of lack
+               of support.
+            3. Rules generated may actually be subrules that can then be combined
+               to derive larger patterns, but if the subrules fail the thresholds
+               they won't be available to be combined.
+               
+        * You can solve this by considering every possible grouping of adjacent
+          intervals, but this has computational issues:
+          
+            1. The computation gets extremely expensive.
+            2. Many redundant rules are extracted.
+    
+    7.2.2 Statistics Based Methods
+        * You can use stats methods to generate quantitative association rules,
+          like "{income > 100k, shop online=yes} --> Age: Mean=38".
+          
+        Rule Generation
+            * Withhold a target attribute, and binarize the other attributes.
+            * Use algorithms like Apriori or FP-growth to extract frequent
+              itemsets from the data, then apply stats methods to the withheld
+              attribute grouped by those itemsets, to generate the rules.
+            * 'Confidence' is not applicable to these rules.
+            
+        Rule Validation
+            * A quantitative association rule is interesting only if the 
+              statistics computed from transactions covered by the rule are
+              different from those not covered by the rule.
+            * Use statistical hypothesis testing methods to determine this.
+    
+    7.2.3 Non-discretization methods
+        * Some applications seek relationships between continuous attributes,
+          and not between discretizations of those attributes.
+        * Text mining, for instance, wants to look at relationships between
+          words, rather than between ranges of word frequencies.
+    
+7.3 Handling a Concept Hierarchy
+    * A concept hierarchy is a multilevel organization of the various entities
+      or concepts defined in a particular domain. Market basket data often has
+      categorization like "2% milk is Dairy, whole wheat and white bread are Bakery"
+    * Based on domain knowledge or standardized classification schemes.
+    * Can be represented using a directed acyclic graph.
+    
+    * Advantages of incorporating concept hierarchies into association analysis:
+        1. Items at a low level of the hierarchy may have support too low to 
+           be included in frequent itemsets, where higher levels will be.
+        2. Rules derived at a low level tend to be overly specific. Rules from
+           too high up may be so general as to be useless--want to work in the
+           middle somewhere to find interesting rules with sufficient support.
+           
+    * To incorporate a concept hierarchy, ach transaction t is replaced with an
+      extended transaction t', containing all the items in t along with their 
+      corresponding ancestors. So you might convert
+      
+        {DVD, wheat bread} to
+        {DVD, wheat bread, home electronics, electronics, bread, food}
+        
+      and then apply Apriori or other algorithms to the extended database to find
+      rules that span different levels.
+      
+    * Limitations of this approach include:
+        1. Items at the higher levels of the hierarchy tend to have a higher
+           support count. Consequently, if minsup is too high, you only get 
+           itemsets involving the high levels of the hierarchy. If it's too low,
+           you get way too many patterns (mostly spurious).
+        2. Using a concept hierarchy increases the computation time overall.
+        3. You may get redundant rules. Rules involving lower levels of the
+           hierarchy are considered redundant if they can be summarized by a
+           rule involving ancestor items.
+
+
+7.4 Sequential Patterns
+
+    7.4.1 Problem Formulation
+    
+    7.4.2 Sequential Pattern Discovery
+    
+    7.4.3 Timing Constraints
+    
+    7.4.4 Alternative Counting Schemes
+    
+7.5 Subgraph Patterns
+
+    7.5.1 Graphs and Subgraphs
+    
+    7.5.2 Frequent Subgraph Mining
+    
+    7.5.3 Apriori-like Method
+    
+    7.5.4 Candidate Generation
+    
+    7.5.5 Candidate Pruning
+    
+    7.5.6 Support Counting
+    
+7.6 Infrequent Patterns
+
+    7.6.1 Negative Patterns
+    
+    7.6.2 Negatively Correlated Patterns
+    
+    7.6.3 Comparisons among Infrequent Patterns, Negative Patterns, 
+          and Negatively Correlated Patterns
+          
+    7.6.4 Techniques for Mining Interesting Infrequent Patterns
+    
+    7.6.5 Techniques Based on Mining Negative Patterns
+    
+    7.6.6 Techniques Based on Support Expectation         
+              
+
+    

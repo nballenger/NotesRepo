@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" />        
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">             
+        <style type="text/css">
+        html { font-size: 62.5%; }
+        body { font-family: 'Andale Mono', 'Courier New', 'Courier'; }
+        h1 { font-size: 2.0rem; }
+        h2 { font-size: 1.8rem; }
+        h3 { font-size: 1.6rem; }
+        h4 { font-size: 1.4rem; }
+        .set-name { 
+            font-weight: bold;
+            font-style: italic;
+            text-transform: uppercase;
+        }
+        .set-name sup, .set-name sub { text-transform: none; }
+        .element-name {
+            font-style: italic;
+        }
+        .serif {
+            font-family: serif;
+            font-weight: bold;
+        }
+        table { border-collapse: collapse; }
+        th, td { padding: 8px; border: 1px solid black; font-size: 1.4rem; }
+        li { font-size: 1.4rem; }
+        tbody th { text-align: left; }
+        footer { height: 400px; }
+        p { padding-left: 6px; border-left: 1px solid silver; }
+        .stacked sup { top: -0.7em; }
+        .stacked sub { top: 0.6em; left: -0.8em; }        </style>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+        <script type="text/javascript">
+        $(document).ready(function() {
+            $("#tabs").tabs();
+        });
+        </script>        
+    </head>
+    <body>
+        <div class="container">
+        <article>
+            <header>
+                <hgroup>
+                    <p>Notes on <em>Mathematical and Computer Programming Techniques for Computer Graphics</em><br />
+                    by Peter Comninos</p>
+                </hgroup>
+            </header>
+            <div id="tabs">
+                <ul>
+                    <li><a href="#tab-sets-definitions">Definitions</a></li>
+                    <li><a href="#tab-sets-notation">Notation</a></li>
+                    <li><a href="#tab-sets-operations">Operations &amp; Rules</a></li>
+                    <li><a href="#tab-sets-functions">Functions</a></li>
+                    <li><a href="#tab-sets-numeric-sets">Numeric Sets</a></li>
+                    <li><a href="#tab-sets-inequalities">Inequalities</a></li>
+                </ul>
+                        
+            <section>
+                <div id="tab-sets-definitions">
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="2">Definitions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th colspan="2">Sets</th>
+                        </tr>
+                        <tr>
+                            <th>set</th>
+                            <td>a list, collection, or class of objects, with clear and unambiguous rules for membership, in which order and multiplicity has no significance</td>                            
+                        </tr>
+                        <tr>
+                            <th>element/member</th>
+                            <td>object in a set</td>
+                        </tr>
+                        <tr>
+                            <th>Tabular Form</th>
+                            <td><span class="set-name">A</span> = { 2, 3, 6, 8 }</td>
+                        </tr>
+                        <tr>
+                            <th>Set Builder / Comprehension Form</th>
+                            <td><span class="set-name">B</span> = { <span class="element-name">x</span> | <span class="element-name">x</span> is an odd integer }<br />
+                                <span class="set-name">B</span> = { <span class="element-name">x</span> : <span class="element-name">x</span> is an odd integer }<br />
+                                <span class="set-name">S</span> = { <span class="element-name">x</span> : &#8472;(<span class="element-name">x</span>) } (where proposition &#8472; holds)</td>                            
+                        </tr>
+                        <tr>
+                            <th>comparable sets</th>
+                            <td>where <span class="set-name">A</span> &#8835; <span class="set-name">B</span> or <span class="set-name">B</span> &#8835; <span class="set-name">A</span></td>
+                        </tr>
+                        <tr>
+                            <th>disjoint sets</th>
+                            <td><span class="set-name">A</span> and <span class="set-name">B</span> have no common elements</td>
+                        </tr>     
+                        <tr>
+                            <th>duality principle</th>
+                            <td>Given a set identity (expression of set relationships) <span class="set-name">I</span>, its dual identity <span class="set-name">I*</span> is made by interchanging every occurence of &#8746; and &#8745;, and each <span class="serif">U</span> and &#8709; in the original identity.</td>
+                        </tr>
+                        <tr>
+                            <th>closure</th>
+                            <td>Given a set <span class="set-name">S</span>, <span class="set-name">S</span> is closed under binary operation x if and only if the result of x on two elements of <span class="set-name">S</span> is also an element of <span class="set-name">S</span>.<br /><br />
+                                iff &#8704;<span class="element-name">s<sub>1</sub></span>,<span class="element-name">s<sub>2</sub></span> &#8712; <span class="set-name">S</span> &#8658; (<span class="element-name">s<sub>1</sub></span> [operation x] <span class="element-name">s<sub>2</sub></span>) &#8712; <span class="set-name">S</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>family&nbsp;of&nbsp;indexed&nbsp;sets</th>
+                            <td>a set <span class="set-name">I</span> whose members index elements of another set <span class="set-name">S</span><br>
+                            Ex: <span class="set-name">S<sub>i</sub></span> = { <span class="element-name">s</span> | <span class="element-name">s</span> = i<sup>n</sup> <sup>&#8743;</sup>n &#8712; &#8469;<sup>+</sup> } which gives rise to:<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="set-name">S<sub>0</sub></span> = { 0<sup>1</sup>, 0<sup>2</sup>, 0<sup>3</sup>, 0<sup>4</sup>,&#8943; }<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="set-name">S<sub>1</sub></span> = { 1<sup>1</sup>, 1<sup>2</sup>, 1<sup>3</sup>, 1<sup>4</sup>,&#8943; }<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="set-name">S<sub>2</sub></span> = { 2<sup>1</sup>, 2<sup>2</sup>, 2<sup>3</sup>, 2<sup>4</sup>,&#8943; }<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#8942;
+                            </td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Intervals</th>
+                        </tr>
+                        <tr>
+                            <th>real number interval</th>
+                            <td>bounded subset of &#8477;, either finite or infinite</td>
+                        </tr>
+                        <tr>
+                            <th>lower bound</th>
+                            <td>lower endpoint of an interval</td>
+                        </tr>
+                        <tr>
+                            <th>upper bound</th>
+                            <td>upper endpoint of an interval</td>
+                        </tr>
+                        <tr>
+                            <th>open bound</th>
+                            <td>the bounding number is excluded from the set</td>
+                        </tr>
+                        <tr>
+                            <th>closed bound</th>
+                            <td>the bounding number is included in the set</td>
+                        </tr>
+                        <tr>
+                            <th>ordered&nbsp;pair,<br>ordered&nbsp;2-tuple</th>
+                            <td>a pair of elements with positions 0 and 1</td>
+                        </tr>
+                        <tr>
+                            <th>ordered&nbsp;n-tuple</th>
+                            <td>ordered collection of n objects, in a specific order, may contain same object multiple times</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">Functions</th>
+                        </tr>
+                        <tr>
+                            <th>function</th>
+                            <td>a relation that associates each element of an input set <span class="set-name">I</span> with the elements of an output set <span class="set-name">O</span></td>
+                        </tr>
+                        <tr>
+                            <th>well&#8209;defined&nbsp;function</th>
+                            <td>is 'total': for every <span class="element-name">i</span> &#8712; <span class="set-name">I</span> there must be an <span class="element-name">o</span> &#8712; <span class="set-name">O</span>;<br>has only one <span class="element-name">o</span> per unique <span class="element-name">i</span> value</td>
+                        </tr>
+                        <tr>
+                            <th>domain</th>
+                            <td>the input set of a function</td>
+                        </tr>
+                        <tr>
+                            <th>co-domain</th>
+                            <td>the output set of a function</td>
+                        </tr>
+                        <tr>
+                            <th>range</th>
+                            <td>for input set <span class="set-name">I</span> and output set <span class="set-name">O</span>, the subset &fnof;(<span class="set-name">I</span>) of <span class="set-name">O</span> is the range of &fnof;</td>
+                        </tr>
+                        <tr>
+                            <th>endofunction</th>
+                            <td>a function where the domain and range are the same, &fnof;(<span class="set-name">I</span>) = <span class="set-name">O</span></td>
+                        <tr>
+                        <tr>
+                            <th>pre-image</th>
+                            <td>an input element</td>
+                        </tr>
+                        <tr>
+                            <th>image</th>
+                            <td>an output element <span class="element-name">o</span> for an input element <span class="element-name">i</span></td>
+                        </tr>
+                        <tr>
+                            <th>restricted&nbsp;domain</th>
+                            <td>for &fnof;:<span class="set-name">I</span>&rarr;<span class="set-name">O</span>, a subset <span class="set-name">S</span> &#8712; <span class="set-name">I</span> in which case the restricted function is denoted &fnof;|<span class="set-name">S</span>:<span class="set-name">S</span>&rarr;<span class="set-name">O</span></td>
+                        </tr>
+                        <tr>
+                            <th>many&#8209;to&#8209;one&nbsp;function</th>
+                            <td>a function where many elements of the domain map to a single element of the range</td>
+                        </tr>
+                        <tr>
+                            <th>injective&nbsp;function,<br>one&#8209;to&#8209;one&nbsp;function</th>
+                            <td>a function where each element of the domain maps to a distinct element of the range</td>
+                        </tr>
+                        <tr>
+                            <th>surjective&nbsp;function,<br>onto&nbsp;function</th>
+                            <td>a function where the output set contains only the images of the input set</td>
+                        </tr>
+                        <tr>
+                            <th>bijective&nbsp;function,<br>one&#8209;to&#8209;one&nbsp;correspondence</th>
+                            <td>a function that is both injective and surjective</td>
+                        </tr>
+                        <tr>
+                            <th>constant&nbsp;function</th>
+                            <td>a function that maps every input value to the same single output value</td>
+                        </tr>
+                        <tr>
+                            <th>identity&nbsp;function,<br>identity&nbsp;transformation</th>
+                            <td>A function that returns its input: &fnof;:<span class="set-name">S</span>&rarr;<span class="set-name">S</span> = &fnof;(<span class="element-name">s<sub>i</sub></span>) = <span class="element-name">s<sub>i</sub></span>, <sup>&#8704;</sup><span class="element-name">s<sub>i</sub></span> &#8712; <span class="set-name">S</span></td>
+                        </tr>
+                        <tr>
+                            <th>composite&nbsp;function</th>
+                            <td>a function wrapped in another function, denoted &fnof;<sub>2</sub>(&fnof;<sub>1</sub>)) or &fnof;<sub>2</sub>&#8728;&fnof;<sub>1</sub></td>
+                        </tr>
+                        <tr>
+                            <th>inverse&nbsp;of&nbsp;a&nbsp;function</th>
+                            <td>function that maps each image <span class="element-name">o<sub>j</sub></span> to its preimage <span class="element-name">i<sub>i</sub></span></td>
+                        </tr>
+                        <tr>
+                            <th>graph&nbsp;of&nbsp;a&nbsp;function</th>
+                            <td>Every ordered pair of inputs and outputs: &fnof;* = { (<span class="element-name">i</span>,<span class="element-name">o</span>) | <span class="element-name">i</span> &#8712; <span class="set-name">I</span> &and; <span class="element-name">o</span> = &fnof;(<span class="element-name">i</span>)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                </div>
+                
+                <div id="tab-sets-notation">
+                
+                <table>
+                    <thead>
+                        <tr>    
+                            <th colspan="2">Symbols</th>
+                            <th>HTML Entity</th>
+                        </tr>
+                    </thead>
+                    <tbody>    
+                        <tr>
+                            <th colspan="3">Sets</th>
+                        </tr>
+                        <tr>
+                            <th>&#8472;</th>
+                            <td>a proposition</td>
+                            <td>&#8472;&nbsp;=&nbsp;&amp;#8472;</td>                    
+                        </tr>
+                        <tr>
+                            <th>&#8709;&nbsp;or&nbsp;{}</th>
+                            <td>the null / empty set</td>
+                            <td>&#8709;&nbsp;=&nbsp;&amp;#8709;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="serif">U</span></th>
+                            <td>the universal set (superset of all sets under examination)</td>
+                            <td></td>
+                        </tr> 
+                        <tr>
+                            <th colspan="3">Set Membership</th>
+                        </tr>
+                        <tr>
+                            <th><span class="element-name">x</span> &#8712; <span class="set-name">A</span></th>
+                            <td><span class="element-name">x</span> is an element of <span class="set-name">A</span></td>
+                            <td>&#8712;&nbsp;=&nbsp;&amp;#8712;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="element-name">x</span> &#8713; <span class="set-name">A</span></th>
+                            <td><span class="element-name">x</span> is not an element of <span class="set-name">A</span></td>
+                            <td>&#8713;&nbsp;=&nbsp;&amp;#8713;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> &#8715; <span class="element-name">x</span></th>
+                            <td><span class="set-name">A</span> contains <span class="element-name">x</span> as a member</td>
+                            <td>&#8715;&nbsp;=&nbsp;&amp;#8715;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> &#8716; <span class="element-name">x</span></th>
+                            <td><span class="set-name">A</span> does not contain <span class="element-name">x</span> as a member</td>
+                            <td>&#8716;&nbsp;=&nbsp;&amp;#8716;</td>
+                        </tr>    
+                        <tr>
+                            <th><span class="set-name">A</span> = <span class="set-name">B</span></th>
+                            <td><span class="set-name">A</span> contains every <span class="element-name">b</span> and <span class="set-name">B</span> contains every <span class="element-name">a</span></td>
+                            <td></td>                        
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> &#8800; <span class="set-name">B</span></th>
+                            <td><span class="set-name">A</span> does not contain every <span class="element-name">b</span> or <span class="set-name">B</span> does not contain every <span class="element-name">a</span></td>
+                            <td>&#8800;&nbsp;=&nbsp;&amp;#8800;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> &#8838; <span class="set-name">B</span></th>
+                            <td><span class="set-name">A</span> is a subset of <span class="set-name">B</span></td>
+                            <td>&#8838;&nbsp;=&nbsp;&amp;#8838;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> &#8839; <span class="set-name">B</span></th>
+                            <td><span class="set-name">A</span> is a superset of <span class="set-name">B</span></td>
+                            <td>&#8839;&nbsp;=&nbsp;&amp;#8839;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> &#8834; <span class="set-name">B</span></th>
+                            <td><span class="set-name">A</span> is a proper subset of <span class="set-name">B</span></td>
+                            <td>&#8834;&nbsp;=&nbsp;&amp;#8834;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> &#8835; <span class="set-name">B</span></th>
+                            <td><span class="set-name">A</span> is a proper superset of <span class="set-name">B</span></td>
+                            <td>&#8835;&nbsp;=&nbsp;&amp;#8835;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> &#8836; <span class="set-name">B</span></th>
+                            <td><span class="set-name">A</span> is not a subset of <span class="set-name">B</span></td>
+                            <td>&#8836;&nbsp;=&nbsp;&amp;#8836;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> &#8837; <span class="set-name">B</span></th>
+                            <td><span class="set-name">A</span> is not a superset of <span class="set-name">B</span></td>
+                            <td>&#8837;&nbsp;=&nbsp;&amp;#8837;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> &#8840; <span class="set-name">B</span></th>
+                            <td><span class="set-name">A</span> is not a subset or equal to <span class="set-name">B</span></td>
+                            <td>&#8840;&nbsp;=&nbsp;&amp;#8840;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> &#8841; <span class="set-name">B</span></th>
+                            <td><span class="set-name">A</span> is not a superset or equal to <span class="set-name">B</span></td>
+                            <td>&#8841;&nbsp;=&nbsp;&amp;#8841;</td>
+                        </tr> 
+                        <tr>
+                            <th colspan="3">Set Operations</th>
+                        </tr>                      
+                        <tr>
+                            <th><span class="set-name">A</span> &#8746; <span class="set-name">B</span></th>
+                            <td>union: <span class="set-name">S</span> = { <span class="element-name">x</span> : <span class="element-name">x</span> &#8712; <span class="set-name">A</span> &#8744; <span class="element-name">x</span> &#8712; <span class="set-name">B</span> }</td>
+                            <td>&#8746;&nbsp;=&nbsp;&amp;#8746;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> &#8745; <span class="set-name">B</span></th>
+                            <td>intersection: <span class="set-name">S</span> = { <span class="element-name">x</span> : <span class="element-name">x</span> &#8712; <span class="set-name">A</span> &#8743; <span class="element-name">x</span> &#8712; <span class="set-name">B</span> }</td>
+                            <td>&#8745;&nbsp;=&nbsp;&amp;#8745;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> - <span class="set-name">B</span></th>
+                            <td>set difference: <span class="set-name">A</span> - <span class="set-name">B</span> = { <span class="element-name">x</span> | <span class="element-name">x</span> &#8712; <span class="set-name">A</span> &#8743; <span class="element-name">x</span> &#8713; <span class="set-name">B</span> }</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A'</span></th>
+                            <td>complement of <span class="set-name">A</span>, <span class="serif">U</span> - <span class="set-name">A</span></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A*</span></th>
+                            <td>the dual identity of <span class="set-name">A</span> (switch every &#8746; for &#8745; and <span class="serif">U</span> for &#8709;)</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> &#8710; <span class="set-name">B</span></th>
+                            <td>symmetric difference of <span class="set-name">A</span> and <span class="set-name">B</span><br />
+                                <span class="element-name">x</span> &#8712; <span class="set-name">A</span> + <span class="element-name">x</span> &#8712; <span class="set-name">B</span> (in <span class="set-name">A</span> XOR in <span class="set-name">B</span>)<br />
+                                <span class="set-name">S</span> = { <span class="element-name">x</span> : (<span class="element-name">x</span> &#8712; <span class="set-name">A</span> &#8743; <span class="element-name">x</span> &#8713; <span class="set-name">B</span>) &#8744; (<span class="element-name">x</span> &#8713; <span class="set-name">A</span> &#8743; <span class="element-name">x</span> &#8712; <span class="set-name">B</span>) }</td>
+                            <td>&#8710;&nbsp;=&nbsp;&amp;#8710;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="set-name">A</span> &times; <span class="set-name">B</span>
+                            <td>the cartesian product of <span class="set-name">A</span> and <span class="set-name">B</span></td>
+                            <td>&times;&nbsp;=&nbsp;&amp;times;</td>
+                        </tr>
+
+                        <tr>
+                            <th><span class="stacked">&prod;<sup>n</sup><sub>i=1</sub></span><span class="set-name">S<sub>i</sub></span></th>
+                            <td>n-ary cartesian product of sets</td>
+                            <td>&prod;&nbsp;=&nbsp;&amp;prod;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="stacked">&#8899;<sup>n</sup><sub>i=1</sub></span><span class="set-name">S<sub>i</sub></span></th>
+                            <td>the generalized set union operation</td>
+                            <td>&#8899;&nbsp;=&nbsp;&amp;#8899;</td>
+                        </tr>
+                        <tr>
+                            <th><span class="stacked">&#8898;<sup>n</sup><sub>i=1</sub></span><span class="set-name">S<sub>i</sub></span></th>
+                            <td>the generalized set intersection operation</td>
+                            <td>&#8898;&nbsp;=&nbsp;&amp;#8898;</td>
+                        </tr>
+                        <tr>
+                            <th colspan="3">Logic</th>
+                        </tr>                            
+                        <tr>
+                            <th>&#8743;</th>
+                            <td>logical AND</td>
+                            <td>&#8743;&nbsp;=&nbsp;&amp;#8743;</td>
+                        </tr>
+                        <tr>
+                            <th>&#8744;</th>
+                            <td>logical OR</td>
+                            <td>&#8744;&nbsp;=&nbsp;&amp;#8744;</td>
+                        </tr>
+                        <tr>
+                            <th>+</th>
+                            <td>logical XOR</td>
+                            <td></td>
+                        </tr>
+                        
+                        <tr>
+                            <th>&#8704;</th>
+                            <td>for all</td>
+                            <td>&#8704;&nbsp;=&nbsp;&amp;#8704;</td>
+                        </tr>
+                        <tr>
+                            <th>&#8707;</th>
+                            <td>there exists</td>
+                            <td>&#8707;&nbsp;=&nbsp;&amp;#8707;</td>
+                        </tr>
+                        <tr>
+                            <td>&#8708;</th>
+                            <td>there does not exist</td>
+                            <td>&#8708;&nbsp;=&nbsp;&amp;#8708;</td>
+                        </tr>
+                        <tr>
+                            <th>iff</th>
+                            <td>if and only if</td>
+                            <td></td>                            
+                        </tr>                        
+                        <tr>
+                            <th>&#8756;</th>
+                            <td>therefore</td>
+                            <td>&#8756;&nbsp;=&nbsp;&amp;#8756;</td>
+                        </tr>
+                        <tr>    
+                            <th>&#8757;</th>
+                            <td>because</td>
+                            <td>&#8757;&nbsp;=&nbsp;&amp;#8757;</td>
+                        </tr>
+                        <tr>
+                            <th>&#8658;</th>
+                            <td>if..then</td>
+                            <td>&#8658;&nbsp;=&nbsp;&amp;#8658;</td>
+                        </tr>
+                        <tr>
+                            <th>&#8660;</th>
+                            <td>if..then, reciprocally</td>
+                            <td>&#8660;&nbsp;=&nbsp;&amp;#8660;</td>
+                        </tr>
+                        <tr>
+                            <th colspan="3">Numeric Sets</th>
+                        </tr>
+                        <tr>
+                            <th>&#8469;</th>
+                            <td>the set of natural numbers {0, 1, 2, 3, ... }</td>
+                            <td>&#8469; = &amp;#8469;</td>
+                        </tr>
+                        <tr>
+                            <th>&#8469;<sup>+</sup></th>
+                            <td>the set of positive natural numbers {1, 2, 3, ... }</td>
+                            <td>&#8469; = &amp;#8469;</td>
+                        </tr>
+                        <tr>
+                            <th>&#8484;</th>
+                            <td>the set of integer numbers {..., -3, -2, -1, 0, 1, 2, 3, ...}</td>
+                            <td>&#8484; = &amp;#8484;</td>
+                        </tr>
+                        <tr>
+                            <th>&#8474;</th>
+                            <td>the set of rational numbers, expressible as the ratio of two integers (divisor&#8800;0)</td>
+                            <td>&#8474; = &amp;#8474;</td>
+                        </tr>
+                        <tr>
+                            <th>&#8474;'</th>
+                            <td>the set of irrational numbers, those with non-periodic decimal expansions</td>
+                            <td>&#8474; = &amp;#8474;</td>
+                        </tr>
+                        <tr>
+                            <th>&#8477;</th>
+                            <td>the set of real numbers, numbers with a 1:1 correspondence with a number line</td>
+                            <td>&#8477; = &amp;#8477;</td>
+                        </tr>
+                        <tr>
+                            <th>&#8450;</th>
+                            <td>the set of complex numbers, { <span class="element-name">x</span> | <span class="element-name">x</span> = a+bi &and; a,b &#8712; &#8477; &and; i = &radic;-1 }</td>
+                            <td>&#8450; = &amp;#8450;</td>
+                        </tr>
+                        <tr>
+                            <th>&Aopf;</th>
+                            <td>the set of algebraic numbers: real numbers that are the solution of a polynomial with integer coefficients of the form<br>
+                            c<sub>n</sub>x<sup>n</sup> + c<sub>n-1</sub>x<sup>n-1</sup> + c<sub>n-2</sub>x<sup>n-2</sup> + &#8943; + c<sub>2</sub>x<sup>2</sup> + c<sub>1</sub>x<sup>1</sup> + c<sub>0</sub>x<sup>0</sup><br>
+                            for n &gt; 0 where c<sub>i</sub> &#8712; &#8484; &and; c<sub>n</sub> &#8800; 0</td>
+                            <td>&Aopf; = &amp;Aopf;</td>
+                        </tr>
+                        <tr>
+                            <th>&Topf;</th>
+                            <td>the set of transcendental numbers, irrational numbers that are not the solution of any polynomial equation with integer coefficients, like &pi;, e, sin(&pi;), cos(2&pi;), tan(&pi;/4)</td>
+                            <td>&Topf; = &amp;Topf;</td>
+                        </tr>
+                        <tr>
+                            <th colspan="3">Intervals</th>
+                        </tr>
+                        <tr>
+                            <th>&infin;</th>
+                            <td>infinity</td>
+                            <td>&infin;&nbsp;=&nbsp;&amp;infin;</td>
+                        </tr>
+                        <tr>
+                            <th>&#120073;</th>
+                            <td>family of all real number intervals including singleton and zero length</td>
+                            <td>&#120073;&nbsp;=&nbsp;&amp;#120073;</td>
+                        </tr>
+                        <tr>
+                            <th>(...)</th>
+                            <td>open bounded set</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>[...]</th>
+                            <td>closed bounded set</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>(...]<br>[...)</th>
+                            <td>mixed bounded sets</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th colspan="3">Functions</th>
+                        </tr>
+                        <tr>
+                            <th>&#8728;</th>
+                            <td>function composition operator: f<sub>2</sub> &#8728; f<sub>1</sub> = f<sub>2</sub>(f<sub>1</sub>(i))</td>
+                            <td>&#8728;&nbsp;=&nbsp;&amp;#8728;</td>
+                        </tr>
+                        <tr>
+                            <th>&fnof;</th>
+                            <td>a function</td>
+                            <td>&fnof;&nbsp;=&nbsp;&amp;fnof;</td>
+                        </tr>
+                        <tr>
+                            <th>&fnof;:<span class="set-name">I</span>&rarr;<span class="set-name">O</span><br>
+                                <span class="set-name">I</span> &fnof;&#866; <span class="set-name">O</span></th>
+                            <td>&fnof; maps <span class="set-name">I</span> into <span class="set-name">O</span></td>
+                            <td>&rarr;&nbsp;=&nbsp;&amp;rarr;<br>
+                            &fnof;&#866;&nbsp;=&nbsp;&amp;fnof;&amp;#866;</td>
+                        </tr>
+                        <tr>
+                            <th>&fnof;<sup>n</sup></th>
+                            <td>a function composed with itself n times, (&fnof;&#8728;&fnof;&#8728;&#8943;&#8728;&fnof;)(<span class="element-name">i</span>)</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>&fnof;<sup>-1</sup></th>
+                            <td>the inverse of a function</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>&fnof;*</th>
+                            <td>the graph of a function, the set of all ordered pairs (<span class="element-name">i</span>,<span class="element-name">o</span>) where <span class="element-name">i</span> &#8712; <span class="set-name">I</span> &and; <span class="element-name">o</span> &#8712; <span class="set-name">O</span></td>
+                            <td></td>
+                        </tr>                        
+                    </tbody>
+                </table>
+                </div>
+                
+                <div id="tab-sets-operations">
+                <h2>Basic Set Operations and Rules</h2>            
+                
+                <p><span class="set-name">A</span> &#8746; <span class="set-name">B</span> = { <span class="element-name">x</span> : <span class="element-name">x</span> &#8712; <span class="set-name">A</span> &#8744; <span class="element-name">x</span> &#8712; <span class="set-name">B</span> }<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;<span class="set-name">A</span> &#8746; <span class="set-name">B</span> = <span class="set-name">B</span> &#8746; <span class="set-name">A</span><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;<span class="set-name">A</span> &#8838; <span class="set-name">A</span> &#8746; <span class="set-name">B</span><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;<span class="set-name">B</span> &#8838; <span class="set-name">A</span> &#8746; <span class="set-name">B</span>
+                </p>
+                
+                <p><span class="set-name">A</span> &#8745; <span class="set-name">B</span> = { <span class="element-name">x</span> : <span class="element-name">x</span> &#8712; <span class="set-name">A</span> &#8743; <span class="element-name">x</span> &#8712; <span class="set-name">B</span> }<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;<span class="set-name">A</span> &#8745; <span class="set-name">B</span> = <span class="set-name">B</span> &#8745; <span class="set-name">A</span><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;(<span class="set-name">A</span> &#8745; <span class="set-name">B</span>) &#8838; <span class="set-name">A</span><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;(<span class="set-name">A</span> &#8745; <span class="set-name">B</span>) &#8838; <span class="set-name">B</span>
+                </p>
+                
+                <p><span class="set-name">A</span> - <span class="set-name">B</span> = { <span class="element-name">x</span> : <span class="element-name">x</span> &#8712; <span class="set-name">A</span> &#8743; <span class="element-name">x</span> &#8713; <span class="set-name">B</span> }<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;(<span class="set-name">A</span> - <span class="set-name">B</span>) &#8838; <span class="set-name">A</span><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;(<span class="set-name">A</span> - <span class="set-name">B</span>) &#8745; (<span class="set-name">A</span> &#8745; <span class="set-name">B</span>) = &#8709;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;(<span class="set-name">B</span> - <span class="set-name">A</span>) &#8745; (<span class="set-name">A</span> &#8745; <span class="set-name">B</span>) = &#8709;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;(<span class="set-name">B</span> - <span class="set-name">A</span>) &#8745; (<span class="set-name">A</span> - <span class="set-name">B</span>) = &#8709;
+                </p>
+                
+                <p><span class="set-name">A</span> &times; <span class="set-name">B</span> = { (a,b) | a &#8712; <span class="set-name">A</span> &and; b &#8712; <span class="set-name">B</span> }</p>
+                
+                <p><span class="stacked">&prod;<sup>n</sup><sub>i=1</sub></span><span class="set-name">S<sub>i</sub></span> = <span class="set-name">S<sub>1</sub></span> &times; <span class="set-name">S<sub>2</sub></span> &times; &#8943; &times; <span class="set-name">S<sub>n</sub></span> = { (<span class="element-name">s<sub>1</sub></span>,<span class="element-name">s<sub>2</sub></span>,&#8943;,<span class="element-name">s<sub>n</sub></span>) | <span class="element-name">s<sub>1</sub></span> &#8712; <span class="set-name">S<sub>1</sub></span> &and; <span class="element-name">s<sub>2</sub></span> &#8712; <span class="set-name">S<sub>2</sub></span> &and; &#8943; &and; <span class="element-name">s<sub>n</sub></span> &#8712; <span class="set-name">S<sub>n</sub></span> }</p>
+                
+                <p><span class="stacked">&#8899;<sup>n</sup><sub>i=1</sub></span><span class="set-name">S<sub>i</sub></span> = <span class="set-name">S<sub>1</sub></span> &#8746; <span class="set-name">S<sub>2</sub></span> &#8746; <span class="set-name">S<sub>3</sub></span> &#8746; &#8943; &#8746; <span class="set-name">S<sub>n</sub></span></p>
+
+                <p><span class="stacked">&#8898;<sup>n</sup><sub>i=1</sub></span><span class="set-name">S<sub>i</sub></span> = <span class="set-name">S<sub>1</sub></span> &#8745; <span class="set-name">S<sub>2</sub></span> &#8745; <span class="set-name">S<sub>3</sub></span> &#8745; &#8943; &#8745; <span class="set-name">S<sub>n</sub></span></p>
+                <p><span class="set-name">A</span>&nbsp;&#8710;&nbsp;<span class="set-name">B</span> =  { <span class="element-name">x</span> : (<span class="element-name">x</span> &#8712; <span class="set-name">A</span> + <span class="element-name">x</span> &#8712; <span class="set-name">B</span>) }<br />
+                <span class="set-name">A</span>&nbsp;&#8710;&nbsp;<span class="set-name">B</span> = { <span class="element-name">x</span> : (<span class="element-name">x</span> &#8712; <span class="set-name">A</span> &#8743; <span class="element-name">x</span> &#8713; <span class="set-name">B</span>) &#8744; (<span class="element-name">x</span> &#8713; <span class="set-name">A</span> &#8743; <span class="element-name">x</span> &#8712; <span class="set-name">B</span>) }<br />
+                <span class="set-name">A</span>&nbsp;&#8710;&nbsp;<span class="set-name">B</span> = (<span class="set-name">A</span> &#8745; <span class="set-name">B'</span>) &#8746; (<span class="set-name">A'</span> &#8745; <span class="set-name">B</span>)<br />
+                <span class="set-name">A</span>&nbsp;&#8710;&nbsp;<span class="set-name">B</span> = (<span class="set-name">A</span> - <span class="set-name">B</span>) &#8746; (<span class="set-name">B</span> - <span class="set-name">A</span>)<br />
+                <span class="set-name">A</span>&nbsp;&#8710;&nbsp;<span class="set-name">B</span> = (<span class="set-name">A</span> &#8746; <span class="set-name">B</span>) - (<span class="set-name">B</span> &#8745; <span class="set-name">A</span>)<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;<span class="set-name">A</span> &#8710; <span class="set-name">B</span> = <span class="set-name">B</span> &#8710; <span class="set-name">A</span><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;(<span class="set-name">A</span> &#8710; <span class="set-name">B</span>) &#8710; <span class="set-name">C</span> = <span class="set-name">A</span> &#8710; (<span class="set-name">B</span> &#8710; <span class="set-name">C</span>)<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;<span class="set-name">A</span> &#8745; (<span class="set-name">B</span> &#8710; <span class="set-name">C</span>) = (<span class="set-name">A</span> &#8745; <span class="set-name">B</span>) &#8710; (<span class="set-name">A</span> &#8745; <span class="set-name">C</span>)<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;<span class="set-name">A</span> &#8710; &#8709; = <span class="set-name">A</span><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&#8756;&nbsp;<span class="set-name">A</span> &#8710; <span class="set-name">A</span> = &#8709;
+                </p>
+                
+                <p><span class="set-name">A'</span> = <span class="set-name">A<sup>c</sup></span> = <span class="serif">U</span> - <span class="set-name">A</span> = { <span class="element-name">x</span> | <span class="element-name">x</span> &#8712; <span class="serif">U</span> &#8743; <span class="element-name">x</span> &#8713; <span class="set-name">A</span> }
+                </p>
+                
+                
+                <h2>Theorems on Comparable Sets, given comparable sets <span class="set-name">A</span> and <span class="set-name">B</span></h2>
+                
+                <ol>
+                    <li><span class="set-name">A</span> &#8838; <span class="set-name">B</span> &#8658; <span class="set-name">A</span> &#8745; <span class="set-name">B</span> = <span class="set-name">A</span></li>
+                    <li><span class="set-name">A</span> &#8838; <span class="set-name">B</span> &#8658; <span class="set-name">A</span> &#8746; <span class="set-name">B</span> = <span class="set-name">B</span></li>
+                    <li><span class="set-name">A</span> &#8838; <span class="set-name">B</span> &#8658; <span class="set-name">B'</span> &#8838; <span class="set-name">A'</span></li>
+                    <li><span class="set-name">A</span> &#8838; <span class="set-name">B</span> &#8658; <span class="set-name">A</span> &#8746; (<span class="set-name">B</span> - <span class="set-name">A</span>) = <span class="set-name">B</span></li>
+                    <li><span class="set-name">A</span> &#8838; <span class="set-name">B</span> &#8658; (<span class="set-name">B</span> - <span class="set-name">A</span>) = (<span class="set-name">B</span> &#8745; <span class="set-name">A'</span>)</li>                    
+                </ol>
+                
+                <h2>Rules of Algebra of Sets</h2>
+                <p>Given universe <span class="serif">U</span> and subsets <span class="set-name">A</span>, <span class="set-name">B</span>, and <span class="set-name">C</span>, and rules &#8746;, &#8745;, and <span class="set-name">S'</span>:</p>
+                
+                <ul>
+                    <li>Identity rules:
+                        <ul>
+                            <li><span class="set-name">A</span> &#8746; &#8709; = <span class="set-name">A</span></li>
+                            <li><span class="set-name">A</span> &#8745; <span class="serif">U</span> = <span class="set-name">A</span></li>
+                            <li><span class="set-name">A</span> &#8746; <span class="serif">U</span> = <span class="serif">U</span></li>
+                            <li><span class="set-name">A</span> &#8745; &#8709; = &#8709;</li>
+                        </ul>
+                    </li>
+                    <li>Complement rules:
+                        <ul>
+                            <li><span class="set-name">A</span> &#8746; <span class="set-name">A'</span> = <span class="serif">U</span></li>
+                            <li><span class="set-name">A</span> &#8745; <span class="set-name">A'</span> = &#8709;</li>
+                            <li><span class="serif">U'</span> = &#8709;</li>
+                            <li>&#8709;' = <span class="serif">U</span></li>
+                            <li>(<span class="set-name">A'</span>)' = <span class="set-name">A</span></li>
+                        </ul>
+                    </li>
+                    <li>Idempotent rules:
+                        <ul>
+                            <li><span class="set-name">A</span> &#8746; <span class="set-name">A</span> = <span class="set-name">A</span></li>
+                            <li><span class="set-name">A</span> &#8745; <span class="set-name">A</span> = <span class="set-name">A</span></li>
+                        </ul>
+                    </li>
+                    <li>Commutative rules:
+                        <ul>
+                            <li><span class="set-name">A</span> &#8746; <span class="set-name">B</span> = <span class="set-name">B</span> &#8746; <span class="set-name">A</span></li>
+                            <li><span class="set-name">A</span> &#8745; <span class="set-name">B</span> = <span class="set-name">B</span> &#8745; <span class="set-name">A</span></li>
+                        </ul>
+                    </li>
+                    <li>Associative rules:
+                        <ul>
+                            <li>(<span class="set-name">A</span> &#8746; <span class="set-name">B</span>) &#8746; <span class="set-name">C</span> = <span class="set-name">A</span> &#8746; (<span class="set-name">B</span> &#8746; <span class="set-name">C</span>)</li>
+                            <li>(<span class="set-name">A</span> &#8745; <span class="set-name">B</span>) &#8745; <span class="set-name">C</span> = <span class="set-name">A</span> &#8745; (<span class="set-name">B</span> &#8745; <span class="set-name">C</span>)</li>
+                        </ul>
+                    </li>
+                    <li>Distributive rules:
+                        <ul>
+                            <li><span class="set-name">A</span> &#8746; (<span class="set-name">B</span> &#8745; <span class="set-name">C</span>) = (<span class="set-name">A</span> &#8746; <span class="set-name">B</span>) &#8745; (<span class="set-name">A</span> &#8746; <span class="set-name">C</span>)</li>
+                            <li><span class="set-name">A</span> &#8745; (<span class="set-name">B</span> &#8746; <span class="set-name">C</span>) = (<span class="set-name">A</span> &#8745; <span class="set-name">B</span>) &#8746; (<span class="set-name">A</span> &#8745; <span class="set-name">C</span>)</li>
+                        </ul>
+                    </li>
+                    <li>DeMorgan rules:
+                        <ul>
+                            <li>(<span class="set-name">A</span> &#8746; <span class="set-name">B</span>)' = <span class="set-name">A'</span> &#8745; <span class="set-name">B'</span></li>
+                            <li>(<span class="set-name">A</span> &#8745; <span class="set-name">B</span>)' = <span class="set-name">A'</span> &#8746; <span class="set-name">B'</span></li>
+                        </ul>
+                    </li>
+                    <li>Sub- and Super-sets under these rules:
+                        <ul>
+                            <li><span class="set-name">A</span> &#8838; <span class="set-name">B</span> &#8744; <span class="set-name">B</span> &#8839; <span class="set-name">A</span> &#8658; <span class="set-name">A</span> &#8745; <span class="set-name">B</span> = <span class="set-name">A</span></li>
+                        </ul>
+                    </li>
+                    <li>Proper sub and super sets under these rules:
+                        <ul>
+                            <li><span class="set-name">A</span> &#8834; <span class="set-name">B</span> &#8744; <span class="set-name">B</span> &#8835; <span class="set-name">A</span> &#8658; <span class="set-name">A</span> &#8745; <span class="set-name">B</span> = <span class="set-name">A</span> &#8743; <span class="set-name">B</span> - <span class="set-name">A</span> = &#8709;</li>
+                        </ul>
+                    </li>
+                </ul>
+                </div>
+                <div id="tab-sets-functions">
+                <h2>Functions</h2>
+                
+                <p>&fnof;<sub>1</sub> = &fnof;<sub>2</sub> &#8660; <span class="set-name">I<sub>&fnof;<sub>1</sub></sub></span> = <span class="set-name">I<sub>&fnof;<sub>2</sub></sub></span> &and; <sup>&#8704;</sup><span class="element-name">i</span> &#8712; <span class="set-name">I</span>: &fnof;<sub>1</sub>(<span class="element-name">i</span>) = &fnof;<sub>2</sub>(<span class="element-name">i</span>)
+                
+                </p>
+                <p>&fnof;(<span class="set-name">I</span>) &#8838; <span class="set-name">O</span></p>
+                
+                <p>(&fnof;<sub>n</sub>&#8728;&#8943;&#8728;&fnof;<sub>2</sub>&#8728;&fnof;<sub>1</sub>) = &fnof;<sub>n</sub>(&#8943;&fnof;<sub>2</sub>(&fnof;<sub>1</sub>))&#8943;)</p>
+                
+                <p>&fnof;* &#8834; <span class="set-name">I</span> &times; <span class="set-name">O</span></p>
+                
+                </div>
+                <div id="tab-sets-numeric-sets">
+                <h2>Properties of the Numeric Sets</h2>
+                <ul>
+                    <li>&#8477;, real numbers:
+                        <ul>
+                            <li>Loosely defined as the set of numbers with a 1:1 relationship with evenly spaced points on a straight line.</li>
+                            <li>Closed under addition, subtraction, multiplication, and division.</li>
+                        </ul>
+                    </li>
+                    <li>&#8474;, rational numbers:
+                        <ul>
+                            <li>&#8474; = { <span class="element-name">x</span> | <span class="element-name">x</span> = a/b &#8743; a,b &#8712; &#8484; &#8743; b &#8800; 0 }</li>
+                            <li>All numbers that can be expressed as the ratio of two integers, where the divisor is nonzero.</li>
+                            <li>All rational numbers have a periodic decimal expansion.</li>
+                            <li>Closed under addition, subtraction, multiplication, and nonzero division.</li>
+                        </ul>
+                    </li>
+                    <li>&#8474;', irrational numbers:
+                        <ul>
+                            <li>Numbers with non-periodic decimal expansions.</li>
+                        </ul>
+                    </li>
+                    <li>&#8469;, natural numbers:
+                        <ul>
+                            <li>Closed under addition and multiplication.</li>
+                        </ul>
+                    </li>
+                    <li>&#8484;, integer numbers:
+                        <ul>
+                            <li>Union of &#8469; and whole negative numbers.</li>
+                            <li>Closed under addition, multiplication, and subtraction.</li>
+                        </ul>
+                    </li>
+                    <li>&#8450;, complex numbers:
+                        <ul>
+                            <li>&#8450; &#8834; &#8477;</li>
+                            <li>Complex numbers are those in which all non-constant polynomials have real roots.</li>
+                            <li>&#8450; = { <span class="element-name">x</span> | <span class="element-name">x</span> = a + bi &#8743; a,b &#8712; &#8477; &#8743; i = &#8730;-1 }</li>
+                        </ul>
+                    </li>
+                    <li>&Aopf;, algebraic numbers:
+                        <ul>
+                            <li>Any real number that is the solution of a polynomial with integer coefficients of the form <br /><br />&nbsp;&nbsp;&nbsp;&nbsp;c<sub>n</sub>x<sup>n</sup> + c<sub>n-1</sub>x<sup>n-1</sup> + c<sub>n-2</sub>x<sup>n-2</sup> + &#8943; + c<sub>2</sub>x<sup>2</sup> + c<sub>1</sub>x<sup>1</sup> + c<sub>0</sub>x<sup>0</sup> = 0<br /><br />
+                            for n > 0 where c<sub>i</sub> are integer coefficients and c<sub>n</sub> &#8800; 0</li>
+                        </ul>
+                    </li>
+                    <li>&Topf;, transcendental numbers:
+                        <ul>
+                            <li>Any irrational number that is not the solution of any polynomial equation with integer coefficients.</li>
+                            <li>Examples are &pi;, e, sin(&pi;), cos(2&pi;), tan(&pi;/4)</li>
+                            <li>&#8477; = &Aopf; &#8746; &Topf;</li>
+                        </ul>
+                    </li>
+                </ul>
+                </div>
+                
+                <div id="tab-sets-inequalities">
+                <h2>Properties of Ordering Relations / Inequalities</h2>
+                <p>Given real numbers a and b, their ordering relations may be:</p>
+                <ul>
+                    <li>a = b</li>
+                    <li>a &gt; b</li>
+                    <li>a &lt; b</li>
+                    <li>a &ge; b</li>
+                    <li>a &le; b</li>
+                </ul>
+                
+                <p>Inequalities of real numbers have these properties:</p>
+                <table>
+                    <tr>
+                        <th>Reflexivitiy</th>
+                        <td>a &le; a</td>                        
+                    </tr>
+                    <tr>
+                        <th>Trichotomy</th>
+                        <td>a &lt; b XOR a = b XOR a &gt; b</td>
+                    </tr>
+                    <tr>
+                        <th>Antisymmetry</th>
+                        <td>a &le; b &and; b &le; a &#8658; a = b</td>
+                    </tr>
+                    <tr>
+                        <th>Transitivity</th>
+                        <td>a &le; b &and; b &le; c &#8658; a &le; c</td>
+                    </tr>
+                    <tr>
+                        <th>Addition/Subtraction</th>
+                        <td>
+                            a &le; b &#8658; a + c &le; b + c<br />
+                            a &le; b &#8658; a - c &le; b - c<br />
+                            a &ge; b &#8658; a + c &ge; b + c<br />
+                            a &ge; b &#8658; a - c &ge; b - c
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Multiplication/Division</th>
+                        <td>
+                            a &le; b &and; c &ge; 0 &#8658; ac &le; bc<br>
+                            a &ge; b &and; c &ge; 0 &#8658; ac &ge; bc<br>
+                            a &le; b &and; c &le; 0 &#8658; ac &ge; bc<br>
+                            a &ge; b &and; c &le; 0 &#8658; ac &le; bc<br><br>
+                            a &le; b &and; c &ge; 0 &#8658; a/c &le; b/c<br>
+                            a &ge; b &and; c &ge; 0 &#8658; a/c &ge; b/c<br>
+                            a &le; b &and; c &le; 0 &#8658; a/c &ge; b/c<br>
+                            a &ge; b &and; c &le; 0 &#8658; a/c &le; b/c
+                        </td>
+                    </tr>
+                </table>
+                <br />
+                <p>Given a,b &#8712; &#8477; &and; a &le; b, the following intervals can be defined:</p>
+                <table>
+                    <tr>
+                        <th>bounded:</th>
+                        <td>
+                        I<sub>1</sub> = (a,b) = { <span class="element-name">x</span> | a &lt; <span class="element-name">x</span> &lt; b }<br />
+                        I<sub>2</sub> = [a,b] = { <span class="element-name">x</span> | a &le; <span class="element-name">x</span> &le; b }<br />
+                        I<sub>3</sub> = (a,b] = { <span class="element-name">x</span> | a &lt; <span class="element-name">x</span> &le; b }<br />
+                        I<sub>4</sub> = [a,b) = { <span class="element-name">x</span> | a &le; <span class="element-name">x</span> &lt; b }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>unbounded:</th>
+                        <td>
+                        I<sub>5</sub> = (-&infin;,b) = { <span class="element-name">x</span> | <span class="element-name">x</span> &lt; b }<br />
+                        I<sub>6</sub> = [-&infin;,b] = { <span class="element-name">x</span> | <span class="element-name">x</span> &le; b }<br />
+                        I<sub>7</sub> = (a,&infin;] = { <span class="element-name">x</span> | a &lt; <span class="element-name">x</span> }<br />
+                        I<sub>8</sub> = [a,&infin;) = { <span class="element-name">x</span> | a &le; <span class="element-name">x</span> }<br />                        
+                        I<sub>9</sub> = (-&infin;,&infin;) = { <span class="element-name">x</span> | <span class="element-name">x</span> &#8712; &#8477; }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>degenerate:</th>
+                        <td>
+                        I<sub>10</sub> = { a } (singleton set)<br />
+                        I<sub>11</sub> = &#8709; (zero length interval)
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <p>For the family of all real number intervals, &#120073;, given two intervals I<sub>1</sub> and I<sub>2</sub>:<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;I<sub>1</sub>,I<sub>2</sub> &#8712; &#120073; &#8658; I<sub>1</sub> &#8745; I<sub>2</sub> &#8712; &#120073;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;I<sub>1</sub>,I<sub>2</sub> &#8712; &#120073; &and; I<sub>1</sub> &#8745; I<sub>2</sub> &#8800; &#8709; &#8658; I<sub>1</sub> &#8746; I<sub>2</sub> &#8712; &#120073;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;I<sub>1</sub>,I<sub>2</sub> &#8712; &#120073; &and; I<sub>1</sub> &#8836; I<sub>2</sub> &and; I<sub>2</sub> &#8836; I<sub>1</sub> &#8658; (I<sub>1</sub> - I<sub>2</sub>) &#8712; &#120073;<br />
+                </p>                
+                
+                <p>Given two closed, real number intervals A = [a<sub>L</sub>,a<sub>U</sub>] and B = [b<sub>L</sub>,b<sub>U</sub>], arithmetic operations are:<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;C = [a<sub>L</sub>,a<sub>U</sub>] + [b<sub>L</sub>,b<sub>U</sub>] = [a<sub>L</sub> + b<sub>L</sub>, a<sub>U</sub> + b<sub>U</sub>]<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;C = [a<sub>L</sub>,a<sub>U</sub>] - [b<sub>L</sub>,b<sub>U</sub>] = [a<sub>L</sub> - b<sub>L</sub>, a<sub>U</sub> - b<sub>U</sub>]<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;C = AB = [min(a<sub>L</sub>*b<sub>L</sub>, a<sub>L</sub>*b<sub>U</sub>, a<sub>U</sub>*b<sub>L</sub>, a<sub>U</sub>*b<sub>U</sub>), max(a<sub>L</sub>*b<sub>L</sub>, a<sub>L</sub>*b<sub>U</sub>, a<sub>U</sub>*b<sub>L</sub>, a<sub>U</sub>*b<sub>U</sub>)]<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;C = A/B = [min(a<sub>L</sub>/b<sub>L</sub>, a<sub>L</sub>/b<sub>U</sub>, a<sub>U</sub>/b<sub>L</sub>, a<sub>U</sub>/b<sub>U</sub>), max(a<sub>L</sub>/b<sub>L</sub>, a<sub>L</sub>/b<sub>U</sub>, a<sub>U</sub>/b<sub>L</sub>, a<sub>U</sub>/b<sub>U</sub>)]
+                </p>
+                </div>
+            </section>
+            </div><!-- /tabs -->            
+            <footer>&nbsp;</footer>
+        </article>
+        </div><!-- /container -->
+    </body>
+</html>

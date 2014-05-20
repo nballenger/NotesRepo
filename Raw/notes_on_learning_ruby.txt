@@ -1,0 +1,986 @@
+Notes on Learning Ruby
+
+Chapter 1: Ruby Basics
+
+* Interpreted, object oriented
+* hashbang line is #!/usr/bin/env ruby
+
+Chapter 2: A Quick Tour of Ruby
+
+2.1 Ruby is Object Oriented
+    2.1.1 The Object Class and the Kernel Module
+        * Object is the ruby base class
+        * Kernel is a module, can be mixed into a class or included
+        * Object includes Kernel
+        
+2.2 Ruby's Reserved Words
+    
+    BEGIN       block of code to run first
+    END         block of code to run last
+    alias       create alias for existing method, operator or global
+    and         logical operator, low precedence
+    begin       starts a code block or group of statements, closes w 'end'
+    break       terminates a while or until loop or method in a block
+    case       compares an expression with a matching when clause, closes w 'end'
+    class       defines a class; closes with 'end'
+    def         defines a method, closes with 'end'
+    defined?    operator for testing existence
+    do          begins a block, executes; closes with 'end'
+    else        part of if/elsif/unless/when conditional
+    elsif       part of if/elsif/unless/when conditional
+    end         ends a code block
+    ensure      always executes at block termination; use after last 'rescue'
+    false       boolean, instance of FalseClass
+    for         starts a for loop, used with 'in'
+    if          part of if/elsif/unless/when conditional
+    in          used with 'for'
+    module      defines a module, closes with 'end'
+    next        jumps before a loop's conditional
+    nil         empty var, instance of NilClass
+    not         logical operator
+    or          logical operator
+    redo        jumps after a loop's conditional
+    rescue      evaluates an expression after an exception is raised; used before 'ensure'
+    retry       repeats a method call outside of 'rescue'
+    return      returns a value from a method or block
+    self        current object
+    super       calls method of same name in superclass
+    then        continuation of if, unless, and when
+    true        boolean, instance of TrueClass
+    undef       makes a method in current class undefined
+    unless      executes code block if conditional statement is false
+    until       executes code block while conditional statement is false
+    when        starts a clause under case
+    while       executes code when the conditional statement is true
+    yield       executes the block passed to the method
+    __FILE__    name of current source file
+    __LINE__    Number of current line in current source file
+    
+2.3 Comments
+
+    # Single Line
+    =begin
+    Multi-line
+    =end
+    
+2.4 Variables
+    * Dynamically typed
+    * kind_of method will return assumed type:
+    
+        x = 10
+        x.kind_of? Integer  # returns true
+        x.class             # => Fixnum, subclass of Integer
+        
+    2.4.1 Local Variables
+        * Block scope
+        * Local variables should be underscore prefaced
+        
+    2.4.2 Instance Variables
+        * Referenced via an instance of a class, belongs to a given object
+        * Prefaced with @:
+        
+            @hello = hello
+            
+    2.4.3 Class Variables
+        * Shared among all instance of a class
+        * Prefaced with @@:
+        
+            @@times = 0
+            
+    2.4.4 Global variables
+        * Available anywhere in a program
+        * Prefaced with $:
+        
+            $amount = "0.00"
+            
+    2.4.5 Constants
+        * Name is capitalized or all uppercase:
+            
+            NAME = "Jack London"
+            Age  = "32"
+            
+    2.4.6 Parallel Assignment
+        * Separate variables and values with commas:
+        
+            x, y, z = 100, 200, 500
+            
+2.5 Strings
+    * Quoted with double or single
+    * Can be treated like an array with []:
+    
+        thing = "I am a pipe."
+        thing[2..5]   # => 'am a'
+        
+2.6 Numbers and Operators
+    * All numbers are instances of classes
+    * Assignment operators are standard
+    * Arithmetic operators are standard, with ** for exponentiation
+    * Math module has lots of math functions
+    
+2.7 Conditional Statements
+    * Example:
+    
+        value = 0
+        if value.zero? then
+            puts "value is zero."
+        end
+        
+2.8 Arrays and Hashes
+    * Array assignment:
+    
+        x = ["a", "b", "c"]
+        
+    * Access:
+    
+        x[0]    # => "a"
+        
+    * Hash assignment:
+    
+        y = { "a" => 1, "b" => 2 }
+        
+    * Access:
+    
+        y["a"]  # => 1
+        
+2.9 Methods
+    * Definition:
+    
+        def hello
+            puts "Hello!"
+        end
+        
+    * Calling:
+    
+        hello   # => "Hello!"
+        
+    * Undefining:
+    
+        undef hello
+        
+    * With arguments:
+    
+        def repeat( word, times )
+            puts word * times
+        end
+        
+    2.9.1 Return Values
+        * Last value in a method is returned automatically
+        * Otherwise will use explicit return value
+        
+    2.9.2 Method Name Conventions
+        * If a method ends with a question mark, method returns a boolean:
+        
+            x.eql? y
+            
+        * If it ends with an exclamation mark, the method makes changes in place
+        
+            mystring.delete!("substring")
+            
+        * If it ends in an equals sign, it's a setter:
+        
+            class Name
+                def family_name=(family)
+                    @family_name = family
+                end
+                def given_name=(given)
+                    @given_name = given
+                end
+            end
+            
+    2.9.3 Default Arguments
+        * Example:
+        
+            def repeat(word="Hello", times=3)
+                puts word * times
+            end
+            
+    2.9.4 Variable Arguments
+        * Prefix an arg with a splat (*) to pass in a variable number of args:
+        
+            def num_args( *args )
+                length = args.size
+                label = length == 1 ? " argument" : " arguments"
+                num = length.to_s + label + " ( " + args.inspect + " )"
+                num
+            end
+            
+        * Variable list of args always comes after set args
+        
+    2.9.5 Aliasing Methods
+        * Creates a method reference, essentially
+        
+            def greet
+                puts "Hello!"
+            end
+            
+            alias hi greet
+            
+2.10 Blocks
+    * Certain types of code blocks are 'anonymous functions'
+    * Example:
+    
+        pacific = ["WA", "OR", "CA"]
+        
+        pacific.each do |element|    # temp variable element
+            puts element
+        end
+        
+    * Alternate syntax:
+    
+        pacific.each { |e| puts e }
+        
+    2.10.1 The yield Statement
+        * Executes a code block associated with the method
+        
+            def gimme
+                if block_given?
+                    yield
+                end
+                else
+                    puts "I'm blockless!"
+                end
+            end
+            
+            gimme { print "say hi" }  # => prints 'say hi'
+            
+        * Control flow goes through supplied block, then to statement immediately following yield
+        * Blocks in this instance are essentially closures
+        
+    2.10.2 Procs
+        * Procedures (procs) can be stored as objects, with their context
+        * Couple ways to do this:
+        
+            count = Proc.new { [1,2,3,4,5].each do |i| print i end; puts }
+            your_proc = lambda { puts "Lurch: 'You rang?'" }
+            my_proc = proc { puts "Morticia: 'Who was at the door, Lurch?'" }
+            
+            count.call
+            your_proc.call
+            my_proc.call
+            
+        * You can get a method to convert an associated block to a proc on the fly,
+            by creating an argument to the method proceeded by an ampersand:
+            
+                def return_block
+                    yield
+                end
+                
+                def return_proc( &proc )
+                    yield
+                end
+                
+                return_block { puts "Got block!" }
+                return_proc { puts "Got block, convert to proc!" }
+                
+2.11 Symbols
+
+    * Symbols are prefaced with a colon, and are placeholders for identifiers and strings
+    * You create them by calling to_sym or intern on a string, or assigning a symbol to a symbol
+    * Converting a string to a symbol and back:
+    
+        name = "Jack"
+        name.to_sym # => :Jack
+        :Jack.id2name # => "Jack"
+        name == :Jack.id2name # => true
+        
+    * Once a symbol is created, only one copy of the symbol is held in a single memory address
+    
+2.12 Exception Handling
+
+2.13 Ruby Documentation
+
+    * RDoc extracts documentation from Ruby source files
+    * To view it, use the ri executable, like 'ri Kernel.print'
+    
+    
+Chapter 3: Conditional Love
+
+3.1 The if Statement
+    * Forms:
+    
+        if 1 == 1 then print "True!"
+        
+        if x == 256
+            puts "x equals 256"
+        end
+        
+        puts "x equals 256" if x == 256
+        
+        if x == 256: puts "x equals 256" end
+        
+    * Logical Operators:
+        
+        && || ! and or not
+    
+    3.1.1 Using else and elsif
+    
+        * Example:
+        
+            if lang == :en
+                print "dog"
+            elsif lang == :es
+                print "perro"
+            elsif lang == :fr
+                print "chien"
+            elsif lang == :de
+                print "Hund"
+            else
+                puts "No language set; default = 'dog'."
+            end
+
+        * Form with colon instead of line break:
+                    
+            if lang == :en: print "dog"
+            elsif lang == :es: print "perro"
+            elsif lang == :fr: print "chien"
+            elsif lang == :de: print "Hund"
+            else puts "No language set; default = 'dog'."
+            end
+            
+    3.1.2 The Ternary Operator
+        * Example:
+        
+            label = length == 1 ? " argument" : " arguments"
+            
+3.2 The case Statement
+    * Example:
+    
+        dog = case lang
+            when :en "dog"
+            when :es "perro"
+            when :fr "chien"
+            when :de "Hund"
+            else     "dog"
+        end
+        
+    * Example with ranges:
+    
+        scale = 8
+        case scale
+            when    0: puts "lowest"
+            when 1..3: puts "med-low"
+            when 4..5: puts "medium"
+            when 6..7: puts "med-high"
+            when 8..9: puts "high"
+            when   10: puts "off scale"
+        end
+        
+3.3 The while Loop
+    * Example:
+    
+        i = 0
+        breeds = ["quarter", "arabian", "appalosa", "paint"]
+        put breeds.size
+        temp = []
+        
+        while i < breeds.size do
+            temp << breeds[i].capitalize   # << is append operator
+            i += 1
+        end
+        
+    * do while type syntax:
+    
+        temp = 98.3
+        
+        begin
+            print "Your temp is "+temp.to_s+" F"
+            puts "I think you're ok"
+            temp += 0.1
+        end while temp < 98.6
+        
+        puts "Your temp is "+temp.to_s+" F. Are you ok?"
+        
+    * break statement:
+    
+        while i < breeds.size
+            temp << breeds[i].capitalize
+            break if temp[i] == "Arabian"
+            i += 1
+        end
+        p => temp
+        
+    3.3.2 unless and until
+        * Example:
+        
+            unless lang == "de"
+                dog = "dog"
+            else
+                dog = "Hund"
+            end
+            
+        * Example:
+        
+            weight = 150
+            until weight == 200 do          # basic form
+                puts "Weight: "+weight.to_s
+                weight += 5
+            end
+            
+            begin                           # do while form
+                puts "Weight: "+weight.to_s
+                weight += 5
+            end until weight == 200
+            
+            puts age += 1 until age > 28   # statement modifier form
+    
+3.4 The loop Method
+    * Example:
+    
+        loop do
+            print "Type something: "
+            line = gets
+            break if line =~ /q|Q/
+            puts line
+        end
+        
+3.5 The for loop
+    * Example:
+    
+        for i in 1..5 do
+            print i, " "
+        end
+        
+        for i in 1..5
+            print i, " "
+        end
+        
+        for i in 1..5 do print i, " " end
+        
+    * Nested example:
+        
+        for i in 1..12
+            for j in 1..12
+                print i.to_s + " x " + j.to_s + " = ", j*i, "\n"
+            end
+        end
+        
+    3.5.1 The times Method
+        * Example:
+        
+            10.times { |i | print i, " " }  # => 0 1 2 3 4 5 6 7 8 9
+            
+    3.5.2 The upto Method
+        * Example:
+        
+            1.upto(10) { |i| print i, " " } # => 0 1 2 3 4 5 6 7 8 9
+            
+    3.5.3 The downto Method
+        * Example:
+        
+            5.downto(1) { |i| print i, " " } # => 5 4 3 2 1
+            
+3.6 Execution Before or After a program
+    * Example:
+    
+        BEGIN { puts "Date and time: " + Time.now.to_s }
+        
+        def bmi(weight, height)
+            703.0 * (weight.to_f / (height.to_f**2))
+        end
+        
+        my_bmi = bmi(196,73)
+        
+        puts "Your BMI is: " + x = sprintf("%0.2f", my_bmi)
+        
+        END { puts "blah blah blah" }
+        
+
+Chapter 4: Strings
+    
+4.1 Creating Strings
+    * Examples:
+    
+        title = String.new   # => ""
+        title.empty?         # => true
+        title.length         # => 0
+        title.size           # => 0
+        
+        title = String.new("Some stuff")
+        
+        sad_love_story = "Romeo and Juliet"
+        
+    * Double quotes interpret escaped characters, single quotes preserve them
+    
+    4.1.1 General Delimited Strings
+        * Preceded by %, followed by matched delimiter characters like !, { or [
+        * Example:
+        
+            comedy  = %!As You Like It!
+            history = %[Henry V]
+            tragedy = %(Julius Caesar)
+            
+        * %Q is double quoted string, %q is single quoted, %x is back tick delimited for command output
+        
+    4.1.2 Here Documents
+        * Example:
+        
+            sonnet = <<29
+            Blah blah blah
+            blah blah blah
+            blah blah blah
+            29
+            
+        * Delimit the delimiter:
+        
+            sonnet = <<hamlet   # same as double quoted string
+            sonnet = <<"hamlet" # same as double quoted string
+            sonnet = <<'ghost'  # same as single quoted string
+            my_dir = <<`dir`    # same as back ticks
+            ind    = <<-hello   # for indentation
+            
+4.2 Concatenating Strings
+    * Adjacent strings will concatenate
+    * + is the explicit concatenation operator
+    * << will add a second string to a previous one
+    * You can chain << to combine multiple strings
+    * String objects have a concat method, like "blah".concat " blah"
+    * Alternately:
+    
+        h = "Hello, "
+        n = "Name"
+        h.concat(m)
+        
+    * Strings can be made immutable with the freeze method:
+    
+        greet = "Hi there."
+        greet.freeze
+        greet.concat("!")  # => TypeError: can't modify frozen string
+        greet.frozen?      # => true
+        
+4.3 Accessing Strings
+    * [] is an alias for the slice method
+    * slice! performs in place changes, is a counterpart to []=
+    * This stuff is odd:
+    
+        line = "A horse! A horse! My kingdom for a horse!"
+        cite = "Act V, Scene IV"
+        speaker = "King Richard III"
+        
+        speaker['King']     # => "King" if found, nil if not
+        line[7]             # => 33, the character code
+        line[7].chr         # => '!', the character
+        line[18,23]         # => "my kingdom for a horse!", offset 18, length 23
+        
+        cite[0..4]          # => "Act V", two dots means include last char
+        cite[0...4]         # => "Act ", three dots means exclude last char
+        line[/horse!$/]     # => "horse!", or nil if not found
+        
+        line.index("k")     # => 21, first index of character
+        
+        line[line.index("k")].chr    # => "k"
+        
+4.4 Comparing Strings
+    * == is test for comparing two String objects
+    * eql? returns true if two strings are equal in length and content
+    * <=> compares character code values of strings, returns -1, 0 or 1
+    * casecmp is equivalent to <=> but is case insensitive
+    
+4.5 Manipulating Strings
+    * The asterisk operator, *, repeats a string by an integer, like perl's x
+    
+    4.5.1 Inserting a string into a string
+        * Example:
+        
+            "Be carful.".insert 6, "e"   # => "Be careful."
+            
+    4.5.2 Changing All or Part of a String
+        * Example:
+        
+            mystring[" some substring"]= "replacement text"
+            mystring[15]= "replacement text"    # inserts at that position
+            
+    4.5.3 The chomp and chop methods
+        * chop or chop! take the last character off a string
+        * chomp or chomp! take the record separator off a string
+        
+    4.5.4 The delete Method
+        * delete or delete! removes characters from a string: "blah blah".delete('b')  # => 'lah lah'
+        * Uses the intersection of its arguments to decide which part to remove:
+        
+            "That's all folks".delete "abcdefghijklmnopqrstuvwxyz", "^ha"  # => "haa"
+            
+        * Caret negates an argument's contents
+        
+    4.5.5 Substitute the Substring
+        * gsub or gsub! replaces a substring with a replacement string:
+        
+            "That's alll folks".gsub "alll", "all"
+            
+        * replace method replaces the entire string with another one, 
+            without creating a new object
+            
+    4.5.6 Turn It Around
+        * reverse method returns reversed string, reverse! reverses in place
+        
+    4.5.7 From a String to An Array
+        * split method with no arg returns single element array
+        * split with a regex arg splits normally
+        
+4.6 Case Conversion
+    * capitalize or capitalize! is equivalent to perl's ucfirst
+    
+    4.6.1 Iterating over a string
+        * Using newlines as a default separator for each:
+        
+            "new\nopen\nclose\nprint".each { |item| puts item.capitalize }
+            
+        * Using each_byte to iterate by byte:
+        
+            "matz".each_byte { |b| print b, "/" }
+            
+    4.6.2 downcase, upcase, and swapcase
+        * downcase and downcase! are equivalent to lower() in perl
+        * upcase and upcase! are equivalent to upper()
+        * swapcase and swapcase! invert case
+        
+4.7 Managing Whitespace
+    * length and size methods return the number of characters in a string
+    * ljust and rjust take integer args, and are like lpad and rpad
+    * center method takes an integer arg, pads both sides
+    * all three take an optional second arg to define the padding string
+    * lstrip, rstrip, lstrip!, rstrip!, strip and strip! all remove whitespace
+    
+4.8 Incrementing Strings
+    * next, next!, succ and succ! increments the rightmost character of a string
+    
+4.9 Converting Strings
+    * to_f goes to float
+    * to_i goes to int
+    * intern and to_sym goes to symbol
+    * to_s goes to string
+    
+4.10 Regular Expressions
+    * Methods:
+        string.grep(/pattern/)
+        string.grep { block }
+        
+    * Can also use =~ and !~
+    * Both return MatchData objects
+    
+
+Chapter 5: Math
+    * Numeric classes:
+        Numeric
+            Integer
+                Fixnum
+                Bignum
+                Rational
+                Complex
+            Float            
+            Matrix
+            
+    * Modules: Math, Precision
+    
+5.1 Class Hierarchy and Included Modules
+
+5.2 Converting Numbers
+    * The Integer() method will convert a non int to an int object
+    * Float() converts to float
+    
+5.3 Basic Math Operations
+    * Arithmetic operators: + - * / ** %
+    * Unary operators: + -
+    * Named methods: div, modulo, divmod, quo, remainder
+    
+    5.3.1 Division and Truncation
+        * Integer division results in an integer answer
+        * Including at least one float returns a float
+        
+    5.3.2 Equality, Less Than, or Greater Than
+        * Equality tests: ==, eql?, <=>
+        
+    5.3.3 Abbreviated Assignment Operators
+        * Assignment operators: =, +=, -=, *=, /=, **=, %=
+        
+    5.3.4 Operators
+        ::              Scope resolution
+        [], []=         Reference, set
+        **              Exponentiation
+        + - ! ~         Unary ops, negation, complement
+        * / %           Multiplication, division, modulo
+        + -             Addition, subtraction
+        << >>           Shift left, shift right
+        &               bitwise and
+        | ^             Bitwise or, bitwise xor
+        > >= < <=       Gt, lt, gte, lte
+        <=> ==          Equality
+        ===             In range test
+        != =~ !~        Inequality, regexp, non-regexp
+        &&              logical and
+        ||              logical or
+        .. ...          range inclusive, range exclusive
+        ?:              ternary
+        = += -= *= /=   assignment
+        %= **= <<= 
+        >>= &= |= ^=
+        &&= ||=
+        not             logical negation
+        and or          logical composition
+        defined?        special operator
+        
+5.4 Ranges
+    * .. is range inclusive
+    * ... is range exclusive
+    * === is in range test
+    
+        (1..25) === 14 # => true
+        (1..25) === 26 # => false
+        
+    * to_a() will render to an array:
+    
+        (1..9).to_a  # => [1,2,3,4,5,6,7,8,9]
+        
+    * You can also create a Range object:
+    
+        digits = Range.new(1,9)
+        digits.to_a
+        
+5.5 Inquiring about Numbers
+    * Methods:
+        zero?
+        nonzero?
+        integer?
+        finite?
+        infinite?
+        nan?
+        
+    5.5.1 Iterating through blocks
+        * Examples:
+        
+            10.times { |i| print i, " " }
+            100.downto(1) { |c| print c, " "; sleep 1 }
+            1.upto(100) { |c| print c, " "; sleep 1 }
+            
+5.6 More Math Methods
+    * Methods:
+        abs
+        ceil
+        floor
+        round
+        next
+        chr
+        
+5.7 Math Functions
+    * Constants:
+    
+        Math.constants # => ["E", "PI"]
+        
+    * Functions:
+    
+        Math.acos, Math.acos!           Arc cosine
+        Math.acosh, Math.acosh!         Hyperbolic arc cosine
+        Math.asin, Math.asin!           Arc sine
+        Math.asinh, Math.asinh!         Hyperbolic arc sine
+        Math.atan, Math.atan!           Arc tangent with x arg
+        Math.atan2, Math.atan2!         Arc tangent with x and y args
+        Math.atanh, Math.atanh!         Hyperbolic arc tangent
+        Math.cos, Math.cos!             Cosine
+        Math.cosh, Math.cosh!           Hyperbolic cosine
+        Math.sin, Math.sin!             Sine
+        Math.erf                        Error function
+        Math.erfc                       Complementary error function
+        Math.exp, Math.exp!             Base x of Euler
+        Math.frexp                      Normalized fraction and exponent
+        Math.hypot                      Hypotenuse
+        Math.ldexp                      Floating point value corresponding to a given mantisaa and exponent
+        Math.sinh, Math.sinh!           Hyperbolic sine
+        Math.sqrt, Math.sqrt!           Square root
+        Math.tan, Math.tan!             Tangent
+        Math.tanh, Math.tanh!           Hyperbolic tangent
+        
+5.8 Rational Numbers
+    * Can be expressed as a fraction of integers
+    * Uses the Rational class
+    * You must require the class, and should require the mathn library
+    * Example:
+    
+        require 'rational'
+        require 'mathn'
+        
+        rat = Rational(25/100)
+        rat + Rational(1/4)
+        rat + 1/4
+        
+        rat - Rational(1/8)
+        rat - 1/8
+        
+        rat * 3
+        rat / 2
+        
+        rat**2
+        
+        rat == 1/8
+        rat == 1/4
+        rat <=> 1/4
+        rat <=> 1/8
+        rat <=> 1/2
+        
+        rat.inspect   # => "1/4"
+        rat.to_s      
+        rat.to_f
+        
+5.9 Prime Numbers
+    * There's a prime class, Prime, that lets you generate primes starting at 2
+    * Has four methods: new, next/succ, each
+    * Generating primes:
+    
+        require 'mathn'
+        
+        prime_number = Prime.new
+        prime_number.next
+        
+
+Chapter 6: Arrays
+    * Built in class
+    * Can contain any type of object
+    * 0 indexed, ordered collection
+    * Will increase in size as necessary
+    
+6.1 Creating Arrays
+    * Examples:
+    
+        months = Array.new
+        months.empty?               # => true
+        months = Array.new(12)      
+        months.size                 # => 12
+        months.inspect              # => [nil, nil, ..., nil]
+        month = Array.new(12, "month")   # => ["month",...,"month"]
+        
+    6.1.1 Clear the deck
+        * clear method empties the array
+        
+    6.1.2 Creating an array with a block
+        * Example:
+        
+            num = Array.new(10) { |e| e = e * 2 }
+            
+    6.1.3 There's an Easier Way
+        * Example:
+        
+            month_abbrv = Array.[] ("jan", "feb", "mar")
+            
+        * Or this:
+        
+            month_abbrv = Array["jan", "feb", "mar"]
+            
+        * Or this:
+        
+            month_abbrv = ["jan", "feb", "mar"]
+            
+6.2 Accessing Elements
+    * use [index], like every other damn language
+    * negative indexes count from the last element
+    * first and last are methods that return elements
+    * myarray.index "mystring" returns an index value for first match
+    * rindex returns last match
+    * slicing is:
+    
+        myarray[offset, index]
+        myarray[start..stop]
+        
+6.3 Concatenation
+    * Combine arrays with +
+    * Append to an array with <<
+    
+6.4 Operations
+    * Basic set operations: Intersection with &, Difference with -, Union with |
+    * Examples:
+    
+        tue = ["shop", "make pie", "sleep"]
+        wed = ["shop", "make pie", "read", "sleep"]
+        tue & wed   # => ["shop", "make pie", "sleep"]
+        wed - tue   # => ["read"]
+        tue | wed   # => ["shop", "make pie", "read", "sleep"]
+        
+6.5 Unique Elements
+    * uniq and uniq! remove dupes and return all unique values
+    
+6.6 Blow your stack
+    * push and pop methods treat the array like LIFO
+    
+6.7 Comparing Arrays
+    * ==, <=>, eql? let you compare arrays
+    
+6.8 Changing Elements
+    * myarray.insert(index, value)
+    * myarray[start..stop] = "val1", "val2", "val3"
+    * myarray[start, length] = "val1", "val2", "val3"
+    
+    6.8.1 As a string
+        * myarray.to_s
+        * myarray.join
+        * myarray.join "joinstring"
+        
+    6.8.2 Using shift and unshift
+        * shift and unshift treat the array like FIFO
+        
+6.9 Deleting Elements
+    * delete method removes items:
+    
+        month_a = %w[ nil jan feb mar apr may jun jul aug sep oct nov dec ]
+        month_a.delete "nil"
+        month_a.delete("noon") { "noon wasn't found."}
+        month_a.delete_at(12)
+        
+6.10 Arrays and Blocks
+    * Iteration example:
+    
+        month_a.each { |e| print e.capitalize + " " }
+        
+    * map method is similar to each, but returns a new array instead of a string
+    
+6.11 Sorting things and about face
+    * x.sort! sorts in place
+    * x.reverse and x.reverse! reverses the array
+    
+6.12 Multidimensional Arrays
+    * Create:
+    
+        d2 = [ ["Jan", 2007], ["Feb", 2007], ["Mar", 2007] ]
+        d2.flatten    # => returns 1 dimensional array
+        d2.transpose  # => [["Jan", "Feb", "Mar"], [2007, 2007, 2007]]
+        
+
+Chapter 7: Hashes
+
+7.1 Creating Hashes
+    * Examples:
+    
+        months = Hash.new
+        months.empty?    # => true
+        months.length
+        
+        months = Hash.new("month")     # => returns a hash with a default value
+        
+        myhash = Hash[ :keyname, "value", :keyname2, "value2 ]
+        myhash = Hash[ :keyname => "value", :keyname2 => "value2" ]
+        myhash = { keyname => "value", keyname2 => "value2" }
+        
+7.2 Accessing Hashes
+    * Examples:
+    
+        myhash.has_key? 12345
+        myhash.has_value? "thing"
+        myhash[12345]
+        myhash.keys
+        myhash.values
+        myhash.values_at "key1", "key2", "key3"
+        myhash.index "value2"
+        
+    * select method returns a new multidimensional array of key value pairs:
+    
+        myhash.select { |key,val| key > 10000 }  # => returns nested array of key value pairs with keys over 10k
+        
+7.3 Iterating over hashes
+    * Examples:
+    
+        myhash.each { |k,v| puts "#{k}/#{v}" }  # => interpolates both into a string
+        myhash.each_key { ...
+        myhash.each_value { ...
+        
+7.4 Changing Hashes
+    
+    
+        
+            
+    

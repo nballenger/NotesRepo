@@ -1,0 +1,139 @@
+Notes on XML-RPC:
+
+    RPC is remote procedure call--lets you call to another machine
+    XML-RPC lets you get XML encoded data back from the remote machine
+    
+Request example:
+
+    POST /RPC2 HTTP/1.0
+    User-Agent: Frontier/5.1.2 (WinNT)
+    Host: betty.userland.com
+    Content-Type: text/xml
+    Content-length: 181
+    
+    <?xml version="1.0"?>
+    <methodCall>
+        <methodName>examples.getStateName</methodName>
+        <params>
+            <param>
+                <value><i4>41<i4></value>
+            </param>
+        </params
+    </methodCall>
+    
+Header requirements:
+
+    A User-Agent and Host must be specified
+    The content type is text/xml
+    Content-Length must be specified and correct
+    
+Payload format:
+
+    Payload is xml, a single <methodCall> structure
+    <methodCall> must have a <methodName>, a string
+    If the procedure call has parameters, there must be a <params> item containing any number of <param> sub-items, each of which has a <value>
+    
+Values:
+
+    <value> fields can be scalars, type indicated by nesting the value inside one of the following tags:
+    
+    Tag                 Type                Example
+    ---------------------------------------------------------
+    <i4> or <int>       4byte signed int    -12
+    <boolean>           0 or 1              1
+    <string>            string              hello world
+    <double>            double precision f  -12.13
+    <dateTime.iso8601>  date/time           19980717T14:08:55
+    <base64>            base64 binary       eW91IGNhbid0IHJlYWQgdGhpcyE=
+    
+    If no type is supplied, type is string.
+    
+    Values can also be <struct> elements
+    <struct> contains <member>s
+    <member> contains <name> and <value>
+    
+    Example <struct>:
+    
+        <struct>
+            <member>
+                <name>lowerBound</name>
+                <value><i4>18</i4></value>
+            </member>
+            <member>
+                <name>upperBound</name>
+                </value><i4>139</i4></value>
+            </member>
+        </struct>
+        
+    Values can be of type <array>
+    An array has a single <data> element
+    <data> can contain any number of <value> elements
+    
+    Example <array>:
+    
+        <array>
+            <data>
+                <value><i4>12</i4></value>
+                <value><string>Egypt</string></value>
+                <value><boolean>0</boolean></value>
+                <value><i4>-31</i4></value>
+            </data>
+        </array>
+        
+    Array elements do not have names.
+    Arrays can be recursive--values can contain an <array> or a <struct> or a scalar
+    
+Response example:
+
+    HTTP/1.1 200 OK
+    Connection: close
+    Content-Length: 158
+    Content-Type: text/xml
+    Date: Fri, 17 Jul 1998 19:55:08 GMT
+    Server: UserLand Frontier/5.1.2-WinNT
+    
+    <?xml version="1.0"?>
+    <methodResponse>
+        <params>
+            <param>
+                <value<string>South Dakota</string></value>
+            </param>
+        </params>
+    </methodResponse>
+    
+Response format:
+
+    Barring error, return 200 OK
+    Content-Type is text/xml, Content-Length must be present and correct
+    Body of the response is a single <methodResponse> with single <params>
+    <params> can contain a single <param> with a single <value>
+    Could also contain a <fault> with a <value>, which is a <struct> containing <faultCode><int>  and one <faultString><string>
+    
+Fault example:
+
+    HTTP/1.1 200 OK
+    Connection: close
+    Content-Length: 426
+    Content-Type: text/xml
+    Date: Fri, 17 Jul 1998 19:55:02 GMT
+    Server: UserLand Frontier/5.1.2-WinNT
+    
+    <?xml version="1.0"?>
+    <methodResponse>
+        <fault>
+            <value>
+                <struct>
+                    <member>
+                        <name>faultCode</name>
+                        <value><int>4</int></value>
+                    </member>
+                    <member>
+                        <name>faultString</name>
+                        <value><string>Too many parameters.</string></value>
+                    </member>
+                </struct>
+            </value>
+        </fault>
+    </methodResponse>
+
+    
