@@ -1,0 +1,152 @@
+Learning Cassandra for Administrators
+By: Vijay Parthasarathy
+Publisher: Packt Publishing
+Pub. Date: November 25, 2013
+Print ISBN-13: 978-1-78216-817-1
+Pages in Print Edition: 120
+
+Chapter 1: Basic Concepts and Architecture
+  * Cassandra is linearly scalable / highly available
+  * Based on the BigTable and Dynamo papers
+
+1.1 CAP Theorem
+  * Triangle between Consistency, Availability, Partition tolerance
+  * Cassandra does stronger availability/partition tolerance, with tunable consistency
+
+1.2 BigTable / Log-structured data model
+  * In BigTable, the primary key and column names are mapped with their respective
+    bytes of value to form a multidimensional map.
+  * The row key serves as the identifier of the column that follows it, and the
+    column name and value are stored in contiguous blocks.
+
+  Column Families
+    * Grouped sets of columns are column families
+    * Column families can be addressed through a row key
+    * All data stored in a column family is of the same type
+    * Distinct column families in a keyspace should be small
+    * Families should rarely change during an operation
+    * Column families can have an unbounded number of columns
+    * Disk and memory accounting are done at the column family level
+    * Think of it as an alternative name for a table
+
+  Keyspace
+    * A keyspace is a group of column families
+    * Replication strategies and ACLs are done at the keyspace level
+    * Think of it as an alternative name for a schema
+
+  Sorted String Table (SSTable)
+    * Persistent file format for Cassandra
+    * Ordered, immutable storage structure from rows of columns
+
+  Memtable
+    * Memory location where data is written during update or delete
+    * Flushed to disk once full to form an SSTable
+    * Reads will merge the data from different SSTables and data in memtables
+    * Reads should be requested with a row/primary key unless it's a key range scan
+    * Client-provided timestamps are used to resolve update conflicts
+    * Since SSTables are immutable, Cassandra writes tombstones for deletes
+    * Tombstones are propagated to other nodes, cleaned up by GC
+
+  Compaction
+    * Compaction compacts n (number of SSTables) into one big SSTable
+    * SSTables are exponentially bigger when they grow older
+
+1.3 Partitioning and Replication Dynamo Style
+  * Partitioner and replication is motivated by the Dynamo paper
+
+  Gossip Protocol
+    * Node B tells a few peers about state of node A, those node propagate outward
+
+  Distributed Hash Table
+    * Partitioning is done across the cluster using consistent hashing, and random
+      distribution of rows over the network, using the hash of the row key
+    * When a node joins the ring, it is assigned a token that advocates where the
+      node has to be placed in the ring
+
+  Eventual Consistency
+    * Cassandra supports both strong and eventual consistency, settable by client
+    * Can have different read/write consistency levels
+    * W + R > N = strong consistency
+    * When nodes are down, Cassandra stores hints for updates performed on the node
+    * Relies on hinted handoffs, read repairs, and anti-entropy repairs
+
+Chapter 2: Installing Cassandra
+
+2.1 Memory, CPU, and Network Requirements
+  * Java-based service that uses a JVM heap to create temporary objects
+  * Uses the heap for in-memory data structures
+  * Relies on the OS kernel to manage the page cache of frequently used file blocks
+  * Two main functions of any Cassandra node:
+    - coordinate client requests
+    - serve data
+  * Coordinator is a proxy that sends data requests/updates to nodes with the data
+  
+2.2 Cassandra in-memory data structures
+  Index Summary
+    * A map of row keys and SSTable locations where data resides
+
+  Bloom Filter
+    * In memory structure per SSTable that helps Cassandra avoid a disk seek
+    * Returns boolean advice (with possible false positive) about data presence
+  
+  Compression Metadata
+    * Denotes start of a compressed block, required for decompression
+    * Uses off-heap memory for bloom filters, index summary, and compression metadata
+    * Expect the OS to maintain the index in file buffer cache
+    * Bump the heap from 4 to 8G, new generation from 1 to 2G
+
+  SSDs versus spinning disks
+    * Works well for spinning or SSD
+  
+  Key cache
+    * Uses key caches to avoid disk seeks in addition to other data structures
+    * For row lookups, Cassandra queries multiple SSTables to resolve the row
+    * Reads are exactly one disk seek when cached
+
+  Row Cache
+    * Row caches are not query caches
+    * Caches the whole row in memory when a query is executed on a row
+
+2.3 Downloading / Choosing Binaries to Install
+  * Use the Oracle JRE
+  * Get the binaries from apache
+  * Locations:
+    - config: /etc/cassandra/conf or {CASSANDRA_HOME}/conf
+    - packaged installs: /etc/cassandra/conf
+    - Binary installs: <install_location>/conf
+    - DataStax Enterprise installs: /etc/dse/cassandra
+
+  Configuring cassandra-env.sh
+    * Set the following:
+
+      MAX_HEAP_SIZE="8G"
+      HEAP_NEWSIZE="1G"
+
+  Configuring Cassandra.yaml
+    cluster_name
+      - name of the cluster, for gossip communication
+      
+    seed_provider
+      - used in bootstrapping the gossip process for new nodes joining the cluster
+      - seed nodes aren't used beyond bootstrapping
+      - "While bootstrapping a node to a live cluster, make sure that the seed node
+        list doesn't contain itself."
+
+    Partitioner
+      - distributes rows across nodes in the cluster
+      - Any IPartitioner can be used as long as it is in the classpath
+      - Supports the following:
+        - Murmur3Partitioner random partitioner
+        - ByteOrderedPartitioner
+        - RandomPartitioner
+
+    auto_bootstrap
+      - makes new Cassandra nodes automatically stream the right data to themselves,
+        provided that the cluster is already up and running
+      - You can re-bootstrap an existing node by deleting all data directories and
+        starting the node with
+
+          -Dcassandra.replace_token=<Tokens>
+
+    broadcast_address
+      

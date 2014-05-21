@@ -1,0 +1,20 @@
+CoffeeScript Application Development
+By: Ian Young;
+Publisher: Packt Publishing
+Pub. Date: August 26, 2013
+Print ISBN-13: 978-1-78216-266-7
+Web ISBN-13: 978-1-78216-267-4
+Pages in Print Edition: 258
+
+Chapter 1: Running a CoffeeScript Program
+  * Install Node.js and npm
+  * Install coffeescript with:
+
+    npm install -g coffee-script
+    coffee -v
+
+  * Open the console with 'coffee', exit with ctrl-d
+  * Write to files with .coffee extension
+  * Compile files with:
+
+    coffee -c myfile.coffee

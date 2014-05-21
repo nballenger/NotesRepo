@@ -162,19 +162,23 @@ P{E<sub>1</sub> &Intersection; E<sub>2</sub> &Intersection; ... &Intersection; E
     <td>Combinatorics</td>
     <td>
 <pre>
-P<sub>r</sub>(n,k) = n<sup>k</sup>
+P<sub>r</sub> = PermuteWithReplacement(n,k) = n<sup>k</sup>
 
-           n!
-P(n,k) = ------
-         (n-k)!
+                                  n!
+P = PermuteWOReplacement(n,k) = &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;
+                                (n-k)!
 
-          (k+n-1)!
-C<sub>r</sub>(n,k) = --------
-          k!(n-1)!
+                                   (k+n-1)!
+C<sub>r</sub> = CombineWithReplacement(n,k) = &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;
+                                   k!(n-1)!
 
-            n!
-C(n,k) = --------
-         k!(n-k)!
+                                   n!
+C = CombineWOReplacement(n,k) = &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;
+                                k!(n-k)!
+
+                                                   n!
+Partition(n,partSize1,partSize2,...) = &mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;
+                                       partSize1!*partSize2!*...
 </pre>
     </td>
   </tr>

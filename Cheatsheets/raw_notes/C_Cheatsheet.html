@@ -1,0 +1,146 @@
+<html><head></head><body><pre>
+Datatypes: char, int, float, double
+Modifiers: short, long, signed, unsigned
+
+Constants/Literals:
+
+  int: 1      long int: 1L      unsigned int: 1U    unsigned long: 1UL
+  Octal int:  01        Hex int: 0x1
+  float: 1.1f or 1.1e-2f
+  double: 1.1
+  character: 'x'  &larr; value is numeric
+  byte: '\000' or '\xhh'
+
+Escapes: \a \b \f \n \r \t \v \\ \? \' \" \000
+
+String Literals: "this is a string" &larr; array of characters, terminated by '\0' null character
+
+Enumerations: 
+
+  enum boolean { NO, YES } &larr; 0 and 1, respectively
+  enum months  { JAN = 'one' }
+
+Declarations:
+
+  type nameA, nameB, nameC;
+  type name = initialValue;
+  const type name; &larr; won't change
+  register type name; &larr; mutable, used frequently
+
+Operators:
+
+  + - * / % &gt; &gt;= &lt; &lt;= == != ++ --
+  &amp; | ^ &lt;&lt; &gt;&gt; ~
+  = += -= *= /= %= &lt;&lt;= &gt;&gt;= &amp;= ^= |=
+
+Control flow:
+
+  { naked block }
+  if (condition) { block }
+  if (condition) { block } else { block }
+  if (condition) { block } else if (condition) { block } else { block }
+  switch (expression) {
+    case const-expression: statements
+  }
+  while (expression) { block }
+  for (ex1; ex2; ex3) { block }
+  do statement while (condition);
+  while (1) { ... break;    ... }
+  while (1) { ... continue; ... }
+
+  for (...)
+    for (...)
+      if (x)
+        goto error;
+
+  error: statement
+
+Functions: returnType name (args) { ... return 0; }
+
+Preprocessor statements:
+
+  #include filename
+  #include &lt;filename&gt;
+  #define name replacementText
+  #define max(A,B) ((A) &gt; (B) ? (A) : (B))
+  #undef somename
+  #if int boolean
+  #elif int boolean
+  #endif
+  #ifdef X
+  #ifndef X
+
+Pointers:
+
+  int x = 1;
+  int *ip;    &larr; declares pointer type variable
+  ip = &amp;x;    &larr; takes pointer to x
+  *ip = 2;    &larr; dereferences and sets x
+  int *ipp;   &larr; declares second pointer
+  ipp = ip;   &larr; sets value of ipp to pointer in ip
+  *ipp = 3;   &larr; sets x
+
+Pointers and Function Args
+
+  /* All args are passed by value, so pointers must be passed in. */
+  void swap(int *px, int *py) { /* interchange values by pointer */
+    int temp;
+    temp = *px;
+    *px = *py;
+    *py = temp;
+  }
+
+Pointers and Arrays
+
+  int x, a[10];    &larr; declare int array of size 10
+  int *pa;         &larr; establishes pointer
+  pa = &amp;a[0];      &larr; addresses a[0], equivalent to a itself
+  x = *pa;         &larr; sets x to value in a[0]
+  x = *(pa+1);     &larr; sets x to a[1]
+
+  /* get length of string via array pointer addition */
+  int strlen(char *s) {
+    int n;
+    for (n = 0; *s != '\0'; s++) 
+      n++;
+    return n;
+  }
+
+Character Arrays and Strings
+
+  char *pmessage;
+  pmessage = "this is a string"; &larr; copies the pointer, not string
+
+  /* Copying a string */
+  void strcpy(char *s, char *t) {
+    while ((*s++ = *t++) != '\0')
+      ;
+  }
+  
+Multidimensional Arrays
+
+  #include <stdio.h>
+
+  static char x[2][3] = {
+    {0, 10, 8},
+    {0, 19, 44}
+  };
+
+  int i,j;
+
+  int main() {
+    for (i = 0; i &lt; 2; i++) {
+      for (j = 0; j &lt; 3; j++) {
+        printf("%2d ",x[i][j]);
+      }
+      printf("\n");
+    }
+    return (0);
+  }
+
+Pointer Arrays
+
+  static char *name[] = { "Zero", "One", "Two", "Three" };
+
+
+</pre></body></html>
