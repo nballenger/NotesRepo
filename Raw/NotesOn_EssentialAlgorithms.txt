@@ -1,0 +1,65 @@
+Essential Algorithms: A Practical Approach to Computer Algorithms
+By: Rod Stephens
+Publisher: John Wiley & Sons
+Pub. Date: August 12, 2013
+Print ISBN: 978-1-118-61210-1
+Web ISBN: 1-118612-10-8
+Pages in Print Edition: 624
+
+Chapter 2: Numerical Algorithms
+
+Randomization
+  Generating pseudo-random numbers
+    "linear congruential generator"
+      Uses X<sub>n+1</sub> = (A x X<sub>n</sub> + B) Mod M, where A, B and M are constants. X<sub>0</sub> is the seed.
+
+      X<sub>0</sub> = 0
+      X<sub>1</sub> = (7 x 0 + 5) Mod 11 = 5
+      X<sub>2</sub> = (7 x 5 + 5) Mod 11 = 40 Mod 11 = 7
+      X<sub>3</sub> = (7 x 7 + 5) Mod 11 = 54 Mode 11 = 10
+
+      Repeats after at most M iterations.
+
+  Ensuring Fairness--all outputs have same probability
+    * convert result of PRNG to fraction from 0 to 1, multiply by the
+      desired range to get a fair translation.
+    * Algorithm for converting a biased coin to a fair coin:
+  
+      Flip the biased coin twice.
+        If the result is {Heads, Tails}, return Heads
+        If the result is {Tails, Heads}, return Tails
+        If the result is something else, start over.
+
+    * Using a binary random factor to translate to larger space:
+
+      Flip coin once for each bit of a binary number of length n.
+
+  Randomizing Arrays
+    * One method:
+
+      RandomizeArray(String: array[])
+        Integer: max_i = <Upper bound of array>
+        For i = 0 To max_i - 1
+          // Pick the item for position i in the array
+          Integer: j = <pseudorandom int, (i,max_i)>
+          <Swap values of array[i] and array[j]>
+        Next i
+      End RandomizeArray
+
+Finding Greatest Common Divisors
+  * Euclidian algorithm:
+
+    Integer: GCD(Integer: A, Integer: B)
+      While (B != 0)
+        Integer: remainder = A Mod B
+        // GCD(A,B) = GCD(B, remainder)
+        A = B
+        B = remainder
+      end While
+      Return A
+    End GCD
+
+Performing Exponentiation
+  Not enough detail to actually use this one.
+
+Working with Prime Factors

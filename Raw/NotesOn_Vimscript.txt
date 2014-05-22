@@ -1,0 +1,127 @@
+Notes on VimScript
+
+Types
+  * two types: strings and numbers
+  * numbers can be decimal, hex (0x01), or octal (01)
+  * single quoted strings are string literals
+  * double quoted strings allow escapes:
+      \n      newline
+      \r      carriage return
+      \t      tab space
+      \123    octal number
+      \x123   hex number
+      \u      character encoded as hex: \u01fc34
+      \f      form feed
+      \e      esc
+      \b      backspace
+      \<CR>   carriage return
+      \<ESC>  esc
+      \<C-W>  ctrl-W
+
+Variables
+  * Five variable types: string, number, list, dictionary, funcref
+  * naming rules:
+    - alphanumeric characters and underscores
+    - initial char must be alpha or underscore
+  * All variable definitions are done with 'let':
+
+    :let mystringvar = "a string"
+    :let mynumbervar = 123
+
+  * Autoconversion happens for numeric strings.
+  * Forcing conversion between numeric and string types:
+
+    :let myvarA = "a string"
+    :let myvarB = myvarA + 0
+    :let myvarC = string(myvarB)
+
+  * Lists:
+
+    :let mylist1 = [1,2,"three",0x04, myfivevar]
+    :echo mylist1[2]
+    :let mylist2 = [[1,2,3],["four","five","six"]]
+    :echo mylist2[0][2]
+    :echo mylist2[-1][-2]
+
+    :let mylist3 = [1,2]
+    :call add(mylist3, 3)
+    :let mylist3 = mylist3 + [4,5,6]
+    :let mylist3 += [7,8]
+    :call extend(mylist3, [9,10])
+    :call remove(mylist3, 0)
+
+  * Dictionaries:
+
+    :let mydict1 = {1: "one", 2: "two", 3: "three"}
+    :echo mydict1[2]
+    :let mydict2 = {1: "one", "tens": {0: "ten", 1: "eleven"}}
+    :echo mydict2['tens']
+    :echo mydict2.tens
+    :let mydict2['apple'] = 'red'
+
+    let mynumbers = {0:'zero',1:'one',2:'two',3:'three'}
+    function mynumbers.convert(numb) dict
+      return join(map(split(a:numb, '\zs'), 'get(self,v:val,"unknown")'))
+    endfunction
+    echo mynumbers.convert(123)
+
+  * Function references:
+
+    :let Myfuncref1 = function("Myfunction")
+    :echo Myfuncref1()
+    :call Myfuncref1()
+    :call Myfuncref1(arg1, arg2, ..., argN)
+
+  * Variable scope
+    - All variables are global if scope is unspecified
+    - scopes available:
+
+      v     Vim predefined global scope
+      g     global scope
+      b     buffer scope--only available in the buffer where it was defined
+      t     tab scope--only available in the vim tab where it was defined
+      w     window scope--only available to the current viewport
+      l     function scope--local to its function
+      s     sourced file scope--local to a vim script loaded with :source
+      a     argument scope--used in arguments to functions
+
+    - Scope usage example:
+
+      let g:sum=0
+      function SumNumbers(num1,num2)
+        let l:sum = a:num1+a:num2
+        "check if previous sum was lower than this
+        if g:sum < l:sum
+          let g:sum=l:sum
+        endif
+        return l:sum
+      endfunction
+      echo SumNumbers(3,4)
+
+  * Comments:
+    - Any line with a quote as the first non-space character is a comment
+
+  * Boolean truth values:
+    - Numeric comparison operators: == != > < >= <=
+    - String comparison operators:
+      =~      true if left side contains right side or is equal to it
+      !~      true if left side does not contain and is not equal to right
+
+
+  * Flow Control:
+
+    if condition
+      code to execute
+    endif
+
+    if condition
+      code
+    else
+      code
+    endif
+
+    if condition
+      code
+    elseif condition
+      code
+    endif
