@@ -1,0 +1,316 @@
+Understanding and Using C Pointers
+By: Richard Reese
+Publisher: O'Reilly Media, Inc.
+Pub. Date: May 15, 2013
+Print ISBN-13: 978-1-4493-4418-4
+Pages in Print Edition: 226
+
+Chapter 1: Introduction
+  * Key to comprehending pointers is understanding how memory is managed in C
+
+Pointers and Memory
+  * C works with three types of memory:
+    - Static/Global: static and global vars live here. Allocated when the 
+      program starts, exist until termination.
+    - Automatic: Declared within a function, created when it is called. Scope
+      is restricted to the function, lifetime to the function execution.
+    - Dynamic: memory allocated from the heap, can be released as needed.
+      Pointers reference allocated dynamic memory. Scope is limited to the
+      pointer or pointers that reference the memory, exists until released.
+
+  Why You Should Become Proficient with Pointers
+    * Less compiler overhead, faster to translate source to machine code.
+    * Situations where the C spec does not explicitly define pointer behavior:
+      - Implementation-defined: some specific, documented implementation is
+        provided, like how the high order bit is propagated in an int shift
+      - Unspecified: some implementation is provided but not documented, like
+        the amount of memory allocated by malloc(0)
+      - Undefined: no requirements imposed, anything can happen. Example is
+        the value of a pointer deallocated by free()
+
+  Declaring Pointers
+    * Declared using a data type, followed by an asterisk, then the var name
+    * White space around the asterisk is irrelevant. These are equivalent:
+
+      int* pi;
+      int * pi;
+      int *pi;
+      int*pi;
+
+    * The asterisk declares that it is a pointer variable.
+    * On declaration, a pointer points at a chunk of uninitialized memory
+    * A pointer to uninitialized memory is probably invalid (program doesn't
+      have the authority to access). Trying to use it will terminate program.
+    * Pointers can be used after declaration, but may not act correctly until
+      after they are initialized.
+
+  How to Read a Declaration
+    * Read pointer declarations backwards. For the declaration:
+
+      const int *pci;
+
+      we have:
+
+      1. pci is a variable                                  pci;
+      2. pci is a pointer variable                          *pci;
+      3. pci is a pointer variable to an integer            int *pci;
+      4. pci is a pointer variable to a constant integer    const int *pci;
+
+  Address of Operator
+    * The ampersand is the 'address of' operator, returns operand's address
+    * Example:
+
+      num = 0;
+      pi = &num;
+
+    * 'num' is set to 0, 'pi' is set to point to the address of num
+    * It's good practice to initialize a pointer var as soon as possible
+
+  Displaying Pointer Values
+    * You can display a variable's address with:
+
+      int num = 0;
+      int *pi = &num;
+      printf("Address of num: %d Value: %d\n", &num, num);
+      printf("Address of pi: %d  Value: %d\n", &pi, pi);
+
+  Dereferencing a Pointer Using the Indirection Operator
+    * The indirection operator, '*', returns the value pointed to by a pointer
+    * Displaying the value of num:
+
+      int num = 5;
+      int *pi = &num;
+      printf("%p\n", *pi);
+
+    * Assigning a value to the integer pointed to by pi:
+
+      *pi = 200;
+
+  Pointers to Functions
+    * Declaring a pointer to a function:
+
+      void (*foo)();
+
+  The Concept of Null
+    * Can refer to a number of things:
+      - the concept of null
+        -- the idea that a pointer can hold a non-pointer special value
+      - the null pointer constant
+        -- the implementation that makes two null pointers equal
+      - the NULL macro
+        -- a constant integer zero cast to a pointer to void:
+          #define NULL ((void *)0)
+      - the ASCII NUL
+        -- a byte containing all zeros
+      - a null string
+        -- an empty string
+      - The null statement
+        -- a semi-colon by itself
+
+    * A zero can be assigned to a pointer, but no other integer value
+    * A pointer can be the only operand of a logical operation:
+
+      if (pi) { // not NULL
+      } else { // is null
+      }
+
+    * A null pointer should never be dereferenced because it does not contain
+      a valid address.
+    * Do not use NULL in contexts other than pointers.
+    * A pointer to void is a general-purpose pointer to hold references
+      to any data type:
+
+      void *pv;
+
+    * Two properties of note:
+      - Will have the same representation and memory alignment as a *char
+      - Will never be equal to another pointer. (though two void pointers
+        assigned a NULL value will be equal)
+    * Any pointer can be assigned to a pointer to void, and can then be
+      cast back to its original pointer type:
+
+      int num;
+      int *pi = &num;
+      printf("Value of pi: %p\n", pi);
+      void* pv = pi;
+      pi = (int*) pv;
+      printf("Value of pi: %p\n", pi);
+
+    * Pointers to void are used for data pointers, not function pointers
+    * You can use the sizeof operator with a pointer to void:
+
+      size_t size = sizeof(void*);
+
+    * A pointer declared global or static is initialized to NULL on startup:
+
+      int *globalpi;
+
+      void foo() {
+        static int *staticpi;
+      }
+
+      int main() {...}
+
+
+Pointer Size and Types
+  * On most modern platforms, the size of a pointer to data is normally the
+    same regardless of the pointer type.
+  * The size of a pointer to a function may be different from a data pointer
+  * Size of a pointer depends on the machine and compiler.
+
+  Predefined Pointer-Related Types
+    * Four predefined types used when working with pointers:
+      size_t          safe type for sizes
+      ptrdiff_t       handles pointer arithmetic
+      intptr_t        stores pointer addresses
+      uintptr_t       stores pointer addresses
+
+    Understanding size_t
+      * Represents the max size any object can be in C, is an unsigned int
+      * Provides a portable means of declaring a size consistent with the
+        addressable area of memory available on a system.
+      * Used as the return type of the sizeof operator
+      * Is an arguemnt to functions like malloc and strlen
+      * Good to use size_t for variables for sizes like number of characters
+        and array indices. Should be used for loop counters, indexing into
+        arrays, and sometimes for pointer arithmetic.
+      * Make sure if printing to use %zu in the printf pattern
+
+    Using the sizeof operator with pointers
+      * sizeof can determine the size of a pointer:
+
+        printf("Size of *char: %d\n", sizeof(char*));
+
+    Using intptr_t and uintptr_t
+      * Used to store pointer addresses portably/safely
+      * Will be the same size as the underlying pointer on the system
+      * Useful for converting pointers to their integer form
+      * Usage:
+
+        int num;
+        intptr_t *pi = &num;
+        uintptr_t *pu = (uintptr_t)&num; // cast to unsigned
+
+        char c;
+        uintptr_t *pc = (uintptr_t*)&c;
+
+Pointer Operators
+
+  Operator      Name                        Meaning
+  ----------------------------------------------------------------------
+  *                                         Declaration
+  *             Dereference                 Dereferences a pointer
+  ->            Point-to                    Access fields of a struct
+  +             Addition                    Increments a pointer
+  -             Subtraction                 Decrements a pointer
+  == !=         equality/inequality         compares pointers
+  > >= < <=     gt, ge, lt, le              compares pointers
+  (data type)   Cast                        Changes pointer type
+
+  Pointer Arithmetic
+    * Operations include adding/subtracting integers to pointers, 
+      subtracting one pointer from another, and comparing pointers
+
+    Adding an Integer to a pointer
+      * Amount added is the product of the integer times the number of
+        bytes of the underlying data type.
+      * Size of primitive data types can change from system to system.
+      * Common sizes:
+
+          byte      1
+          char      1
+          short     2
+          int       4
+          long      8
+          float     4
+          double    8
+
+      * Examples:
+
+        int vector[] = {28,41,7};
+        int *pi = vector;         // pi: 100
+        printf("%d\n", *pi);      // displays 28
+        pi += 1;                  // pi: 104
+        printf("%d\n", *pi);      // displays 41
+        pi += 1;                  // pi: 108
+        printf("%d\n", *pi);      // displays 7
+
+      * If you incremented again in that example, it's likely the pointer
+        would then point to itself--do not go past the end of an array!
+
+    Pointers to void and addition
+      * Adding to a pointer to void may result in a syntax error, though
+        you can do it on most systems.
+
+    Subtracting an integer from a pointer
+      * Works like addition--integer times size of datatype in bytes.
+
+    Subtracting two pointers
+      * Subtracting one pointer from another gives the differences in their
+        addresses. Not really useful except for determining order of elements
+        in an array.
+      * The difference between pointers is the number of units by which
+        they differ. Sign depends on the order of the operands:
+
+        int vector[] = {28,41,7};
+        int *p0 = vector;
+        int *p1 = vector+1;
+        int *p2 = vector+2;
+
+        printf("p2-p0: %d\n",p2-p0);      // 2
+        printf("p2-p1: %d\n",p2-p1);      // 1
+        printf("p0-p1: %d\n",p0-p1);      // -1
+
+      * ptfdiff_t is a portable type for expressing the difference of pointers
+
+  Comparing Pointers
+    * Pointers can be compared using the standard comparison operators.
+    * Really only useful for determining relative ordering of array elements:
+
+        int vector[] = {28,41,7};
+        int *p0 = vector;
+        int *p1 = vector+1;
+        int *p2 = vector+2;
+
+        printf("p2>p0: %d\n",p2>p0);      // p2>p0: 1
+        printf("p2<p0: %d\n",p2<p0);      // p2<p0: 0
+        printf("p0>p1: %d\n",p0>p1);      // p0>p1: 0
+
+Common Uses of Pointers
+
+  Multiple Levels of Indirection
+    * Example with three arrays, where second and third arrays are using
+      pointers to items in the first array:
+
+      char *titles[] = {"A Tale of Two Cities", "Wuthering Heights",
+                        "Don Quixote", "Odyssey", "Moby-Dick", "Hamlet",
+                        "Gulliver's Travels"};
+
+      char **bestBooks[3];      // Each element contains a pointer to
+      char **englishBooks[4];   // a second pointer to char
+
+      bestBooks[0] = &titles[0];
+      bestBooks[1] = &titles[3];
+      bestBooks[2] = &titles[5];
+
+      englishBooks[0] = &titles[0];
+      englishBooks[1] = &titles[1];
+      englishBooks[2] = &titles[5];
+      englishBooks[3] = &titles[6];
+
+      printf("%s\n", *englishBooks[1]);   // Wuthering Heights
+
+  Constants and Pointers
+    * Using 'const' with pointers gives protection in various ways
+
+    Pointers to a constant
+      * A pointer to a constant cannot be used to modify the constant
+      * Example:
+
+        int num = 5;
+        const int limit = 500;
+        int *pi;                // pointer to an integer
+        const int *pci;         // pointer to a constant integer
+
+        pi = &num;
+        pci = &limit;
