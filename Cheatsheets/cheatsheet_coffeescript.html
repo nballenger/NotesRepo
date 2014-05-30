@@ -7,26 +7,61 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
-
     <title>CoffeeScript Cheatsheet</title>
-
-    <!-- Bootstrap core CSS -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+      html {
+        font-size: 62.5%;
+      }
+      body {
+        min-height: 2000px;
+        font-size: 14px;
+        font-size: 1.4rem;
+      }
+      
+      h1 { font-size: 24px; font-size: 2.4rem; }
+      
+      section h1, 
+      h2 { font-size: 22px; font-size: 2.2rem; }
+      
+      section section h1,
+      section h2,
+      h3 { font-size: 20px; font-size: 2.0rem; }
+      
+      section section section h1,
+      section section h2,
+      section h3,
+      h4 { font-size: 18px; font-size: 1.8rem; }
+      
+      section section section section h1,
+      section section section h2,
+      section section h3,
+      section h4,
+      h5 { font-size: 16px; font-size: 1.6rem; }
+      
+      section section section section section h1,
+      section section section section h2,
+      section section section h3,
+      section section h4,
+      section h5,
+      h6 { font-size: 14px; font-size: 1.4rem; }
+      
+      .navbar-static-top {
+        margin-bottom: 19px;
+      }
+      
+      #summary_checkboxes .label-info { color: #000000; }
 
-<style type="text/css">
-.navbar-static-top {
-  margin-bottom: 19px;
-}
-</style>
+      section { padding-left: 12px; }
+    </style>
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
 
   <body>
-
     <!-- Static navbar -->
     <div class="navbar navbar-default navbar-static-top" role="navigation">
       <div class="container">
@@ -37,11 +72,11 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">CoffeScript Cheatsheet</a>
+          <a class="navbar-brand" href="#">CoffeeScript Cheatsheet</a>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Syntax</a></li>
+            <li class="active"><a href="#">Home</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
             <li class="dropdown">
@@ -60,190 +95,311 @@
         </div><!--/.nav-collapse -->
       </div>
     </div>
-
-
     <div class="container">
-<article id="cheatsheet_coffeescript" class="cheatsheet">
-  <header>
-    <h1>CoffeeScript Cheatsheet</h1>
-  </header>
-  <section id="syntax">
-    <header>
-      <h1>Syntax</h1>
-    </header>
-<pre>
-General
-  CS files must be pure coffeescript.
-  No semi-colons allowed.
-  White space is significant.
-  Braces are replaced with a tab.
+      <section id="summary"> 
+        <header><h1>CoffeeScript</h1></header> 
+        <table id="summary_checkboxes" class="table">
+          <thead></thead>
+          <tbody>
+            <tr>
+              <th scope="col">Type</th>
+              <th scope="col">Build</th>
+              <th scope="col">Typing</th>
+              <th scope="col">Whitespace</th>
+              <th scope="col">Pass By</th>
+              <th scope="col">1<sup>st</sup> Class &#131;</th>
+              <th scope="col">Garbage Collection</th>
+              <th scope="col">Inheritance</th>
+            </tr>
+            <tr>
+              <td>
+                <span class="text-muted">Procedural</span><br>
+                <span class="label label-info">Object-Oriented</span><br>
+                <span class="text-muted">Functional</span>
+              </td>
+              <td>
+                <span class="label label-info">Compiled</span><br>
+                <span class="text-muted">Interpreted</span>
+              </td>
+              <td>
+                <span class="label label-info">Weak</span><br>
+                <span class="text-muted">Strong</span><br>
+                <span class="text-muted">Other</span>
+              </td>
+              <td>
+                <span class="text-muted">Non-Meaningful</span><br>
+                <span class="label label-info">Meaningful</span>
+              </td>
+              <td>
+                <span class="label label-info">Value</span><br>
+                <span class="label label-info">Reference</span>
+              </td>
+              <td class="text-center"><span class="badge alert-info"><span class="glyphicon glyphicon-ok"></span></span></td>
+              <td class="text-center"><span class="badge alert-info"><span class="glyphicon glyphicon-ok"></span></span></td>
+              <td>
+                <span class="text-muted">Single</span><br>
+                <span class="label label-info">Multiple</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <h2>History</h2>
+        <h2>Topline Idiosyncracies</h2>
+      </section><!-- /summary -->
+  
+      <section id="datatypes">
+        <header><h1>Datatypes</h1></header>
+        <h2>Summary  of Type System</h2>
+        <h2>Idiosyncracies</h2>
+        <section id="datatypes_simple">
+          <header><h1>Simple Types</h1></header>
+          <section id="datatypes_simple_literals">
+            <header><h1>Simple Literals</h1></header>
+            <section id="datatypes_simple_literals_numbers">
+              <header><h1>Numbers</h1></header>
+            </section>
+            <section id="datatypes_simple_literals_characters">
+              <header><h1>Characters</h1></header>
+            </section>
+            <section id="datatypes_simple_literals_strings">
+              <header><h1>Strings</h1></header>
+            </section>
+          </section>
+          <section id="datatypes_simple_variables">
+            <header><h1>Simple Variables</h1></header>
+            <section id="datatypes_simple_variables_numbers">
+              <header><h1>Numbers</h1></header>
+            </section>
+            <section id="datatypes_simple_variables_characters">
+              <header><h1>Characters</h1></header>
+            </section>
+            <section id="datatypes_simple_variables_strings">
+              <header><h1>Strings</h1></header>
+            </section>
+          </section>
+        </section>
+        <section id="datatypes_composite">
+          <header><h1>Composite Types</h1></header>
+          <section id="datatypes_composite_literals">
+            <header><h1>Composite Literals</h1></header>
+            <section id="datatypes_composite_literals_strings">
+              <header><h1>Strings</h1></header>
+            </section>
+            <section id="datatypes_composite_literals_arrays">
+              <header><h1>Arrays</h1></header>
+            </section>
+            <section id="datatypes_composite_literals_maps">
+              <header><h1>Maps</h1></header>
+            </section>
+          </section>
+          <section id="datatypes_composite_variables">
+            <header><h1>Composite Variables</h1></header>
+            <section id="datatypes_composite_variables_strings">
+              <header><h1>Strings</h1></header>
+            </section>
+            <section id="datatypes_composite_variables_arrays">
+              <header><h1>Arrays</h1></header>
+            </section>
+            <section id="datatypes_composite_variables_maps">
+              <header><h1>Maps</h1></header>
+            </section>
+          </section>
+        </section>
+        <section id="datatypes_reference">
+          <section id="datatypes_reference_literals">
+            <header><h1>Reference Literals</h1></header>
+          </section>
+          <section id="datatypes_reference_variables">
+            <header><h1>Reference Variables</h1></header>
+          </section>
+        </section>
+      </section>
 
-Comments
-  Single line comments start with a hash (#).
-  Multiline comments are enclosed in triple hashes (###).
+      <section id="syntax">
+        <header><h1>Syntax</h1></header>
+        <section id="syntax_summary">
+          <header><h1>Summary</h1></header>
+        </section>
+        <section id="syntax_idiosyncracies">
+          <header><h1>Idiosyncracies</h1></header>
+        </section>
+        <section id="syntax_naming">
+          <header><h1>Naming Conventions</h1></header>
+          <p>Since CoffeeScript compiles to JavaScript, the naming conventions are largely the same as in JS:</p>
+          <ul>
+            <li>CoffeeScript files use the extension <kbd>.coffeescript</kbd>.</li>
+            <li>Names should be alphanumeric, and may use underscores.</li>
+            <li>The underscore should not be the first or last character of a name.</li>
+            <li>Most variables and functions should start with a lower case letter.</li>
+            <li>Constructors (anything that needs to be used with <code>new</code>) should have an uppercase first letter.</li>
+            <li>Global variables should be in all caps.</li>
+          </ul>
+           <p>Several of those are paraphrased From Douglas Crockford's very useful <a href="http://javascript.crockford.com/code.html" target="_blank">Code Conventions for the JavaScript Programming Language</a> document.</p>
+        </section>
+        <section id="syntax_reservedwords">
+          <header><h1>Reserved Words</h1></header>
+          <p>CoffeeScript's compiler will notice if you use a JavaScript reserved word in a place you shouldn't, like an object property name, and will include quotes as appropriate during compilation. Note that <code>var</code> is a reserved word in CoffeeScript to help keep the scoping rules consistent at compilation.</p>
+        </section>
+        <section id="syntax_truthvalues">
+          <header><h1>Truth Values</h1></header>
+        </section>
+        <section id="syntax_comments">
+          <header><h1>Comments</h1></header>
+          <p>CoffeeScript uses two comment styles:</p>
+<pre># Inline Comment
 
-Scope
-  All scripts are wrapped in an anonymous function, creating a local scope.
-  The 'var' keyword is prepended to all variable declarations.
-  You can explicitly set globals on the window object.
+###
+  Multiline Comment
+###</pre>
+        </section>
+        <section id="syntax_operators">
+          <header><h1>Operators</h1></header>
+          <section id="syntax_operators_arithmetic">
+            <header><h1>Arithmetic</h1></header>
+          </section>
+          <section id="syntax_operators_comparison">
+            <header><h1>Comparison</h1></header>
+          </section>
+          <section id="syntax_operators_logical">
+            <header><h1>Logical</h1></header>
+          </section>
+          <section id="syntax_operators_bitwise">
+            <header><h1>Bitwise</h1></header>
+          </section>
+          <section id="syntax_operators_set">
+            <header><h1>Set</h1></header>
+          </section>
+          <section id="syntax_operators_string">
+            <header><h1>String</h1></header>
+          </section>
+          <section id="syntax_operators_assignment">
+            <header><h1>Assignment</h1></header>
+          </section>
+          <section id="syntax_operators_other">
+            <header><h1>Other</h1></header>
+          </section>
+          <section id="syntax_operators_associativity">
+            <header><h1>Associativity and Precedence</h1></header>
+          </section>
+        </section>
+      </section>
+      <section id="syntax_declaration">
+        <header><h1>Variable Declaration</h1></header>
+      </section>
+      <section id="syntax_definition">
+        <header><h1>Variable Definition</h1></header>
+      </section>
+      <section id="syntax_statements">
+        <header><h1>Statements</h1></header>
+      <section>
+      <section id="syntax_blocks">
+        <header><h1>Blocks</h1></header>
+      </section>
+      <section id="syntax_flowcontrol">
+        <header><h1>Flow Control</h1></header>
+        <section id="syntax_flowcontrol_conditionals">
+          <header><h1>Conditionals</h1></header>
+        </section>
+        <section id="syntax_flowcontrol_loops">
+          <header><h1>Loops</h1></header>
+        </section>
+      </section>
+      <section id="syntax_functions">
+        <header><h1>Functions</h1></header>
+        <section id="syntax_functions_declaration">
+          <header><h1>Declaration</h1></header>
+        </section>
+        <section id="syntax_functions_definition">
+          <header><h1>Definition</h1></header>
+        </section>
+        <section id="syntax_functions_calling">
+          <header><h1>Calling</h1></header>
+        </section>
+      </section>
+      <section id="syntax_classes">
+        <header><h1>Classes</h1></header>
+        <section id="syntax_classes_declaration">
+          <header><h1>Declaration</h1></header>
+        </section>
+        <section id="syntax_classes_definition">
+          <header><h1>Definition</h1></header>
+        </section>
+        <section id="syntax_classes_inheritance">
+          <header><h1>Inheritance Model</h1></header>
+        </section>
+      </section>
+      <section id="syntax_objects">
+        <header><h1>Objects</h1></header>
+        <section id="syntax_objects_instantiation">
+          <header><h1>Instantiation</h1></header>
+        </section>
+        <section id="syntax_objects_behavior">
+          <header><h1>Behavior</h1></header>
+        </section>
+      </section>
+    </section>
 
-</pre>
-<h2>Functions</h2>
-<pre>
-myFunc1 = -&gt; "somestring"          # oneliner function
-myFunc2 = -&gt;                       # block function
-  "somestring"
+    <section id="commonuse">
+      <header><h1>Common Usage</h1></header>
+      <section id="commonuse_basicprogram">
+        <header><h1>Basic Program</h1></header>
+      </section>
+      <section id="commonuse_complexprogram">
+        <header><h1>Complex Program</h1></header>
+      </section>
+      <section id="commonuse_varscope">
+        <header><h1>Variable Scope</h1></header>
+      </section>
+      <section id="commonuse_input">
+        <header><h1>Input</h1></header>
+        <section id="commonuse_input_stdin">
+          <header><h1>From STDIN</h1></header>
+        </section>
+        <section id="commonuse_input_files">
+          <header><h1>From Files</h1></header>
+        </section>
+        <section id="commonuse_input_network">
+          <header><h1>From Network</h1></header>
+        </section>
+      </section>
+      <section id="commonuse_output">
+        <header><h1>Output</h1></header>
+        <section id="commonuse_output_stdout">
+          <header><h1>To STDOUT</h1></header>
+        </section>
+        <section id="commonuse_output_files">
+          <header><h1>To Files</h1></header>
+        </section>
+        <section id="commonuse_output_network">
+          <header><h1>To Network</h1></header>
+        </section>
+      </section>
+    </section>
+   
+    <section id="compilation">
+      <header><h1>Compilation / Interpretation</h1></header>
+      <section id="compilation_helloworld">
+        <header><h1>Hello, World</h1></header>
+      </section>
+      <section id="compilation_compiler">
+        <header><h1>Common Compiler / Interpreter Usage</h1></header>
+      </section>
+      <section id="compilation_organization">
+        <header><h1>Code Organization</h1></header>
+      <section>
+    </section>
 
-times = (a,b) -&gt; a * b             # declaration with args
-times = (a = 1, b = 2) -&gt; a * b    # args with defaults
-
-sum = (nums...) -&gt;                 # splat for multiargs
-  result = 0
-  nums.foreach (n) -&gt; result += n
-  result
-
-sum([1,2,3])                       # Invocation with parens
-sum.apply([1,2,3])                 # Invocation with apply()
-sum.call([1,2,3])                  # Invocation with call()
-</pre>
-
-<h2>Objects and Arrays</h2>
-<pre>
-object1 = {one: 1, two: 2}            # Using JSON
-object2 = one: 1, two: 2              # Without optional braces
-object3 =                             # Commas replaced with newlines
-  one: 1
-  two: 2
-
-User.create(name: "John Smith")
-
-</pre>
-
-<h2>Flow Control</h2>
-<pre>
-if true == true                       # Basic if
-  "True"
-
-if true != true then "False"          # Oneline if with 'then'
-
-alert "True" if value == 5            # Suffixed if
-
-if ! true then "False"                # ! and 'not' are equivalent
-if not true then "False"
-
-unless true                           # Basic unless
-  "False"
-
-if true is 1                          # 'is' gives '==='
-  "Type coercion fail."
-
-if true isnt true                     # 'isnt' gives 'is not'
-  alert "Opposites!"
-</pre>
-
-<h2>Loops and Comprehensions</h2>
-<pre>
-for name in ["Roger", "Roderick", "Brian"]          # Foreach loop
-  alert "Release #{name}"
-
-for name, i in ["Roger", "Roderick"]                # Foreach with index
-  alert "#{i} - Release #{name}"
-
-release p for p in ["Roger", "Roderick"]            # Online postfix foreach
-
-prisoners = ["Roger", "Roderick", "Brian"]          
-release p for p in prisoners when p[0] is "R"       # Filtered comprehension
-
-names = sam: seaborn, donna: moss
-alert("#{first} #{last}") for first, last of names  # Comprehension for object
-
-num = 6
-minstrel = while num -= 1                           # While acts like map()
-  num + " Brave Sir Robin ran away"                 # and returns an array
-</pre>
-
-<h2>Arrays</h2>
-<pre>
-array1 = [1,2,3]                                    # Using JS array syntax
-array2 = [                                          # Commas replaced with newlines
-  1
-  2
-  3
-]
-array3 = [1,2,3,]                                   # Trailing comma stripped by CS
-
-range = [1..5]                                      # Range expands to array
-
-firstTwo = ["one","two","three"][0..1]              # Range after array calls slice()
-
-numbers = [0..9]                        
-numbers[3..5] = [-3,-4,-5]                          # Can be used to replace slice
-
-my = "my string"[0..1]                              # Ranges usable on strings
-
-words = ["rattled","rowdy","rebbles","ranks"]
-alert "Stop" if "ranks" in words                    # Using 'in' for array search
-</pre>
-<table>
-  <thead>
-    <tr>
-      <th colspan="2">CS to JS operator conversions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="col">CoffeeScript</th>
-      <th scope="col">JavaScript</th>
-    </tr>
-    <tr>
-      <td><code>is</code></td>
-      <td><code>===</code></td>
-    </tr>
-    <tr>
-      <td><code>isnt</code></td>
-      <td><code>!==</code></td>
-    </tr>
-    <tr>
-      <td><code>not</code></td>
-      <td><code>!</code></td>
-    </tr>
-    <tr>
-      <td><code>and</code></td>
-      <td><code>&amp;&amp;</code></td>
-    </tr>
-    <tr>
-      <td><code>or</code></td>
-      <td><code>||</code></td>
-    </tr>
-    <tr>
-      <td><code>true, yes, on</code></td>
-      <td><code>true</code></td>
-    </tr>
-    <tr>
-      <td><code>false, no, off</code></td>
-      <td><code>false</code></td>
-    </tr>
-    <tr>
-      <td><code>@, this</code></td>
-      <td><code>this</code></td>
-    </tr>
-    <tr>
-      <td><code>of</code></td>
-      <td><code>in</code></td>
-    </tr>
-    <tr>
-      <td><code>in</code></td>
-      <td>No JS equivalent.</td>
-    </tr>
-  </tbody>
-</table>
+    <section id="codestone">
+      <header><h1>Code-etta Stone</h1></header>
+    </section>
   </section>
-</article>
     </div> <!-- /container -->
 
 
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="../bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>
-

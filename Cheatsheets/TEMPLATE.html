@@ -7,33 +7,61 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
-
-    <title>Static Top Navbar Example for Bootstrap</title>
-
-    <!-- Bootstrap core CSS -->
+    <title>[CHEATSHEET NAME]</title>
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+      html {
+        font-size: 62.5%;
+      }
+      body {
+        min-height: 2000px;
+        font-size: 14px;
+        font-size: 1.4rem;
+      }
+      
+      h1 { font-size: 24px; font-size: 2.4rem; }
+      
+      section h1, 
+      h2 { font-size: 22px; font-size: 2.2rem; }
+      
+      section section h1,
+      section h2,
+      h3 { font-size: 20px; font-size: 2.0rem; }
+      
+      section section section h1,
+      section section h2,
+      section h3,
+      h4 { font-size: 18px; font-size: 1.8rem; }
+      
+      section section section section h1,
+      section section section h2,
+      section section h3,
+      section h4,
+      h5 { font-size: 16px; font-size: 1.6rem; }
+      
+      section section section section section h1,
+      section section section section h2,
+      section section section h3,
+      section section h4,
+      section h5,
+      h6 { font-size: 14px; font-size: 1.4rem; }
+      
+      .navbar-static-top {
+        margin-bottom: 19px;
+      }
+      
+      #summary_checkboxes .label-info { color: #000000; }
 
-<style type="text/css">
-body {
-  min-height: 2000px;
-}
-
-.navbar-static-top {
-  margin-bottom: 19px;
-}
-</style>
-    <!-- Just for debugging purposes. Don't actually copy this line! -->
-    <!--[if lt IE 9]><script src="../bootstrap/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
+      section { padding-left: 12px; }
+    </style>
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
 
   <body>
-
     <!-- Static navbar -->
     <div class="navbar navbar-default navbar-static-top" role="navigation">
       <div class="container">
@@ -44,7 +72,7 @@ body {
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Project name</a>
+          <a class="navbar-brand" href="#">[CHEATSHEET NAME]</a>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -64,28 +92,287 @@ body {
               </ul>
             </li>
           </ul>
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="../navbar/">Default</a></li>
-            <li class="active"><a href="./">Static top</a></li>
-            <li><a href="../navbar-fixed-top/">Fixed top</a></li>
-          </ul>
         </div><!--/.nav-collapse -->
       </div>
     </div>
-
-
     <div class="container">
+      <section id="summary"> 
+        <header><h1>Summary</h1></header> 
+        <table id="summary_checkboxes" class="table">
+          <thead></thead>
+          <tbody>
+            <tr>
+              <th scope="col">Type</th>
+              <th scope="col">Build</th>
+              <th scope="col">Typing</th>
+              <th scope="col">Whitespace</th>
+              <th scope="col">Pass By</th>
+              <th scope="col">1<sup>st</sup> Class &#131;</th>
+              <th scope="col">Garbage Collection</th>
+              <th scope="col">Inheritance</th>
+            </tr>
+            <tr>
+              <td>
+                <span class="text-muted">Procedural</span><br>
+                <span class="label label-info">Object-Oriented</span><br>
+                <span class="text-muted">Functional</span>
+              </td>
+              <td>
+                <span class="text-muted">Compiled</span><br>
+                <span class="label label-info">Interpreted</span>
+              </td>
+              <td>
+                <span class="label label-info">Weak</span><br>
+                <span class="text-muted">Strong</span><br>
+                <span class="text-muted">Other</span>
+              </td>
+              <td>
+                <span class="label label-info">Non-Meaningful</span><br>
+                <span class="text-muted">Meaningful</span>
+              </td>
+              <td>
+                <span class="label label-info">Value</span><br>
+                <span class="label label-info">Reference</span>
+              </td>
+              <td class="text-center"><span class="badge alert-info"><span class="glyphicon glyphicon-ok"></span></span></td>
+              <td class="text-center"><span class="badge alert-info"><span class="glyphicon glyphicon-ok"></span></span></td>
+              <td>
+                <span class="text-muted">Single</span><br>
+                <span class="label label-info">Multiple</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <h2>History</h2>
+        <h2>Topline Idiosyncracies</h2>
+      </section><!-- /summary -->
+  
+      <section id="datatypes">
+        <header><h1>Datatypes</h1></header>
+        <h2>Summary  of Type System</h2>
+        <h2>Idiosyncracies</h2>
+        <section id="datatypes_simple">
+          <header><h1>Simple Types</h1></header>
+          <section id="datatypes_simple_literals">
+            <header><h1>Simple Literals</h1></header>
+            <section id="datatypes_simple_literals_numbers">
+              <header><h1>Numbers</h1></header>
+            </section>
+            <section id="datatypes_simple_literals_characters">
+              <header><h1>Characters</h1></header>
+            </section>
+            <section id="datatypes_simple_literals_strings">
+              <header><h1>Strings</h1></header>
+            </section>
+          </section>
+          <section id="datatypes_simple_variables">
+            <header><h1>Simple Variables</h1></header>
+            <section id="datatypes_simple_variables_numbers">
+              <header><h1>Numbers</h1></header>
+            </section>
+            <section id="datatypes_simple_variables_characters">
+              <header><h1>Characters</h1></header>
+            </section>
+            <section id="datatypes_simple_variables_strings">
+              <header><h1>Strings</h1></header>
+            </section>
+          </section>
+        </section>
+        <section id="datatypes_composite">
+          <header><h1>Composite Types</h1></header>
+          <section id="datatypes_composite_literals">
+            <header><h1>Composite Literals</h1></header>
+            <section id="datatypes_composite_literals_strings">
+              <header><h1>Strings</h1></header>
+            </section>
+            <section id="datatypes_composite_literals_arrays">
+              <header><h1>Arrays</h1></header>
+            </section>
+            <section id="datatypes_composite_literals_maps">
+              <header><h1>Maps</h1></header>
+            </section>
+          </section>
+          <section id="datatypes_composite_variables">
+            <header><h1>Composite Variables</h1></header>
+            <section id="datatypes_composite_variables_strings">
+              <header><h1>Strings</h1></header>
+            </section>
+            <section id="datatypes_composite_variables_arrays">
+              <header><h1>Arrays</h1></header>
+            </section>
+            <section id="datatypes_composite_variables_maps">
+              <header><h1>Maps</h1></header>
+            </section>
+          </section>
+        </section>
+        <section id="datatypes_reference">
+          <section id="datatypes_reference_literals">
+            <header><h1>Reference Literals</h1></header>
+          </section>
+          <section id="datatypes_reference_variables">
+            <header><h1>Reference Variables</h1></header>
+          </section>
+        </section>
+      </section>
 
-      <!-- Main component for a primary marketing message or call to action -->
-      <div class="jumbotron">
-        <h1>Navbar example</h1>
-        <p>This example is a quick exercise to illustrate how the default, static and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>
-        <p>To see the difference between static and fixed top navbars, just scroll.</p>
-        <p>
-          <a class="btn btn-lg btn-primary" href="../../components/#navbar" role="button">View navbar docs &raquo;</a>
-        </p>
-      </div>
+      <section id="syntax">
+        <header><h1>Syntax</h1></header>
+        <section id="syntax_summary">
+          <header><h1>Summary</h1></header>
+        </section>
+        <section id="syntax_idiosyncracies">
+          <header><h1>Idiosyncracies</h1></header>
+        </section>
+        <section id="syntax_naming">
+          <header><h1>Naming Conventions</h1></header>
+        </section>
+        <section id="syntax_reservedwords">
+          <header><h1>Reserved Words</h1></header>
+        </section>
+        <section id="syntax_truthvalues">
+          <header><h1>Truth Values</h1></header>
+        </section>
+        <section id="syntax_operators">
+          <header><h1>Operators</h1></header>
+          <section id="syntax_operators_arithmetic">
+            <header><h1>Arithmetic</h1></header>
+          </section>
+          <section id="syntax_operators_comparison">
+            <header><h1>Comparison</h1></header>
+          </section>
+          <section id="syntax_operators_logical">
+            <header><h1>Logical</h1></header>
+          </section>
+          <section id="syntax_operators_bitwise">
+            <header><h1>Bitwise</h1></header>
+          </section>
+          <section id="syntax_operators_set">
+            <header><h1>Set</h1></header>
+          </section>
+          <section id="syntax_operators_string">
+            <header><h1>String</h1></header>
+          </section>
+          <section id="syntax_operators_assignment">
+            <header><h1>Assignment</h1></header>
+          </section>
+          <section id="syntax_operators_other">
+            <header><h1>Other</h1></header>
+          </section>
+          <section id="syntax_operators_associativity">
+            <header><h1>Associativity and Precedence</h1></header>
+          </section>
+        </section>
+      </section>
+      <section id="syntax_declaration">
+        <header><h1>Variable Declaration</h1></header>
+      </section>
+      <section id="syntax_definition">
+        <header><h1>Variable Definition</h1></header>
+      </section>
+      <section id="syntax_statements">
+        <header><h1>Statements</h1></header>
+      <section>
+      <section id="syntax_blocks">
+        <header><h1>Blocks</h1></header>
+      </section>
+      <section id="syntax_flowcontrol">
+        <header><h1>Flow Control</h1></header>
+        <section id="syntax_flowcontrol_conditionals">
+          <header><h1>Conditionals</h1></header>
+        </section>
+        <section id="syntax_flowcontrol_loops">
+          <header><h1>Loops</h1></header>
+        </section>
+      </section>
+      <section id="syntax_functions">
+        <header><h1>Functions</h1></header>
+        <section id="syntax_functions_declaration">
+          <header><h1>Declaration</h1></header>
+        </section>
+        <section id="syntax_functions_definition">
+          <header><h1>Definition</h1></header>
+        </section>
+        <section id="syntax_functions_calling">
+          <header><h1>Calling</h1></header>
+        </section>
+      </section>
+      <section id="syntax_classes">
+        <header><h1>Classes</h1></header>
+        <section id="syntax_classes_declaration">
+          <header><h1>Declaration</h1></header>
+        </section>
+        <section id="syntax_classes_definition">
+          <header><h1>Definition</h1></header>
+        </section>
+        <section id="syntax_classes_inheritance">
+          <header><h1>Inheritance Model</h1></header>
+        </section>
+      </section>
+      <section id="syntax_objects">
+        <header><h1>Objects</h1></header>
+        <section id="syntax_objects_instantiation">
+          <header><h1>Instantiation</h1></header>
+        </section>
+        <section id="syntax_objects_behavior">
+          <header><h1>Behavior</h1></header>
+        </section>
+      </section>
+    </section>
 
+    <section id="commonuse">
+      <header><h1>Common Usage</h1></header>
+      <section id="commonuse_basicprogram">
+        <header><h1>Basic Program</h1></header>
+      </section>
+      <section id="commonuse_complexprogram">
+        <header><h1>Complex Program</h1></header>
+      </section>
+      <section id="commonuse_varscope">
+        <header><h1>Variable Scope</h1></header>
+      </section>
+      <section id="commonuse_input">
+        <header><h1>Input</h1></header>
+        <section id="commonuse_input_stdin">
+          <header><h1>From STDIN</h1></header>
+        </section>
+        <section id="commonuse_input_files">
+          <header><h1>From Files</h1></header>
+        </section>
+        <section id="commonuse_input_network">
+          <header><h1>From Network</h1></header>
+        </section>
+      </section>
+      <section id="commonuse_output">
+        <header><h1>Output</h1></header>
+        <section id="commonuse_output_stdout">
+          <header><h1>To STDOUT</h1></header>
+        </section>
+        <section id="commonuse_output_files">
+          <header><h1>To Files</h1></header>
+        </section>
+        <section id="commonuse_output_network">
+          <header><h1>To Network</h1></header>
+        </section>
+      </section>
+    </section>
+   
+    <section id="compilation">
+      <header><h1>Compilation / Interpretation</h1></header>
+      <section id="compilation_helloworld">
+        <header><h1>Hello, World</h1></header>
+      </section>
+      <section id="compilation_compiler">
+        <header><h1>Common Compiler / Interpreter Usage</h1></header>
+      </section>
+      <section id="compilation_organization">
+        <header><h1>Code Organization</h1></header>
+      <section>
+    </section>
+
+    <section id="codestone">
+      <header><h1>Code-etta Stone</h1></header>
+    </section>
+  </section>
     </div> <!-- /container -->
 
 
@@ -96,4 +383,3 @@ body {
     <script src="../bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>
-
