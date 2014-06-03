@@ -1,0 +1,188 @@
+Mastering Node.js
+By: Sandro Pasquali
+Publisher: Packt Publishing
+Pub. Date: November 25, 2013
+Print ISBN-13: 978-1-78216-632-0
+Web ISBN-13: 978-1-78216-633-7
+Pages in Print Edition: 346
+
+Chapter 1: Understanding the Node Environment
+
+Extending JavaScript
+  * Original design principles of Ryan Dahl:
+    - A Node program/process runs on a single thread, ordering execution 
+      through an event loop
+    - Web applications are IO intensive, so the focus should be on making
+      IO fast
+    - Program flow is always directed through async callbacks
+    - Expensive CPU operations should be split off into separate, parallel
+      processes, emitting events as results arrive
+    - Complex programs should be assembled from simpler programs
+
+  * In general, operations must never block.
+  * Applications express interest in future events, are notified of them
+
+  Events
+    * Events in Node are instances of events.EventEmitter
+    * Example of setting an EventEmitter as the prototype of a function 
+      constructor. Each instance's 'this' provides a reference to the event
+      API. The 'counter' instance can emit events, and we bind a callback
+      to the incremented event to print the counter value:
+
+        var EventEmitter = require('events').EventEmitter;
+        var Counter = function(init) {
+          this.increment = function() {
+            init++;
+            this.emit('incremented', init);
+          }
+        }
+
+        Counter.prototype = new EventEmitter();
+        var counter = new Counter(10);
+        var callback = function(count) { console.log(count); };
+        counter.addListener('incremented', callback);
+        counter.increment(); // 11
+        counter.increment(); // 12
+
+    * Example of async, non-blocking programming:
+
+        var Readable = require('stream').Readable;
+        var readable = new Readable;
+        var count = 0;
+
+        readable._read = function() {
+          if (++count > 10) { return readable.push(null); }
+          setTimeout(function() {
+            readable.push(count + "\n");
+          }, 500);
+        };
+        readable.pipe(process.stdout);
+
+  Modularity
+    * Node has 'packages', following the CommonJS spec
+    * A package is a collection of program files bundled with a manifest
+      describing the collection.
+
+  The Network
+    * Node needs good, stable IO capabilities
+    * Supports several standard network protocols: HTTP, TLS/SSL, UDP
+    * Example that allows sending data between UDP servers:
+
+        var dgram = require('dgram');
+        var client = dgram.createSocket("udp4");
+        var server = dgram.createSocket("udp4");
+
+        var message = process.argv[2] || "message";
+
+        message = new Buffer(message);
+
+        server
+        .on("message", function(msg) {
+          process.stdout.write("Got message: " + msg + "\n");
+          process.exit();
+        })
+        .bind(41234);
+
+        client.send(message, 0, message.length, 41234, "localhost");
+
+V8 (Google's JavaScript Engine)
+  * The Node 'process' object refers to the V8 runtime.
+  * You can pass node options to V8 with --v8-options
+  * Version can be printed with:
+
+    node -e "console.log(process.versions.v8)"
+
+  Memory and Other Limits
+    * A program that would crash V8:
+
+        var count = 0;
+        (function curse() {
+          console.log(++count);
+          curse();
+        })();
+
+    * Errors out at max call stack size
+    * You can change V8's --stack_size options to raise the limit
+    * Built in limits are 700M on 32 bit and 1400M on 64 bit
+    * You can also effect GC behavior and expose a 'gc' object
+
+  Harmony
+    * Harmony is the name for ECMAScript 6
+    * You can pass some --harmony_* options to change language behavior
+
+The Process Object
+  * This covers in detail how JS is compiled by V8 into instructions whose
+    execution context is accessible via the native Node process object
+  * IO ops in Node's single thread (actually the V8 event loop) are delegated
+    to libuv, which has its own multithread/async environment. libuv
+    announces the completion of IO ops, allowing callbacks to be reintroduced
+    into the main V8 thread for execution.
+  * The 'process' object provides info/control for the current running
+    process. It's an instance of EventEmitter, accessible from any scope, 
+    and exposes useful low-level pointers. Example:
+
+      var size = process.argv[2];
+      var totl = process.argv[3] || 100;
+      var buff = [];
+      for (var i=0; i < totl; i++) {
+        buff.push(new Buffer(size));
+        process.stdout.write(process.memoryUsage().heapTotal + "\n");
+      }
+
+  * That outputs memory usage as it grows.
+  * A Node process begins by constructing a single execution stack, with the
+    global context forming the base of the stack. Function on the stack 
+    execute within their own, local, context, which remains enclosed in
+    the global context. 
+
+The Read-Eval-Print Loop and Executing a Node Program
+  * The REPL represents the Node shell. Use it to test execution.
+  * Example code that allows execution of JavaScript on a remote server:
+
+      /* repl_client.js */
+      var net = require('net');
+      var sock = net.connect(8080);
+      process.stdin.pipe(sock);
+      sock.pipe(process.stdout);
+
+      /* repl_server.js */
+      var repl = require('repl');
+      var net = require('net');
+      net.createServer(function(socket) {
+        repl
+        .start({
+          prompt: '> ',
+          input : socket,
+          output: socket,
+          terminal: true
+        })
+        .on('exit', function() { socket.end(); });
+      }).listen(8080);
+
+
+Chapter 2: Understanding Asynchronous Event-Driven Programming
+  * "lightweight, independent, and share-nothing processes communicating
+    through callbacks synchronized within a predictable event loop"
+
+Broadcasting Events
+  * "Node has commoditized IO through the introduction of an environment
+    where resources are (ideally) never idle. [...] If the start, stop, and
+    idle states of a process are understood as being events that can be
+    subscribed to and acted upon we can begin to discuss how extremely
+    complex systems can be constructed within this new, and at heart quite
+    simple to grasp, model."
+
+  Collaboration
+    * In a collaborative work environment, workers could be assigned new tasks
+      instead of idling. You need a virtual switchboard to do that.
+    * A single dispatcher could work, but has a lot of overhead.
+
+  Queueing
+    * Adding a buffer between clients and the dispatcher helps.
+    * Requests are added to a priority queue, the dispatcher addresses the
+      queue to figure out what to apportion to workers.
+
+Listening for Events
+  Signals
+    * The 'process' object exposes POSIX signal names, and a node process
+      can subscribe to those system events
