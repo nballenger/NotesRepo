@@ -186,3 +186,152 @@ Listening for Events
   Signals
     * The 'process' object exposes POSIX signal names, and a node process
       can subscribe to those system events
+    * You can set listeners for things like SIGINT:
+
+        // The long interval keeps the process alive.
+        setInterval(function() {}, 1e6);
+        process.on('SIGINT', function() {
+          console.log('SIGINT received');
+          process.exit(1);
+        });
+
+    * Example of interprocess communication:
+
+        setInterval(function() {}, 1e6);
+        process.on('SIGUSR1', function() {
+          console.log('Got a signal!');
+        });
+
+    * Triggered with:
+
+        kill -s SIGUSR1 123
+
+  Forks
+    * Node creates or forks processes to parallelize execution, rather than
+      creating a thread pool.
+    * To create a child process, you call child_process.fork:
+      
+        var cp = require('child_process');
+        var child = cp.fork(__dirname + '/lovechild.js');
+
+    * The forking process (parent) can send and listen for messages from the
+      forked child process:
+
+        child.on('message', function(msg) {
+          console.log('Child said: ', msg);
+        });
+        child.send('I love you.');
+
+    * The child in lovechild.js can send and listen for messages:
+
+        process.on('message', function(msg) {
+          console.log('Parent said: ', msg);
+          process.send("I love you too.");
+        });
+
+    * You can also pass a network server to a child process:
+
+        var child = require('child_process').fork('./child.js');
+        var server = require('net').createServer();
+        server.on('connection', function(socket) {
+          socket.end('Parent handled connection');
+        });
+        server.listen(8080, function() {
+          child.send("The parent message", server);
+        });
+
+    * In the child.js file:
+
+        process.on('message', function(msg, server) {
+          console.log(msg);
+          server.on('connection', function(socket) {
+            socket.end('Child handled connection');
+          });
+        });
+
+    * The above should create a situation where the parent and child will
+      split the load of incoming requests equally.
+
+  File Events
+    * You can register for notifications on file events through fs.watch
+    * watch() takes three args:
+      1. File or directory path watched.
+      2. Optional options object: { persistent: (true|false) }
+      3. Listener function, taking two args:
+        - name of change event ('rename' or 'change')
+        - filename that was changed
+    * Example of a watcher on itself:
+
+        var fs = require('fs');
+        fs.watch(__filename, {persistent: false}, function(event, filename)
+        {
+          console.log(event);
+          console.log(filename);
+        });
+
+        setImmediate(function() {
+          fs.rename(__filename, __filename + '.new', function() {});
+        });
+
+        // closing a watcher channel:
+        var w = fs.watch('file', function() {});
+        w.close();
+
+  Deferred Execution
+    * Node has two types of deferred event sources that let you schedule
+      callback executions to occur either before or after the processing
+      of queued IO events.
+
+    process.nextTick
+      * Similar to setTimeout, since it defers execution to some future point
+      * "A list of all requested nextTick callbacks are placed at the head
+        of the event queue and is processed, in its entirety and in order, 
+        before IO or timer events, and after execution of the current script
+        *the JavaScript code executing synchronously on the V8 thread)."
+      * Mostly used to postpone broadcasting result events to listeners until
+        the caller has had an opportunity to register event listeners.
+      * Used where async behavior should be emulated.
+      * WRONG EXAMPLE:
+
+          var events = require('events');
+          function getEmitter() {
+            var emitter = new events.EventEmitter();
+            emitter.emit('start');
+            return emitter;
+          }
+
+          var myEmitter = getEmitter();
+
+          myEmitter.on("start", function() {
+            console.log("Started");
+          });
+
+      * That looks like it will emit 'start' which should trigger the on
+        listener, but it won't because the event is emitted prior to binding
+      * RIGHT EXAMPLE:
+
+          var events = require('events');
+
+          function getEmitter() {
+            var emitter = new events.EventEmitter();
+            process.nextTick(function() {
+              emitter.emit('start');
+            });
+            return emitter;
+          }
+          var myEmitter = getEmitter();
+          myEmitter.on('start', function() {
+            console.log('Started');
+          });
+
+      * That will allow the on handler to get attached prior to the emission
+        of the start event.
+
+  setImmediate
+    * Technically a timer like setInterval/setTimeout, but has no set time
+    * While callbacks queued by nextTick will execute before IO and timer
+      events, callbacks queued by setImmediate will be called after IO events.
+    * Note that nextTick happens before setImmediate
+    * Returns an object that can be passed to cancelImmediate.
+
+Timers
