@@ -54,6 +54,9 @@
 
       section { padding-left: 12px; }
       article>section { border-bottom: 1px solid silver; padding-bottom: 10px; margin-bottom: 20px; }
+
+      .bs-callout { margin: 20px 0; padding: 20px; border-left: 3px solid #EEE; }
+      .bs-callout-info { background-color: #F4F8FA; border-color: #5BC0DE; }
     </style>
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -178,6 +181,119 @@ print message</pre>
         <header><h1>Datatypes</h1></header>
         <h2>Summary  of Type System</h2>
         <h2>Idiosyncracies</h2>
+        <section id="datatypes_builtin">
+          <header><h1>Built-In Datatypes</h1></header>
+          <table class="table table-condensed">
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Description</th>
+                <th>Immutable</th>
+                <th>Examples</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th><code>bool</code></th>
+                <td>Boolean value</td>
+                <td><span class="glyphicon glyphicon-ok"></span></td>
+                <td>
+<pre>a = True
+b = False</pre>
+                </td>
+              </tr>
+              <tr>
+                <th><code>int</code></th>
+                <td>integer of arbitrary magnitude</td>
+                <td><span class="glyphicon glyphicon-ok"></span></td>
+                <td>
+<pre>a = 0
+b = 1
+c = -1
+d = 0b1011      # Binary literal
+e = 0o52        # Octal literal 
+f = 0x7f        # Hex literal</pre>
+                </td>
+              </tr>
+              <tr>
+                <th><code>float</code></th>
+                <td>floating-point number</td>
+                <td><span class="glyphicon glyphicon-ok"></span></td>
+                <td>
+<pre>a = 0.0
+b = 1.1
+c = 1.
+d = .1
+e = 5.1e2       # 5.1 * 10<sup>2</sup>
+f = 5.1E2       # Alternate syntax</pre>
+                </td>
+              </tr>
+              <tr>
+                <th><code>list</code></th>
+                <td>mutable sequence of objects</td>
+                <td></td>
+                <td>
+<pre>a = []                          # Empty list object
+b = [1]
+c = [1,2,3]
+d = ['one', 2, 'three']         # Mixed type list
+e = [1, ['two', 2], ['three']]  # Nested lists
+f = list(range(8))              # List returned from method</pre>
+                </td>
+              </tr>
+              <tr>
+                <th><code>tuple</code></th>
+                <td>immutable sequence of objects</td>
+                <td><span class="glyphicon glyphicon-ok"></span></td>
+                <td>
+<pre>a = ()
+b = (1, 'two', 3)
+c = tuple('a','b','c')</pre>
+                </td>
+              </tr>
+              <tr>
+                <th><code>str</code></th>
+                <td>character string</td>
+                <td><span class="glyphicon glyphicon-ok"></span></td>
+                <td>
+<pre>
+a = ''
+b = 'b'
+c = "b"
+d = "Alpha\nBeta"
+</pre>
+                </td>
+              </tr>
+              <tr>
+                <th><code>set</code></th>
+                <td>unordered set of distinct objects</td>
+                <td></td>
+                <td>
+<pre>
+</pre>
+                </td>
+              </tr>
+              <tr>
+                <th><code>frozenset</code></th>
+                <td>immutable form of <code>set</code> class</td>
+                <td><span class="glyphicon glyphicon-ok"></span></td>
+                <td>
+<pre>
+</pre>
+                </td>
+              </tr>
+              <tr>
+                <th><code>dict</code></th>
+                <td>associative mapping of key-value pairs</td>
+                <td></td>
+                <td>
+<pre>
+</pre>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
         <section id="datatypes_simple">
           <header><h1>Simple Types</h1></header>
           <section id="datatypes_simple_literals">
@@ -252,12 +368,96 @@ print message</pre>
         </section>
         <section id="syntax_naming">
           <header><h1>Naming Conventions</h1></header>
+          <ul>
+            <li>Identifiers are case sensitive.</li>
+            <li>Composed of alphanumeric characters + underscore + Unicode characters.</li>
+            <li>Identifiers may not begin with a numeral or match a reserved word.</li>
+            <li>Camel case and underscore separated are both acceptable conventions.</li>
+            <li>It is considered "pythonic" to use self-documenting variable names.</li>
+          </ul>
         </section>
         <section id="syntax_reservedwords">
           <header><h1>Reserved Words</h1></header>
+          <table class="table table-condensed">
+            <tr>
+              <td><code>False</code></td> 
+              <td><code>as</code></td> 
+              <td><code>continue</code></td> 
+              <td><code>else</code></td> 
+              <td><code>from</code></td> 
+              <td><code>in</code></td> 
+              <td><code>not</code></td> 
+              <td><code>return</code></td> 
+              <td><code>yield</code></td> 
+            </tr><tr>
+              <td><code>None</code></td> 
+              <td><code>assert</code></td> 
+              <td><code>def</code></td> 
+              <td><code>except</code></td> 
+              <td><code>global</code></td> 
+              <td><code>is</code></td> 
+              <td><code>or</code></td> 
+              <td><code>try</code></td> 
+              <td>&nbsp;</td>
+            </tr><tr> 
+              <td><code>True</code></td> 
+              <td><code>break</code></td> 
+              <td><code>del</code></td> 
+              <td><code>finally</code></td> 
+              <td><code>if</code></td> 
+              <td><code>lambda</code></td> 
+              <td><code>pass</code></td> 
+              <td><code>while</code></td> 
+              <td>&nbsp;</td> 
+            </tr><tr> 
+              <td><code>and</code></td> 
+              <td><code>class</code></td> 
+              <td><code>elif</code></td> 
+              <td><code>for</code></td> 
+              <td><code>import</code></td> 
+              <td><code>nonlocal</code></td> 
+              <td><code>raise</code></td> 
+              <td><code>with</code></td> 
+              <td>&nbsp;</td> 
+            </tr>
+</table>
         </section>
         <section id="syntax_truthvalues">
           <header><h1>Truth Values</h1></header>
+          <p>Note that in Python, <strong>all objects have a Boolean value</strong>, and may be used in a test statement. Additionally, <strong>Python's Boolean operators will stop evaluating a statement as soon as a result can be determined.</strong> This is similar to the convention in some other languages of having a strong and weak set of logical operators, with the strong operator having higher precedence and forcing full evaluation of a statement, and the weak operator returning as soon as a value is found.</p>
+          <p>There are several notable knock-on effects of Python's short-circuit logical evaluations:</p>
+          <ul>
+            <li>You can use <code>or</code> statements to select the first non-empty object from a list of objects: <code>item = X or Y or Z or None</code></li>
+            <li>You should be intentional about using <code>or</code> to evaluate the return values of functions, since in a statement like <code>f1() or f2()</code>, <code>f2()</code> will not run when <code>f1()</code> returns <code>True</code>.</li>
+          </ul>
+          <p>Additionally, it is important to note that the values <code>True</code> and <code>False</code> are internally the same as the integers <code>1</code> and <code>0</code> respectively. Thus, initializing a variable to <code>False</code> is the same as setting it to <code>0</code>.</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Truthy Values</th>
+                <th>Falsy Values</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <ul>
+                    <li>Boolean literal <code>True</code></li>
+                    <li>Non-zero numbers</li>
+                    <li>Non-empty sequences and containers (strings and lists)</li>
+                  </ul>
+                </td>
+                <td>
+                  <ul>
+                    <li>Boolean literal <code>False</code></li>
+                    <li>Numberic objects with a value of zero</li>
+                    <li>Empty sequences and containers</li>
+                    <li>The <code>None</code> object</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </section>
         <section id="syntax_operators">
           <header><h1>Operators</h1></header>
@@ -354,7 +554,7 @@ print message</pre>
                 </tr>
                 <tr>
                   <th scope="row"><code>&lt;&gt;</code></th>
-                  <td>Obsolte synonym for <code>!=</code>.</td>
+                  <td>Obsolete synonym for <code>!=</code>.</td>
                   <td></td>
                 </tr>
                 <tr>
@@ -370,6 +570,7 @@ print message</pre>
           </section>
           <section id="syntax_operators_logical">
             <header><h1>Logical</h1></header>
+            <p>Note that Python does not have a native exclusive-or operator. The equivalent can be obtained by (among other methods) an equality comparison on the Boolean casts of two operands: <code>bool(a) != bool(b)</code>.</p>
             <table class="table table-condensed">
               <thead>
                 <tr>
@@ -379,7 +580,34 @@ print message</pre>
                 </tr>
               </thead>
               <tbody>
-
+                <tr>
+                  <th><code>and</code></th>
+                  <td>Returns <code>True</code> if both the left and right operands evaluate to <code>True</code>.</td>
+                  <td>
+<pre>True and True             # True
+True and False            # False
+False and True            # False
+False and False           # False</pre>
+                  </td>
+                </tr>
+                <tr>
+                  <th><code>or</code></th>
+                  <td>Returns <code>True</code> if either the left or the right operand evaluates to <code>True</code>.</td>
+                  <td>
+<pre>True or True              # True
+True or False             # True
+False or True             # True
+False or False            # False</pre>
+                  </td>
+                </tr>
+                <tr>
+                  <th><code>not</code></th>
+                  <td>Unary operator. Returns <code>True</code> if the right operand evaluates to <code>False</code>.</td>
+                  <td>
+<pre>not True                  # False
+not False                 # True</pre>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </section>
@@ -530,6 +758,17 @@ b //= 3   # b is set to 3</pre>
       </section>
       <section id="syntax_statements">
         <header><h1>Statements</h1></header>
+        <div class="bs-callout bs-callout-info">
+        <h2>A note on 'empty' blocks in Python:</h2>
+        <p>Due to Python's whitespace-delimited syntax the language requires an explicit no-operation statement: <code>pass</code>. Without <code>pass</code>, creating placeholder code that included compound statements would be difficult. For example:</p>
+<pre>#TODO: flesh out the push and pop methods:
+def push():
+  pass
+
+def pop():
+  pass</pre>
+        <p>Leaving a completely empty function body would cause a syntax error, since the <code>def</code> statement opens a block. Without the <code>pass</code> statement, developers would be forced to include some other no-operation statement, like <code>True</code> or <code>1</code>&mdash;<code>pass</code> makes clear that the line is intended to be a no-op.</p>
+        </div>
       <section>
       <section id="syntax_blocks">
         <header><h1>Blocks</h1></header>
@@ -538,9 +777,67 @@ b //= 3   # b is set to 3</pre>
         <header><h1>Flow Control</h1></header>
         <section id="syntax_flowcontrol_conditionals">
           <header><h1>Conditionals</h1></header>
+<pre>a = True
+b = False
+
+if a:
+  print "a was True"
+elif b:
+  print "b was True"
+else:
+  print "neither was True"
+
+c = 1 if a else -1      # if/else oneliner as a ternary expression</pre>
         </section>
         <section id="syntax_flowcontrol_loops">
           <header><h1>Loops</h1></header>
+            <section id="syntax_flowcontrol_loops_while">
+              <header><h1>The <code>while</code> Loop</h1></header>
+<pre>a = True
+
+print "Rolling till we get six!"
+while a:
+  roll = int(random.random() * 6) + 1
+  print roll
+  if roll == 6:
+    a = False
+else:
+    print "'a' is False now."       # else block executes if you exit without 'break'
+
+while True:
+  print "Should run once."
+  break
+else:
+  print "This should never print."  # Will not run due to 'break' in loop body
+  
+
+b = 0
+while b &lt; 10:
+  b += 1
+  if (b % 2) == 1:                  # Uses 'continue' to skip odd numbers
+    continue
+  print str(b)
+</pre>
+          </section>
+          <section id="syntax_flowcontrol_loops_for">
+            <header><h1>The <code>for</code> Loop</h1></header>
+<pre>
+for x in ["a", "b", "c"]:
+  print x
+
+
+T = [(1,2), (3,4), (5,6)]
+for (a,b) in T:
+  print(a,b)
+
+D = {'a': 1, 'b': 2, 'c': 3}
+for key in D:
+  print(key, '=&gt;', D[key])
+
+for (key, value) in D.items():
+  print(key, '=&gt;', value)
+</pre>
+          </section>
         </section>
       </section>
       <section id="syntax_functions">
