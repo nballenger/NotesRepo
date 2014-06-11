@@ -1,0 +1,12 @@
+The Principles of Object-Oriented JavaScript
+By: Nicholas C. Zakas
+Publisher: No Starch Press
+Pub. Date: February 13, 2014
+Print ISBN-13: 978-1-59327-540-2
+Pages in Print Edition: 120
+
+Chapter 1: Primitive and Reference Types
+  What Are Types?
+    * Primitive types are stored as simple data types, reference types
+      are stored as objects--references to memory locations.
+    * Tracks variables for a scope with a 'variable object'.

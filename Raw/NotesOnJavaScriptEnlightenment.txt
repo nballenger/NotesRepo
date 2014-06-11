@@ -1,3 +1,10 @@
+JavaScript Enlightenment
+By: Cody Lindley
+Publisher: O'Reilly Media, Inc.
+Pub. Date: January 7, 2013
+Print ISBN-13: 978-1-4493-4288-3
+Pages in Print Edition: 166
+
 Notes on JavaScript Enlightenment
 
 Chapter 1: JavaScript Objects

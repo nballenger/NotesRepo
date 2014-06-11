@@ -1,0 +1,188 @@
+Data Structures and Algorithms with JavaScript
+By: Michael McMillan
+Publisher: O'Reilly Media, Inc.
+Pub. Date: March 14, 2014
+Print ISBN-13: 978-1-4493-6493-9
+Pages in Print Edition: 246
+
+Chapter 1: The JavaScript Programming Environment and Model
+
+The JavaScript Environment
+  * This book uses Mozilla's SpiderMonkey for a JavaScript shell.
+  * Gives you an executable for evaluating files of js.
+
+JavaScript Programming Practices
+  * Declare your variables.
+  * JS doesn't have block scope, it has function scope
+  * Sometimes you hit the recursion call limit.
+
+Objects and Object-Oriented Programming
+  * Examples here of using 'this'.
+
+Chapter 2: Arrays
+  
+JavaScript Arrays Defined
+  * Specialized type of object
+  * Indices are property names that are integers used to indicate offsets
+  * Index values converted to strings internally to conform to object rules
+  * Not quite as efficient as arrays in other languages.
+
+Using Arrays
+  Creating:
+
+    var a = [];
+    var b = [1,2,3,4,5];
+    var c = new Array();
+    var d = new Array(1,2,3,4,5);  // fills array with args
+    var e = new Array(10); // returns empty array of length 10
+    var f = [1, "string", true, null];
+
+  Accessing and Writing Array Elements
+    
+    var a = [];
+    for (var i = 0; i < 100; ++i) {
+      nums[i] = i+1;
+    }
+
+  Creating Arrays from Strings
+    
+    var sentence = "a b c d e";
+    var words = sentence.split(" ");
+
+  Aggregate Array Operations
+    
+    var a = [1,2,3];
+    var b = a;  // reference to a, no deep copy
+
+Accessor Functions
+
+  Searching for a Value
+
+    a.indexOf(value)
+    lastIndexOf(value)
+
+  String Representations of Arrays
+    
+    a.join()
+    a.toString()
+
+  Creating New Arrays from Existing Arrays
+
+    var a = [1,2];
+    var b = [3,4];
+    var c = a.concat(b);
+
+    var a = [1,2,3,4,5];
+    var b = a.splice(3,3); // start point, number of items
+
+Mutator Functions
+  
+  Adding Elements to an Array
+
+    var a = [];
+    a.push(1);    // adds to end
+    a.unshift(2); // adds to beginning
+
+  Removing Elements from an Array
+
+    var a = [1,2,3,4,5];
+    a.pop();      // takes from end
+    a.shift();    // takes from beginning
+
+  Adding/Removing from the Middle of an Array
+
+    var a = [1,2,3,7,8];
+    var b = [4,5,6];
+    a.splice(3,0,b);
+
+    var a = [1,2,3,4,5,6];
+    a.splice(3,3);  // removes 4,5,6
+
+  Putting Array Elements in Order
+
+    var a = [1,2,3,4,5];
+    a.reverse();    // reverses in place
+    var b = [5,1,2,4,3];
+    b.sort();       // sorts in place, but as strings
+
+    var b = [5,1,2,4,3];
+    b.sort(function(n1,n2) { return n1 - n2; }); // numeric sort
+
+Iterator Functions
+
+  Non-Array-Generating Iterator Functions
+
+    var a = [1,2,3,4,5];
+    a.forEach(function (n) { console.log(n, n*n); });
+
+    var allEvenBool = a.every(function (n) { return n % 2 == 0; });
+
+    var atLeastOneEven = a.some(function (n) { return n % 2 == 0; });
+
+    var sum = a.reduce(function (total, n) { return total + n; });
+
+    var b = ['jack ', 'climbed ', 'the ', 'beanstalk '];
+    b.reduce(function (output, s) { return output + s; });
+    b.reduceRight(function (output, s) { return output + s });
+
+  Iterator Functions that Return a New Array
+    
+    function double(n) { return 2*n; }
+    var a = [1,2,3,4,5];
+    var b = a.map(double);
+
+    function isEven(n) { return n%2==0; }
+    var c = a.filter(isEven);
+
+Two-Dimensional and Multidimensional Arrays
+
+  Creating Two-Dimensional Arrays
+
+    var a = [];
+    var rows = 5;
+    for (var i = 0; i < rows; ++i) { a[i] = []; }
+
+    // Augmenting the prototype, from Crockford:
+    Array.matrix = function(rows, cols, initial) {
+      var arr = [];
+      for (var i = 0; i < rows; ++i) {
+        var columns = [];
+        for (var j = 0; j < cols; ++j) {
+          columns[j] = initial;
+        }
+        arr[i] = columns;
+      }
+      return arr;
+    }
+
+  Processing Two-Dimensional Array Elements
+    * Use nested for loops.
+
+  Jagged Arrays
+    * Rows may have different numbers of elements.
+
+Arrays of Objects
+  * You can have arrays of objects.
+
+Arrays in Objects
+  * Lots of data structures in this book are class objects with an 
+    underlying array for data storage.
+
+Chapter 3: Lists
+  * List ADT:
+    Properties:
+      listSize
+      pos
+      length
+    Functions:
+      toString()
+      getElement()
+      insert()
+      append()
+      remove()
+      front()
+      end()
+      prev()
+      next()
+      currPos()
+      moveTo()
