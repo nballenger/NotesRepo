@@ -57,6 +57,7 @@
 
       .bs-callout { margin: 20px 0; padding: 20px; border-left: 3px solid #EEE; }
       .bs-callout-info { background-color: #F4F8FA; border-color: #5BC0DE; }
+      cite { font-style: italic; }
     </style>
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -166,7 +167,7 @@ print message</pre>
             <p>Developed starting in the late 1980's by Guido van Rossum. The 2.0 release in 2000 brought in automated garbage collection and unicode support, and the 3.0 release in 2008 added features and refinements, many of which were also backported to 2.6 and 2.7. Python has a rather specific design philosophy, typified by statements like, <q>Explicit is better than implicit.</q> and <q>Simple is better than complex.</q> See <a href="http://legacy.python.org/dev/peps/pep-0020/" target="_blank">PEP 20</a> for the original "Zen of Python" document.</p>
           </div>
           <div class="tab-pane" id="idiosyncracies">
-            <p>One way to think about the particularities of python is that it's in many ways diametrically opposed to perl. Where perl was created by a linguist, python is the creation of a mathematician. Perl has "more than one way to do it," while python generally strives to have a single, canonical way of expressing specific operations. Some of the more striking features of python are:</p>
+            <p>Python is in many ways diametrically opposed to perl. Where perl was created by a linguist, python is the creation of a mathematician. Perl has "more than one way to do it," while python generally strives to have a single, canonical way of expressing specific operations. Some of the more striking features of python are:</p>
             <ul>
               <li>White space is meaningful and proper formatting is enforced by the interpreter&mdash;consequently python programs tend to be very readable (though not friendly to careless copy-paste jobs).</li>
               <li>Set operations are built into the language, so performing unions and intersections, as well as set comparisons, is syntactically simple.</li>
@@ -752,6 +753,8 @@ b //= 3   # b is set to 3</pre>
       </section>
       <section id="syntax_declaration">
         <header><h1>Variable Declaration</h1></header>
+        <p>Python names do not need to be declared prior to their initial assignment, although they must be assigned a value before being used in an expression or statement.<p>
+        <p>On initialization, a name will be associated by Python with a local <em>namespace</em>
       </section>
       <section id="syntax_definition">
         <header><h1>Variable Definition</h1></header>
@@ -772,6 +775,8 @@ def pop():
       <section>
       <section id="syntax_blocks">
         <header><h1>Blocks</h1></header>
+        <p>Python blocks are delimited by preceeding whitespace. The amount of whitespace denoting a block indentation is arbitrary between programs, but within a program must be internally consistent. You can use four spaces, two spaces, literal tabs, etc., but once you establish an indentation method in a file (on first usage), you must continue to use that for the remainder of the file.</p>
+        <p>Python does not have "naked" blocks
       </section>
       <section id="syntax_flowcontrol">
         <header><h1>Flow Control</h1></header>
@@ -837,6 +842,61 @@ for key in D:
 for (key, value) in D.items():
   print(key, '=&gt;', value)
 </pre>
+          </section>
+          <section id="syntax_flowcontrol_loops_list_comprehension">
+            <div class="bs-callout bs-callout-info">
+              <h2>Additional Python Iterators: Comprehensions</h2>
+              <p>Python can loop and iterate using <code>while</code> and <code>for</code>, but also provides 'comprehensions' as an additional iteration structure. A comprehension is a statement that returns a list (or dictionary, or set) of items which have been filtered and/or transformed. Comprehensions take the general form:</p>
+<pre>[ expression for item in iterable if condition ]</pre>
+              <p>More specifically:</p>
+<pre>[
+  item * 2                  # Mapping statement for each item through the filter
+  for                       # Keyword, multiples allowed
+  item                      # Declaration of loop variable for mapping statement
+  in                        # Keyword
+  myList                    # Some iterable
+  if item &gt; 5               # Filtering condition (optional)
+]</pre>
+              <p>Concrete examples of list comprehensions:</p>
+<pre>one2nine = [n for n in range(1,10)]               # Returns [1,2,3,4,5,6,7,8,9]
+evens    = [n for n in range(1,10) if n % 2 == 0] # Returns [2,4,6,8]
+doubles  = [n*2 for n in range(1,10)]             # Returns [2,4,6,8,10,12,14,16,18]
+tuples   = [(n,n*2) for n in range(1,5)]          # Returns [(1,2),(2,4),(3,6),(4,8)]</pre>
+              <p>It is valid to use more than one <code>for</code> statement in a comprehension (each of which may have an <code>if</code> statement), so you can create comprehensions equivalent to nested loops:</p>
+<pre>
+rows = range(1,4)
+cols = range(1,4)
+
+# Will return [(1, 1), (1, 2), ..., (3, 2), (3, 3)]
+table_cells    = [(r, c) for r in rows for c in cols]
+
+# Will return [(1, 1), (2, 2), (3, 3)]
+identity_cells = [(r, c) for r in rows for c in cols if r == c]
+
+# Will return [(3,3)]
+ident_over_2   = [(r, c) for r in rows if r &gt; 2 for c in cols if r == c]
+</pre>
+              <p>Dictionary comprehensions:</p>
+<pre>
+# Will return {97: 'a', 98: 'b', 99: 'c', 100: 'd', 101: 'e'}
+charcodes = { number : chr(number) for number in range(97,102) }
+</pre>
+              <p>Set comprehensions:</p>
+<pre>
+numbers = [1,2,3,1,1,5,9,5]
+
+unique_odds = { n for n in numbers if n % 2 }   # Returns set([1, 3, 5, 9])
+</pre>
+              <p><strong>Note:</strong> Python does not have comprehensions for tuples. If you see syntax like the following, it is a 'generator' expression, <strong>not</strong> a tuple generator. Generators are expressions that hold their state from call to call, and are capable of acting like iterables without actually holding all their possible values in memory--because those values are <em>generated</em> on each call.</p>
+
+<pre>
+my_generator = (n for n in range(1,100))  # Creates a generator object
+
+next(my_generator) # returns 1
+next(my_generator) # returns 2
+</pre>
+              <p>Each iteration of a generator function will produce the next value in the sequence, but at no point is it necessary for <code>my_generator</code> to actually contain a ninety-nine item list of numbers.</p>
+            </div>
           </section>
         </section>
       </section>
@@ -928,6 +988,13 @@ for (key, value) in D.items():
     <section id="codestone">
       <header><h1>Code-etta Stone</h1></header>
     </section>
+  </section>
+
+  <section id="bibliography">
+    <header><h1>Bibliography</h1></header>
+    <ol>
+      <li id="bib-lutz2013">Lutz, Mark. <cite>Learning Python, 5th Edition.</cite> O'Reilly Media, Inc., <time datetime="2013-06-26">June 26, 2013</time>. Online version through O'Reilly Safari service.</li>
+    </ol>
   </section>
       </article>
     </div> <!-- /container -->
