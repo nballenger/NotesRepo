@@ -460,8 +460,27 @@ d = "Alpha\nBeta"
             </tbody>
           </table>
         </section>
+        <section id="syntax_comments">
+          <header><h1>Comments</h1></header>
+          <p>Python has two comment styles: inline comments prefaced with <code>#</code>, and 'docstrings,' which are multi-line comments encosed in triple quotes (<code>""" ... """</code>). Docstrings are parsed by various documentation tools to present interactive documentation for your code, while inline comments are typically used for one-off notes only meant to be seen by someone actually reading your code directly.</p>
+<pre>
+# This is an inline comment.
+
+""" 
+This is a docstring. 
+"""
+</pre>
+        </section>
         <section id="syntax_operators">
           <header><h1>Operators</h1></header>
+          <div class="bs-callout bs-callout-info">
+            <h2>A Note on Operator Symbols vs. Named Operations in Python</h2>
+            <p>Python has a full complement of operator symbols: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>, <code>**</code>, <code>//</code>, and so on. In common usage they will appear as in most other languages. However, it is worth understanding the mechanism by which those operators are applied to Python objects, since they represent an abstraction that can be overloaded or repurposed.</p>
+            <p>Since everything in Python is an object, applying binary or unary operations to operands actually means applying them to objects. That being the case, each object must define how it will respond to built in operators&mdash;when you combine two numbers with <code>+</code>, you are actually asking two <code>Number</code> objects to take part in a summation, rather than combining literal numeric primitives.</p>
+            <p>Python accomplishes this through a series of operator overloading methods, which the common operator symbols are merely proxies for. So, for instance, adding two numeric objects with the <code>+</code> operator actually means calling the <code>__add__</code> method behind the scenes.</p>
+            <p>These operator overloading methods are inherited by any object type capable of responding to their corresponding operator symbol, and you can overload the methods to define how objects of your own classes will respond to built in operators.</p>
+            
+          </div>
           <section id="syntax_operators_arithmetic">
             <header><h1>Arithmetic</h1></header>
             <table class="table table-condensed">
@@ -526,6 +545,7 @@ d = "Alpha\nBeta"
                 </tr>
               </tbody>
             </table>
+          </section>
           <section id="syntax_operators_comparison">
             <header><h1>Comparison</h1></header>
             <table class="table table-condensed">
@@ -623,7 +643,71 @@ not False                 # True</pre>
                 </tr>
               </thead>
               <tbody>
-
+                <tr>
+                  <th><code>&amp;</code></th>
+                  <td>Performs a bitwise AND of the right and left operands.</td>
+                  <td>
+<pre>
+bin(2)            # Returns '0b10'
+bin(3)            # Returns '0b11'
+bin(2&amp;3)          # Returns '0b10'
+</pre>
+                  </td>
+                </tr>
+                <tr>
+                  <th><code>|</code></th>
+                  <td>Performs a bitwise OR of the right and left operands.</td>
+                  <td>
+<pre>
+bin(8)            # Returns '0b1000'
+bin(2)            # Returns   '0b10'
+bin(8 | 2)        # Returns '0b1010'
+</pre>
+                  </td>
+                </tr>
+                <tr>
+                  <th><code>^</code></th>
+                  <td>Performs a bitwise XOR of the right and left operands.</td>
+                  <td>
+<pre>
+bin(5)            # Returns  '0b101'
+bin(10)           # Returns '0b1010'
+bin(5^10)         # Returns '0b1111'
+</pre>
+                  </td>
+                </tr>
+                <tr>
+                  <th><code>~</code></th>
+                  <td>Returns bitwise inversion of unary operand.</td>
+                  <td>
+<pre>
+bin(1)            # Returns   '0b1'
+bin(~1)           # Returns '-0b10'
+</pre>
+                  </td>
+                </tr>
+                <tr>
+                  <th><code>&gt;&gt;</code></th>
+                  <td>Right-shifts the first operand by the second operand number of bits.</td>
+                  <td>
+<pre>
+bin(8)            # Returns '0b1000'
+bin(8&gt;&gt;1)         # Returns  '0b100'
+bin(8&gt;&gt;2)         # Returns   '0b10'
+</pre>
+                  </td>
+                </tr>
+                <tr>
+                  <th><code>&lt;&lt;</code></th>
+                  <td>Left-shifts the first operand by the second operand number of bits.</td>
+                  <td>
+<pre>
+bin(2)            # Returns   '0b10'
+bin(2&lt;&lt;1)         # Returns  '0b100'
+bin(2&lt;&lt;2)         # Returns '0b1000'
+</pre>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </section>
@@ -845,7 +929,7 @@ for (key, value) in D.items():
           </section>
           <section id="syntax_flowcontrol_loops_list_comprehension">
             <div class="bs-callout bs-callout-info">
-              <h2>Additional Python Iterators: Comprehensions</h2>
+              <h2><strong>Additional Python Iterators: Comprehensions</strong></h2>
               <p>Python can loop and iterate using <code>while</code> and <code>for</code>, but also provides 'comprehensions' as an additional iteration structure. A comprehension is a statement that returns a list (or dictionary, or set) of items which have been filtered and/or transformed. Comprehensions take the general form:</p>
 <pre>[ expression for item in iterable if condition ]</pre>
               <p>More specifically:</p>
@@ -887,7 +971,7 @@ numbers = [1,2,3,1,1,5,9,5]
 
 unique_odds = { n for n in numbers if n % 2 }   # Returns set([1, 3, 5, 9])
 </pre>
-              <p><strong>Note:</strong> Python does not have comprehensions for tuples. If you see syntax like the following, it is a 'generator' expression, <strong>not</strong> a tuple generator. Generators are expressions that hold their state from call to call, and are capable of acting like iterables without actually holding all their possible values in memory--because those values are <em>generated</em> on each call.</p>
+              <p><strong>Note:</strong> Python does not have comprehensions for tuples. If you see syntax like the following, it is a 'generator' expression, <strong>not</strong> a tuple comprehension. Generators are expressions that hold their state from call to call, and are capable of acting like iterables without actually holding all their possible values in memory--because those values are <em>generated</em> on each call.</p>
 
 <pre>
 my_generator = (n for n in range(1,100))  # Creates a generator object
@@ -902,11 +986,22 @@ next(my_generator) # returns 2
       </section>
       <section id="syntax_functions">
         <header><h1>Functions</h1></header>
+        <p>Python functions serve the same dual purpose as in many object-oriented languages: promoting code modularity and reuse, and serving as executable members of instantiated objects. In practical terms functions are defined using the <code>def</code> or <code>lambda</code> statements, called by name with parenthetical arguments, and return values using the <code>return</code> and <code>yield</code> statements.</p>
+        <p>Python functions (both those produced by <code>def</code> and <code>lambda</code>) are first class citizens, and taking a function reference is done as with any other variable:</p>
+<pre>
+def myFunc(myArg):
+  return myArg
+
+myRef = myFunc
+myRef('an argument')    # Returns the string 'an argument'
+</pre>
         <section id="syntax_functions_declaration">
           <header><h1>Declaration</h1></header>
+          <p>Python functions, like other named entities, are not declared separately from their definition.</p>
         </section>
         <section id="syntax_functions_definition">
           <header><h1>Definition</h1></header>
+          
         </section>
         <section id="syntax_functions_calling">
           <header><h1>Calling</h1></header>
