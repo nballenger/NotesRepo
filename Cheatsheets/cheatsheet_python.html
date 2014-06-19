@@ -1001,19 +1001,90 @@ myRef('an argument')    # Returns the string 'an argument'
         </section>
         <section id="syntax_functions_definition">
           <header><h1>Definition</h1></header>
-          
+          <p>Functions in Python may be declared in two ways: using <code>def</code> to create a named function, and using <code>lambda</code> to return an anonymous, single expression function object. Some simple examples:</p>
+<pre>
+def summation (arg1, arg2):
+  return arg1 + arg2
+
+s = lambda arg1,arg2: arg1 + arg2
+</pre>
         </section>
         <section id="syntax_functions_calling">
           <header><h1>Calling</h1></header>
+
+          <div class="bs-callout bs-callout-info">
+            <h1>Function Decorators: Reusable Wrapper Code</h1>
+            <p>Decorators are a means of making meta-code reusable, so that if a class of functions shares similar processing for argument validation, or call logging, or any other modular task, that work can be delegated to a wrapping function. Syntactically, decorators appear on separate lines before <code>def</code> statements, and consist of an <code>@</code> symbol followed by a 'metafunction.' Calls to the function created by <code>def</code> are remapped to take the output of the metafunction as input. Consequently, these two code samples  are functionally equivalent:</p>
+
+<table class="table">
+  <tr>
+    <td>
+<pre>
+def wrapper(some_function):
+  def inner(*args, **kwargs):
+    print "Args of wrapped function: %s, %s" % (args, kwargs)
+    return some_function(*args, **kwargs)
+  return inner
+
+def summation(a,b):
+  return a + b
+
+<strong>summation = wrapper(summation)</strong>
+</pre>
+    </td>
+    <td>
+<pre>
+def wrapper(some_function):
+  def inner(*args, **kwargs):
+    print "Args of wrapped function: %s, %s" % (args, kwargs)
+    return some_function(*args, **kwargs)
+  return inner
+
+<strong>@wrapper</strong>
+def summation(a,b):
+  return a + b
+
+</pre>
+    </td>
+  </tr>
+</table>
+            <p>Note that the <code>wrapper</code> function is written to take a function as input, and return a different function as output. </p>
+          </div>
         </section>
       </section>
       <section id="syntax_classes">
         <header><h1>Classes</h1></header>
         <section id="syntax_classes_declaration">
           <header><h1>Declaration</h1></header>
+          <p>Python does not require that classes be declared separately from their definitions.</p>
         </section>
         <section id="syntax_classes_definition">
           <header><h1>Definition</h1></header>
+          <p>Everything in Python is an object, and classes are no different from other named entities in that respect. When you use the <code>class</code> keyword in a statement, Python creates a class object and assigns it the name provided in the statement header. When that class object is subsequently called, it returns an instance object. For example:</p>
+<pre>
+class MyClass:
+  class_var = "Class Variable"
+
+  def print_class_var(self):
+    print self.class_var          # Reads from 'self', but in class namespace
+
+  def set_instance_var(self,value):
+    self.instance_var = value     # Assignments to self set instance variable
+
+  def print_instance_var(self):
+    print self.instance_var       # Reads from 'self', in instance namespace
+
+my_instance_1 = MyClass()
+my_instance_1.set_instance_var('foo')
+
+my_instance_2 = MyClass()
+my_instance_2.set_instance_var('bar')
+
+my_instance_1.print_class_var()           # Prints 'Class Variable'
+my_instance_2.print_class_var()           # Prints 'Class Variable'
+my_instance_1.print_instance_var()        # Prints 'foo'
+my_instance_2.print_instance_var()        # Prints 'bar'
+</pre>
         </section>
         <section id="syntax_classes_inheritance">
           <header><h1>Inheritance Model</h1></header>
@@ -1089,6 +1160,7 @@ myRef('an argument')    # Returns the string 'an argument'
     <header><h1>Bibliography</h1></header>
     <ol>
       <li id="bib-lutz2013">Lutz, Mark. <cite>Learning Python, 5th Edition.</cite> O'Reilly Media, Inc., <time datetime="2013-06-26">June 26, 2013</time>. Online version through O'Reilly Safari service.</li>
+      <li>http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/</li>
     </ol>
   </section>
       </article>
