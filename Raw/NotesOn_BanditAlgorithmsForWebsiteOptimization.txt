@@ -52,5 +52,6 @@ Chapter 3: The epsilon-Greedy Algorithm
       - If tails, explore by flipping a 50/50 coin:
         - If heads, explore treatment A
         - If tails, explore treatment B
-    * Effect is that the displayed treatment oscillates between exploring the
-      current best option
+    * Effect is that the displayed treatment oscillates between exploiting the
+      current best option and exploring additional options
+    * Gives the following:
