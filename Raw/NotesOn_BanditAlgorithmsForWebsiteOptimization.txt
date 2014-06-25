@@ -1,0 +1,57 @@
+Bandit Algorithms for Website Optimization
+By: John Myles White
+Publisher: O'Reilly Media, Inc.
+Pub. Date: December 26, 2012
+Print ISBN-13: 978-1-4493-4133-6
+Pages in Print Edition: 88
+
+Chapter 1: Two Characters: Exploration and Exploitation
+  * Exploration: experimentation that doesn't involve acting on results so as
+    not to bias the ongoing testing.
+  * Exploitation: using knowledge gained from testing to effect change in the
+    target population. Changes the playing field for further testing.
+  * You have to balance them.
+
+Chapter 2: Why Use Multiarmed Bandit Algorithms?
+  What Are We Trying to Do?
+    * "Success" in this field requires measurable achievement in areas like:
+      - Traffic
+      - Conversions
+      - Sales
+      - Clickthroughs
+    * Terminology from academic literature, re: slot machines:
+      - 'reward': a measure of success
+      - 'arms': list of potential changes
+  The Business Scientist: Web-Scale A/B Testing
+    * Running an A/B test: treatment and control groups, measure the effect,
+      globally apply the treatment if significant change is indicated.
+    * Profile is a period of pure exploration followed by a long period of
+      pure exploitation.
+    * Possible drawbacks:
+      - Jumps abruptly between exploration and exploitation
+      - Wastes resources in the exploration phase on inferior options
+    * Bandit algorithms might be better because:
+      - Smoothly decrease exploration as winners emerge
+      - Exploration resources are apportioned more efficiently among high
+        performing treatment groups
+    * Terminology:
+      - 'convergence': tendency of good bandit algorithms to settle on a
+        winning strategy over time
+
+Chapter 3: The epsilon-Greedy Algorithm
+  Introducing the epsilon-Greedy Algorithm
+    * epsilon-Greedy is almost a purely greedy algorithm since it generally
+      exploits the best available option at a given time, but occasionally
+      it will explore other available options. 'epsilon' refers to the odds
+      that it will try alternate methods.
+    * Basic notion is to flip a coin--heads you explore, tails you exploit.
+    * Process might look like:
+      - request comes in for a page
+      - eG flips a coin that has probability epsilon of coming up heads.
+      - If heads, exploit the current best performing treatment
+      - If tails, explore by flipping a 50/50 coin:
+        - If heads, explore treatment A
+        - If tails, explore treatment B
+    * Effect is that the displayed treatment oscillates between exploiting the
+      current best option and exploring additional options
+    * Gives the following:
