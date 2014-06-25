@@ -1,0 +1,123 @@
+Heroku: Up and Running
+By: Neil Middleton; Richard Schneeman
+Publisher: O'Reilly Media, Inc.
+Pub. Date: November 26, 2013
+Print ISBN-13: 978-1-4493-4139-8
+Pages in Print Edition: 100
+
+Chapter 1: Getting Started with Heroku
+  The Dawn of Virtual Servers
+    * Everybody loves them virts. Mmm, good.
+  Enter the Cloud
+    * You can get a slice of computing power rather than a full host.
+  You New Around Here?
+    * Stuff worth noting:
+      - Ephemeral file system: you can write/read the disk, but restarts ditch everything.
+        If you need real persistence, use S3 or similar.
+      - Shared state: If you want to store session data server side, you have to do it
+        across multiple machines--use memcached or similar.
+      - Dependency Management: You have to use an external tool to manage dependencies.
+      - Scale out, not up: Heroku servers are one size, called 'dynos'. Scaling means
+        adding dynos, not having more powerful instances.
+      - Logs: no ssh, so no direct log access--got to use the heroku CLI tools.
+  Quick Start
+    * Sign up for an account.
+    * Install Heroku Toolbelt
+    * Do something like
+
+        heroku login
+        git clone https://github.com/neilmiddleton/ruby-sample
+        heroku create
+        git push heroku master
+        heroku open
+
+    * That'll push to heroku, because the create op attaches a remote repo to the code
+    * Heroku will then run a build process on it, so it's live, and the open call opens it
+
+Chapter 2: How Heroku Works
+  * Platform is broken up into key segments:
+    - Routers, to route traffic from the web
+    - Dynos, where application code actually runs
+
+  What is a Dyno?
+    * Each dyno represents a fixed resource allocation.
+    * Applications are billed by the dyno/hour, prorated to the second.
+    * Every app is credited with 750 dyno/hours per month.
+    * Full architectural picture is:
+
+                                   +------------------------+     
+                                   | HTTP requests from web |     
+                                   +------------+-----------+     
+                                                |                 
+                                                v                 
+                                                                  
+                                +--------------------------------+
+                                |            Routers             |
+                                |                                |
+                                +--------------------------------+
+    +-------------+ +--------+  +--------------------------------+
+    | API calls   | |        |  |                                |
+    | from users  | | Heroku |  |              Dynos             |
+    +------+------+ |  API   |  |                                |
+           |        |        |  |                                |
+           |        |        |  +--------------------------------+
+           +----->  |        |  +--------------------------------+
+                    |        |  |            Logplex             |
+                    |        |  |                                |
+                    +--------+  +--------------------------------+
+                                +--------------------------------+
+                                |                                |
+                                |            Add-ons             |
+                                |                                |
+                                +--------------------------------+
+
+
+  HTTP Routing
+    * Router is an Erlang program to connect requests to the appropriate dynos.
+
+    Request Life Cycle
+      * DNS request for your domain, which is pointed at Heroku via A or CNAME
+      * Router does a url lookup, finds app code, redirects request
+
+    Long Running Requests
+      * Router will time out request after 30 seconds. If a first byte is returned,
+        the router sets a 55 second rolling window before timeout.
+
+  The Dyno Manager and Dynos
+    * A dyno is an isolated, virtualized UNIX container for running applications
+    * Each dyno runs separate application code.
+    * When you send code to Heroku, it's converted to a "slug" that can run quickly
+      on any available dyno.
+    * Failures can happen, so it's advisable to build stateless web apps.
+    * Each dyno is restarted every 24 hours, clearing ephemeral storage.
+
+  Configuration
+    * Each version of an app (dev/staging/prod) might need different config variables.
+    * Traditionally those are factored into the source somehow.
+    * Heroku wants you to use environment variables:
+
+        heroku config:set SOME_VAR=asdf
+        heroku config
+        heroku config:get SOME_VAR
+        heroku config:unset SOME_VAR
+
+    * You can have different dynos running the same code, but behaving differently
+
+  Releases
+    * For Heroku's purposes, a release is a combination of your app code (slug) and the
+      configuration around it. 
+    * Any changes to the slug or config will generate a new release, viewable by
+
+        heroku releases
+
+    * You can roll back to a previous version pretty easily.
+
+  Slug Compilation
+    * On change, a runtime instance is started to compile your app to a slug
+    * All base images of the dynos are the same linux install
+    * With a base image in place, and your app code, Heroku runs a buildpack
+    * When the buildpack finishes, a slug of the finished product is put in storage
+    * Larger slugs take longer to travel to new dynos
+    * When old versions are killed, new ones are spun up.
+    * Scaling out is easy, since the slug is stored centrally and shipped around to dynos
+
