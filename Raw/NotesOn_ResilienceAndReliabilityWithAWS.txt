@@ -1,0 +1,503 @@
+Resilience and Reliability on AWS
+By: Jurg van Vliet; Flavia Paganelli; Jasper Geurtsen
+Publisher: O'Reilly Media, Inc.
+Pub. Date: January 11, 2013
+Print ISBN-13: 978-1-4493-3919-7
+Pages in Print Edition: 150
+
+Chapter 1: Introduction
+  * Book will cover: elasticsearch, Postgres, MongoDB, Redis, Logstash, 
+    Global Delivery
+
+Chapter 2: The Road to Resilience and Reliability
+  Once Upon a Time, There Was a Mason
+    * Blah blah blah, "Infrastructure as a Service, IaaS"
+  Rip. Mix. Burn.
+    * Technologies in the cloud are building blocks
+  Cradle to Cradle
+    * Decomposing components is now as important as composing--renew often.
+    * Cloud is cheaper and uses fewer resources.
+
+Chapter 3: Crash Course in AWS
+  * Chapter highlights the core AWS services used to build components in book
+
+  Regions and Availability Zones
+    * All services are organized in regions. 
+    * All regions provide pretty much the same services.
+    * Regions are comprised of availability zones.
+    * Each AZ is made of one or more data centers.
+    * In the event of a weather or major network event, you can switch AZs.
+
+    Route 53: Domain Name System Service
+      * Route 53 is programmatic DNS, that helps with failover.
+
+    IAM (Identity and Access Management)
+      * Does access management via identities.
+      * Organized by users and groups.
+      * Users can be in zero or more groups, each have credentials.
+      * Access is granted in policies. Example:
+
+        { "Statement": [ { 
+          "Effect": "Allow",
+          "Action": "EC2:Describe*",
+          "Resource":"*"
+        }]}
+
+      * Multi Factor Authentication (MFA) can be added to IAM steps
+      * Roles can be added to EC2 instances. A role is multiple policies.
+
+  The Basics: EC2, RDS, ElastiCache, S3, CloudFront, SES, and CloudWatch
+    * Basic services of IaaS anywhere are 'compute' and 'storage'
+    * Amazon's compute is EC2, storage is S3
+    * RDS is 'database as a service'
+    * CloudFront is the CDN
+    * Simple Email Service does deliverability
+    
+    CloudWatch
+      * AWS's monitoring solution.
+      * All AWS services have resource usage metrics.
+      * You can create custom metrics in CloudWatch
+
+    EC2 (et al)
+      * Concepts:
+        - Instance: a single server. Launched from an AMI into an AZ. Diff sizes.
+        - Image (Amazon Machine Image, AMI): Boot image for instances.
+        - Volume and Snapshot (EBS, S3): EBS (Elastic Block Store) persists
+          local storage in volumes between 1G and 1T. A volume resides in an AZ,
+          and can only be attached to one instance. You can snapshot volumes.
+        - Security Group: Instances are part of security groups. Lets you do
+          firewalling. Extended by Virtual Private Cloud (VPC)
+        - Elastic IP: Instances get a dynamic public IP on launch. For persistent
+          IPs you can use an Elastic IP. Route 53 mostly makes obsolete.
+        
+    RDS
+      * Relational Database Service. Comes in MySQL, Oracle, and SQLServer
+      * Scales quickly, 31 day restore window.
+      * Max capacity is 1T.
+
+    ElastiCache
+      * Like RDS for memcached. Lets you grow/shrink a memcached cluster.
+
+    S3/CloudFront
+      * 'Simple Storage Service': unlimited data, very durable
+      * You can create buckets in any region, any amount of objects per bucket
+      * Item size is 1b to 5T
+      * Storage is exposed through a web service
+      * For static web assets, CloudFront is the CDN
+      * CloudFront can expose an S3 bucket, or distribute frmo a custom origin
+
+    SES
+      * You can get whitelisting through Simple Email System, but you have to
+        run your own MTA to push stuff out.
+
+Growing Up: ELB, Auto Scaling
+  ELB (Elastic Load Balancer)
+    * Sits in front of a group of instances. Reachable by a hostname.
+    * Through Route 53, record resolution to the IP of the ELB
+    * Can distribute any kind of TCP traffic, and HTTP/S
+    * Terminates HTTPS, talks HTTP to instances
+    * Evenly distributed across AZs (as configured)
+    * Has no complex routing, just does health checks and even distribution.
+
+  Auto Scaling
+    * Elastic group of instances that resizes based on demand.
+    * Launches and terminates instances based on CloudWatch metrics
+    * Resizable based on any CloudWatch metric
+
+Decoupling: SQS, SimpleDB & DynamoDB, SNS, SWF
+  * If the app gets big enough that individual components are failing, you
+    have to break your app into smaller apps by decoupling.
+  * Services like SimpleDB, Simple Notification Service, Simple Workflow Service
+    are the glue of a decoupled system.
+
+  SQS (Simple Queue Service)
+    * Lets web services queue messages between components.
+    * If you need to preserve order absolutely (SQS just tries hard to do so)
+      you have to add your own message ids.
+    * Message reads are atomic, but messages must be deleted within an
+      expiry window (visibility timeout), or they will be reread to ensure
+      that they are successfully processed.
+    * Messages are not retained indefinitely--deleted after four days by default
+
+  SimpleDB
+    * Non-relational data store that stores structured info.
+    * You create 'domains' to store 'items'
+    * Items are collections of attributes (KV pairs)
+    * Attributes can have multiple values.
+    * Items can have up to 256 attributes, domains can have 1B attributes
+    * All together can grow to 10GB
+    * All attributes are indexed.
+    * Domains are distinct, and there are no joins.
+    * The storage is eventually consistent.
+    * You can enforce consistency in reads and put/delete.
+    * If you want backups from SimpleDB, you have to roll your own
+
+  SNS (Simple Notification Services)
+    * Can push messages to any component that is listening
+    * You create 'topics', which are conduits for publishing events/messages
+    * Anybody with an AWS account can subscribe to a topic, though they may
+      not be permitted to receive messages.
+    * A subscriber can configure an end point in HTTP/S, email, or SQS
+
+  SWF (Simple Workflow Service)
+    * Takes a workflow description, fires two tasks:
+      - if a decision affecting flow is required, that's done by deciders
+      - other tasks are handled by workers
+    * Not actually clear from their description what this does.
+
+Chapter 4: Top 10 Survival Tips
+  Make a Choice
+    * Paraphrase: don't waste time evaluating vendors, just use AWS.
+  Embrace Change
+    * Blah blah blah, we're living in interesting times.
+  Everything will Break
+    * Engineer with the notion that something somewhere is likely to fail at
+      any time. Be resilient to component failure.
+  Know Your Enemy
+    * Consider AWS an enemy--everybody should understand it well.
+  Know Yourself
+    * Spend time building failure scenarios and running them.
+  Engineer for Today
+    * Build for the problems you have right now.
+    * Use off the shelf components.
+    * Don't reinvent the wheel.
+  Question Everything
+    * Browse your AWS accounts looking for anomalies.
+    * Constantly identify waste.
+  Don't Waste
+    * Make sure every component does its fair share of work
+    * Run the minimum instances necessary.
+    * Don't keep unused resources.
+  Learn from Others
+    * Don't be a dick, other people know things too.
+  You Are Not Alone
+    * Build a team.
+
+Chapter 5: ElasticSearch
+  
+Introduction
+  * "It is an Open Source, Distributed, RESTful, Search Engine built on top
+    of Apache Lucene."
+  * Operational unit of ES is a cluster, not a server.
+  * Clusters of 1 are possible for dev/test/transient data
+  * ES holds json data in indexes, which are sharded.
+  * Any node in a cluster can accept requests.
+  * Practical upper limit on nodes is unknown.
+  * Used as a replacement for SOLR
+  * Can power distributed logging, can do big data work
+
+EC2 Plug-In
+  * Normally nodes can do context discovery with multicast, but in EC2 there
+    is no multicast.
+  * So you use security groups or tags, and you can restrict discovery to AZs
+
+Missing Features
+  * Default conf on an ES node doesn't reserve a chunk of system memory
+  * Added this in /etc/default/elasticsearch:
+
+    ES_HEAP_SIZE=$(($(/usr/bin/awk '/MemTotal/{print $2}' /proc/meminfo) / 2))k
+
+  * The .deb package installs startup scripts, defaults, etc
+  * /etc/default/elasticsearch has defaults for /etc/init.d/elasticsearch
+  * Added Route 53, each node self add to the weighted round robin
+  * Uses Boto script (python) to launch WRR init at startup
+
+Chapter 6: Postgres
+  * Postgres can scale well with AWS, but you have to use it well
+
+Pragmatism First
+  * PG install will span several db clusters
+  * Need easy scaling, flexibility, reliabilit
+  * Need a reliable restore to point in time, for cloning clusters
+  * This does not implement, because it is only several clusters:
+    - Automatic failover
+    - Dynamic parameters
+  * Master slave configuration. Manual promotion of slave during failure
+
+The Challenge
+  * Biggest hurdle is disk space. SSD and high IO volumes are a short term
+    solution with big databases--you need to go horizontally.
+
+  Tablespaces
+    * Tablespaces let you move tables and indexes to other filesystems.
+    * Use tablespaces to spread disk ops across many EBS volumes.
+
+Building Blocks
+  * Basic pieces will be:
+    - EC2 - instances and volumes
+    - S3 - WAL archive files for db restore post crash
+    - SimpleDB - housekeeping
+    - Route 53 - identify resources
+    - CloudWatch - monitoring
+
+  Configuration with userdata
+    * Launch a master node to join the cluster, with userdata like:
+
+      { 
+        "name"       : "db01",
+        "cluster"    : "db.9apps.net",
+        "slow"       : "500",
+        "tablespaces": [ { "device": "/dev/sdf", "name": "main", "size": 100 } ]
+      }
+
+    * Launch a slave:
+
+      {
+        "name"        : "db02",
+        [...]
+        "master"      : "db01.9apps.net",
+        [...]
+      }
+
+    * Launch a clone (start a new cluster):
+
+      {
+        "name"        : "db",
+        "cluster"     : "development.9apps.net",
+        "clone"       : "db01.9apps.net",
+        [...]
+      }
+
+    * Adding tablespaces means specifying an additional tablespace in the
+      userdata, and rotate the cluster nodes. When new nodes are launched, 
+      the existing tablespaces are ignored, or changed when we increase the
+      size of the volume. If a tablespace didn't exist before, it is created.
+
+  IAM Policies (Identity and Access Management)
+    * Creating IAM policies is not simple/easy. Use AWS's policy generator in
+      combination with the dev/api guides.
+
+    Example Policy:
+
+      {
+        "Statement": [
+          {
+            "Sid": "Stmt1233455667",
+            "Action": [
+              "ec2:AttachVolume","
+              "ec2:CreateSnapshot",
+              [...]
+            ],
+            "Effect": "Allow",
+            "Resource": [ "*" ]
+          }
+        ]
+      }
+
+  Postgres Persistence (backup/restore)
+    * A full backup is not a dump, it's a collection of snapshots of EBS vols
+    * Restore creates volumes from the snapshots, replays the WAL archive
+      until the db is fully restored (latest version or specific timestamp)
+    * Backup script code included in the book, in Python with Boto
+
+    WAL Archive
+      * Stands for 'write ahead logging', maintains a continuous backup of log
+        files which help in restoring the db after a system crash.
+      * Enables point in time restore from archived WAL
+
+    In Practice
+      * Scale is postgres clusters w/ ~10 tablespaces
+      * Basebackup = ~ 1 hour
+      * Cluster had one master, two slaves, both slaves hot enough to fail to
+
+  Self Reliance
+    * Instances decide on the course of action, no outside coordination
+    * Human intervention possible
+    * Core of self reliance here is an AMI with no software installed at start
+    * AMI has an Ubuntu LTS install and Postgres, which is installed with
+
+      add-apt-repository ppa:pitti/postgresql
+      apt-get update
+      apt-get install postgresql-9.1 postgresql-client-9.1 pgtune
+
+    * Use Monit to keep pg in check once it's running:
+
+      check process postgresql with pidfile /var/run/postgresql/9.1-main.pid
+        start program = "/etc/init.d/postgresql start"
+        stop program  = "/etc/init.d/postgresql stop"
+        if failed unixsocket /var/run/postgresql/.s.PGSQL.5432 protocol pgsql then restart
+        if failed unixsocket /var/run/postgresql/.s.PGSQL.5432 protocol pgsql then alert
+        if failed host localhost port 5432 protocol pgsql then restart
+        if failed host localhost port 5432 protocol pgsql then alert
+        if 5 restarts within 5 cycles then timeout
+        group database
+
+    * Working with AMIs is tedious but very crucial.
+    * There is no AMI simulator, you must test by launching new instances
+
+Monitoring
+  * CloudWatch monitors and sends alerts when certain events occur
+  * Every node reports on itself and what it knows about the cluster.
+  * CloudWatch handles aggregation of collected metrics.
+  * monitor.py script included in book here.
+  * Called every minute with cron.
+
+Chapter 7: MongoDB
+  * Requirements in this case:
+    - Backup/restore
+    - Easy (horizontal) scalability
+    - Resilience to external influence
+    - Reliability
+
+How It Works
+  * Work with MongoDB Replica Set for high availability, uses Route 53 to make
+    sure it can be reached, uses SimpleDB for backup administration, uses
+    SQS for a simple task queue.
+
+  Replica Set
+    * HA version of Mongo is called a 'replica set'--a collection of nodes,
+      some of which hold data (members), and of those nodes holding data,
+      one is the group selected master. Revote on master failure.
+    * Non-data nodes are called 'arbiters'.
+    * Only operational if the majority of members are up: If you have 3 AZs, you
+      need at least three nodes: two members and one arbiter. If you lose an
+      entire AZ, you want to keep an operational Replica Set.
+
+    Set Configuration
+      * Members and arbiters should join automatically, leave in good state
+        when they shut down.
+      * Two scenarios: an RS doesn't exist yet, or exists but needs joining
+      * In the second case you have to task the master with adding you
+      * Join or init directly after the Mongo daemon is launched. However, the
+        master might be recovering, so you have to queue that action in SQS
+      * Script for launching Mongo (/etc/init/mongodb.conf) shows handling
+      * Sets up a task queue, anybody can write to the queue, only the master
+        runs the tasks in the queue.
+      * Traded a layer of infrastructure for SQS and SimpleDB, though it's a
+        bit rudimentary. Alternate approach is to use SNS
+
+    Set Endpoint
+      * Discovery is all handled by the client. Good client libs only need to
+        access the replica set through one of the members.
+      * Route 53 is used to give nodes and clusters an end point.
+      
+    Userdata
+      * Joining / initiating a replica set requires the same userdata
+      * If the RS name exists, there are valid snapshots of an EBS volume
+        with a version of the db, and those are used to bootstrap/join the set
+      * Userdata for an RS named mongodb w 100G storage:
+
+        { "name": "mongodb", "size": 100, "role": "active" }
+
+      * Launching an arbiter in the same RS:
+
+        { "name": "mongodb", "role": "arbiter" }
+
+      * Launch a RS from a specific snapshot:
+
+        { "name": "mongodb", "size": 100, "source": "snap-123456", "role": "active" }
+
+  Backups
+    * Mongo 2 has journaling, which lets you do FS based snapshots of the dbpath
+    * Don't forget to purge snapshots, since they cost money/disk.
+
+Auto Scaling
+  * Goal is a self-healing Replica Set that alerts you if you need to
+    supervise recovery
+  * PG failover was fully manual, didn't use Auto Scaling
+  * For Mongo you can use Auto Scaling
+  * If your components can be safely stopped and restarted, makes sense to use
+    Auto Scaling Groups of 1, to keep the replica set alive at all times.
+  * Used in this case to keep group size intact, not grow/shrink
+  * Commands to set up auto scaling for a typical MongoDB replica set is
+    in the book here
+  * Commands to upgrade the replica set requires changing the Auto Scaling Group
+    and rotate the instances.
+  
+Monitoring
+  * They rolled their own PHP solution. Not really worth copying here.
+  * For every member in the RS they add metrics. Health of arbiters comes from
+    the RS itself. RS metrics are only added by the master.
+
+Chapter 8: Redis
+  * Redis is an open source, advanced KV store. Often referred to as a data
+    structure since keys can contain strings, hashes, lists, sets and sorted
+    sets.
+  * Redis tasks for this project:
+    - Backup/restore
+    - Failover
+    - Scaling (up and down)
+    - Monitoring
+
+The Problem
+  * Limit is that it stores structured data in memory, so is not persisted
+  * Two consequences: how to do persistence, how to do replication?
+  * Distributed Redis would solve this, is work in progress at time of writing
+
+Our Approach
+  * Redis has master/slave replication. Anything can be a master, masters are
+    almost totally unaware of slaves. Slaves have only one master, which is
+    slaveof.
+  * This project does replication and horizontal scaling by chaining Redis
+  * Redis chain here is a unidirectional linked list, with every slave
+    behind its master.
+  * If a node dies, its slave has to reslave itself to the master of its
+    previous master, or become a master itself.
+  * Head is for writes only, but slaves can perform reads.
+
+Implementation
+  * Solution is all Python/Boto, using the Python redis client
+  * Instructions here for setting that up
+
+  userdata
+    * Want to dictate a Redis instance/chain by userdata.
+    
+      {
+        "name"            : "kate",
+        "persistence"     : "normal",
+        "monitoring"      : "on",
+        "maxmemory"       : "on",
+        "maxmemory-policy": "noeviction",
+        "logging"         : "warning"
+      }
+
+    * Persistence levels:
+      - 'no': no snapshots or dumps of any kind
+      - 'low': dumps to S3 (RDB) and EBS snapshots
+      - 'normal': Low + AOF (append only file, with default config)
+      - 'high': Normal + AOF, every change is appended
+
+    * Logging levels: 'warning', 'error', 'info', default is 'unset'
+    * Logs go to SimpleDB
+    * Monitoring values:
+      - 'off': no CloudWatch monitoring
+      - 'on': CloudWatch monitoring of Redis system state
+      - 'all': monitoring of system state and size of all keys
+    * 'maxmemory'--if you are using redis as a datastore, don't ditch things at
+      all. If it's a cache, you want to clear entries as they age out.
+    * If it's a cache, discard memcached
+    * Haivng maxmemory on sets the max to 60% of available system memory
+    * Default maxmemory-policy is empty
+
+  Redis
+    * Includes shell script for init.d
+
+    Configuration (maxmemory)
+      * Redis is volatile. maxmemory settings are a failsafe option to protect
+        data
+      * Redis conf files are dependent on the persistence level, taken from the
+        Redis install directory. maxmemory and policy come from userdata.
+
+    Persistence
+      * Several ways to get persistence in Redis:
+        - RDB, which is point in time db snapshots
+        - AOF, append only file
+        - EBS snapshots
+      * AOF can be written every second or always, though that's costly
+      * "In our experience, Redis persistence is quite problematic."
+      * "We mostly rely on replication for durability of the data."
+
+    Monitoring
+      * Monitoring is via CloudWatch again
+      * Want to be able to switch monitoring on and off
+      * Sometimes, if Redis is used for queue style data, you may want to
+        monitor the size of the keys. Can be costly, makes your CloudWatch
+        console basically unusable.
+      * Monitoring script in python is here
+
+  Chaining (Replication)
+    * Once you've got Redis running, need to make chains of Redis instances
+    * Has no central oversight, but does need central administration, which si
+      done through SimpleDB and Route 53. SimpleDB administers, Route 53
+      identifies the parts of the chain.
+
