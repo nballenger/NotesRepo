@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Toplines: RESTful Web Services, Richardson and Ruby, 2007</title>
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+    <article id="toplines-restful-web-services">
+      <header>
+      <h1>RESTful Web Services <small>Richardson and Ruby, 2007</small></h1>
+      </header>
+
+      <div class="well"> 
+      <section id="executive-summary">
+        <header>
+          <h2>Executive Summary</h2>
+        </header>
+        <p><abbr title="REpresentational State Transfer">REST</abbr> is a software architecture style (cf. <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm" target="_blank">Fielding, 2000</a>) intended to leverage stateless communication protocols and universally addressable data resources to <q>[emphasize] scalability of component interactions, generality of interfaces, independent deployment of components, and intermediary components to reduce interaction latency, enforce security, and encapsulate legacy systems.</q></p>
+        <p>At the heart of REST is the idea that networked software can only achieve and maintain scale when client and server programs do not attempt to maintain persistent, stateful connections to each other. REST proposes that each party (client and server) be fully responsible for maintaining their own state and for passing with each network request all state information necessary for the other party to respond usefully.</p>
+
+        <p>Theoretically software architected under RESTful principles can gracefully increase to web scale because no network call need be related to previous or subsequent calls. Consequently dependencies can be decoupled and redeployed across whatever infrastructure is required, as long as the URI addressing system is maintained and the proper state data is transmitted with each client/server request.</p>
+
+        <p>Resource-Oriented Architecture (<a href="http://shop.oreilly.com/product/9780596529260.do" target="_blank">Richardson, Ruby 2007</a>) is <q>an attempt at a consolidated set of guidelines for REST.</q></p>
+        <p><abbr title="Resource-Oriented Architecture">ROA</abbr> is summarized by its authors as:</p>
+        <div class="row">
+          <div class="col-md-6">
+        <p><strong>Four concepts:</strong></p>
+        <ol>
+          <li>
+            <details>
+              <summary>Resources</summary>
+              <p>Anything important enough to be referenced as a thing in itself; typically something stored on a computer represented as a bit stream; may be a physical object, or representations on a computer.</p>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>URIs</summary>
+              <p><b>U</b>niversal <b>R</b>esource <b>I</b>dentifier. A string that uniquely references a particular resource. Related: URL, <b>U</b>niversal <b>R</b>esource <b>L</b>ocator, a string indicating how to reach a specific representation of a resource.</p>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Representations</summary>
+              <p>Some portrayal of a resource, capable of being transmitted to a client. If the resource were a car, representations might include a photograph or a block of text about the car.</p>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Links</summary>
+              <p>A relationship between two resources germane to the service at hand, served as part of a representation.</p>
+            </details>
+          </li>
+        </ol>
+          </div>
+          <div class="col-md-6">
+        <p><strong>And four properties:</strong></p>
+        <ol>
+          <li>
+            <details>
+              <summary>Addressability</summary>
+              <p><q>A web service is addressable if it exposes the interesting aspects of its data set through resources.</q> Embodied in REST as URI/URL.</p>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Statelessness</summary>
+              <p><q>In a stateless application, the server considers each client request in isolation, and in terms of the current resource state. If the client wants any application state to be taken into consideration, the client must submit it as part of the request.</q> Embodied in REST as a property of HTTP.</p>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary>Connectedness</summary>
+              <p>That resources are related, typically in a hierarchy or graph. <q>In a well-connected service, the client can make a path through the application by following links and filling out forms.</q> Embodied in REST as Links.</p>
+            </details>
+          </li>
+          <li>
+            <details>
+            <summary>a Uniform Interface</summary>
+              <p>That all resources can be accessed and acted upon via a standard set of methods, or a subset of those methods. Embodied in REST as HTTP methods/verbs.</p>
+            </details>
+          </li>
+        </ol>
+          </div>
+        </div>
+
+        <p>ROA makes the following general recommendations:</p>
+
+        <p><strong>URIs:</strong></p>
+        <ul>
+          <li>Resources and URIs should have an intuitive correspondence.</li>
+          <li>URIs should have a predictable structure.</li>
+          <li>Scoping information (data being requested) should be built into the URI for a resource.</li>
+          <li>When possible, everything required to recreate GET and HEAD requests should be included in the URI, not the entity-body or HTTP headers.</li>
+          <li>Every representation of a resource should have its own URI.</li>
+        </ul>
+        <p><strong>HTTP:</strong></p>
+        <ul>
+          <li>Method information (what to do with received data) should be encoded in the HTTP verb used in the request (GET, HEAD, PUT, DELETE, POST, etc.)</li>
+          <li>Neither scoping nor method information should be put into the entity-body.</li>
+          <li>HTTP headers should be used judiciously and for their intended purposes: authentication, redirection, encodings permitted, etc.</li>
+          <li>State should not be stored in cookies or session variables: application state lives on the client, resource state on the server.</li>
+          <li>When used correctly, GET and HEAD are safe (will not alter resource state), and GET, HEAD, PUT, and DELETE are idempotent (repeated requests will have the same effect as the first request).</li>
+        </ul>
+
+        <p>ROA also proposes a nine-step design process for converting requirements into resources:</p>
+
+        <ol>
+          <li>Figure out the data set</li>
+          <li>Split the data set into resources</li>
+        </ol>
+
+        <p>For each resource:</p>
+
+        <ol start="3">
+          <li>Name the resources with URIs</li>
+          <li>Expose a subset of the uniform interface</li>
+          <li>Design the representation(s) accepted from the client</li>
+          <li>Design the representation(s) served to the client</li>
+          <li>Integrate this resource into existing resources, using links/forms</li>
+          <li>Consider the typical course of events: what's supposed to happen?</li>
+          <li>Consider error conditions: what might go wrong?</li>
+        </ol>
+      </section>
+      </div>
+      <section>
+        <header>
+          <h2>Chapter Summaries</h2>
+        </header>
+
+        <section class="chapter">
+          <header>
+            <h3>Preface</h3>
+          </header>
+          <ul>
+            <li>All web applications, on the human and programmable webs, are essentially web services. The book's goal is to <q>reunite the programmable web with the human web.</q></li>
+            <li>REST is an architectural style, ROA is <q>an attempt at a consolidated set of guidelines for REST.</q></li>
+            <li>'Big' web services (the WS-* stack) are perhaps overkill, and certainly subvert REST by making scoping and method information part of the request payload.</li>
+          </ul>
+        </section>
+
+        <section class="chapter">
+          <header>
+            <h3>Chapter 1: The Programmable Web and Its Inhabitants</h3>
+          </header>
+          <ul>
+            <li>Technologies relevant to the programmable (and human) web: HTTP as stateless transfer protocol, URI as resource identification, and XML, JSON, HTML, plain text, and binary as data transfer formats.</li>
+            <li>HTTP requests are made of a method, path, request headers, and an entity-body. Responses are a response code, response headers, and an entity-body.</li>
+            <li>In ROA there are two crucial kinds of information encoded in HTTP requests and URI structures: method information (HTTP) and scoping information (URI). Method information is what to do with received data, and is represented by the HTTP 'verbs' (GET/HEAD/PUT/DELETE/POST/OPTIONS). Scoping information is what data a service should operate on, and is represented by the path and query string of the URI.</li>
+            <li>There are three competing architectures for web services:
+              <ol>
+                <li><strong>RESTful, Resource-Oriented Architectures</strong>:
+                  <ul>
+                    <li>Method information stored in the HTTP method</li>
+                    <li>Scoping information stored in the URI</li>
+                  </ul>
+                </li>
+                <li><strong>RPC-Style Architectures</strong>:
+                  <ul>
+                    <li>Accepts an envelope of data, responds with an envelope of data.</li>
+                    <li>Method and scoping are inside envelope payload or metadata.</li>
+                    <li>Transport protocol can be any, though is often HTTP</li>
+                    <li>Each RPC service tends to define a brand new vocabulary.</li>
+                    <li><q>A service that uses HTTP POST heavily or exclusively is probably an RPC-style service.</q></li>
+                  </ul>
+                </li>
+                <li><strong>REST-RPC Hybrid Architectures</strong>:
+                  <ul>
+                    <li>Services somewhere between RESTful and RPC-style</li>
+                    <li>Often created by pragmatic programmers without much REST theory</li>
+                    <li>Often very reliant on overloaded HTTP POST.</li>
+                  </ul>
+                </li>
+              </ol>
+            </li>
+            <li>Technologies on the programmable web:
+              <dl class="dl-horizontal">
+                <dt>HTTP</dt><dd>RESTful services put method in HTTP method, scoping in URI; RPC-style services ignore the HTTP method, put scoping/method elsewhere.</dd>
+                <dt>URI</dt><dd>RESTful services expose a URI for every operable piece of data; hybrid services expose a URI for every operation a client can perform; RPC-style services expose one URI for every remote procedure call endpoint.</dd>
+                <dt>SOAP</dt><dd>XML envelope format. <q>To a first approximation, every current web service that uses SOAP also has an RPC architecture.</q></dd>
+                <dt>WS-*</dt><dd>XML 'stickers' for the SOAP envelope, analogous to HTTP headers.</dd>
+                <dt>WSDL</dt><dd>Web Service Description Language. XML vocabulary for describing SOAP services, such that clients can load a WSDL file to know the service's capabilities.</dd>
+                <dt>WADL</dt><dd>Web Application Description Language. XML vocabulary for describing RESTful services, similar to WSDL. Not as necessary as WSDL, because RESTful services have some discovery built into the service.</dd>
+              </dl>
+            </li>
+          </ul>
+        </section>
+
+        <section class="chapter">
+          <header>
+            <h3>Chapter 2: Writing Web Service Clients</h3>
+          </header>
+          <ul>
+            <li>Chapter demonstrates writing clients for RESTful and hybrid services.</li>
+            <li>Every web service request involves the same three steps:
+              <ol>
+                <li>Come up with data for the HTTP request:
+                  <ul>
+                    <li>HTTP method</li>
+                    <li>URI</li>
+                    <li>HTTP headers</li>
+                    <li>entity-body</li>
+                  </ul>
+                </li>
+                <li>Format that data as an HTTP request, send to an HTTP server</li>
+                <li>Parse the response data into data structures you can use</li>
+              </ol>
+            </li>
+            <li>Each language has an HTTP library, and it is likely you will use or write an abstraction layer on top of that at some point.</li>
+            <li>Base requirements for an HTTP library:
+              <ul>
+                <li>Must support HTTPS/SSL</li>
+                <li>Must support at least GET, HEAD, POST, PUT, DELETE</li>
+                <li>Must allow the programmer to customize the entity body sent</li>
+                <li>Must allow customization of the HTTP headers sent</li>
+                <li>Must give access to the response code and headers of the response</li>
+                <li>Must be able to handle HTTP proxying</li>
+              </ul>
+            </li>
+            <li>Additional features an HTTP library may support:
+              <ul>
+                <li>Request data in compressed form via Accept-Encoding</li>
+                <li>Automatically cache responses</li>
+                <li>Transparently support HTTP auth: Basic, Digest, WSSE</li>
+                <li>Transparently follow HTTP redirects</li>
+                <li>Parse and create HTTP cookie strings</li>
+              </ul>
+            </li>
+            <li>Examples follow, but are unlikely to represent the current best practices and so are omitted here. Code covers making and parsing requests in different languages.</li>
+          </ul>
+        </section>
+        <section class="chapter">
+          <header>
+            <h3>Chapter 3: What Makes RESTful Services Different?</h3>
+          </header>
+          <ul>
+            <li>This chapter takes Amazon's S3 (Simple Storage Service) as an example of a RESTful service.</li>
+            <li>There are two main uses for S3:
+              <ul>
+                <li>backup server: store private data, basically rent disk space</li>
+                <li>data host: public access data, pay for bandwidth/storage</li>
+              </ul>
+            </li>
+            <li>S3 is essentially object-oriented, with two major concepts:
+              <ul>
+                <li>object: named piece of data with accompanying metadata. Four parts in an object:
+                  <ol>
+                    <li>A reference to the parent bucket</li>
+                    <li>data/value stored in the object</li>
+                    <li>name/key</li>
+                    <li>Metadata key-value pairs, mostly custom, may include HTTP header values</li>
+                  </ol>
+                </li>
+                <li>bucket: named container for objects
+                  <ul>
+                    <li>Cannot be nested, may only contain objects.</li>
+                    <li>Limit is 100 buckets per user account.</li>
+                    <li>Bucket names are [AZaz09_.-]*, and may not conflict with any other existing bucket across all users.</li>
+                    <li>Recommendation: no uppercase letters in bucket names, keep everything in one bucket, or one bucket per project at most.</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>S3 exposes three types of resources:
+              <ol>
+                <li>A list of your buckets</li>
+                <li>A particular bucket</li>
+                <li>A particular object in a bucket</li>
+              </ol>
+            </li>
+            <li>HTTP methods in S3:
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Effect</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>GET</code></td>
+                    <td>Pulls the object value.</td>
+                  </tr>
+                  <tr>
+                    <td><code>PUT</code> to a bucket URI</td>
+                    <td>Creates a bucket.</td>
+                  </tr>
+                  <tr>
+                    <td><code>PUT</code> to a bucket/object-name URI</td>
+                    <td>Creates an object in a bucket.</td>
+                  </tr>
+                  <tr>
+                    <td><code>HEAD</code></td>
+                    <td>Gets metadata for an object.</td>
+                  </tr>
+                  <tr>
+                    <td><code>DELETE</code></td>
+                    <td>Deletes object or bucket.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </li>
+            <li>How S3 handles request signing and access control:
+              <ul>
+                <li>Requests have to come in with the Authorization header</li>
+                <li>Since S3 has different levels of access, regular HTTP auth isn't sufficient</li>
+                <li>S3 uses a message authentication code (MAC)</li>
+                <li>Each request uses your secret key to sign portions of the request: URI, HTTP method, a couple of headers</li>
+                <li>Once you've signed a request, you can send the signature to a third party without revealing the secret used to sign the request</li>
+                <li>The third party can then make the signed request and Amazon will serve it for a limited time, giving access to your data in a limited fashion.</li>
+              </ul>
+            </li>
+          </ul>
+        </section>
+
+        <section class="chapter">
+          <header>
+            <h3>Chapter 4: Resource-Oriented Architecture</h3>
+          </header>
+          <ul>
+            <li>Chapter outlines a concrete RESTful architecture.</li>
+            <li>In 'Resource Oriented Architecture', a resource is:
+              <ul>
+                <li>Anything important enough to be referenced as a thing in itself</li>
+                <li>Typically something stored on a computer represented as a bit stream</li>
+                <li>Resource may be a physical object, representations on computer</li>
+              </ul>
+            </li>
+            <li>URIs:
+              <ul>
+                <li>Should have an intuitive correspondence to the resources they identify</li>
+                <li>Should have a structure that varies in predictable ways</li>
+              </ul>
+            </li>
+            <li>Relationship Between URIs and Resources:
+              <ul>
+                <li>Each resource can have multiple URIs</li>
+                <li>Ideally one would be 'canonical'</li>
+                <li>Each URI designates exactly one resource</li>
+              </ul>
+            </li>
+            <li><q>An application is addressable if it exposes the interesting aspects of its data set as resources. Since resources are exposed through URIs, an addressable application exposes a URI for every piece of information it might conceivably serve.</q></li>
+            <li>
+          </ul>
+        </section>
+      </section>
+    </article>
+  </div><!--/container-->
+  </body>
+</html>

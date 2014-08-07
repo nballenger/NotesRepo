@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Toplines: NoSQL Distilled: A Brief Guide to the Emerging World of Polyglot Persistence, Sadalage and Fowler, 2012</title>
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+    <article id="toplines-nosql-distilled">
+      <header>
+      <h1>NoSQL Distilled<small>, a book by Sadalage and Fowler, 2012 <a href="http://martinfowler.com/books/nosql.html" target="_blank"><span class="glyphicon glyphicon-link"></span></a></small></h1>
+      </header>
+
+      <div class="well"> 
+        <section id="executive-summary">
+          <header>
+            <h2 class="text-center">Executive Summary</h2>
+          </header>
+          <h4>The term "NoSQL"</h4>
+          <p>Originating in 2009 in the wake of Google's 'BigTable' and Amazon's 'Dynamo' storage solutions, <strong>"NoSQL" is a catchall term</strong> for data stores that share several common features:</p>
+          <ul>
+            <li><strong>Don't use SQL</strong> as a query language or data description language</li>
+            <li>Generally <strong>open source</strong></li>
+            <li>Need to be <strong>clustered</strong>, typically</li>
+            <li>Have a <strong>range of options for consistency and distribution</strong>, in comparison to ACID.</li>
+            <li><strong>Don't have a schema</strong></li>
+            <li>Are <strong>purposely denormalized</strong></li>
+          </ul>
+          <h4>Types of NoSQL Database</h4>
+          <p>There are four distinct classes of NoSQL database: <strong>Key-Value</strong>, <strong>Document</strong>, <strong>Column-Family</strong>, and <strong>Graph</strong>. The first three are 'aggregate-oriented,' in that they tend to store non-homogeneous data that is internally structured in some way. Additionally, Key-Value, Document, and Column-Family stores are all amenable to distribution, parallelization, and sharding in support of web-scale data storage. Graph databases serve a qualitatively different need as they excel at storing and accessing arbitrary graph structures (webs of connected nodes), and are not able to be sharded easily (if at all).</p>
+          <h4>Aggregate-Oriented Stores</h4>
+          <p>The three aggregate-oriented stores allow operation on data units with a more complex structure than you would find in a set of relational tuples, allowing you to store lists, associative arrays, object serializations, and other types of structured data. The aggregate records are typically updated atomically, and aggregates (whether JSON, XML, plain text, or a language-specific serialization format) are the unit of communication with the data store.</p>
+          <p>Designing data models for NoSQL solutions is substantially different than under the relational model, as NoSQL data is denormalized by design. It is common (and encouraged) for individual record details to exist in as many locations as necessary to quickly serve application queries without requiring any kind of relational JOIN. Where a normalized, relational model achieves consistency and economize on disk space at the potential expense of query speed, NoSQL solutions are built to return an atomic result (an aggregate) as quickly as possible. This comes at the potential cost of data consistency, as laid out in the <abbr title="Consistency, Availability, Partition-tolerance">CAP</abbr> theorem, and the definite cost of space on disk.</p>
+
+          <h4>Consistency Models: CAP Theorem, ACID vs. BASE</h4>
+          <p>Moving to a NoSQL data model requires rethinking the topic of data consistency by taking a more granular approach&mdash;essentially asking the question, "what level of consistency do each of my data types require?" The most common rubric for assessing that is called the CAP Theorem (sometimes 'Brewer's Conjecture'). CAP proposes that there is a three-way relationship between <b>C</b>onsistency, <b>A</b>vailability, and <b>P</b>artition tolerance, and that no system can achieve 100% efficiency in all three simultaneously.</p> 
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Term</th>
+                <th>Definition</th>
+                <th>Tradeoffs</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Consistency</th>
+                <td>Whether two read queries executed simultaneously will receive the same result; whether simultaneous write attempts will potentially place the database into a state capable of serving different results to identical read queries.</td>
+                <td>To achieve full data consistency at all times, a system must give up either partition tolerance or availability, or some combination thereof. A partitioned database cannot be read from with 100% consistency since the unreachable portion of the database could have conflicting data written to it, and it cannot accept writes without placing the data into a state inconsistent with the unreachable nodes. Theoretically a database can be both consistent and partition tolerant if it stops accepting writes immediately following a partitioning event&mdash;but obviously it does so at the cost of availability.</td>
+              </tr>
+              <tr>
+                <th>Availability</th>
+                <td>Whether the database (embodied by individual nodes) is reachable and responsive to all supported query types.</td>
+                <td>Achieving full availability would mean all nodes remain fully operational even in the face of a partitioning event. To do so would mean that data consistency could not be guaranteed, since the partitioned nodes would be in a potentially conflicting state.</td>
+              </tr>
+              <tr>
+                <th>Partition-tolerance</th>
+                <td>The degree to which consistency and availability can be maintained in the event that a portion of the cluster becomes unreachable by another portion (the web of nodes becomes two disconnected webs).</td>
+                <td>Being partition-tolerant means that both halves of the cluster retain some operational capacity, despite being unable to synchronize with the rest of the cluster. To do that, consistency or availability (or both) have to be relaxed&mdash;you can lower availability by disallowing some or all writes, or you can allow data consistency to drop as the two partitioned halves slowly move out of sync.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>Each database system (whether relational or NoSQL) has to address the limits imposed by the CAP theorem. There are two general strategies that roughly correspond to relational and NoSQL systems, given the acronyms <abbr title="Atomicity, Consistency, Isolation, Durability">ACID</abbr> and <abbr title="Basically Available, Soft-state, Eventually consistent">BASE</abbr>.</p>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>DB Family</th>
+                <th>CAP&nbsp;Strategy</th>
+                <th>Implications</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Relational</th>
+                <td><strong>A</strong>tomicity<br>
+                  <strong>C</strong>onsistency<br>
+                  <strong>I</strong>solation<br>
+                  <strong>D</strong>urability</td>
+                <td>The typical tool for achieving ACID compliance is the transaction: related SQL statements accepted as a batch, executed while locking their target rows (or tables) against other writes and many types of read. Transactions can be fully atomic, move the database from one consistent state to another, remain isolated from other simultaneous write requests, and cause non-emphemeral (durable) state changes. While each product has its own way of meeting ACID requirements, database operators are typically given some leeway in the level of protection (and therefore system overhead)  each transaction will incur.
+                </td>
+              </tr>
+              <tr>
+                <th>NoSQL</th>
+                <td><strong>B</strong>asically<br>
+                  <strong>A</strong>vailable<br>
+                  <strong>S</strong>oft-state<br>
+                  <strong>E</strong>ventually&nbsp;consistent</td>
+                <td>The BASE acronym is primarily about signaling, "NoSQL has a CAP strategy too!" BASE prioritizes availability, so NoSQL solutions are much more ambivalent about consistency than relational systems. They try to maintain some level of availability even during partitioning events, while admitting that the database may be in an inconsistent ("soft") state at any given time. Despite that, the trend is always toward synchronization, giving eventual consistency. Database operators are allowed to configure what consistutes acceptable levels of consistency, often at the individual query level. E.g., a read of movie showtimes can require a very low level of consistency, while a write representing a credit card payment can require a very high level.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>Comparison of Aggregate-Oriented DB Families</h4>
+          <p>Key-Value, Document, and Column-Family databases all deal with structured aggregates as their base unit of data, but they differ in how they store and access those aggregates. Key-Value stores are essentially very large associative arrays&mdash;one piece of data is a key, which retrieves a second piece of data, a value. Document stores function essentially the same way, but where values are completely opaque to a strict Key-Value system, a Document database will have some level of introspection into the documents stored within it. This imposes some restrictions on the Document store user, such as having to store all values as well formed JSON or XML, but in exchange gives programmatic access to the document for features like secondary indexing of content.</p>
+          <p>In contrast to the single-level key structure of a Key-Value or Document store, in a Column-Family system each individual 'column' is essentially an associative array indexed by a 'row key'. A 'column family' is a group of columns all using the same set of row keys&mdash;roughly analagous to a table and primary key in a relational database. Interestingly, Column-Family stores are largely differentiated not by how they parse data but how they distribute it: each column family is local to a single node in a cluster (depending on the implementation). Consequently, if each column family represents a distinct query type, like "everything about a donation," results for that query will be returned efficiently by asking that node to output specific rows from its column family.</p>
+
+          <h4>Graph Databases</h4>
+          <p>Graph databases are lumped into "NoSQL" along with the three other types largely because they don't use SQL as their data language. In practical terms they serve a quite specific purpose: to manage data with a high degree of connectedness. Such data is best represented by a graph structure, made up of 'nodes' connected by 'edges.' Where a relational database will allow you to write a query that exposes relationships built into the database schema, a graph database will hold many arbitrary relationships and allow you to express your query in terms of traversing an emergent path.</p>
+
+          <h4>Appropriate Use Cases</h4>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Family</th>
+                <th>Suitable For</th>
+                <th>Unsuitable For</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Key-Value</th>
+                <td>
+                  <ul>
+                    <li>Storing session information</li>
+                    <li>User profiles and preferences</li>
+                    <li>Shopping cart data</li>
+                  </ul>
+                </td>
+                <td>
+                  <ul>
+                    <li>Data with many relationships</li>
+                    <li>Multi-operation transactions</li>
+                    <li>Queries by value</li>
+                    <li>Operations on sets</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <th>Document</th>
+                <td>
+                  <ul>
+                    <li>Event logging</li>
+                    <li>Content management systems, blogging platforms</li>
+                    <li>Web or real-time analytics</li>
+                    <li>E-commerce applications</li>
+                  </ul>
+                </td>
+                <td>
+                  <ul>
+                    <li>Complex transactions spanning different documents</li>
+                    <li>Queries against aggregate structure (no fixed schema)</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <th>Column-Family</th>
+                <td>
+                  <ul>
+                    <li>Event logging</li>
+                    <li>Content management systems, blogging platforms</li>
+                    <li>Counters</li>
+                    <li>Expiring usage</li>
+                  </ul>
+                </td>
+                <td>
+                  <ul>
+                    <li>Queries that aggregate data (sum, count, etc.)</li>
+                    <li>Fast prototypes</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <th>Graph</th>
+                <td>
+                  <ul>
+                    <li>Connected data</li>
+                    <li>Routing, dispatch, and location-based services</li>
+                    <li>Recommendation engines</li>
+                  </ul>
+                </td>
+                <td>
+                  <ul>
+                    <li>Instances where all or many records need similar updates</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <h4>Overall Considerations</h4>
+          <p>The book notes two paradigm shifts that have to be taken into account when transitioning from relational to NoSQL databases:</p>
+          <ul>
+            <li>Where relational databases are most often <em>integration</em> databases, where all data from multiple applications is consolidated into a normalized whole, successful distributed databases are <em>application</em> databases. An application database attempts to serve the specific needs of an application or service, without consideration of whether its data will integrate with that of other application databases.</li>
+            <li>You have to radically rethink data consistency. In that respect, what was once the job of the database is now the job of your application code. Data integration is a separate job from day to day data storage, and may happen during a step like moving collected data to a data warehouse.</li>
+          </ul>
+
+          <p><strong>In short: the only way to scale is to distribute across clustered nodes, which requires redefining data consistency guidelines in a more granular fashion, and including those guidelines in application code instead of an integral part of the data model.</strong></p> 
+        </section>
+      </div>
+      <section>
+        <header>
+          <h2>Chapter Summaries</h2>
+        </header>
+
+        <section class="chapter">
+          <header>
+            <h3>Preface</h3>
+          </header>
+          <ul>
+            <li>NoSQL databases are interesting because they can enhance application development productivity, and handle large scale data.</li>
+            <li>Types of NoSQL databases:
+          <table class="table table-condensed">
+            <thead>
+              <tr>
+                <th>Data Model</th>
+                <th>Examples</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Key-Value</td>
+                <td>
+                  <ul class="list-inline">
+                    <li>BerkeleyDB</li>
+                    <li>LevelDB</li>
+                    <li>Memcached</li>
+                    <li>Project Voldemort</li>
+                    <li>Redis</li>
+                    <li>Riak</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>Document</td>
+                <td>
+                  <ul class="list-inline">
+                    <li>CouchDB</li>
+                    <li>MongoDB</li>
+                    <li>OrientDB</li>
+                    <li>RavenDB</li>
+                    <li>Terrastore</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>Column-Family</td>
+                <td>
+                  <ul class="list-inline">
+                    <li>Amazon SimpleDB</li>
+                    <li>Cassandra</li>
+                    <li>HBase</li>
+                    <li>Hypertable</li>
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td>Graph</td>
+                <td>
+                  <ul class="list-inline">
+                    <li>FlockDB</li>
+                    <li>HyperGraphDB</li>
+                    <li>Infinite Graph</li>
+                    <li>Neo4J</li>
+                    <li>OrientDB</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          </li>
+        </ul>
+        </section>
+
+        <section class="chapter">
+          <header>
+            <h3>Chapter 1: Why NoSQL?</h3>
+          </header>
+          <p>Value of relational databases:</p>
+          <ul>
+            <li>More flexible than a file system</li>
+            <li>ACID compliant transactions give access control, rollbacks</li>
+            <li>The basic relational model is well known</li>
+          </ul>
+          <p>Downsides and complications of relational databases:</p>
+          <ul>
+            <li>Relational dbs suffer from 'impedance mismatch'&mdash;the overhead you incur in translating in-memory structures (objects, etc.) into relational data.</li>
+            <li>In a relational db driven app, data integration tends to happen at the level of the database, via SQL. If instead of an integration database you treat your persistence as a series of 'application databases,' one per app, data integration is moved from the db layer to the web service/application layer.</li>
+            <li>The relational model doesn't scale horizontally very well&mdash;sharding will either break querying/referential integrity/transactions or will introduce unacceptable network latency.</li>
+          </ul>
+          <p>Brief notes about NoSQL:</p>
+          <ul>
+            <li>Emerged in '09 with BigTable and Dynamo from Google and Amazon.</li>
+            <li>'NoSQL' is kind of a catchall term, no clear definition. Common characteristics of 'NoSQL' systems:
+              <ul>
+                <li>They don't use SQL</li>
+                <li>Generally open source</li>
+                <li>Need to be clustered, typically.</li>
+                <li>Range of options for consistency and distribution, in comparison to ACID.</li>
+                <li>Doesn't typically serve needs of old, non-web systems.</li>
+                <li>Don't have a schema.</li>
+                <li>Don't worry about what "NoSQL" stands for.</li>
+                <li>Relational databases are one option among many now, which is a way of thinking called 'polyglot persistence.'</li>
+              </ul>
+            </li>
+          </ul>
+          <p><q>To shift to a polyglot world, organizations need to shift from integration databases to application databases.</q></p>
+        </section>
+
+        <section class="chapter">
+          <header>
+            <h3>Chapter 2: Aggregate Data Models</h3>
+          </header>
+          <ul>
+            <li>"Data model" describes how we interact with the data in a database. In this book "data model" is mostly used to refer to the model by which the database organizes data&mdash;a metamodel.</li>
+            <li>Each NoSQL solution has a different data model, which this book puts in four categories:
+              <ul>
+                <li>key-value</li>
+                <li>document</li>
+                <li>column-family</li>
+                <li>graph</li>
+              </ul>
+            </li>
+            <li>Key-value, document, and column-family are 'aggregate oriented.'</li>
+          </ul>
+
+          <h5>The Aggregate Data Model</h5>
+          <ul>
+            <li>Aggregate data model recognizes that often you want to operate on data units that have a more complex structure than a set of tuples, so you end up with records that have internal structures like lists and associative arrays.</li>
+            <li>The term comes from 'Domain Driven Design', which calls it a 'collection of related objects that we wish to treat as a unit.'</li>
+            <li>Typically we update aggregates with atomic operations and communicate with our data storage in terms of aggregates.</li>
+            <li>The aggregate is a natural unit for replication and sharing across machines.</li>
+          </ul>
+
+          <h5>Relations versus Aggregates</h5>
+          <p>Assume we have to build an e-commerce site that will sell items directly to consumers over the web, and we have to store:</p>
+          <ul>
+            <li>user info</li>
+            <li>product catalog</li>
+            <li>orders</li>
+            <li>shipping addresses</li>
+            <li>billing addresses</li>
+            <li>payment data</li>
+          </ul>
+          <p>In a relational database that might give you these tables:</p>
+          <ul>
+            <li>Customer (many Orders, many Billing Addresses)</li>
+            <li>Order (a Customer, an Address, many Order Payments, many Order Items)</li>
+            <li>Order Item (an Order, a Product)</li>
+            <li>Product (many Order Items)</li>
+            <li>Order Payment (an Order, a Billing Address)</li>
+            <li>Billing Address (a Customer, an Address, many Order Payments)</li>
+            <li>Address (many Billing Addresses)</li>
+          </ul>
+          <p>An aggregate view of the same thing might look like this:</p>
+          <ul>
+            <li>two main aggregates, customer and order</li>
+            <li>a customer contains a list of billing addresses</li>
+            <li>an order contains a list of order items, a shipping address, and payments</li>
+            <li>a payment contains a billing address for that payment</li>
+          </ul>
+
+          <h5>Example of an Aggregate Record</h5>
+<pre>
+// in customers
+{
+  "id": 1,
+  "name": "Martin",
+  "billingAddress": [{"city":"Chicago"}]
+}
+
+// in Orders
+{
+  "id": 99,
+  "customerId": 1,
+  "orderItems": [
+    {
+      "productId": 27,
+      "price": 32.45,
+      "productName": "NoSQL Distilled"
+    }
+  ],
+  "shippingAddress": [{"city":"Chicago"}],
+  "orderPayment": [
+    {
+      "ccinfo":"1000-1000-1000-1000",
+      "txnId":"abelif879rft",
+      "billingAddress": {"city":"Chicago"}
+    }
+  ]
+}
+</pre>
+          <p>Note that:</p>
+          <ul>
+            <li>The link between customer and order isn't in either aggregate, it's a relationship between aggregates.</li>
+            <li>There's a certain amount of denormalization you'll see, because you want to minimize the number of aggregates you access during a data interaction.</li>
+            <li>You could aggregate your model differently from the above--no one answer.</li>
+          </ul>
+
+          <h5>Consequences of Aggregate Orientation</h5>
+          <ul>
+            <li>Relational databases are typically ignorant of their implied aggregates.</li>
+            <li>That's better if you don't have aggregated ways of looking at your data.</li>
+            <li>Aggregate orientation is way better for running on a cluster.</li>
+            <li>Aggregate oriented databases don't have ACID transactions that span multiple aggregates, but do support atomic manipulation of a single aggregate.</li>
+            <li>You have to manage multi-aggregate atomicity in your application code.</li>
+          </ul>
+
+          <h4>Key-Value and Document Data Models</h4>
+          <ul>
+            <li>Both key-value and document databases consist of lots of aggregates, each having a key used to get at the data.</li>
+            <li>In a key-value database, the aggregate is opaque to the database.</li>
+            <li>A document database can see structure in the aggregate.</li>
+            <li>If you use key-value, you can store whatever you want, if you use document you have to conform to the structures it supports, but you get more flexible access structures.</li>
+            <li>The lines between key-value and document are pretty blurry.</li>
+          </ul>
+
+          <h4>Column-Family Stores</h4>
+          <ul>
+            <li>These are differentiated by the way they physically store data.</li>
+            <li>If writes are rare, but you often need to read a few columns of many rows, it's better to store groups of columns for all rows as the basic storage unit.</li>
+            <li>BigTable was the first post-SQL column store db.</li>
+            <li>Helpful to think of these as a two-level aggregate structure.</li>
+            <li>The first key is a row identifier, picking up the aggregate of interest.</li>
+            <li>In column-family stores, that row aggregate is itself a map of more detailed values, referred to as columns.</li>
+            <li>In addition to accessing a row as a whole, you can pick out a column.</li>
+            <li>The columns are organized into column families. Each column has to be part of a single column family, and the column acts as a unit for access, with the assumption that data for a column family will usually be accessed together.</li>
+            <li>A column family might be roughly analogous to a table--grouped columns.</li>
+            <li>Think of a row as the join of records in all column families.</li>
+            <li>Google BigTable and HBase think of data this way, but Cassandra is different</li>
+            <li>In cassandra:
+              <ul>
+                <li>a row only occurs in one column family, but that column family may contain supercolumns, which are columns that contain nested columns.</li>
+                <li>Cassandra supercolumns are roughly equivalent to BigTable families.</li>
+              </ul>
+            </li>
+            <li>You can add any column to any row, irrespective of column families.</li>
+            <li>Cassandra uses the terms 'skinny' and 'wide' for the number of columns per row.</li>
+          </ul>
+
+          <h4>Summarizing Aggregate-Oriented Databases</h4>
+          <ul>
+            <li>They all share the idea of an aggregate indexed by a lookup key.</li>
+            <li>Aggregated data is central to running on a cluster.</li>
+            <li>Key-value treates the aggregate as opaque, document gets internal structure.</li>
+            <li>Columnar models divide the aggregate into column families and row aggregates.</li>
+          </ul>
+        </section>
+
+        <section class="chapter">
+          <header>
+            <h3>Chapter 3: More Details on Data Models</h3>
+          </header>
+          <h4>Relationships</h4>
+          <ul>
+            <li>Aggregates are good for info accessed together, but there are cases where data that is related is accessed in different circumstances.</li>
+            <li>Simplest way to deal with that is to embed the id of one aggregate into another</li>
+            <li>Many systems have ways to make the relationships visible to the database.</li>
+            <li>Riak lets you put link info in metadata, to do link walking and partial retrieval of records.</li>
+            <li>Since the aggregate is the unit of data retrieval, you only get atomic updates within a single aggregate, not across related aggregates.</li>
+            <li>Aggregate oriented databases consequently become more awkward as you need to operate across multiple aggregates.</li>
+          </ul>
+
+          <h4>Graph Databases</h4>
+          <ul>
+            <li>Motivated not by clustering, but models where small records have complex interconnections.</li>
+            <li>They store a graph data structure made of connected nodes.</li>
+            <li>Ideal for capturing any data consisting of complex relationships like social networks, product preferences, or eligibility rules.</li>
+            <li>Fundamental model is nodes connected by edges (also 'arcs')</li>
+            <li>Lots of possibilities beyond that:
+              <ul>
+                <li>FlockDB is nodes and edges with no additional attributes</li>
+                <li>Neo4J lets you attach Java objects as properties of nodes and edges, and is schemaless.</li>
+                <li>Infinite Graph stores Java objects, which are subclasses of its built in types, as nodes and edges.</li>
+              </ul>
+            </li>
+            <li>Once you build the db, the system lets you query the graph.</li>
+            <li>Traversals of the graph (in contrast to JOINs) are very cheap.</li>
+            <li>Inserts are pretty expensive though.</li>
+            <li>Mostly graph databases are run on a single server.</li>
+            <li>Only thing in common with aggregate-oriented is that they're not relational, and they cropped up around the same time.</li>
+          </ul>
+
+          <h4>Schemaless Databases</h4>
+          <ul>
+            <li>Data storage in a NoSQL db is much more casual than in the relational model.</li>
+            <li>Makes it easier to store non uniform data.</li>
+            <li>Programs typically rely on some form of implicit schema--field names, etc.</li>
+            <li>If the implicit schema is embodied in the application code, you have to read the application code to understand what data is stored, which isn't good.</li>
+            <li>In essence the schema for 'schemaless' databases is shifted to the application</li>
+            <li>That's problematic if multiple applications access the same database.</li>
+          </ul>
+
+          <h4>Materialized Views</h4>
+          <ul>
+            <li>Aggregates can make overview queries expensive. Indexes can help some.</li>
+            <li>Relational databases have views for this purpose.</li>
+            <li>Materialized views are computed in advance and cached.</li>
+            <li>Effective for high read data that can stand being somewhat stale.</li>
+            <li>NoSQL databases don't have views, but they do have precomputed/cached queries</li>
+            <li>Sometimes this is done with map reduce.</li>
+            <li>Two rough strategies for a materialized view:
+              <ul>
+                <li>eager approach&mdash;you update the view at the same time you update the data</li>
+                <li>batch jobs&mdash;update at regular intervals, you need to know how stale it is</li>
+                <li>Materialized views can be built in or outside the database.</li>
+                <li>Materialized views can be used within the same aggregate--order summary in an order aggregate, for instance.</li>
+              </ul>
+            </li>
+          </ul>
+
+          <h4>Modeling for Data Access</h4>
+          <ul>
+            <li>You have to consider how the data is going to be read and what the side effects on data related to those aggregates will be.</li>
+          </ul>
+        </section>
+
+        <section class="chapter">
+          <header>
+            <h3>Chapter 4: Distribution Models</h3>
+          </header>
+          <ul>
+            <li>Scaling out is generally cheaper than scaling up.</li>
+            <li>Aggregate orientation fits scaling out well, since aggregates are a natural unit for distribution.</li>
+            <li>Running clustered increases complexity in the system, so weigh the benefits.</li>
+            <li>Two broad paths to distribution:
+              <ul>
+                <li>replication&mdash;copies the same data to multiple nodes</li>
+                <li>sharding&mdash;different data on different nodes</li>
+              </ul>
+            </li>
+            <li>Replication and sharding are orthogonal--you can use either or both.</li>
+            <li>Replication can be master-slave or peer-peer.</li>
+          </ul>
+
+          <h4>Single Server</h4>
+          <ul>
+            <li>Running the database on a single machine handling all reads and writes.</li>
+            <li>Simplest option, may make sense even with a NoSQL solution.</li>
+            <li>Graph databases typically work best in a single server setup.</li>
+          </ul>
+
+          <h4>Sharding</h4>
+          <ul>
+            <li>Horizontal scaling by putting different parts of your data onto diff servers.</li>
+            <li>Ideally different users talk to different server nodes--each user talks to one server, so requests are fulfilled quickly, and load is balanced.</li>
+            <li>Big question is how to clump the data so that one users mostly gets data from a single server--makes aggregate oriented databases a nice choice.</li>
+            <li>Constraints are that you want to both put together data that will be accessed together, and you want to balance the load.</li>
+            <li>Sometimes good to group aggregates that will be read in sequence.</li>
+            <li>Historically sharding is done in application logic, but many NoSQL databases can do autosharding, where the db allocates data to shards and allocates access to the correct shard.</li>
+            <li>Sharding lets you horizontally scale reads and writes, where replication only lets you scale reads, while writes are relatively static.</li>
+            <li>Sharding by itself isn't resilient--you need redundancy too.</li>
+            <li>Going from a single node to sharded can be really tricky, figure it out early.</li>
+          </ul>
+
+          <h4>Master-Slave Replication</h4>
+          <ul>
+            <li>Replicates data across multiple nodes.</li>
+            <li>One node is the master, rest are slaves/secondaries.</li>
+            <li>Replication process syncs slaves with the master.</li>
+            <li>Helpful in scaling a read intensive dataset.</li>
+            <li>All read/write can go to master, slave acts as hot backup for failover.</li>
+            <li>You run a risk of inconsistent data when replication lags or fails.</li>
+          </ul>
+
+          <h4>Peer-to-Peer Replication</h4>
+          <ul>
+            <li>Master-slave has a bottleneck at the master node.</li>
+            <li>Peer to peer systems have nodes where each node has equal weight, can all accept writes, and losing any of them doesn't block access.</li>
+            <li>Consistency can be an issue, as can collisions.</li>
+            <li>Couple of broad options for getting consistency:
+              <ul>
+                <li>Ensure that whenever we write, the replicas coordinate to ensure avoiding a conflict.</li>
+                <li>Cope with an inconsistent write with policy about data merges.</li>
+              </ul>
+            </li>
+          </ul>
+
+          <h4>Combining Sharding and Replication</h4>
+          <ul>
+            <li>Master-slave plus sharding means you have multiple masters, but each data item only has a single master. A single node can be master for some data, and slave for other data, or nodes can have dedicated roles.</li>
+            <li>Peer-to-peer plus sharding is often used for column-family databases.</li>
+            <li>In that scenario, each shard is present on 3 or more nodes. A failed node will result in data being replicated to a new node to ensure redundancy.</li>
+          </ul>
+        </section>
+
+        <section class="chapter">
+          <header>
+            <h3>Chapter 5: Consistency</h3>
+          </header>
+          <p>Moving away from relational model means rethinking consistency.</p>
+
+          <h4>Update Consistency</h4>
+          <ul>
+            <li>write-write conflict&mdash;two people updating an item at the same time</li>
+            <li>serialized writes&mdash;application of one, then the next, according to policy</li>
+            <li>lost update&mdash;in a write-write conflict, the first applied is lost</li>
+            <li>pessimistic approach to concurrency&mdash;prevents conflicts from happening</li>
+            <li>optimistic approach to concurrency&mdash;detects problems and solves them</li>
+            <li>Common pessimistic approach to updates is write locks.</li>
+            <li>Optimistic approach to updates is conditional updates, where any client that does an update tests the value just prior to updating to see if it's changed since the last read was performed.</li>
+            <li>In a distributed system, nodes might apply updates in different orders, which would result in a different stored value on each node.</li>
+            <li>Approach to that is 'sequential consistency'&mdash;making sure each node applies updates in the same order to produce the same state.</li>
+            <li>Different optimistic method: record both updates, and say they're in conflict</li>
+            <li>Then you decide on a merge policy and bring the records together.</li>
+            <li>Automated merging of write-write conflicts is domain specific, must be written on a case by case basis.</li>
+            <li>Pessimistic approaches, while 'safer', can degrade performance to below the threshold of being fit for purpose.</li>
+            <li>Pessimistic approaches often lead to deadlocks, which are hard to debug.</li>
+            <li>Replication makes running into write-write conflicts much more common.</li>
+            <li>Using a single node for writes solves it, and most distribution models except peer-to-peer will use this strategy.</li>
+          </ul>
+
+          <h4>Read Consistency</h4>
+          <ul>
+            <li>Maintaining update consistency doesn't guarantee read consistency.</li>
+            <li>Hypothetical: An order with line items and shipping charge, with shipping charge calculated based on the line items. Adding a line item means recalculating and updating the shipping charge. If Alice adds a line item, Bob reads the line items and shipping charge, and then Alice updates the shipping charge, you get an 'inconsistent read' or 'read-write conflict'.</li>
+            <li>Basically somebody does a read in the middle of a non-transactional write.</li>
+            <li>This is 'logical consistency': ensuring different data items make sense in relation to each other according to business rules.</li>
+            <li>Graph databases support ACID transactions, so they don't really have these issues, where aggregate-oriented ones do.</li>
+            <li>If all updated values are in the same aggregate, you can maintain consistency</li>
+            <li>If you update multiple aggregates to perform a single operation, you can have an inconsistency window. NoSQL systems may have very short windows.</li>
+            <li>With replication, you get another kind of consistency: replication consistency.</li>
+            <li>Hypothetical: Reserving the last available hotel room. The reservation system runs on many nodes. Alice is looking at the last room in Atlanta, Bob is looking at it in Boston, and Charles is looking in Chicago. Bob books the room, and the data updates in Atlanta faster than Chicago. At the same time, Alice and Charles get different views of the same data, due to 'replication inconsitency.'</li>
+            <li>You ideally want the data to have the same value when read from different replica nodes.</li>
+            <li>Updates propagate eventually, closing the inconsistency window--the system is 'eventually consistent.'</li>
+            <li>Data that is out of date is 'stale'.</li>
+            <li>Replication inconsistency can exacerbate logical inconsistency by lengthening the inconsistency window.</li>
+            <li>You can often supply the level of consistency you need on a per transaction basis, giving you the ability to use weak consistency most of the time.</li>
+            <li>Inconsistent reads are particularly problematic when you get inconsistent with yourself--most users act independently, so they don't see conflicts.</li>
+            <li>Hypothetical: Posting comments on a blog entry. You type your entry, enter it, it is posted to a different node, and appears lost because it hasn't update on the node you're reading from.</li>
+            <li>You can tolerate reasonably log inconsistency windows if you can get 'read-your-writes consistency', where users are guaranteed to see their own updates.</li>
+            <li>You can do that with 'session consistency'--user may lose consistency once their session ends, but up to that point they see their own updates.</li>
+            <li>Techniques for getting session consistency:
+              <ul>
+                <li>Sticky session&mdash;session tied to one node</li>
+                <li>Session affinity&mdash;another term for sticky session</li>
+                <li>Version stamps&mdash;ensure every interaction with the data store includes at least the latest version stamp seen by a session.</li>
+              </ul>
+            </li>
+            <li>Under master-slave it can be difficult to do session consistency if you want to do master writes and slave reads, since you're always looking at the inconsistency window.</li>
+            <li>Approaches to that:
+              <ul>
+                <li>Send writes to the slave and have them forwarded to the master</li>
+                <li>Switch the session temporarily to the master for writes, then back to slave</li>
+              </ul>
+            </li>
+            <li>You have to plan for consistency in your application logic as well as the database, because it's a very common scenario to present a view to a user, have them think or work, and then refresh--during which time the data may have changed.</li>
+          </ul>
+
+          <h4>Relaxing Consistency</h4>
+          <ul>
+            <li>Different domains have different tolerances for inconsistency, and it's part of the tradeoffs you make in designing a system.</li>
+            <li>Transactions are expensive in terms of time and resources.</li>
+          </ul>
+
+          <h5>The CAP Theorem</h5>
+          <ul>
+            <li>Proposed by Eric Brewer in 2000, formal proof by Lynch and Gilbert.</li>
+            <li>Also referred to as 'Brewer's Conjecture'.</li>
+            <li>Basic statement: Consistency, Availability, Partition tolerance: choose two.</li>
+            <li>Availability means if you can talk to a node, it can read and write data.</li>
+            <li>Partition tolerance means the cluster can survive communication breakages that create unconnected sub clusters.</li>
+            <li>A single server system is CA but not P--can't be partitioned.</li>
+            <li>You can theoretically build a CA cluster, usually in a single data center, but you have to be able to detect and respond to partitioning very fast.</li>
+            <li>Theorem breaks down to "if you may suffer partitioning, you have to trade off between consistency and availability."</li>
+            <li>If Alice in Atlanta and Bob in Boston both want to book a hotel room in Chicago, we would want there to be a master server for the Chicago bookings that was the write-master. If the link to Atlanta went down, availability would suffer, but consistency would be maintained.</li>
+            <li>Shopping carts are classic examples: you can always write to a shopping cart, even if network failures meant you had multiple shopping carts. Checkout can merge the carts.</li>
+            <li>It is possible (depending on domain) to deal with inconsistency in coherent ways, but it takes a lot of work to do so.</li>
+            <li>Advocates of NoSQL say that instead of ACID, they have BASE: Basically Available, Soft state, Eventual Consistency.</li>
+            <li>That's a pretty poorly defined term.</li>
+          </ul>
+
+          <h5>Summary: Consistency in Distribution</h5>
+          <ul>
+            <li>We can improve consistency by getting more nodes involved in the interaction, but each node we add increases the response time of that interaction.</li>
+            <li>That makes 'availability' the limit of the latency we're prepared to tolerate; once latency gets too high, we treat the data as unavailable.</li>
+          </ul>
+
+          <h4>Relaxing Durability</h4>
+          <ul>
+            <li><q>What's the point of a data store if it can lose updates?</q></li>
+            <li>You may occasionally want to trade durability for performance.</li>
+            <li>An in memory db is a good example--on crash, any unflushed updates are lost.</li>
+            <li>Another example: storing user-session state. At worst that's usually annoying to lose, rarely catastrophic.</li>
+            <li>Consider having durability level specified in a call, so important updates can force a flush from memory to disk.</li>
+            <li>You can get a replication durability failure if one node updates but fails before propagating that change outward.</li>
+          </ul>
+
+          <h4>Quorums</h4>
+          <ul>
+            <li>The more nodes you involve in a request, the higher the chance of avoiding inconsistencies.</li>
+            <li>How many nodes do you need for strong consistency?</li>
+            <li>Consider a system with three nodes:
+              <ul>
+                <li>A write quorum is W &gt; N/2 (writing nodes must be more than half total nodes)</li>
+                <li>A read quorum is dependent on how the write quorum is defined.</li>
+                <li>If writes have to be confirmed by 2 machines, you have to read at least two nodes to make sure you have the data.</li>
+                <li>If writes are confirmed by one machine, you have to talk to all nodes to make sure of the data.</li>
+                <li>Relationship between the number of nodes you need for a read (R), those confirming a write (W), and the replication factor (N), to ensure a strongly consistent read, is <code>R &plus; W &gt; N</code></li>
+                <li>Those inequalities are for peer-peer distribution models.</li>
+              </ul>
+            </li>
+            <li>Don't confuse the number of nodes with the replication factor.</li>
+            <li>Most authorities suggest a replication factor of at least 3 for resilience. </li>
+            <li>There's a tradeoff between read and write speed: If you need fast, strongly consistent reads, you might have a write quorum of N to ensure that talking to any single node is enough for a read.</li>
+          </ul>
+
+          <h4>Further Reading</h4>
+          <ul>
+            <li>Tanenbaum and Van Steen on consistency in distributed systems</li>
+            <li>IEEE Computer Feb 2012 on the CAP theorem</li>
+          </ul>
+
+        </section>
+
+        <section class="chapter">
+          <header>
+            <h3>Chapter 6: Version Stamps</h3>
+          </header>
+          <h4>Business and System Transactions</h4>
+          <ul>
+            <li>Typically business transactions (put an item in the cart) and system transactions (update the state of the cart model) are not 1 to 1.</li>
+            <li>Broad set of techniques for handling read-write logical inconsistencies is called 'offline concurrency'.</li>
+            <li>Particularly useful one is 'Optimistic Offline Lock', which is a form of conditional update where a client operation rereads any info the business transaction relies on and checks that it hasn't changed since it was originally read and displayed.</li>
+            <li>Good way to implement that is a version stamp: a field that changes every time the underlying data in the record changes.</li>
+            <li>You can use etags in HTTP headers to do this, and get the server to respond to mismatched etags in update requests with 412, Precondition Failed.</li>
+            <li>Many ways to construct the version stamp: counters, GUID numbers, hashing the contents of the resource with a large hash key size, using the timestamp of the last update.</li>
+            <li>You can create composite stamps by using more than one technique.</li>
+          </ul>
+
+          <h4>Version Stamps on Multiple Nodes</h4>
+          <ul>
+            <li>If you're single server or single master, you can use a counter or timestamp.</li>
+            <li>If you need to compare tags for time math, you can't use hashes/GUIDs.</li>
+            <li>If you use timestamps, you have to ensure all nodes use the same clock.</li>
+            <li>Most common approach is a 'vector stamp', which is a set of counters, one for each node.</li>
+            <li>For three nodes blue, green, and black, a vector stamp would be: <code>[blue: 43, green: 54, black: 12]</code></li>
+            <li>Each node updates its own vector stamp counts, and when nodes talk they compare their vector stamps and synchronize.</li>
+            <li>There are specific types of vector stamps that differ in how they synchronize: vector clocks and version vectors.</li>
+            <li>Vector stamps let you spot inconsistencies, but doesn't resolve them--that will be domain dependent and algorithmic.</li>
+          </ul>
+        </section>
+
+        <section class="chapter">
+          <header>
+            <h3>Chapter 7: Map-Reduce</h3>
+          </header>
+          <ul>
+            <li>For a multi-node setup, you need ways to reduce the amount of data sent over the network during the course of a computation.</li>
+            <li>Map-reduce is a form of 'Scatter-Gather' (Hohpe and Woolf), and has multiple implementations in the wild.</li>
+          </ul>
+
+          <h4>Basic Map-Reduce</h4>
+          <ul>
+            <li>First stage in a job is the 'map', a function whose input is a single aggregate and whose output is a bunch of key-value pairs.</li>
+            <li>Each map run is independent of all others, so they can be parallelized.</li>
+            <li>A map operation runs on a single record, the reduce reduces across all values of a single key in the key-value pairs emitted by the map.</li>
+          </ul>
+
+          <h4>Partitioning and Combining</h4>
+          <ul>
+            <li>You can increase parallelism by partitioning the output of the mappers.</li>
+            <li>You can't run a reducer across keys in the output of the map, but you can run multiple reducers in parallel.</li>
+            <li>Typically the results of the mapper are divided based on the key of each processing node, with multiple keys grouped into partitions.</li>
+            <li>The framework takes data from all nodes for one partition, combines it into a single group for that partition, and sends it to a reducer.</li>
+            <li>Your mapper may be shipping redundant key-value pairs between nodes, so you have the option of providing a combiner function. </li>
+            <li>A combiner function is a reducer function whose output must match its input.</li>
+            <li>This is a 'combinable reducer' and feeds the final reducer step.</li>
+            <li>Not all reducers are combinable.</li>
+            <li>If you have combining reducers the map-reduce framework can run both in parallel and in series, rerunning on its own output as new input is added.</li>
+            <li>Some frameworks require all reducers to be combining.</li>
+          </ul>
+
+          <h4>Composing Map-Reduce Calculations</h4>
+          <ul>
+            <li>There are constraints imposed by each step:
+              <ul>
+                <li>The map task may operate only on a single aggregate at a time.</li>
+                <li>The reduce task may operate on only a single key from the map output.</li>
+              </ul>
+            </li>
+            <li>Calculations need to be structured around operations that fit with the idea of a reduce operation: calculating averages, for instance.</li>
+          </ul>
+
+          <h5>A Two Stage Map-Reduce Example</h5>
+          <ul>
+            <li>Use a pipes and filters approach to model complex map-reduce calculations.</li>
+            <li>Hypothetical: compare the sales of products for each month in 2011 to the same month in the year prior.
+              <ul>
+                <li>First stage produces aggregate figures for a single product in a single month of the year.</li>
+                <li>Second stage takes that as input and produces the result for a single product by comparing one month's results with the same month in the prior year.</li>
+              </ul>
+            </li>
+            <li>The constraints the format places on you make purpose built languages a good choice: Apache Pig, Hadoop, Hive, etc.</li>
+          </ul>
+
+          <h5>Incremental Map-Reduce</h5>
+          <ul>
+            <li>It's helpful in a system where new data becomes available during the course of a run to be able to incorporate that new data into the computation.</li>
+            <li>You can always run incremental maps, since maps operate on single records.</li>
+            <li>The reduce step is more complex--any change in the map outputs can trigger a new reduction.</li>
+            <li>If the reducer is combinable and the data changes are only additive, you can just run the reduce with the existing result plus new additions.</li>
+            <li>If the changes are destructive, you can just rerun any partition where changes were applied. Same for combiner step.</li>
+            <li>Much of this is handled by the framework, so you need to know how the framework supports incremental operation.</li>
+          </ul>
+
+          <h4>Further Reading</h4>
+          <ul>
+            <li>Books on Hadoop are helpful on the topic.</li>
+          </ul>
+        </section>
+        <section class="chapter">
+          <header>
+            <h3>Chapter 8: Key-Value Databases</h3>
+          </header>
+
+          <ul>
+            <li>KV store is a simple hash table, mostly used when all access is via primary key</li>
+            <li>Essentially a two column table, with ID and Value.</li>
+            <li>Terminology comparison in Oracle and Riak:
+              <table class="table table-condensed">
+                <thead>
+                  <tr>
+                    <th>Oracle</th>
+                    <th>Riak</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>database instance</td>
+                    <td>Riak cluster</td>
+                  </tr>
+                  <tr>
+                    <td>table</td>
+                    <td>bucket</td>
+                  </tr>
+                  <tr>
+                    <td>row</td>
+                    <td>key-value</td>
+                  </tr>
+                  <tr>
+                    <td>rowid</td>
+                    <td>key</td>
+                  </tr>
+                </tbody>
+              </table>
+            </li>
+          </ul>
+
+          <h4>What Is a Key-Value Store</h4>
+          <ul>
+            <li>Simplest NoSQL stores from an API perspective. You ask for a key and do something with the result.</li>
+            <li>Values are blobs that the data store just holds onto with no introspection.</li>
+            <li>The application is responsible for knowing what's inside the records.</li>
+            <li>Generally have good performance and are very scalable.</li>
+            <li>Popular key-value databases:
+              <ul>
+                <li>Riak</li>
+                <li>Redis (Data Structure server)</li>
+                <li>Memcached DB</li>
+                <li>Berkeley DB</li>
+                <li>Hamster DB (good for embedded use)</li>
+                <li>Amazon DynamoDB (not open source)</li>
+                <li>Project Voldemort (open source DynamoDB implementation)</li>
+              </ul>
+            </li>
+            <li>Some of these allow the object stored to be any data structure, not just an object within the application domain.</li>
+            <li>Riak lets you store keys in 'buckets', which are just a way of segmenting keys.</li>
+            <li>Buckets are essentially flat namespaces for keys.</li>
+            <li>If you wanted to store user session info, shopping cart info, and user prefs in Riak, you could put them in the same bucket with one key:
+<pre>
+&lt;Bucket = userData&gt;
+  &lt;Key = sessionID&gt;
+    &lt;Value = Object&gt;
+      UserProfile
+      SessionData
+      ShoppingCart
+        CartItem
+        CartItem
+</pre>
+            </li>
+            <li>If you have different types of things in the same bucket, you could append the item type to the key: Key = sessionId_userProfile</li>
+            <li>You could also create separate 'domain buckets' to store specific data.</li>
+            <li>Using domain buckets means you can get the object you need without extra stuff.</li>
+          </ul>
+
+          <h4>Key-Value Store Features</h4>
+          <ul>
+            <li>This covers how the features of this data store type differ from an RDBMS.</li>
+          </ul>
+
+          <h5>Consistency</h5>
+          <ul>
+            <li>Applicable only for operations on a single key.</li>
+            <li>Optimistic writes can be done, but are very expensive to do.</li>
+            <li>Riak and implementations like it are 'eventually consistent'</li>
+            <li>Two ways of dealing with conflicts: newest write wins, or return both and let the client resolve the conflict.</li>
+            <li>You can give default values for consistency when a bucket is created.</li>
+          </ul>
+
+          <h5>Transactions</h5>
+          <ul>
+            <li>Generally speaking, this type has no guarantees on writes.</li>
+            <li>Riak has the concept of quorum implemented using the W value (write quorum) during the write API call.</li>
+          </ul>
+
+          <h5>Query Features</h5>
+          <ul>
+            <li>All key-value stores can query by key.</li>
+            <li>Most will not give you a list of all keys, and if they do it's a very expensive operation to perform.</li>
+            <li>Some get around this by letting you search values, like Riak Search does.</li>
+            <li>You have to think carefully about how you generate your key values, to make retrieval eaiser and faster.</li>
+          </ul>
+
+          <h5>Structure of Data</h5>
+          <ul>
+            <li>Key-value stores don't care about the internal structure of their data.</li>
+          </ul>
+
+          <h5>Scaling</h5>
+          <ul>
+            <li>Many scale using sharding.</li>
+            <li>The value of the key determines the node it'll store on.</li>
+            <li>If a node goes down, you can't write keys to it according to the shard partitioning policy, and you can't read its keys.</li>
+            <li>Riak lets you control the aspects of the CAP theorem: N, R, and W</li>
+            <li>Example: A 5 node Riak cluster. If N is 3, all data is replicated to at least 3 nodes. If R is 2, any two nodes must reply to a GET for it to be considered successful. If W is 2, the PUT request is written to two nodes before hte write is considered successful.</li>
+            <li>Choose a W value to match your consistency needs, set them as defaults.</li>
+          </ul>
+
+          <h4>Suitable Use Cases</h4>
+          <ul>
+            <li><strong>Storing Session Information</strong>: there's a session id to use as a key, you get everything in 1 request</li>
+            <li><strong>User Profiles, Preferences</strong>: most users are uniquely identifiable, riak can store everything about a user</li>
+            <li><strong>Shopping Cart Data</strong>: shopping carts are user specific, should be available all the time across all browsers, machines, and sessions, and you can dump all the info into a value.</li>
+          </ul>
+
+          <h4>When Not to Use</h4>
+          <ul>
+            <li><strong>Relationships among Data</strong>: Even though some stores have link walking, if you need to have relationships between different sets of data, or correlate the data between different sets of keys, key-value stores are not great.</li>
+            <li><strong>Multioperation Transactions</strong>: Saving multiple keys or needing reverts/rollbacks aren't great for k-v</li>
+            <li><strong>Query by Data</strong>: If you need to search keys based on something in the value part of the k-v pair, key-value stores are not going to perform well. There is no way to inspect values on the database side outside of some things like Riak Search or indexing engines like Lucene or Solr.</li>
+            <li><strong>Operations by Sets</strong>: Operations happen one key at a time, so you have to do anything multi-key from the client side.</li>
+          </ul>
+        </section>
+        <section class="chapter">
+          <header>
+            <h3>Chapter 9: Document Databases</h3>
+          </header>
+          <ul>
+            <li>Document databases store and retrieve self-describing, hierarchical tree data structures that can consist of maps, collections, and scalars.</li>
+            <li>Documents are similar, but not exactly the same.</li>
+            <li>Documents are stored in the value of a key-value store, with introspection into the value.</li>
+            <li>Terminology across Oracle and MongoDB:
+              <table class="table table-condensed">
+                <thead>
+                  <tr>
+                    <th>Oracle</th>
+                    <th>MongoDB</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>database instance</td>
+                    <td>MongoDB Instance</td>
+                  </tr>
+                  <tr>
+                    <td>schema</td>
+                    <td>database</td>
+                  </tr>
+                  <tr>
+                    <td>table</td>
+                    <td>collection</td>
+                  </tr>
+                  <tr>
+                    <td>row</td>
+                    <td>document</td>
+                  </tr>
+                  <tr>
+                    <td>rowid</td>
+                    <td>_id</td>
+                  </tr>
+                  <tr>
+                    <td>join</td>
+                    <td>DBRef</td>
+                  </tr>
+                </tbody>
+              </table>
+            </li>
+          </ul>
+
+          <h4>What is a Document Database?</h4>
+          <ul>
+            <li>Entries must be well structured, but not schema-identical.</li>
+            <li>Popular document databases:
+              <ul>
+                <li>MongoDB</li>
+                <li>CouchDB</li>
+                <li>Terrastore</li>
+                <li>OrientDB</li>
+                <li>RavenDB</li>
+                <li>Lotus Notes (Notes Storage Facility)</li>
+              </ul>
+            </li>
+          </ul>
+
+          <h4>Features</h4>
+          <ul>
+            <li>Focus here is on MongoDB.</li>
+            <li>Each MongoDB Instance has multiple 'databases'.</li>
+            <li>Each database can have multiple 'collections'.</li>
+            <li>Storing a document means choosing a database and collection.</li>
+            <li>Normally represented as db.coll.insert(document)</li>
+          </ul>
+
+          <h5>Consistency</h5>
+          <ul>
+            <li>Configured in Mongo using the 'replica sets' and choosing to wait for the writes to be replicated to all slaves or a given number of slaves.</li>
+            <li>Each write can specify the number of servers to propagate to before returning successfully.</li>
+            <li>You can set consistency level with things like: <code>db.runCommand({ getlasterror: 1, w: "majority" })</code></li>
+            <li>You can change settings to get strong write consistency. By default a write is reported successful once the database receives it, but you can change that to wait for writes to be synced to disk or propagated.</li>
+          </ul>
+
+          <h5>Transactions</h5>
+          <ul>
+            <li>Single document transactions are atomic.</li>
+            <li>You cannot do transactions with more than one operation, though some products like RavenDB are configured to allow that.</li>
+            <li>By default all writes are reported successful.</li>
+            <li>You can change that with the WriteConcern parameter.</li>
+          </ul>
+
+          <h5>Availability</h5>
+          <ul>
+            <li>Document databases try to improve availability by replicating using a master slave setup.</li>
+            <li>The same data is on multiple nodes, and reads can be done even if the primary node is down.</li>
+            <li>Mongo does replication for high availability using replica sets.</li>
+            <li>A replica set is two or more nodes in an async master-slave replication.</li>
+            <li>Replica-set nodes elect the primary among themselves.</li>
+            <li>You can set the priority of a node to encourage its election.</li>
+            <li>All requests go to the master node, and data is replicated to slaves.</li>
+            <li>If the master node goes down, the remaining nodes elect a new one.</li>
+            <li>When the failed node rejoins it comes back as a slave and catches up.</li>
+          </ul>
+
+          <h5>Query Features</h5>
+          <ul>
+            <li>CouchDB lets you query by views, materialized or dynamic.</li>
+            <li>CouchDB lets you do views implemented by map-reduce.</li>
+            <li>Document databases let you query the data inside the document without having to retrieve the whole document by key.</li>
+            <li>Mongo has a query language expressed via JSON, with constructs like $query, $orderby, $explain, etc. You can combine them to create a query.</li>
+          </ul>
+
+          <h5>Scaling</h5>
+          <ul>
+            <li>Scaling for read heavy applications can be done by adding more read slaves.</li>
+            <li>So you get horizontal scaling for reads.</li>
+            <li>Scaling for writes is done by sharding.</li>
+            <li>Mongo splits data between shards by a certain field, and moved to nodes.</li>
+            <li>Data is dynamically moved between nodes so they are always balanced.</li>
+            <li>By adding more sharded nodes, you get horizontal scaling for writes.</li>
+            <li>If each shard is a replica set you can get better read performance within the shard.</li>
+            <li>No downtime is experienced during data movement and infrastructure refactoring, though you may not get optimal performance at those times.</li>
+            <li>It may be important to pick a shard key with domain specific information&mdash;if you need to put info close to users, use a geographic key, for instance.</li>
+          </ul>
+
+          <h4>Suitable Use Cases</h4>
+          <ul>
+            <li><strong>Event Logging</strong>: Logging often has many different types of message, and they can all be stored in a document database without formally defining a schema.</li>
+            <li><strong>Content Management Systems, Blogging Platforms</strong>: Storing web facing documents is a good use case, since they can be json/xml.</li>
+            <li><strong>Web Analytics or Real-Time Analytics</strong>: Document databases can store info like page views, etc, and metrics can be added without schema changes.</li>
+            <li><strong>E-Commerce Applications</strong>: Often these need flexible schemas for products/orders, and the ability to evolve data models without expensive db refactoring/data migration.</li>
+          </ul>
+
+          <h4>When Not to Use</h4>
+          <ul>
+            <li><strong>Complex Transactions Spanning Different Operations</strong>: If you need atomic, cross document ops, don't use these.</li>
+            <li><strong>Queries against Varying Aggregate Structure</strong>: If you need ad hoc querying of values, this isn't a great choice because they don't have a fixed schema at the db level.</li>
+          </ul>
+
+        </section>
+
+        <section class="chapter">
+          <header>
+          <h3>Chapter 10: Column-Family Stores</h3>
+          </header>
+
+          <ul>
+            <li>Examples: Cassandra, HBase, Hypertable, Amazon SimpleDB</li>
+            <li>Terminology map between RDBMS and Cassandra:
+              <table class="table table-condensed">
+                <thead>
+                  <tr>
+                    <th>RDBMS</th>
+                    <th>Cassandra</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>database instance</td><td>cluster</td>
+                  </tr>
+                  <tr>
+                    <td>database</td><td>keyspace</td>
+                  </tr>
+                  <tr>
+                    <td>table</td><td>column family </td>
+                  </tr>
+                  <tr>
+                    <td>row</td><td>row</td>
+                  </tr>
+                  <tr>
+                    <td>column (Same for all rows)</td><td>column (can be different per row)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </li>
+          </ul>
+
+          <h4>What is a Column-Family Data Store?</h4>
+          <ul>
+            <li>Store data in column families as rows that have many columns associated with a row key.</li>
+            <li>Column families are groups of related data that is often accessed together.</li>
+            <li>Cassandra is 'fast and easily scalable with write operations spread across the cluster.'</li>
+            <li>Cassandra has no master node&mdash;any node can read/write.</li>
+          </ul>
+
+          <h4>Features</h4>
+          <ul>
+            <li>Basic unit of storage in Cassandra is a column.</li>
+            <li>A Cassandra column is a name-value pair where the name is the key.</li>
+            <li>Each pair is a single column, and is stored with a timestamp.</li>
+            <li>The timestamp expires data, resolves conflicts, etc.</li>
+            <li>A row is a collection of columns attached or linked to a key.</li>
+            <li>A collection of similar rows makes a column family.</li>
+            <li>When the columns in a family are simple columns, the family is 'standard'.</li>
+            <li>A column consisting of a map of columns is a 'super column'.</li>
+            <li>A super column is a name and value, where the value is a map of columns.</li>
+            <li>Example:
+<pre>
+{
+  name: "book:12345",
+  value: {
+    author: "Jack Jackson",
+    title: "A Book",
+    isbn: "12345"
+  }
+}
+</pre>
+            </li>
+            <li>A column family of super columns is a 'super column family'.</li>
+            <li>Standard and super column families are put into keyspaces.</li>
+            <li>A keyspace is similar to a 'database' in an RDBMS, where all column families related to the application are stored.</li>
+          </ul>
+
+          <h5>Consistency</h5>
+          <ul>          
+            <li>When a write is received, the data goes into a commit log, then an in-mem structure called a 'memtable.'</li>
+            <li>A write is successful when it's written to the commit log and memtable.</li>
+            <li>Writes are batched in memory and written to structures called SSTAble.</li>
+            <li>SSTables are not written to after they are flushed, and unused SSTables are reclaimed during compaction.</li>
+            <li>Reads are effected by consistency settings. If your consistency setting is ONE, a read returns data from the first replica, even if it is stale.</li>
+            <li>Subsequent reads will return the refreshed data--this is 'read repair.'</li>
+            <li>ONE also writes to one node's commit log.</li>
+            <li>ONE is good if you need high write performance but less consistency and durability--data may be lost if the node goes down without replicating.</li>
+            <li>QUORUM is a setting for read and write that ensures the majority of the nodes respond to the read and the column with the newest timestamp is returned to the client, and the replicas are repaired.</li>
+            <li>A write under QUORUM must propagate to the majority of nodes before success is returned to the client.</li>
+            <li>ALL consistency level means all nodes must return to reads/writes.</li>
+            <li>ALL is not fault tolerant--node down blocks all reads and writes.</li>
+            <li>You can set the value of N during keyspace creation.</li>
+            <li>You can run the node repair command to force Cassandra to update values.</li>
+            <li>A down node's data is handed to other nodes. When the node comes back, the data is slowly repaired on that node--this is 'hinted handoff.'</li>
+          </ul>
+
+          <h5>Transactions</h5>
+          <ul>
+            <li>A write is atomic at the row level.</li>
+            <li>If a node goes down, the commit log is used to preserve changes.</li>
+            <li>External transaction libraries like ZooKeeper can sync reads/writes.</li>
+            <li>Libraries like Cages let you wrap transactions over ZooKeeper.</li>
+          </ul>
+
+          <h5>Availability</h5>
+          <ul>
+            <li>Highly available: no master, every node is a peer.</li>
+            <li>You can increase availability by reducing consistency levels.</li>
+            <li>Availability is governed by (R+W) &gt; N</li>
+            <li>If you had 10 nodes, with N=3, if you set R=2 and W=2, then R+W&gt;N is true, so the cluster is read/write available.</li>
+            <li>If you had 10 nodes, N=3, R=2, W=1, the cluster is writable but can't read.</li>
+          </ul>
+        </section>
+      </section>
+    </article>
+  </div><!--/container-->
+  </body>
+</html>

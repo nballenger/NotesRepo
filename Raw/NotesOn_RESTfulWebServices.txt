@@ -1537,3 +1537,366 @@ Custom Places
       contains the new URI
 
   What Might Go Wrong?
+    * Client may try to move a place off the map using invalid lat/long: 400
+    * Client tries to define same name at same place more than once: 409
+    * Client tries to access private place created by someone else: 403 or 404
+
+
+Chapter 7: A Service Implementation
+
+A Social Bookmarking Web Service
+  * Chapter uses RoR to develop a RESTful web service with much of the
+    functionality of the del.icio.us web service and web site.
+  * Three chapter goals:
+    1. Demonstrate making a RESTful, resource-oriented service out of an 
+       existing RPC-style service.
+    2. Show the sort of tradeoffs necessary for getting a design to work with
+       your chosen framework.
+    3. Show the complete code to a non-trivial web service.
+  * Chose RoR because Ruby is a dynamic language, rails has many helper classes
+  * Starts with empty Rails 1.2 app, with acts_as_taggable and
+    http_authentication plugins installed, and the atom-tools gem to
+    generate Atom feeds for representations:
+
+      rails bookmarks;cd bookmarks
+      script/plugin install acts_as_taggable
+      script/plugin install http_authentication
+      gem install atom-tools
+
+  * Also created an SQL db called bookmarks_development, configured 
+    config/database.yaml to make the connection work.
+
+Figuring Out the Data Set
+  * Four main kinds of data in the del.icio.us site:
+    - user accounts
+    - bookmarks ('posts' in del.icio.us terms)
+    - tags (metadata for bookmarks)
+    - bundles (collections of tags for a user)
+  * User accounts are stateful resources--they track name/email as well as
+    username and password, and those can be changed through HTTP. User accounts
+    also have bookmarks as subordinate resources.
+  * Bookmarks belong to a user, have six pieces of data:
+    - URI
+    - long and short descriptions
+    - timestamp
+    - collection of tags
+    - public/private flag
+  * URI and short description are required pieces of state.
+  * There are emergent properties of all URIs: newness, popularity, etc. This
+    example will only track newness to keep things simple.
+  * Tags have only one piece of state, their name. They only exist in relation
+    to bookmarks and bundles.
+  * Db schema as a Rails migration:
+
+    class InitialSchema < ActiveRecord::Migration
+      # Create the db tables on a Rails migration
+      def self.up
+        # The users table, tracking four items of state plus unique id
+        create_table :users, :force => true do |t|
+          t.column :user_id, :string
+          t.column :name, :string
+          t.column :full_name, :string
+          t.column :email, :string
+          t.column :password, :string
+        end
+
+        # Bookmarks table, tracking six state items plus derivative field and ID
+        create_table :bookmarks, :force => true do |t|
+          t.column :bookmark_id, :string
+          t.column :uri, :string
+          t.column :uri_hash, :string
+          t.column :short_description, :string
+          t.column :long_description, :text
+          t.column :timestamp, :datetime
+          t.column :public, :boolean
+        end
+
+        # Join table gives bookmarks subordinate to users
+        create_table :user_bookmarks, :force => true do |t|
+          t.column :user_id, :integer
+          t.column :bookmark_id, :integer
+        end
+
+        # Tables for acts_as_taggable plugin. This one is tags
+        create_table :tags do |t|
+          t.column :name, :string
+        end
+
+        # rel between tags and things tagged
+        create table :taggings do |t|
+          t.column :tag_id, :integer
+          t.column :taggable_id, :integer
+          t.column :taggable_type, :string
+        end
+
+        # Indexes for search
+        add_index :users, :name
+        add_index :bookmarks, :uri_hash
+        add_index :tags, :name
+        add_index :taggings, [:tag_id, :taggable_id, :taggable_type]
+      end
+
+      # Drop the db on a reverse migration
+      def self.down
+        [:users, :bookmarks, :tags, :user_bookmarks, :taggings].each do |t|
+          drop_table t
+        end
+      end
+    end
+
+Resource Design
+  * Focus here is on translating del.icio.us ideas into ROA
+  * Existing del.icio.us service is a REST-RPC hybrid, rooted at
+    https://api.de.icio.us/v1/, and exposes three RPC-style APIs rooted at
+    posts/, tags/, and bundles/. Need to define RESTful resources that expose
+    at least the functionality of those APIs:
+  * The posts/ API lets auth'd user fetch/manage bookmark posts:
+    - posts/get -- Search posts by tag/date, or search for specific URI
+    - posts/recent -- fetch n most recent posts, with optional tag filter
+    - posts/dates -- fetch number of posts by user for each day, tag filter
+    - posts/all -- fetch all posts by user, ever, w tag filter
+    - posts/update -- check when user last posted a bookmark
+    - posts/add -- create a bookmark for a URI, must include short desc
+    - posts/delete -- deletes a post for a particular URI
+  * The tags/ API lets an auth'd user manage tags separately from bookmarks:
+    - tags/get -- list of tags used by the auth'd user
+    - tags/rename -- rename an existing tag
+  * The bundles/ API lets the auth'd user group tags together:
+    - tags/bundles/all -- fetch user's bundles, listing all bundles w their tags
+    - tags/bundles/set -- group tags together into a possibly new bundle
+    - tags/bundles/delete -- delete a bundle
+  * There are functions exposed by the web site but not the service:
+    - /{username} -- fetch any user's bookmarks
+    - /{username}/{tag} -- fetch bookmarks for user, w tag filter
+    - /tag/{tag-name} -- fetch bookmarks w tag across all users
+    - /url/{URI-MD5} -- list of users who have bookmarked a URI
+    - /recent -- most recent bookmarks across all users
+
+  REST in Rails
+    * Rails doesn't let you define resources directly--you have to divide up
+      your app's functionality into controllers, which expose the resources.
+    * First var in a request URI routes Rails to the right controller class.
+    * In Rails 1.2, you define controllers corresponding to HTTP verbs:
+      sending GET to /weblogs triggers WeblogController#index, while POST
+      triggers WeblogController#create to create a subordinate resource.
+    * Going to define resources in terms of Rails controllers, and design
+      with the constraints of those in mind.
+    * Accessing the Rails app from localhost, on 3000/v1
+
+  The User Controller
+    * Exposes a one-off user list at /users, and a resource for every user
+      at a URI that incorporates the user's database id.
+    * Layout of UsersController:
+
+      Operation     HTTP action           Rails method
+      ----------------------------------------------------------
+      List users    GET /users            UsersController#index
+      Create user   POST /users           #create
+      View user     GET /users/{id}       #show
+      Modify user   PUT /users/{id}       #update
+      Delete user   DELETE /users/{id}    #destroy
+
+    * Actually want a subset of that--no global user list, no user edit,
+      so don't define index for some controllers, only expose POST for new users
+    * Would rather expose readable URIs that might change than permanent URIs
+      that don't tell you anything, so user URI will go from /user/{id} to
+      /users/{unique-name}, which will do GET, PUT, DELETE.
+
+  The Bookmarks Controller
+    * Bookmarks are a subordinate resource to user accounts, and they'll be
+      exposed by a controller class rooted beneath the user account resource
+      at /users/{username}/bookmarks.
+    * Wanted to incorporate the bookmarked URI into the resource URI, but 
+      Rails doesn't want to do that. Instead going to hash the URI, use that.
+    * Hash isn't the URI, but is better than a database ID, and Rails is ok w it.
+    * When a user is created it has no bookmarks, then client creates bookmarks 
+      by sending a POST to its own bookmark list resource.
+    * We do want to let a user get somebody's list of all bookmarks, so 
+      /users/{username}/bookmarks will respond to GET, and individual bookmarks
+      will respond to GET, PUT, and DELETE.
+
+  The User Tags Controller
+
+The rest of this chapter may be interesting, but is very RoR-centric.
+
+
+Chapter 8: REST and ROA Best Practices
+  
+Resource-Oriented Basics
+  * Every interesting thing your application manages should be exposed as a resource.
+  * A URI is the name of a resource. Every resource must have at least one name.
+  * A web service serves representations of a resource, not resources themselves.
+  * All resource access happens through HTTP's uniform interface.
+  * "Put complexity in your representations, in the variety of resources you expose,
+    and in the links between resources. Don't put it in the access methods."
+
+The Generic ROA Procedure
+  1. Figure out the data set.
+  2. Split the data set into resources.
+  For each resource:
+  3. Name the resources with URIs.
+  4. Expose a subset of the uniform interface.
+  5. Design the representation(s) accepted from the client.
+  6. Design the representation(s) served to the client.
+  7. Integrate this resource into existing resources, using hypermedia links/forms.
+  8. Consider the typical course of events: what's supposed to happen?
+  9. Consider error conditions: what might go wrong?
+
+Addressability
+  * "A web service is addressable if it exposes the interesting aspects of its
+    data set through resources."
+
+  Representations Should Be Addressable
+    * A URI should never represent more than one resource.
+    * Every representation of a resource should have its own URI.
+    * "It's OK for a client to send information in HTTP request headers, so long
+      as the server doesn't make that they only way of selecting a resource or
+      representation."
+
+State and Statelessness
+  * Two types of state: resource state and application state.
+  * Resource state is information about resources.
+  * Application state is information about the path the client has taken through
+    the application.
+  * Resource state stays on the server, is sent to the client in representations.
+  * Application state stays on the client until it can be used to create, modify,
+    or delete a resource. Then it is sent to the server as part of a POST, PUT,
+    or DELETE request, where it becomes resource state.
+  * A RESTful service is 'stateless' if the server never stores application state.
+  * In a stateless application, the server considers each client request in 
+    isolation, and in terms of the current resource state. If the client wants 
+    any application state to be taken into consideration, the client must submit 
+    it as part of the request.
+  * The client manipulates resource state by sending a representation as part of a 
+    PUT or POST request. The server manipulates client state by sending
+    representations in response to the client's GET request.
+
+Connectedness
+  * The server can guide the client from one application state to another by
+    sending links and forms in its representations.
+  * In a well-connected service, the client can make a path through the
+    application by following links and filling out forms.
+  * The server can guide the client from one resource state to another by
+    sending forms in its representations. Forms guide the client through the
+    process of modifying resource state with a PUT or POST request, by giving
+    hints about what representations are acceptable.
+  * Hypermedia data formats are particularly useful since they support links and
+    forms natively.
+
+The Uniform Interface
+  * All interaction is via HTTP methods, all resources expose a subset of those
+    methods as acceptable ways to interact.
+  * A method does the same thing on every resource that supports it.
+  * HTTP verbs:
+
+    GET         Request for information about a resource.
+    HEAD        Request for metadata about a resource.
+    PUT         Assertion about the state of the resource.
+    DELETE      Assertion that a resource should no longer exist.
+    POST        Attempt to create a new resource from an existing one, or an
+                attempt to append to the state of an existing resource.
+    OPTIONS     Request for the supported subset of HTTP verbs for a resource.
+
+  Safety and Idempotence
+    * GET and HEAD should be safe: never change resource state.
+    * PUT or DELETE should be idempotent: repeated requests have the same effect.
+
+  New Resources: PUT Versus POST
+    * A client can only use PUT to create resources when it can calculate the
+      final URI of the new resource.
+    * To create a resource via POST, the client must POST to a factory resource,
+      which will choose the newly created URI.
+
+  Overloading POST
+    * POST can also be a tiny RPC-style message processor, to give the resource
+      a wider vocabulary than the uniform interface provides.
+    * Authors STRONGLY discourage the use of overloaded POST, because it ruins
+      the uniform interface.
+    * Two noncontroversial uses for overloaded POST:
+      - Simulating HTTP's uniform interface for clients that don't support the
+        full range of HTTP verbs, like PUT or DELETE.
+      - Working around limits on the length of a URI. The standard imposes no
+        limit on URI length, but server and client programs do.
+    * "If you want to do without PUT or DELETE altogether, it's entirely RESTful
+      to expose safe operations on resources through GET, and all other operations
+      through overloaded POST."
+    * "If the uniform interface really doesn't work for you, or it's not worth the
+      effort to make it work, then go ahead and overload POST, but don't lose the
+      resource-oriented design. Every URI you expose should still be a resource:
+      something a client might want to link to."
+    * "A rule of thumb: if you're using overloaded POST, and you never expose GET
+      and POST on the same URI, you're probably not exposing resources at all."
+
+This Stuff Matters
+  * Want to revisit the ideas underlying the principles of ROA in light of the
+    real designs laid out in previous chapters.
+
+  Why Addressability Matters
+    * Means every interesting aspect of your service is immediately accessible from
+      outside. Makes it possible for others to make mashups of your service.
+
+  Why Statelessness Matters
+    * Each request contains all application states necessary to understand 
+      that request. None of this information is kept on the server, and none
+      of it is implied by previous requests.
+    * Makes scaling up trivial. If one server can't handle all the requests,
+      set up a load balancer and make a second server handle half the traffic.
+    * When your application is stateless, you don't need to coordinate activity
+      between servers, sharing memory or creating "server affinity" to make sure
+      the same server handles every request in a "session."
+    * "You can throw web servers at the problem until the bottleneck becomes
+      access to your _resource_ state." Then you have to scale your persistence.
+    * Stateless apps are more reliable. A request that times out in a stateless
+      application can be resent without worrying about whether the "session" has
+      gone into an incorrect state.
+
+  Why the Uniform Interface Matters
+    * The restrictions of the uniform interface (GET/HEAD are safe, PUT/DELETE are
+      idempotent) make HTTP more reliable. If a request didn't go through, send it
+      again--nothing bad will happen. (POST is another story)
+   
+  Why Connectedness Matters
+    * Hypertext linking and forms make the web work.
+    * Web services should be as strong as the human readable web in that regard.
+    * Resources should demonstrate the options for moving to a new application state.
+    * A service should be self-describing, and not require you to infer rules
+      of connection. Connection rules might seem obvious, but typically involve
+      business logic or complex ideas ("what is latitude?") that the client should
+      not be responsible for having to know about.
+    * Connectedness makes it possible for the client to handle relationships that
+      change over time. Links hide the rules about how you have to build a URI,
+      which means your client doesn't have to know about them.
+
+
+Resource Design
+  * Three kinds of resources:
+    - Predefined, one-off resources like service's home page or a static list of
+      links to resources. Corresponds to something you've only got a few of.
+    - A large (possibly infinite) number of resources corresponding to individual
+      items of data. Might correspond to an object in an OO system, or a db row.
+    - A large (probably infinite) number of resources corresponding to the possible
+      outputs of an algorithm. Might correspond to query results.
+
+  Relationships Between Resources
+    * Service with two people, Alice and Bob, each resources, who get married
+    * Do you modify each record? PUT to one of them?
+    * Make the 'marriage' a resource, PUT or POST to that endpoint, and the
+      server will apply any appropriate rules about 'marriage', then create a
+      new resource or send an error message. Other resources can then link to
+      the new resource, which will respond to the uniform interface.
+
+  Asynchronous Operations
+    * HTTP is synchronous request-response over sockets.
+    * Not all ops can be completed in the time an HTTP request has to work.
+    * To do that over HTTP, you have to split the operation into two or more
+      synchronous requests. The first spawns the operation, subsequent requests
+      poll for completion.
+    * For that, you send a 202 Accepted response code, which tells the client
+      that the request was accepted and (presumably) queued. In the Location header,
+      the server puts the location of the job resource which will handle the
+      request--where the client can later poll for status. When the job is complete,
+      the client can GET the output and DELETE the job resource.
+    * However, each request to start an async job makes the server create a new
+      resource, so the requests aren't safe or idempotent. So you have to use POST,
+      which means you need to expose different resources for async stuff than
+      for synchronous operations.
