@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Amazon Web Services for Dummies, Bernard Golden, 2013</title>
+<link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
+<style type="text/css">
+  section section section section section section h1,
+  section section section section section h2,
+  section section section section h3,
+  section section section h4,
+  section section h5,
+  section h6 { font-size: 12px; }
+
+  section section section section section h1,
+  section section section section h2,
+  section section section h3,
+  section section h4
+  section h5 { font-size: 18px; }
+
+  section section section section h1,
+  section section section h2,
+  section section h3,
+  section h4 { font-size: 18px; }
+
+  section section section h1,
+  section section h2,
+  section h3 { font-size: 24px; }
+
+  section section h1,
+  section h2 { font-size: 30px; }
+
+  section h1 { font-size: 36px; }
+</style>
+</head>
+<body>
+<div class="container">
+<article id="">
+  <header>
+    <h1>Learning Chef<small>, Taylor and Vargo, 2014</small></h1>
+  </header>
+
+  <section id="executive-summary">
+    <header>
+      <h1>Executive Summary</h1>
+    </header>
+  </section><!-- /executive-summary -->
+
+  <section id="chapter-summaries">
+    <header>
+      <h1>Chapter Summaries</h1>
+    </header>
+
+    <section class="chapter" id="chapter-01">
+      <header>
+        <h1>Chapter 1: Configuration Management and Chef</h1>
+      </header>
+      
+      <ul>
+        <li>Lots of "about chef" stuff.</li>
+        <li><q>Infrastructure as code.</q></li>
+        <li>First half of the book covers essential components of Chef Client, including Test Kitchen, Chef Solo/Chef Local, and Cookbooks.</li>
+        <li>Second half of the book covers Chef Server, including On-Premise Chef Server, Chef Zero, Roles, Data Bags, and Environments, and Knife.</li>
+      </ul>
+    </section><!-- /chapter-01 -->
+
+    <section class="chapter" id="chapter-02">
+      <header>
+        <h1>Chapter 2: Configure Your Chef Development Environment</h1>
+      </header>
+      <ul>
+        <li>Tells you to install some stuff: text editor, chef, Chef Development Kit.</li>
+        <li>ChefDK puts Chef and Ruby into <code>/opt/chefdk/embedded</code>. Add it to your <code>PATH</code> if the executables aren't symlinked from <code>/usr/bin</code>.</li>
+    </section><!-- /chapter-02 -->
+
+    <section class="chapter" id="chapter-03">
+      <header>
+        <h1>Chapter 3: Write Your First Chef Recipe</h1>
+      </header>
+      <ul>
+        <li>Example Hello World recipe, saved as <code>hello.rb</code>:
+<pre>
+file 'hello.txt' do
+  content 'Hello, world!'
+end
+</pre>
+        </li>
+        <li>Run it with <code>chef-apply</code>.</li>
+        <li><code>chef-apply</code> is a wrapper to <code>chef-solo</code> that makes it possible to execute an arbitrary <code>.rb</code> file.</li>
+        <li>Notes that Chef uses a domain specific language on top of Ruby, and that the point of recipes is to bring a machine into a desired configuration state.</li>
+        <li>First line of the hello, world references <code>file</code>, a chef "resource." Resources are blocks that can take arguments, do specific ops-related stuff.</li>
+        <li>Bits inside the block (in this case <code>content</code>) are "attributes", which are basically parameters to chef resources.</li>
+        <li>Your job is to specify the desired configuration of the machine, chef's job is to get it to that state.</li>
+        <li>Ideally things you do with chef are idempotent.</li>
+        <li>Chef can't just reverse or undo changes it makes, so to remove or uninstall things you have to tell Chef that X should not be present on the system. Ex: cleaning up a file in your home directory:
+<pre>
+file "#{ENV['HOME']}/stone.txt" do
+  action :delete
+end
+</pre>
+        </li>
+        <li>Specific terms from this section:
+          <dl>
+            <dt>recipe</dt>
+            <dd><q>a set of instructions written in a Ruby DSL which indicate the <i>desired configuration</i> to Chef.</q></dd>
+
+            <dt>resource</dt>
+            <dd><q>a cross-platform abstraction for something managed by Chef (such as a file). Resources are the building blocks from which you compose Chef code.</q></dd>
+
+            <dt>attribute</dt>
+            <dd><q>parameters passed to a resource.</q></dd>
+          </dl>
+        </li>
+      </ul>
+    </section><!-- /chapter-03 -->
+
+    <section class="chapter" id="chapter-04">
+      <header>
+        <h1>Chapter 4: Ruby and Chef Syntax</h1>
+      </header>
+      <ul>
+        <li>Blah blah blah, Ruby bullshit.</li>
+        <li>Ruby syntax review.</li>
+      </ul>
+
+      <h2>Chef Syntax and Examples</h2>
+      <ul>
+        <li>Chef DSL is a subset of Ruby, and you can use any Ruby stuff in Chef recipes.</li>
+        <li>Basic Chef syntax:
+<pre>
+resource 'NAME' do
+  parameter1  value1
+  parameter2  value2
+end
+</pre>
+        </li>
+        <li>In OO terms, <q>The Chef recipe DSL creates a new resource object for you, sets the correct attributes and parameters, and then executes that resource when chef evaluates the code.</q></li>
+        <li>Example of three resources, no specific Ruby stuff:
+<pre>
+template '/etc/resolv.conf' do
+  source 'my_resolv.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+end
+
+package 'ntp' do
+  action :upgrade
+end
+
+service 'apache2' do
+  restart_command '/etc/init.d/apache2 restart'
+end
+</pre>
+        </li>
+        <li>Execution of a resource on an array, mixing in some Ruby:
+<pre>
+['bacon', 'eggs', 'sausage'].each do |type|
+  file "/tmp/#{type}" do
+    content "#{type} is delicious!"
+  end
+end
+</pre>
+        </li>
+        <li>Chef execution is "multi-phase," with Ruby getting computed during the first phase, and resources in the second phase, so essentially the Ruby produces a Chef script.</li>
+        <li>Some common resources: <code>bash</code>, <code>chef_gem</code>, <code>cron</code>, <code>deploy_revision</code>, <code>directory</code>, <code>execute</code>, <code>file</code>, <code>gem_package</code>, <code>group</code>, <code>link</code>, <code>mount</code>, <code>package</code>, <code>remote_file</code>, <code>service</code>, <code>template</code>, <code>user</code></li>
+      </ul>
+    </section><!-- /chapter-04 -->
+
+    <section class="chapter" id="chapter-05">
+      <header>
+        <h1>Chapter 5: Manage Sandbox Environments with Test Kitchen</h1>
+      </header>
+
+      <ul>
+        <li>Test Kitchen makes a sandbox via Vagrant/VirtualBox. It comes in the ChefDK, so it should be installed.</li>
+        <li>Executable is <code>kitchen</code>. <kbd>kitchen init --create-gemfile</kbd> will create all config files for adding Test Kitchen support to a project.</li>
+        <li>Once you run that, you have to run <kbd>bundle install</kbd>, which uses Bundler to download and manage Ruby gems, in this case the <code>kitchen-vagrant</code> driver and its dependencies.</li>
+        <li><code>kitchen init</code> creates:
+<pre>
+.
+|- .kitchen             &larr; TK's data persists here
+|  |- logs              
+|    |- kitchen.log     &larr; last run of TK
+|- .kitchen.yml         &larr; Configures virts
+|- Gemfile              &larr; Manifest for Bundler
+|- Gemfile.lock         &larr; Current gem environment
+|- test                 &larr; Where tests go
+   |- integration 
+      |- default
+</pre>
+        </li>
+        <li>Update <code>.kitchen.yml</code> to be:
+<pre>
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: ubuntu-14.04
+    driver:
+      provider: virtualbox
+      box: gw-base-ubuntu-14.04
+      box_url: file:///Users/nick/Desktop/ubuntu-vagrant/gw-base-ubuntu-14.04.box
+      username: gw
+      ssh_key: "/Users/nick/.ssh/gw-base-ubuntu"
+      synced_folders:
+        - ["./shared"]
+
+suites:
+  - name: default
+    run_list:
+    attributes:
+</pre>
+        </li>
+        <li>An "instance" is an environment that includes a way to create a VM and a way to deploy automation code. <code>kitchen list</code> will show available instances.</li>
+        <li><code>kitchen create [instance-name]</code> will start up a virt.</li>
+        <li>You can log into the box with <code>kitchen login</code>.</li>
+        <li>YAML syntax:
+          <ul>
+            <li>Files start with <code>---</code></li>
+            <li>Comments start with <code>#</code></li>
+            <li>Use spaces only, no tabs.</li>
+            <li>Two data types: colon-space delimited key value pairs, lists</li>
+            <li>KV can be nested, compound value on new line, indented</li>
+            <li>KV can also be JSON</li>
+            <li>Lists are ordered data, items starting with a dash-space:
+<pre>
+outermostKey:
+- key1: value1
+- key2: value2
+- key3: value3
+</pre>
+            </li>
+            <li>Values can be integers, strings, or arrays with <code>[]</code></li>
+          </ul>
+        </li>
+        <li><code>.kitchen.yml</code> has four main sections:
+          <ul>
+            <li><code>driver</code>: driver plugin to use, with conf parameters to manage TK environments. Get driver list with <code>kitchen driver discover</code>.</li>
+            <li><code>provisioner</code>: which conf management tool, <code>chef_solo</code> in this case</li>
+            <li><code>platforms</code>: list of OS's TK will create instances for</li>
+            <li><code>suites</code>: conf to run on each instance (chef recipes)</li>
+          </ul>
+        </li>
+        <li>You can add a <code>synced_folders</code> key to a platform's driver section, to add synced folders to the guest OS.</li>  
+        <li>Note that synced folders only sync on <code>kitchen create</code>.</li>
+      </ul>
+    </section><!-- /chapter-05 -->
+
+    <section class="chapter" id="chapter-06">
+      <header>
+        <h1>Chapter 6: Manage nodes with Chef Client</h1>
+      </header>
+      <ul>
+        <li>"workstation": where you develop chef code</li>
+        <li>"node": machine managed by chef</li>
+        <li>Process for creating a test node:
+<pre>
+mkdir -p node/shared;cd node
+kitchen init --create-gemfile
+bundle install
+vim .kitchen.yml                  &larr; edit yml file
+kitchen create                    &larr; uses cached box version
+kitchen setup                     &larr; installs chef-client
+kitchen login
+</pre>
+        </li>
+        <li>Write a recipe in <code>./shared/hello.rb</code>:
+<pre>
+log "Important message."
+</pre>
+        </li>
+        <li>Run it from the guest with <kbd>chef-client --local-mode hello.rb --log-level info</kbd></li>
+        <li>Chef client can operate in local, client, or solo modes. Local simulates a server in memory, client mode requires an actual server, solo mode runs locally with a limited set of functionality.</li>
+        <li>Every chef run triggers <code>ohai</code>, which collects info about the node's current state, which is then available to recipes. Ex:
+<pre>
+log "IP Address: #{node['ipaddress']}"
+log "MAC Address: #{node['macaddress']}"
+</pre>
+        </li>
+      </ul>
+    </section><!-- /chapter-06 -->
+
+    <section class="chapter" id="chapter-07">
+      <header>
+        <h1>Cookbook Authoring and Use</h1>
+      </header>
+      <ul>
+        <li>Cookbooks are packages for recipes, and each cookbook details a single unit of infrastructure like an application or server.</li>
+    </section><!-- /chapter-07 -->
+  </section><!-- /chapter-summaries -->
+</article>
+</div>
+</body>
+</html>

@@ -343,6 +343,1149 @@
             <li>
           </ul>
         </section>
+Addressability
+  * Two features of ROA: addressability and statelessness
+  * "An application is addressable if it exposes the interesting aspects of its
+    data set as resources. Since resources are exposed through URIs, an 
+    addressable application exposes a URI for every piece of information it 
+    might conceivably serve."
+  * S3 is addressable because each resource gets a unique URI
+
+Statelessness
+  * 'Statelessness': "every HTTP request happens in complete isolation .When 
+    the client makes an HTTP request, it includes all information necessary 
+    for the server to fulfill that request. The server never relies on 
+    information from previous requests."
+  * Statelessness says that the possible states of the server are themselves
+    resources, and should be given URIs. "The client should not have to
+    coax the server into a certain state to make it receptive to a request."
+  * Easier to distribute a stateless application across load balanced servers
+  * Stateless apps are easily cacheable
+  * Client does not need to be part of a time limited handshake--can make
+    request A, wait a week, then request B
+  * Most common way to break statelessness is to use HTTP sessions
+  * Session cookie is NOT the state--it's a key to a data structure server side
+  * State in the URI is fine (&start=10, etc), state in cookies is not RESTful
+
+  Application State Versus Resource State
+    * Application state lives on the client, resource state on the server
+    * Service only cares about application state at request time
+    * Client must include all relevant state details with requests
+    * Resource state is the same for every client
+    * API keys with resource limits violate statelessness, because they keep
+      a bit of application state server side--number of requests from that key
+
+Representations
+  * The resource is a thing, what is streamed to you is a representation.
+
+Deciding Between Representations
+  * Give a distinct URI to each representation of a resource.
+  * Means the URI has all information necessary to fulfill the request.
+  * You can also give a URI to the 'platonic form' of a thing if you want
+  * Alternately, use content negotiation. Only expose the platonic URI, then
+    clients provide HTTP request headers indicating content types it is
+    willing to accept. 'Accept-Language', etc.
+  * It's RESTful either way, but author recommends putting it in the URI,
+    since a URI can be passed around but metadata gets stripped
+
+Links and Connectedness
+  * In most RESTful services, representations are linked hypermedia
+  * Links take you to other resources.
+  * From Fielding: "Hypermedia as the engine of application state." Means that
+    the current state of an HTTP session is not stored server side as a
+    resource state, but tracked by the client as an application state, and
+    created by the path the client takes through the web. Server guides the
+    client's path by serving hypermedia links showing possible next steps.
+  * 'lever of state': something like a link that shows how to get from one
+    state to the next state.
+  * 'connectedness': a service is connected to the extent that you can put
+    the service in different states by following links and filling out forms.
+  * Human web is well connected, most web services are not.
+  * S3 representations don't include URIs--you have to know what's there to
+    issue the appropriate GET request. You can store linked data in your 
+    buckets though.
+
+The Uniform Interface
+  * Four methods for most common ops:
+    - GET to retrieve
+    - PUT to create new, POST to an existing URI
+    - PUT to modify
+    - DELETE to delete
+
+  GET, PUT, and DELETE
+    * GET and DELETE don't need entity-body content
+    * PUT includes entity-body that's the proposed representation at the URI
+    * PUT creates or overwrites
+
+  HEAD and OPTIONS
+    * HEAD retrieves a metadata only representation
+    * OPTIONS tells which methods a resource supports
+    
+  POST
+    * From RFC 2616, the HTTP standard, POST is designed to:
+      - do annotation of existing resources
+      - post a message to a bbs, newsgroup, mailing list, group of articles
+      - provide a block of data, like form fields, to a data handler
+      - extend a database through an append operation
+    * Function performed by POST is determined by the server, is usually
+      dependent on the Request-URI.
+
+    Creating Subordinate Resources
+      * Subordinate resources are those that exist in relation to some other
+        "parent" resource. A blog might be a resource, posts are subordinate.
+      * You POST to the parent, which chooses how to append the data.
+      * Difference between PUT and POST: the client uses PUT when it is in
+        charge of deciding which URI the new resource should have, and POST
+        when the server is in charge of deciding the new URI.
+      * Response to creation of subordinate resources is usually 201, Created,
+        and the Location header will give the new URI.
+
+    Appending to the Resource State
+      * Sometimes a POST will append data to the resource, not create a sub
+      * Example is a log resource, which would get appended to
+
+    Overloaded POST: The not-so-uniform interface
+      * This is about submitting a block of data to a data-handler
+      * Overloaded because the handler may decide to do any of a number of
+        actions that mimic the result of other HTTP methods
+      * Doing things that way (forcing the server to look in the entity-body, 
+        headers, or URI for method information) is RPC-style
+      * Should not be used to cover up poor resource design.
+      * Usually possible to shuffle your resource design so the uniform
+        interface applies, rather than bringing RPC into it
+
+  Safety and Idempotence
+    * When used correctly, GET and HEAD are safe, and GET/HEAD/PUT/DELETE
+      are idempotent
+
+    Safety
+      * GET and HEAD will not change any resource state.
+      * They may have side effects--the server could count hits--but they
+        don't request any state change.
+      * A client should never make GET/HEAD requests just for side effects.
+
+    Idempotence
+      * Operation that can be repeated with no different effect.
+      * PUT and DELETE are idempotent--you can delete a thing over and over,
+        and doing a PUT will just overwrite the same way over and over.
+      * Don't allow clients to PUT representations that change a resource's 
+        state in relative terms. You could set a value to a new value, but
+        you wouldn't try to increment that value by 1
+
+    Why Safety and Idempotence Matter
+      * Lets reliable requests be sent over an unreliable network.
+      * Most common misuse of the uniform interface is to expose unsafe
+        operations through GET.
+      * Consider the case of a spider hitting a /delete URL with a GET
+
+  Why the Uniform Interface Matters
+    * You don't have to use HTTP, but common agreement is important.
+    * There are applications that extend HTTP's uniform interface, like 
+      WebDAV, which gives new verbs like MOVE, COPY, SEARCH
+    * Those can be RESTful since REST doesn't say what the uniform interface is
+    * Don't use WebDAV because it makes your service incompatible with other
+      RESTful services, since it would use a different uniform interface.
+    * Since webforms only implement GET and POST, you have to use a simpler
+      uniform interface from them via GET and overloaded POST, where GET
+      is safe and POST is not.
+
+That's It!
+  * ROA is four concepts:
+    1. Resources
+    2. Their names (URIs)
+    3. Their representations
+    4. The links between them
+  * And four properties:
+    1. Addressability
+    2. Statelessness
+    3. Connectedness
+    4. A uniform interface
+
+
+Chapter 5: Designing Read-Only Resource-Oriented Services
+  * Chapter is about designing a service to serve map information
+  * It's a programmer friendly way to retrieve map data for any purpose
+  * Won't actually implement it--too complicated, don't have the data
+
+Resource Design
+  * Author takes an OO approach to designing resources--they're 'nouns'
+  * An HTTP resource (in contrast to a class) exposes at most six HTTP methods
+  * You can overload POST to turn a resource into a small RPC-style
+    message processor
+  * "The uniform interface means that a resource-oriented design must treat
+    as objects what an OO design might consider verbs. In the ROA, a Reader
+    can't subscribe to a regularly appearing Column, because 'subscribe to'
+    is not part of the uniform interface. There must be a third object,
+    Subscription, representing that relationship between a Reader and a
+    Column. This relationship object is subject to the uniform interface: it
+    can be created, fetched (perhaps as a syndication feed), and deleted."
+  * "In a resource-oriented analysis, all object manipulation happens through
+    resources that respect the uniform interface."
+
+Turning Requirements into Read-Only Resources
+  * Procedure to follow once you have an idea of what you want your program
+    to do. Produces resources that respond to GET and possibly HEAD:
+    1. Figure out the data set
+    2. Split the data set into resources
+  * For each kind of resource:
+    1. Name the resources with URIs
+    2. Design the representation(s) served to the client
+    3. Integrate this resource into existing resources, using hypermedia
+       links and forms
+    4. Consider the typical course of events: what's supposed to happen?
+    5. Consider error conditions: what might go wrong?
+
+Figure Out the Data Set
+  * In this case the service will serve map data that uses a standard 2D 
+    coordinate system. Maps don't need to be accurate, but they do need
+    to be addressable using lat/long.
+  * Data set will include maps, points on maps, planets they are on, points
+    on planets.
+  * Not obligated to give a complete account of the state of any resource:
+    representation of "Earth" can just be the list of maps on Earth.
+  * Some points are more important than others, and users will want to know
+    about them more than unimportant points. Data set will include a mapping
+    of place names to lat/long coordinates
+  * For simplicity, will make a well chosen point stand in for areas.
+  * Every place is of a type or types.
+  * Service can find a place on a planet, given its name, type, or description.
+  * Can show that place on any appropriate maps, and it can find places nearby.
+  * With a street address, it can locate the corresponding place on Earth,
+    and show it on a road map.
+  * with a country name, it can locate a representative point and show it
+    on a political map.
+  * For ambiguous queries, the service can list all appropriate points within
+    the given scope
+
+  General Lessons
+
+Split the Data Set into Resources
+  * Once you have a data set, you have to figure out how to expose it as
+    resources. 
+  * A resource is 'anything interesting enough to be the target of a hypertext
+    link.' Anything with a name should have a URI.
+  * Services commonly expose three resource types:
+    - Predefined, one-off resources for especially important app aspects
+      .. Includes top-level directories, a homepage, root URIs
+    - A resource for every object exposed through the service
+      .. one service may expose many kinds of objects, each with a resource set
+      .. for instance, every S3 bucket and object is a resource.
+    - Resources representing the results of algorithms applied to the data set
+      .. collection resources that are the result of queries
+      .. search strings are a good example--basically infinite, algorithmic
+         resources that exist to reference results of a particular search
+  * Some of the resources so far for the maps service:
+    - list of planets
+    - Mars
+    - Earth
+    - Satellite map of Mars
+    - Radar map of Venus
+    - Topo map of Earth
+    - Political map of Earth
+  * Every point on a map is potentially interesting, and should be a resource
+  * Points are infinite--you use lat long to address them
+  * Will also serve 'places', which are named locations, each with a type,
+    a lat/long, and might have additional associated data.
+  * Algorithmic resources:
+    - places on Earth called 'Springfield'
+    - Container ships on Earth
+    - Craters on Mars more than 1km in diameter
+    - Places on the moon named before 1900
+  * All rely on the client providing a search string or combining unrelated
+    elements (A and B or C)
+  * All the resources so far fit into five basic types:
+    1. List of planets
+    2. A place on a planet identified by name
+    3. A geographic point identified by lat/long
+    4. A list of places that match search criteria
+    5. A map of a planet centered on a point
+  * It takes a while to get the hang of exposing an algorithm as a set of
+    resources. Instead of thinking in terms of actions (do a search on the map)
+    you need to think in terms of the results of that search (the list of
+    places on the map matching a search).
+
+Name the Resources
+  * Decided on five resource types, now they need names.
+  * Root is at http://maps.example.com/
+  * List of planets is the most basic resource, so put it at the root
+  * Three basic rules for URI design:
+    1. Use path variables to encode hierarchy: /parent/child
+    2. Put punctuation characters in path variables to avoid implying
+       hierarchy where none exists: /parent/child1;child2
+    3. Use query variables to imply inputs into an algorithm, for example:
+       /search?q=jellyfish&start=20
+
+  Encode Hierarchy Into Path Variables
+    * Planets first: /Venus, /Earth, /Mars
+    * Places by name:
+      - /Venus
+      - /Venus/Cleopatra
+      - /Earth/France/Paris
+      - /Earth/Paris,%20France
+    * Sending a GET to one of those invokes a remote operation that takes
+      a variable number of arguments, and can locate a place on a planet
+      to any desired degree of precision.
+    * Path variables are the best way to organize scoping information that can
+      be arranged hierarchically.
+
+  No Hierarchy? Use Commas or Semicolons
+    * Next set is geographic points on the globe
+    * Lat/long are tied together, not hierarchical
+    * Combine them on the same level of the hierarchy with punctuation:
+      - /Earth/24.9195,17.821
+      - /Venus/3,-80
+    * Can be used as scoping info to identify a named place:
+      /v1/Earth/43.9,-103.46/Mount%20Rushmore
+    * Use commas when the order of scoping information is important, semicolons
+      when the order doesn't matter.
+    * The use of semicolons feeds into 'matrix URIs', a way of defining KV
+      pairs in URIs without using query variables. WADL has support for 
+      matrix URIs. Especially helpful if you need to put KV pairs in the
+      middle of a hierarchy
+
+    Map URIs
+      * URIs to maps of planets, places, and points:
+        - /radar/Venus
+        - /radar/Venus/65.9,7.00
+        - /geologic/Earth/43.9,-103.46
+
+    Scale
+      * Going to extend the first path variable to specify scale
+      * Examples:
+        - /satellite.10/Earth/41,-112   -- gives 1:24k
+        - /satellite.5/Earth/41,-112    -- gives 1:250k
+        - /satellite.1/Earth/41,-112    -- gives 1:51,969k
+      * Scale determines size of the map in pixels, which features show up
+      * Chose numbers by exaggerated the decision, found a generalized
+        solution, then scaled the decision back down
+
+  Algorithmic Resource? Use Query Variables
+    * Most web apps don't store much state in path vars--they use query vars
+    * We're socialized to view query variables as inputs to a process
+    * Google Web stuff won't prefetch query string URIs since they may not
+      be safe or idempotent
+
+  URI Recap
+    * Three basic kinds of URIs in this service:
+      - the list of planets at the root /
+      - A planet or place on a planet:
+        /{planet}/[{scoping information}/][{place-name}]
+        where scoping-information is a hierarchy of place names, or a lat/long
+      - A map of a planet, or a point on a map:
+        /{map-type}{scale}/{planet}/[{scoping-information}]
+        where scoping-information will always be a lat/long
+
+Design Your Representations
+  The Representation Talks About the State of the Resource
+    * Main purpose of a representation is to convey the state of the resource
+    * Resource state can be almost anything about the underlying resource
+
+  The Representation Links to Other States
+    * Links to other resources represent possible new application states
+    * "Links are the levers of application state."
+
+  Representing the List of Planets
+    * What's a good format for the list of planets at the root?
+      - plain text would require a custom parser
+      - JSON is structured, but not 'hypermedia'
+      - custom XML vocabulary is popular, with or without a schema doc
+    * XML seems to be the default, though there are so many schemas that it
+      isn't likely you'd need to define a new one from scratch.
+    * Atom would work, but not very well
+    * XHTML seems like the best choice:
+      
+      <!DOCTYPE html PUBLIC [...]>
+      <html xmlns="[...]" xml:lang="en">
+        <head>
+          <title>Planet List</title>
+        </head>
+        <body>
+          <ul class="planets">
+            <li><a href="/Earth">Earth</a></li>
+            <li><a href="/Venus">Venus</a></li>
+            [...]
+          </ul>
+        </body>
+      </html>
+
+  Representing Maps and Points on Maps
+    * Simpler model that google maps: map service can dynamically generate
+      and serve a 256x256 image at any scale, centered on any lat/long point
+    * When a point is requested, serve a hypermedia file that includes a 
+      link to a tiny map image centered on that point.
+    * When a map of an entire planet is requested, pick a point and serve a
+      hypermedia file that links to an image centered on that point
+    * Each hypermedia file will include links to adjacent map points, and
+      the client can follow nav links to stitch together tiles for a map of
+      any desired size.
+    * XHTML representation of the road map of Earth:
+
+      [...]
+      <img class="map" src="/road.2/Earth/images/37.0,-95.png" alt="Map tile"/>
+      <a class="map_nav" href="46.0518,-95.8">North</a>
+      <a class="map_nav" href="41.3776,-89.7698">Northeast</a>
+      [...]
+      <a class="zoom_in" href="/road.1/Earth/37.0;-95.8">Zoom in</a>
+      <a class="zoom_out" href="/road.3/Earth/37.0;-95.8">Zoom out</a>
+      [...]
+
+    * Representation served is not an image, it's a little XHTML chunk
+
+  Representing the Map Tiles
+    * You ask for a map, you get an XHTML doc that gives you a link to a 
+      256 pixel square map image.
+    * "A representation conveys the state of its resource, but it doesn't have
+      to convey the _entire_ state of the resource. It just has to convey
+      _some_ state."
+
+  Representing Planets and Other Places
+    * How to get from the planet list to, say, road map of Earth?
+    * GET /, GET /Earth, GET linked map of Earth
+    * XHTML representation of Earth:
+
+    [...]
+    <dl class="place">
+      <dt>name</dt> <dd>Earth</dd>
+      <dt>maps</dt>
+        <dd>
+          <ul class="maps">
+            <li><a class="map" href="/road/Earth">Road</a></li>
+            <li><a class="map" href="/satellite/Earth">Satellite</a></li>
+            [...]
+          </ul>
+        </dd>
+      <dt>type</dt> <dd>planet</dd>
+      <dt>description</dt>
+        <dd>Third planet from Sol. [...]</dd>
+    </dl>
+    [...]
+
+    * Representing a planet as a place means clients can parse it the same
+      way they parse other place representations.
+    * Place representation doesn't serve an image link, it serves links to
+      maps, which then link to map images.
+    * Purpose of these representations is to convey the state of the place
+    * XHTML for a point on a map:
+
+    [...]
+    <p>Welcome to <a class="coordinates" href="/Earth/43.9,-103.46">43.9&deg;N
+       103.46&deg;W</a> on scenic <a class="place" href="/Earth">Earth</a>.
+    </p>
+
+    <p>See this location on a map:</p>
+
+    <ul class="maps">
+      <li><a class="map" href="/road/Earth/43.9,-95.9">Road</a></li>
+      [...]
+    </ul>
+
+    <p>Things that are here:</p>
+
+    <ul class="places">
+      <li><a href="/Earth/43.9,-95.9/Mount%20Rushmore">Mount Rushmore</a></li>
+    </ul>
+
+    <form id="searchPlace" method="get" action="">
+      <p>Show nearby places, features, or businesses;
+         <input name="show" repeat="template" />
+         <input class="submit" />
+      </p>
+    </form>
+    [...]
+
+  Representing Lists of Search Results
+    * Need representation for algorithmic resources, like "diners near X"
+    * When somebody searches near a place, they want links to more places
+    * Search results then are just links to more place resources
+    * Representation of 'list of places called Springfield in the US':
+
+    [...]
+    <p>Places matching <span class="searchterm">Springfield</span> in or
+       around <a class="place" href="/Earth/USA">the United States of
+       America</a>:
+    </p>
+
+    <ul>
+      <li>
+        <a class="place" href="/Earth/USA/IL/Springfield">Springfield, IL</a>
+      </li>
+      <li>
+        <a class="place" href="/Earth/USA/MA/Springfield">Springfield, MA</a>
+      </li>
+      [...]
+    </ul>
+    [...]
+
+    * If you were writing a client to consume this, that would produce an 
+      interface something like google maps, you would have it:
+      1. Build the large scale map by going to /Earth/USA, which would give you
+         the address of one map tile.
+      2. Get adjacent tiles to keep building the large scale map, stitch
+         them together until you have the whole country.
+      3. Put markers on the map for search results.
+
+Link the Resources to Each Other
+  * Include forms that tell you how to format requests for algorithmic resources
+  * repeat="template" is XHTML 5, part of that standard's 'repetition model'
+    that lets you express an arbitrary number of text boxes without writing
+    a hugely long HTML page.
+
+The HTTP Response
+  * Have considered data to serve, which HTTP requests to receive, how the
+    data will be represented as it is served, but still have to consider the
+    HTTP response: response codes, headers, error conditions.
+
+  What's Supposed to Happen?
+    * Most read-only resources follow this:
+      - client sends a GET to a URI
+      - server responds with 200 OK, some headers, a representation
+    * Only question is what headers to request with/respond with
+    * Don't use many request headers--good for the client to put scoping info
+      into the URL, not the headers.
+    * One set you absolutely need: the ones that make conditional GET work
+
+    Conditional HTTP GET
+      * Implemented with two response headers: Last-Modified and ETag and
+        two request headers: If-Modified-Since and If-None-Match.
+      * Only a few resources are based on really volatile information--most
+        of the time, a client's second and subsequent HTTP requests for a
+        resource are wasted--could have just reused the first response's 
+        representation.
+      * When a server modifies a representation, it should include a time
+        value for the Last-Modified header. The client can store the value of
+        Last-Modified and use it later.
+      * In subsequent requests for the same resource, the client can include
+        the value in the If-Modified-Since header:
+
+          GET /road/Earth HTTP/1.1
+          Host: maps.example.com
+          If-Modified-Since: Thu, 30 Nov 2006 20:00:51 GMT
+
+      * If the data changed, server sends 200 with new representation, other
+        sends 304 Not Modified and omits the entity body.
+
+  What Might Go Wrong?
+    * Also need to plan for requests you can't fulfill.
+    * Error conditions should provoke 3xx,4xx,5xx response codes, and you should
+      give supplementary information in the headers.
+    * Likely error conditions:
+      - client tries to GET a map that doesn't exist: 404
+      - client uses a place name not in the database: 404 or 303 See Other
+      - client may use logically impossible lat/long: 404 or 400 bad request
+      - Search for places returns no results: 200 OK
+      - Server is overloaded: 503 Service Unavailable
+      - Server is functioning incorrectly: 500 Internal Error
+
+
+Chapter 6: Designing Read/Write Resource-Oriented Services
+  * Chapter expands the scope of the map service to store client data
+  * Going to expand previous chapter's service just enough so that clients
+    can annotate the map with custom places. Each custom place is associated
+    with a user account, and may be public or private to that account.
+
+User Accounts as Resources
+  * Lots of ways to do auth/identification
+  * In this case, user accounts are resources, like the maps themselves
+  * Clients won't have to use a browser to sign up for a user account, they
+    can create one with a generic web service client.
+
+  Why Should User Accounts Be Resources?
+    * If we forced user account creation through a web interface, we'd have
+      to use overloaded POST to do it, since browsers only handle GET/POST
+    * "Treating user accounts as read/write resources means I can demonstrate
+      the new resource-oriented design procedure on a data structure you're
+      probably familiar with."
+    * Want to show that new possibilities open up when you treat everyday
+      structures as resources subject to the uniform interface.
+
+  Authentication, Authorization, Privacy, and Trust
+    * Need a way of authenticating users--tying a request to a user
+    * Authorization is the problem of determining which requests to let
+      through for a given user.
+    * Chapter 8 covers in more detail, but here are the basics:
+      - HTTP requests may include credentials in the Authorization header
+      - Service will examine credentials and request, determine yes or no
+      - if credentials are insufficient, server responds with 401 unauthorized,
+        and sets the WWW-Authenticate response header with instructions on
+        how to send correct credentials in future requests.
+    * Several kinds of auth: HTTP Basic, HTTP Digest, WSSE
+    * S3 does custom authentication via request signing
+    * Stipulate HTTP Basic for this section
+    * To ensure privacy in transit, using HTTP over SSL
+    * HTTP Basic requires HTTPS, since it sends credentials in the clear
+    * Nothing about HTTP fixes trust problems between user and client.
+    * Big web services have ways for a client to make service requests
+      without knowing the actual auth credentials involved.
+
+  Turning Requirements into Read/Write Resources
+    * Modified set of steps for turning requirements into resources:
+      1. Figure out the data set
+      2. Split the data set into resources
+      For each resource:
+      3. Name the resources with URIs
+      4. Expose a subset of the uniform interface
+      5. Design the representation(s) accepted from the client
+      6. Design the representation(s) served to the client
+      7. Integrate this resource into existing resources, using links/forms
+      8. Consider the typical course of events: what's supposed to happen?
+      9. Consider error conditions: what might go wrong?
+
+  Figure Out the Data Set
+    * In this service, there are two pieces of info for a user account:
+      - name of the account
+      - password for access
+
+  Split the Data Set into Resources
+    * Will expose each user account as a resource.
+    * Resources of the second type: portals to underlying user objects.
+
+  Name the Resources with URIs
+    * With this form: /user/{user-name}
+
+  Expose a Subset of the Uniform Interface
+    * "If you find yourself wishing there were more HTTP methods, the first
+      thing to do is go back to step two, and try to split up your data set
+      so you have more kinds of resources. Only if this fails should you
+      consider introducing an element of the RPC style by making a particular
+      resource support overloaded POST."
+    * Questions:
+      - Will clients modify resources of this type? Yes.
+      - Will clients be deleting resources of this type? Yes.
+      - Will clients be fetching representations of resources of this type? Y.
+   
+  Design the Representation(s) Accepted from the Client
+    * Username can be in the URI of a PUT request, but password should go
+      into the entity-body.
+    * In general, a PUT like this is setting up a piece of resource state, and
+      the encoding format you choose should reflect that. In this case, the
+      data (password) is simple, and will never be passed back to the client.
+    * Chooses here to use application/x-www-form-urlencoded as the encoding
+    * "When an object's state can be represented as KV pairs, form-encoding
+      is the simplest representation format." Most languages have that ability
+      in their HTTP or CGI library.
+    * Hypothetical Ruby code for creating a user account:
+
+    require 'rubygems'
+    require 'rest-open-uri'
+    require 'cgi'
+    require 'uri'
+    
+    def make_user(username, password)
+      open("https://maps.example.com/user/#{URI.escape(username)}",
+           :data => CGI::escape("password=#{password}"), :method => :put)
+    end
+
+    * Changing a password is the same as creating the account: a PUT
+    * To modify a user account, a client must provide an Authorization header
+      that convinces the service it has permission to modify that account.
+    * DELETE doesn't require a representation, but does require auth.
+
+  Design the Representation(s) to Be Served to the Client
+    * XHTML doc for a user account served to the authenticated user:
+
+    [...]
+    <p class="authenticated">
+      You are currently logged in as
+      <a class="user" href="/user/leonardr">leonardr</a>.
+    </p>
+
+    <p>User homepage for
+      <a class="user" href="/user/leonardr">leonardr</a></p>
+
+    <form id="modifyUser" method="put" action="">
+      <p>Change your password:
+        <input class="password" name="password" /><br />
+        <input class="submit" /></p>
+    </form>
+    [...]
+
+    * Uses PUT method, which is not HTML legal, but is a feature in XHTML5
+    * You could also send a WADL snippet instead of a form
+    * XHTML representation served to an unauthenticated user:
+
+    [...]
+    <p class="authenticated">
+      You are currently logged in as
+      <a class="user" href="/user/leonardr">leonardr</a>.
+    </p>
+
+    <p>User homepage for
+      <a class="user" href="/user/samruby">samruby</a></p>
+    [...]
+
+  Link This Resource to Existing Resources
+    * One nice feature is to add the authenticated message to the representation
+      of every resource, displayed when the client submits a request with
+      valid credentials. It's hypermedia that shows an auth'd client how to
+      retrieve data about its user account.
+    * Another nice thing would be to show un-auth'd users how to create accounts
+    * In this case we'll use an XHTML5 snippet telling the client how to
+      create a user:
+
+      <form id="createUser" method="PUT" template="/user/{username}">
+        <p>Username: <input type="text" name="username" /></p>
+        <p>Password: <input type="password" name="password" /></p>
+        <input class="submit" />
+      </form>
+
+  What's Supposed to Happen?
+    * If all goes well with a PUT to /usr/leonardr, issue a 201 Created
+    * If the account exists and the password is modified, 200 OK or 205
+      Reset Content
+    * GET success gives 200, DELETE success gives 200
+
+  What Might Go Wrong?
+    * Possible error conditions:
+      - client's representation might be unintelligible to the server,
+        which would give 415 Unsupported Media Type
+      - client supplies no representation at all: 400 Bad Request
+      - client tells server to put resource into inconsistent or impossible
+        state: 400 Bad Request or 409 Conflict
+      - Client sends wrong credentials: 401 Unauthorized
+      - Client tries to create user that already exists, 409 Conflict or 401
+      - Unspecified server error, 500 or 503
+
+Custom Places
+  * Designing places that will show up on maps alongside built in places
+
+  Figure Out the Data Set
+    * Custom places show up in search results, have the same data as 
+      built-in places (type, name, lat, long, description)
+    * May share coordinates with other places, built-in and custom
+    * All custom places are associated with a user account
+
+  Split the Data Set into Resources
+    * Each custom place will be a resource
+    * Clients can get a list of their custom places
+    * No separate resource for that list, just part of user account resource
+
+  Name the Resources with URIs
+    * Custom places are subordinate resources. Chose to name them similarly
+      to built-in places:
+
+      /user/{username}/{planet}/{lat},{long}/{place name}
+
+  Expose a Subset of the Uniform Interface
+    * GET and HEAD work similar to built in places
+    * DELETE for your own custom places
+    * PUT creates or changes state
+    * If you add a comment to an existing place, you're creating a subordinate
+      resource of that resource. Instead of figuring out the final URI of the
+      annotation and sending a PUT to it, the client can POST to the URI
+      of the existing resource, and let the server decide the ultimate URI.
+    * Any URI identifying a built-in place can be the target of a POST
+    * If you want to annotate a new place, client has to know lat/long
+    * You'd then make a PUT to a URI like:
+
+      /usr/bob/Earth/42,-93.7/the%20cornfield%20where...
+
+    * Though it's cleaner to use POST, since a brand new place on the map is
+      actually a subordinate resource to an existing spatial resource.
+    * Though this uses POST, it's not overloaded--it's creating sub resources.
+
+  Design the Representation(s) Accepted from the Client
+    * Info in KV format: planet, lat, long, name, public, description, username
+    * Can be passed as a form encoded string--no complex data structures.
+    * Info in the URI as scoping information doesn't need to be repeated
+    * "When the client modifies one of its custom places, anything and
+      everything about the place might change: its name, location, type,
+      description, public status. The PUT request that modifies a place can
+      specify the same key-value pairs used to create a place, in any
+      combination. The server will make the appropriate changes, assuming the
+      changes make sense."
+    * Example POST creating a subordinate resource:
+
+      POST /Earth/USA/Mount%20Rushmore HTTP/1.1
+      Host: maps.example.com
+      Authorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ=
+      
+      type=national-park&description=We%20visited%20on%203/5/2005
+
+  Design the Representation(s) Served to the Client
+    * Only difference from built in place's representation is that the 
+      service will, for a user's custom places, tack on a form indicating
+      how they should edit that place.
+
+  Link This Resource to Existing Resources
+    * Three kinds of integration to do:
+      - data integration: DELETE user account should cascade to custom places,
+        URIs to deleted places should give 410 Gone or 404 Not Found
+      - insert links from other resources to these resources: search results,
+        points on the globe should show how to create a custom place, user
+        account needs to list the user's custom places
+
+  What's Supposed to Happen
+    * Custom places respond to GET just like a built in place
+    * Responds to PUT and DELETE if authorized
+    * On create, issues 201 Created
+    * Modify without changing location, 200 OK
+    * Modify with location change, 301 Moved Permanently, Location header
+      contains the new URI
+
+  What Might Go Wrong?
+    * Client may try to move a place off the map using invalid lat/long: 400
+    * Client tries to define same name at same place more than once: 409
+    * Client tries to access private place created by someone else: 403 or 404
+
+
+Chapter 7: A Service Implementation
+
+A Social Bookmarking Web Service
+  * Chapter uses RoR to develop a RESTful web service with much of the
+    functionality of the del.icio.us web service and web site.
+  * Three chapter goals:
+    1. Demonstrate making a RESTful, resource-oriented service out of an 
+       existing RPC-style service.
+    2. Show the sort of tradeoffs necessary for getting a design to work with
+       your chosen framework.
+    3. Show the complete code to a non-trivial web service.
+  * Chose RoR because Ruby is a dynamic language, rails has many helper classes
+  * Starts with empty Rails 1.2 app, with acts_as_taggable and
+    http_authentication plugins installed, and the atom-tools gem to
+    generate Atom feeds for representations:
+
+      rails bookmarks;cd bookmarks
+      script/plugin install acts_as_taggable
+      script/plugin install http_authentication
+      gem install atom-tools
+
+  * Also created an SQL db called bookmarks_development, configured 
+    config/database.yaml to make the connection work.
+
+Figuring Out the Data Set
+  * Four main kinds of data in the del.icio.us site:
+    - user accounts
+    - bookmarks ('posts' in del.icio.us terms)
+    - tags (metadata for bookmarks)
+    - bundles (collections of tags for a user)
+  * User accounts are stateful resources--they track name/email as well as
+    username and password, and those can be changed through HTTP. User accounts
+    also have bookmarks as subordinate resources.
+  * Bookmarks belong to a user, have six pieces of data:
+    - URI
+    - long and short descriptions
+    - timestamp
+    - collection of tags
+    - public/private flag
+  * URI and short description are required pieces of state.
+  * There are emergent properties of all URIs: newness, popularity, etc. This
+    example will only track newness to keep things simple.
+  * Tags have only one piece of state, their name. They only exist in relation
+    to bookmarks and bundles.
+  * Db schema as a Rails migration:
+
+    class InitialSchema < ActiveRecord::Migration
+      # Create the db tables on a Rails migration
+      def self.up
+        # The users table, tracking four items of state plus unique id
+        create_table :users, :force => true do |t|
+          t.column :user_id, :string
+          t.column :name, :string
+          t.column :full_name, :string
+          t.column :email, :string
+          t.column :password, :string
+        end
+
+        # Bookmarks table, tracking six state items plus derivative field and ID
+        create_table :bookmarks, :force => true do |t|
+          t.column :bookmark_id, :string
+          t.column :uri, :string
+          t.column :uri_hash, :string
+          t.column :short_description, :string
+          t.column :long_description, :text
+          t.column :timestamp, :datetime
+          t.column :public, :boolean
+        end
+
+        # Join table gives bookmarks subordinate to users
+        create_table :user_bookmarks, :force => true do |t|
+          t.column :user_id, :integer
+          t.column :bookmark_id, :integer
+        end
+
+        # Tables for acts_as_taggable plugin. This one is tags
+        create_table :tags do |t|
+          t.column :name, :string
+        end
+
+        # rel between tags and things tagged
+        create table :taggings do |t|
+          t.column :tag_id, :integer
+          t.column :taggable_id, :integer
+          t.column :taggable_type, :string
+        end
+
+        # Indexes for search
+        add_index :users, :name
+        add_index :bookmarks, :uri_hash
+        add_index :tags, :name
+        add_index :taggings, [:tag_id, :taggable_id, :taggable_type]
+      end
+
+      # Drop the db on a reverse migration
+      def self.down
+        [:users, :bookmarks, :tags, :user_bookmarks, :taggings].each do |t|
+          drop_table t
+        end
+      end
+    end
+
+Resource Design
+  * Focus here is on translating del.icio.us ideas into ROA
+  * Existing del.icio.us service is a REST-RPC hybrid, rooted at
+    https://api.de.icio.us/v1/, and exposes three RPC-style APIs rooted at
+    posts/, tags/, and bundles/. Need to define RESTful resources that expose
+    at least the functionality of those APIs:
+  * The posts/ API lets auth'd user fetch/manage bookmark posts:
+    - posts/get -- Search posts by tag/date, or search for specific URI
+    - posts/recent -- fetch n most recent posts, with optional tag filter
+    - posts/dates -- fetch number of posts by user for each day, tag filter
+    - posts/all -- fetch all posts by user, ever, w tag filter
+    - posts/update -- check when user last posted a bookmark
+    - posts/add -- create a bookmark for a URI, must include short desc
+    - posts/delete -- deletes a post for a particular URI
+  * The tags/ API lets an auth'd user manage tags separately from bookmarks:
+    - tags/get -- list of tags used by the auth'd user
+    - tags/rename -- rename an existing tag
+  * The bundles/ API lets the auth'd user group tags together:
+    - tags/bundles/all -- fetch user's bundles, listing all bundles w their tags
+    - tags/bundles/set -- group tags together into a possibly new bundle
+    - tags/bundles/delete -- delete a bundle
+  * There are functions exposed by the web site but not the service:
+    - /{username} -- fetch any user's bookmarks
+    - /{username}/{tag} -- fetch bookmarks for user, w tag filter
+    - /tag/{tag-name} -- fetch bookmarks w tag across all users
+    - /url/{URI-MD5} -- list of users who have bookmarked a URI
+    - /recent -- most recent bookmarks across all users
+
+  REST in Rails
+    * Rails doesn't let you define resources directly--you have to divide up
+      your app's functionality into controllers, which expose the resources.
+    * First var in a request URI routes Rails to the right controller class.
+    * In Rails 1.2, you define controllers corresponding to HTTP verbs:
+      sending GET to /weblogs triggers WeblogController#index, while POST
+      triggers WeblogController#create to create a subordinate resource.
+    * Going to define resources in terms of Rails controllers, and design
+      with the constraints of those in mind.
+    * Accessing the Rails app from localhost, on 3000/v1
+
+  The User Controller
+    * Exposes a one-off user list at /users, and a resource for every user
+      at a URI that incorporates the user's database id.
+    * Layout of UsersController:
+
+      Operation     HTTP action           Rails method
+      ----------------------------------------------------------
+      List users    GET /users            UsersController#index
+      Create user   POST /users           #create
+      View user     GET /users/{id}       #show
+      Modify user   PUT /users/{id}       #update
+      Delete user   DELETE /users/{id}    #destroy
+
+    * Actually want a subset of that--no global user list, no user edit,
+      so don't define index for some controllers, only expose POST for new users
+    * Would rather expose readable URIs that might change than permanent URIs
+      that don't tell you anything, so user URI will go from /user/{id} to
+      /users/{unique-name}, which will do GET, PUT, DELETE.
+
+  The Bookmarks Controller
+    * Bookmarks are a subordinate resource to user accounts, and they'll be
+      exposed by a controller class rooted beneath the user account resource
+      at /users/{username}/bookmarks.
+    * Wanted to incorporate the bookmarked URI into the resource URI, but 
+      Rails doesn't want to do that. Instead going to hash the URI, use that.
+    * Hash isn't the URI, but is better than a database ID, and Rails is ok w it.
+    * When a user is created it has no bookmarks, then client creates bookmarks 
+      by sending a POST to its own bookmark list resource.
+    * We do want to let a user get somebody's list of all bookmarks, so 
+      /users/{username}/bookmarks will respond to GET, and individual bookmarks
+      will respond to GET, PUT, and DELETE.
+
+  The User Tags Controller
+
+The rest of this chapter may be interesting, but is very RoR-centric.
+
+
+Chapter 8: REST and ROA Best Practices
+  
+Resource-Oriented Basics
+  * Every interesting thing your application manages should be exposed as a resource.
+  * A URI is the name of a resource. Every resource must have at least one name.
+  * A web service serves representations of a resource, not resources themselves.
+  * All resource access happens through HTTP's uniform interface.
+  * "Put complexity in your representations, in the variety of resources you expose,
+    and in the links between resources. Don't put it in the access methods."
+
+The Generic ROA Procedure
+  1. Figure out the data set.
+  2. Split the data set into resources.
+  For each resource:
+  3. Name the resources with URIs.
+  4. Expose a subset of the uniform interface.
+  5. Design the representation(s) accepted from the client.
+  6. Design the representation(s) served to the client.
+  7. Integrate this resource into existing resources, using hypermedia links/forms.
+  8. Consider the typical course of events: what's supposed to happen?
+  9. Consider error conditions: what might go wrong?
+
+Addressability
+  * "A web service is addressable if it exposes the interesting aspects of its
+    data set through resources."
+
+  Representations Should Be Addressable
+    * A URI should never represent more than one resource.
+    * Every representation of a resource should have its own URI.
+    * "It's OK for a client to send information in HTTP request headers, so long
+      as the server doesn't make that they only way of selecting a resource or
+      representation."
+
+State and Statelessness
+  * Two types of state: resource state and application state.
+  * Resource state is information about resources.
+  * Application state is information about the path the client has taken through
+    the application.
+  * Resource state stays on the server, is sent to the client in representations.
+  * Application state stays on the client until it can be used to create, modify,
+    or delete a resource. Then it is sent to the server as part of a POST, PUT,
+    or DELETE request, where it becomes resource state.
+  * A RESTful service is 'stateless' if the server never stores application state.
+  * In a stateless application, the server considers each client request in 
+    isolation, and in terms of the current resource state. If the client wants 
+    any application state to be taken into consideration, the client must submit 
+    it as part of the request.
+  * The client manipulates resource state by sending a representation as part of a 
+    PUT or POST request. The server manipulates client state by sending
+    representations in response to the client's GET request.
+
+Connectedness
+  * The server can guide the client from one application state to another by
+    sending links and forms in its representations.
+  * In a well-connected service, the client can make a path through the
+    application by following links and filling out forms.
+  * The server can guide the client from one resource state to another by
+    sending forms in its representations. Forms guide the client through the
+    process of modifying resource state with a PUT or POST request, by giving
+    hints about what representations are acceptable.
+  * Hypermedia data formats are particularly useful since they support links and
+    forms natively.
+
+The Uniform Interface
+  * All interaction is via HTTP methods, all resources expose a subset of those
+    methods as acceptable ways to interact.
+  * A method does the same thing on every resource that supports it.
+  * HTTP verbs:
+
+    GET         Request for information about a resource.
+    HEAD        Request for metadata about a resource.
+    PUT         Assertion about the state of the resource.
+    DELETE      Assertion that a resource should no longer exist.
+    POST        Attempt to create a new resource from an existing one, or an
+                attempt to append to the state of an existing resource.
+    OPTIONS     Request for the supported subset of HTTP verbs for a resource.
+
+  Safety and Idempotence
+    * GET and HEAD should be safe: never change resource state.
+    * PUT or DELETE should be idempotent: repeated requests have the same effect.
+
+  New Resources: PUT Versus POST
+    * A client can only use PUT to create resources when it can calculate the
+      final URI of the new resource.
+    * To create a resource via POST, the client must POST to a factory resource,
+      which will choose the newly created URI.
+
+  Overloading POST
+    * POST can also be a tiny RPC-style message processor, to give the resource
+      a wider vocabulary than the uniform interface provides.
+    * Authors STRONGLY discourage the use of overloaded POST, because it ruins
+      the uniform interface.
+    * Two noncontroversial uses for overloaded POST:
+      - Simulating HTTP's uniform interface for clients that don't support the
+        full range of HTTP verbs, like PUT or DELETE.
+      - Working around limits on the length of a URI. The standard imposes no
+        limit on URI length, but server and client programs do.
+    * "If you want to do without PUT or DELETE altogether, it's entirely RESTful
+      to expose safe operations on resources through GET, and all other operations
+      through overloaded POST."
+    * "If the uniform interface really doesn't work for you, or it's not worth the
+      effort to make it work, then go ahead and overload POST, but don't lose the
+      resource-oriented design. Every URI you expose should still be a resource:
+      something a client might want to link to."
+    * "A rule of thumb: if you're using overloaded POST, and you never expose GET
+      and POST on the same URI, you're probably not exposing resources at all."
+
+This Stuff Matters
+  * Want to revisit the ideas underlying the principles of ROA in light of the
+    real designs laid out in previous chapters.
+
+  Why Addressability Matters
+    * Means every interesting aspect of your service is immediately accessible from
+      outside. Makes it possible for others to make mashups of your service.
+
+  Why Statelessness Matters
+    * Each request contains all application states necessary to understand 
+      that request. None of this information is kept on the server, and none
+      of it is implied by previous requests.
+    * Makes scaling up trivial. If one server can't handle all the requests,
+      set up a load balancer and make a second server handle half the traffic.
+    * When your application is stateless, you don't need to coordinate activity
+      between servers, sharing memory or creating "server affinity" to make sure
+      the same server handles every request in a "session."
+    * "You can throw web servers at the problem until the bottleneck becomes
+      access to your _resource_ state." Then you have to scale your persistence.
+    * Stateless apps are more reliable. A request that times out in a stateless
+      application can be resent without worrying about whether the "session" has
+      gone into an incorrect state.
+
+  Why the Uniform Interface Matters
+    * The restrictions of the uniform interface (GET/HEAD are safe, PUT/DELETE are
+      idempotent) make HTTP more reliable. If a request didn't go through, send it
+      again--nothing bad will happen. (POST is another story)
+   
+  Why Connectedness Matters
+    * Hypertext linking and forms make the web work.
+    * Web services should be as strong as the human readable web in that regard.
+    * Resources should demonstrate the options for moving to a new application state.
+    * A service should be self-describing, and not require you to infer rules
+      of connection. Connection rules might seem obvious, but typically involve
+      business logic or complex ideas ("what is latitude?") that the client should
+      not be responsible for having to know about.
+    * Connectedness makes it possible for the client to handle relationships that
+      change over time. Links hide the rules about how you have to build a URI,
+      which means your client doesn't have to know about them.
+
+
+Resource Design
+  * Three kinds of resources:
+    - Predefined, one-off resources like service's home page or a static list of
+      links to resources. Corresponds to something you've only got a few of.
+    - A large (possibly infinite) number of resources corresponding to individual
+      items of data. Might correspond to an object in an OO system, or a db row.
+    - A large (probably infinite) number of resources corresponding to the possible
+      outputs of an algorithm. Might correspond to query results.
+
+  Relationships Between Resources
+    * Service with two people, Alice and Bob, each resources, who get married
+    * Do you modify each record? PUT to one of them?
+    * Make the 'marriage' a resource, PUT or POST to that endpoint, and the
+      server will apply any appropriate rules about 'marriage', then create a
+      new resource or send an error message. Other resources can then link to
+      the new resource, which will respond to the uniform interface.
+
+  Asynchronous Operations
+    * HTTP is synchronous request-response over sockets.
+    * Not all ops can be completed in the time an HTTP request has to work.
+    * To do that over HTTP, you have to split the operation into two or more
+      synchronous requests. The first spawns the operation, subsequent requests
+      poll for completion.
+    * For that, you send a 202 Accepted response code, which tells the client
+      that the request was accepted and (presumably) queued. In the Location header,
+      the server puts the location of the job resource which will handle the
+      request--where the client can later poll for status. When the job is complete,
+      the client can GET the output and DELETE the job resource.
+    * However, each request to start an async job makes the server create a new
+      resource, so the requests aren't safe or idempotent. So you have to use POST,
+      which means you need to expose different resources for async stuff than
+      for synchronous operations.
       </section>
     </article>
   </div><!--/container-->

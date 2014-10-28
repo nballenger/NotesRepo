@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Chapter Summaries: High Performance Python, Gorelick and Ozsvald, 2014</title>
+<link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
+<style type="text/css">
+  section section section section section section h1,
+  section section section section section h2,
+  section section section section h3,
+  section section section h4,
+  section section h5,
+  section h6 { font-size: 12px; }
+
+  section section section section section h1,
+  section section section section h2,
+  section section section h3,
+  section section h4 
+  section h5 { font-size: 18px; }
+  
+  section section section section h1,
+  section section section h2,
+  section section h3,
+  section h4 { font-size: 18px; }
+
+  section section section h1,
+  section section h2,
+  section h3 { font-size: 24px; }
+
+  section section h1,
+  section h2 { font-size: 30px; }
+  
+  section h1 { font-size: 36px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <article class="book-summary" id="high-performance-python">
+    <header>
+      <h1>High Performance Python<small>, Gorelick and Ozsvald, 2014</small></h1>
+      <p><u>High Performance Python</u>, Micha Gorelick; Ian Ozsvald; O'Reilly Media, Inc.; August 15, 2014<br>
+      Print ISBN: 978-1-4493-6159-4; Print ISBN-13: 978-1-4493-6159-4; Pages in Print Edition: 300</p>
+    </header>
+
+    <section id="executive-summary">
+      <header>
+        <h1>Executive Summary</h1>
+      </header>
+    </section>
+
+    <section id="chapter-summaries">
+      <header>
+        <h1>Chapter Summaries</h1>
+      </header>
+
+      <section class="chapter" id="chapter-preface">
+        <header>
+        <h1>Preface</h1>
+        </header>
+        <ul>
+          <li>Book is aimed at people with a CPU bound problem, but also looks at data transfer and memory bound problems.</li>
+          <li>Meant for intermediate to advanced Python programmers.</li>
+          <li>If you have an SQL or NoSQL bottleneck, this won't help.</li>
+          <li>
+            Book covers:
+            <ul>
+              <li>background on the machinery of the computer</li>
+              <li>profiling</li>
+              <li>pure python approaches, using python and modules effectively</li>
+              <li>matrices with numpy</li>
+              <li>compilation and just in time computing</li>
+              <li>concurrency</li>
+              <li>multiprocessing</li>
+              <li>cluster computing</li>
+              <li>using less RAM</li>
+              <li>lessons from the field</li>
+            </ul>
+          </li>
+          <li>Book focuses on Python 2.7 on 64-bit *nix systems</li>
+          <li><q>Typically when you want reproducible results based on a set of trusted libraries, you don't want to be at the bleeding edge. High performance Python developers are likely to be using and trusting Python 2.7 for years to come.</q></li>
+        </ul>
+      </section><!-- /#chapter-preface -->
+      <section class="chapter" id="chapter-01">
+        <header>
+        <h1>Chapter 1: Understanding Performant Python</h1>
+        </header>
+        <ul>
+          <li><q>High performance programming can be thought of as [...] writing more efficient code or [...] finding a more suitable algorithm.</q></li>
+          <li>Chapter focuses on efficient code to reduce overhead, which should help with understanding the specific costs and benefits of Python's abstracting of the underlying hardware.</li>
+        </ul>
+
+        <h2>Fundamental Computer System</h2>
+        <ul>
+          <li>
+            Three basic computing parts:
+            <ul>
+              <li>computing units &mdash; key property is ops per unit of time</li>
+              <li>memory units &mdash; key property is size and r/w speed</li>
+              <li>connections between computing and memory &mdash; key property is speed of moving data around</li>
+            </ul>
+          </li>
+          <li>
+            Translation for standard workstation:
+            <ul>
+              <li>computing units: CPU (with L1, L2, etc. cache memory built in)</li>
+              <li>storage: RAM and disk</li>
+              <li>connections: bus (and backside bus that connects CPU to L1, L2, etc. caches)</li>
+            </ul>
+          </li>
+          <li>Additional link between computing units / storage is network connection, but very slow</li>
+        </ul>
+
+        <h3>Computing Units</h3>
+        <ul>
+          <li>CPUs and GPUs are most commonly used computing unit.</li>
+          <li>Main properties of interest: instructions per cycle (IPC), cycles per second (clock speed).</li>
+          <li>Every chip has a different balance between IPC and clock speed.</li>
+          <li>
+          IPC and clock speed progressions have gotten stagnant, so chip builders rely on other methods to gain speed:
+            <ul>
+              <li>hyperthreading: presenting a virtual second CPU to the host OS, interleaving two threads of instructions into a single physical CPU</li>
+              <li>out of order execution: compiler optimization that spots pieces of work not reliant on previous computations, that can be rescheduled out of order</li>
+              <li>multi-core architectures: multiple CPU units within the same chip</li>
+            </ul>
+          </li>
+          <li>Amdahl's law: <q>if a program designed to run on multiple cores has some routines that must run on one core, this will be the bottleneck for the final speedup by allocating more cores.</q></li>
+          <li><q>[A] major hurdle with utilizing multiple cores in Python is Python's use of a Global Interpreter Lock. The GIL makes sure that a Python process can only run one instruction at a time, regardless of the number of cores it is currently using. This means that even though some Python code has access to multiple cores at a time, only one core is running a Python instruction at any given time. [...] Can be avoided by using other standard library tools like multiprocessing or technologies such as numexpr, cython, or distributed models of computing.</q></li>
+        </ul>
+
+        <h3>Memory Units</h3>
+        <ul>
+          <li>Many types, all storing bits. Major difference is read/write speed.</li>
+          <li>R/W speed is heavily dependent on how the data is being read&mdash;basically memory page size</li>
+          <li>Memory units also have latency: time to find the data</li>
+          <li>
+            Types of Memory units:
+            <ul>
+              <li>Spinning hard drive: slow R/W, high latency, very large capacity</li>
+              <li>Solid state hard drive: faster R/W, lower latency, currently smaller capacity</li>
+              <li>RAM: fast R/W, low latency, limited capacity</li>
+              <li>L1/L2 cache: extremely fast R/W, very low capacity (kilobyte range)</li>
+            </ul>
+          </li>
+          <li>Since there's an inverse relationship between capacity and R/W speed, data lives in full form on disk, reduced form in RAM, and very small form in L1/L2 cache.</li>
+        </ul>
+
+        <h3>Communications Layers</h3>
+        <ul>
+          <li>All communications internally are on one or another bus.</li>
+          <li>Frontside bus: the connection between RAM and L1/L2 cache. It moves data ready to be transformed by the processor into the staging ground for calculations.</li>
+          <li>External bus: main route from hardware devices to the CPU and system memory. Slower than frontside bus.</li>
+          <li><q>Many drawbacks to using a GPU come from the bus it is connected on: since the GPU is generally a peripheral device, it communicates through the PCI bus which is much slower than the frontside bus.</q></li>
+          <li>Network can be thought of as a communication block, though much slower. Frontside bus can do dozens of gigabits/s, network is on the order of several dozen megabits.</li>
+          <li>Speed is given from several quantities: 
+            <ul>
+              <li>bus frequency: transfers the bus can do per second</li>
+              <li>bus width: how much data can be moved in one transfer</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h2>Putting the Fundamental Elements Together</h2>
+        <ul>
+          <li>Section introduces example problems, ideal solutions, Python approaches.</li>
+          <li><q>A warning: this section may seem bleak&mdash;most of the remarks seem to say that Python is natively incapable of dealing with the problems of performance. This is untrue for two reasons. [...] What native Python may lack in performance it gets back right away with speed of development. Furthermore, throughout the book we will introduce modules and philosophies that can help mitigate many of the problems described below with relative ease.</q></li>
+        </ul>
+
+        <h3>Idealized computing vs Python VM</h3>
+        <ul>
+          <li>A code sample that determines whether a number is prime:
+<pre>
+import math
+def check_prime(number):
+  sqrt_number = math.sqrt(number)
+  number_float = float(number)
+  for i in xrange(2, int(sqrt_number)+1):
+    if (number_float / i).is_integer():
+      return False
+  return True
+
+print "check_prime(10000000) = ", check_prime(10000000) # False
+print "check_prime(10000019) = ", check_prime(10000019) # True
+</pre>
+          </li>
+          <li>Going to look at this via an abstract model of computation, then draw comparisons to what happens with Python runs the code, so we can iteratively bring the Python code closer to the optimal code.</li>
+        </ul>
+
+        <h4>Idealized Computing</h4>
+        <ol>
+          <li>At start, the value of <code>number</code> is stored in RAM. To calculate <code>sqrt_number</code> and <code>number_float</code>, need to send that value to the CPU.</li>
+          <li>Ideally we'd send that value once, it would go into L1/L2 cache, CPU would do calculations and send values back to RAM. That minimizes the reads of <code>number</code> from RAM, and privileges the backside bus (which is faster).</li>
+          <li>For the loop we want to send <code>number_float</code> and several values of <code>i</code> at a time. Possible because the CPU vectorizes ops with no additional time cost, so it can do multiple, independent computations at the same time.</li>
+          <li><code>number_float</code> is sent to the CPU cache with as many values of <code>i</code> as it can hold. For each pair the CPU divides, checks whether it's a whole number, signals whether a value was an integer&mdash;if so the function ends.</li>
+          <li>Ideally you'd vectorize the processing so that it checks 5 values of <code>i</code> at a time, so the <code>any(result)</code> operation happens in the CPU without a transfer back to RAM.</li>
+        </ol>
+
+        <h4>Python's Virtualized Machine</h4>
+        <ul>
+          <li>The Python interpreter does a lot of abstraction of things like memory allocation, what sequence things are sent to the CPU in, etc. You trade some performance for gains in development time.</li>
+          <li>Python runs optimized instructions, but the trick can be getting them to run in the correct sequence for high performance.</li>
+          <li>A vectorized version of the prime checker might include this (invalid Python) line:
+<pre>
+[...]
+for i in xrange(0, len(numbers), 5):
+  result = (number_float / numbers[i:(i+5)]).is_integer()  # Not valid Python
+  if any(result):
+    return False
+[...]
+</pre>
+          </li>
+          <li>You can't do that in python because you can't divide a float by a list. You can however use external libraries like numpy to do vectorized calculations.</li>
+          <li>Because Python is garbage collected, its objects are laid out in memory in a way that is not conducive to keeping the L1/L2 cache filled with relevant data for the next calculation.</li>
+          <li>Additionally, since Python is not compiled and is dynamically typed, optimizations are drastically harder to achieve since code can change itself at run time. You can mitigate this with cython, which letsyou compile code and provide compiler hints.</li>
+          <li>Lastly, the GIL mentioned above keeps you from being able to effectively parallelize this code, because even if you write it to run on multiple cores it will still only run on one. Addressable with the multiprocessing module.</li>
+        </ul>
+
+        <h2>So Why Use Python?</h2>
+        <ul>
+          <li>Python code that utilizes wrappers for tools in other languages can be comparable to C.</li>
+          <li>There are a large number of libraries both in the core and as external packages.</li>
+          <li>Be careful of working toward code speed gains at the expense of readability and maintenance cost.</li>
+        </ul>
+      </section><!-- /#chapter-01 -->
+
+      <section class="chapter" id="chapter-02">
+        <header>
+          <h1>Chapter 2: Profiling to Find Bottlenecks</h1>
+        </header>
+        <ul>
+          <li><q>Any measurable resource can be profiled.</q></li>
+        </ul>
+        <h2>Profiling efficiently</h2>
+        <ul>
+          <li>Basic techniques discussed first will include
+            <ul>
+              <li><code>%timeit</code> from IPython</li>
+              <li><code>time.time()</code></li>
+              <li>a timing decorator</li>
+              <li><code>cProfile</code> module</li>
+              <li><code>line_profiler</code></li>
+            </ul>
+        <h2>Introducing the Julia Set</h2>
+        <h2>Calculating the full Julia Set</h2>
+        <h2>Simple approaches to timing - print and a decorator</h2>
+        <h2>Simple timing using the Unix time command</h2>
+        <h2>Using the cProfile module</h2>
+        <h2>runsnakerun to visualise cProfile output</h2>
+        <h2>line_profiler for line-by-line measurements</h2>
+        <h2>memory_profiler for diagnosing memory usage</h2>
+        <h2>Inspecting objects on the heap with heapy</h2>
+        <h2>Dowser for live graphing of instantiated variables</h2>
+        <h2>The dis module to examine CPython bytecode</h2>
+        <h2>Unit testing during optimization to maintain correctness</h2>
+        <h2>Strategies to profile your code successfully</h2>
+      </section><!-- /#chapter-02 -->
+
+      <section class="chapter" id="chapter-03">
+        <header>
+          <h1>Chapter 3: Lists and Tuples</h1>
+        </header>
+        <h2>A more efficient search</h2>
+        <h2>Lists vs Tuples</h2>
+        <h2>Wrap Up</h2>
+      </section><!-- /#chapter-03 -->
+      <section class="chapter" id="chapter-04">
+        <header>
+        <h1>4. Dictionaries and Sets</h1>
+        </header>
+        <h2>How do dictionaries and sets work?</h2>
+        <h2>Dictionaries and Namespaces</h2>
+        <h2>Wrap Up</h2>
+      </section><!-- /#chapter-04 -->
+      <section class="chapter" id="chapter-05">
+        <header>
+        <h1>5. Iterators and Generators</h1>
+        </header>
+        <h2>Iterators for Infinite Series</h2>
+        <h2>Lazy Generator Evaluation</h2>
+        <h2>Wrap Up</h2>
+      </section><!-- /#chapter-05 -->
+      <section class="chapter" id="chapter-06">
+        <header>
+        <h1>6. Matrix and Vector Computation</h1>
+        </header>
+        <h2>Introduction to the Problem</h2>
+        <h2>Aren’t python lists good enough?</h2>
+        <h2>Memory Fragmentation</h2>
+        <h2>Enter numpy</h2>
+        <h2>numexpr: making inplace operations faster and easier</h2>
+        <h2>A Cautionary Tale: Verify “optimizations” (scipy)</h2>
+        <h2>Wrap Up</h2>
+      </section><!-- /#chapter-06 -->
+      <section class="chapter" id="chapter-07">
+        <header>
+        <h1>7. Compiling to C</h1>
+        </header>
+        <h2>What sort of speed gains are possible?</h2>
+        <h2>JITs vs Compilers</h2>
+        <h2>Why does type information help the code run faster?</h2>
+        <h2>Using a C compiler</h2>
+        <h2>Reviewing the Julia Set example</h2>
+        <h2>Cython</h2>
+        <h2>Shed Skin</h2>
+        <h2>Cython and numpy</h2>
+        <h2>Numba</h2>
+        <h2>Pythran</h2>
+        <h2>PyPy</h2>
+        <h2>When to use each technology</h2>
+        <h2>Foreign function interfaces</h2>
+        <h2>Wrap Up</h2>
+      </section><!-- /#chapter-07 -->
+      <section class="chapter" id="chapter-08">
+        <header>
+        <h1>8. Concurrency</h1>
+        </header>
+        <h2>Introduction to Async</h2>
+        <h2>Serial Crawler</h2>
+        <h2>Gevent</h2>
+        <h2>Tornado</h2>
+        <h2>AsyncIO</h2>
+        <h2>Database Example</h2>
+        <h2>Wrap Up</h2>
+      </section><!-- /#chapter-08 -->
+      <section class="chapter" id="chapter-09">
+        <header>
+        <h1>9. The multiprocessing module</h1>
+        </header>
+        <h2>An overview of the multiprocessing module</h2>
+        <h2>Estimating Pi using the Monte Carlo method</h2>
+        <h2>Estimating Pi using Processes and Threads</h2>
+        <h2>Finding Prime Numbers</h2>
+        <h2>Verifying Primes using Inter Process Communication</h2>
+        <h2>Sharing numpy data with multiprocessing</h2>
+        <h2>Synchronizing File and Variable Access</h2>
+        <h2>Summary</h2>
+      </section><!-- /#chapter-09 -->
+      <section class="chapter" id="chapter-10">
+        <header>
+        <h1>10. Clusters and Job Queues</h1>
+        </header>
+        <h2>Benefits of clustering</h2>
+        <h2>Clusters can introduce more pain than you might expect</h2>
+        <h2>Common cluster designs</h2>
+        <h2>How to start a clustered solution</h2>
+        <h2>Ways to avoid pain when using clusters</h2>
+        <h2>Three clustering solutions</h2>
+        <h2>Using the ParallelPython module for simple local clusters</h2>
+        <h2>Using IPython Parallel to support research</h2>
+        <h2>NSQ for robust production clustering</h2>
+        <h2>Other clustering tools to look at</h2>
+      </section><!-- /#chapter-10 -->
+      <section class="chapter" id="chapter-11">
+        <header>
+        <h1>11. Using Less RAM</h1>
+        </header>
+        <h2>Objects for primitives are expensive</h2>
+        <h2>Understanding the RAM used in a collection</h2>
+        <h2>Bytes vs Unicode</h2>
+        <h2>Efficiently storing lots of text in RAM</h2>
+        <h2>Tips for using less RAM</h2>
+        <h2>Probabilistic data structures</h2>
+      </section><!-- /#chapter-11 -->
+      <section class="chapter" id="chapter-12">
+        <header>
+        <h1>12. Lessons from the Field</h1>
+        </header>
+        <h2>AdpativeLab for Social Media Analytics (SoMA)</h2>
+        <h2>Making deep learning fly with RadimRehurek.com</h2>
+        <h2>Large scale productionized machine learning at Lyst.com</h2>
+        <h2>Large Scale Social Media Analysis at Sme.sh</h2>
+        <h2>PyPy for successful web and data processing systems</h2>
+        <h2>Task queues at Lanyrd.com</h2>
+      </section><!-- /#chapter-12 -->
+    </section><!-- /#chapter-summaries -->
+  </article>
+</div><!-- /.container -->
+</body>
+</html>

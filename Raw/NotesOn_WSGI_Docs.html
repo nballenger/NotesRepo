@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Book Summary: Lightweight Django, Elman and Lavin, 2014</title>
+<link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
+<style type="text/css">
+  section section section section section section h1,
+  section section section section section h2,
+  section section section section h3,
+  section section section h4,
+  section section h5,
+  section h6 { font-size: 12px; }
+
+  section section section section section h1,
+  section section section section h2,
+  section section section h3,
+  section section h4
+  section h5 { font-size: 18px; }
+
+  section section section section h1,
+  section section section h2,
+  section section h3,
+  section h4 { font-size: 18px; }
+
+  section section section h1,
+  section section h2,
+  section h3 { font-size: 24px; }
+
+  section section h1,
+  section h2 { font-size: 30px; }
+
+  section h1 { font-size: 36px; }
+</style>
+</head>
+<body>
+<div id="container">
+<article id="wsgi-documentation">
+  <header>
+    <h1>Notes on WSGI Documentation</h1>
+    <p>From <a target="_blank" href="http://wsgi.readthedocs.org/en/latest/">http://wsgi.readthedocs.org/en/latest/</a></p>
+  </header>
+
+  <h2>What is WSGI?</h2>
+  <ul>
+    <li>"Web Server Gateway Interface"</li>
+    <li><q>[S]pecification that describes how web server communicates with web applications, and how web applications can be chained together to process one request.</q></li>
+  </ul>
+
+  <h2>Learn about WSGI</h2>
+
+  <section>
+    <header>
+      <h1>Notes on "WSGI &ndash; Gateway or Glue?", Mark Rees</h1>
+      <p>From: <a href="http://osdcpapers.cgpublisher.com/product/pub.84/prod.21" target="_blank">http://osdcpapers.cgpublisher.com/product/pub.84/prod.21</a></p>
+    </header>
+
+    <h2>Introduction</h2>
+    <ul>
+      <li>WSGI created by Phillip J. Eby</li>
+      <li>Wanted a <q>simple and universal interface between web servers and python web applications or frameworks.</q></li>
+      <li>Tries to prevent the need for framework authors to create adaptors for multiple different webservers.</li>
+    </ul>
+
+    <h2>How WSGI Works</h2>
+    <ul>
+      <li>Two interfaces are specified: webserver to application, and application to webserver.</li>
+      <li>Webserver to application:
+        <ul>
+          <li>Server calls a function or callable the app supplies.</li>
+          <li>Function/object takes two args: <code>environ</code> and <code>start_response</code></li>
+          <li><code>environ</code> must be a <q>builtin Python dictionary containing CGI-style environment variables like REQUEST_METHOD, requires WSGI variables, and may also include server-specific extension variables.</q></li>
+          <li><code>start_response</code> will be a Python function.</li>
+        </ul>
+      <li>Application to webserver:
+        <ul>
+          <li>App prepares headers it wants to send, calls <code>start_response</code> function it was given with a status code and list of headers.</li>
+          <li>App prepares entity-body as a list of strings or an iterator, passes that back (by returning) to the webserver.</li>
+          <li>On receipt, webserver streams the strings to the client.</li>
+        </ul>
+      </li>
+      <li>Script that would create a WSGI application:
+<pre>
+def application(environ, start_response):
+  """ Simplest possible application object"""
+  status = '200 OK'
+  response_headers = [('Content-type','text/plain')]
+  start_response(status, response_headers)
+  return ['Hello world!\n']
+</pre>
+      </li>
+      <li>OO version of the same thing:
+<pre>
+class WSGIAppClass:
+  def __init__(self, environ, start_response):
+    self.environ = environ
+    self.start = start_response
+
+  def__iter__(self):
+    status = '200 OK'
+    response_headers = [('Content-type','text/plain')]
+    self.start(status, response_headers)
+    yield "Hello world!\n"
+</pre>
+      </li>
+      <li>Those could be deployed on most servers that had a WSGI adaptor without much trouble.</li>
+    </ul>
+  </section>
+
+  <section>
+    <header>
+      <h1>Notes On PEP 3333, updated WSGI Specification, 2011</h1>
+      <p><a href="http://legacy.python.org/dev/peps/pep-3333/" target="_blank">http://legacy.python.org/dev/peps/pep-3333/</a></p>
+    </header>
+    <ul>
+      <li><q>It should also be easy to create request preprocessors, response postprocessors, and other WSGI-based "middleware" components that look like an application to their containing server, while acting as a server for their contained applications.</q></li>
+      <li><q>The application object is simply a callable object that accepts two arguments. The term "object" should not be misconstrued as requiring an actual object instance: a function, method, class, or instance with a <code>__call__</code> method are all acceptable for use as an application object. [...] this should not be construed to mean that application developers will use WSGI as a web programming API! It is assumed that application developers will continue to use existing, high-level framework services to develop their applications. <strong>WSGI is a tool for framework and server developers, and is not intended to directly support application developers.</strong></q></li>
+    </ul>
+  </section>
+</article>
+</div>
+</body>
+</html>

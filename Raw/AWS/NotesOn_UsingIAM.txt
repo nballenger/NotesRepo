@@ -1,0 +1,132 @@
+Notes on this document:
+
+http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UsingIAM.html
+
+Controlling Access to Amazon EC2 Resources
+  * Can use Identity and Access Management (IAM) to allow other users, services, and
+    applications to use your EC2 resources without sharing your credentials.
+
+  Network Access to Your Instance
+    * A security group acts as a firewall around instances. Assign security groups
+      to instances at launch.
+
+  Amazon EC2 Permission Attributes
+    * You can specify which AWS accounts can use your AMIs and EBS snapshots.
+    * You cannot restrict permissions for users within the AWS account.
+    * Each AMI has a LaunchPermission attribute controlling with AWS accounts can use
+    * Each EBS snapshot has a createVolumePermission for the same thing.
+
+  IAM and Amazon EC2
+    * IAM enables:
+      - Create users/groups under your AWS account
+      - Assign security credentials to each user
+      - Control each user's permissions to perform tasks in AWS
+      - Allow users in another AWS account to share your resources
+      - Create roles for your AWS account, define users/services that can assume them
+      - Use existing identities for your enterprise to grant task permissions in AWS
+    
+    Creating an IAM Group and Users
+      Create a group:
+        - Go to IAM console > Groups > Create New Group
+        - Select a policy template, create the group
+
+      Create a user, add to group, set pw:
+        - Users > Create New Users
+        - Download credentials, save access key(s)
+        - Add the user to groups
+        - Security Credentials > Sign-In Credentials > Manage Password
+        - Give user their credentials.
+
+-----------------------------------------------------------------------
+
+Notes on this document:
+
+http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-policies-for-amazon-ec2.html
+
+IAM Policies for Amazon EC2
+  * By default, users have no permissions--must create policies granting access
+  * Attaching a policy to user(s) allows/denies permissions on resources
+
+  Policy Syntax
+    * IAM policies are JSON documents, structured as:
+
+      {
+        "Statement": [{
+          "Effect": "effect",
+          "Action": "action",
+          "Resource": "arn",
+          "Condition": {
+            "condition": { "key": "value" }
+          }
+        }]
+      }
+
+    * Parts are:
+      - Effect -- "Allow" or "Deny"
+      - Action -- specific API action
+      - Resource -- resource affected by the action, as Amazon Resource Name (arn)
+      - Condition -- optional, used to control when policy is in effect
+
+  Actions for Amazon EC
+    * In an IAM policy statement, can specify any API action from any service
+      that supports IAM. For EC2, use prefix "ec2:", like "ec2:RunInstances"
+    * Separate multiple actions with commas, in a list, optional wildcards:
+    
+      "Action": ["ec2:action1", "ec2:action2"] or
+      "Action": "ec2:Describe*"                or
+      "Action": "ec2:*"
+
+  Amazon Resource Names for Amazon EC2
+    * Not all API actions support individual ARNs
+    * ARNs have the following general syntax:
+      
+      arn:aws:[service]:[region]:[account]:resourceType/resourcePath
+
+    * Parts are:
+      - service -- "ec2" for example
+      - region -- region, like "us-east-1"
+      - account -- AWS account id, no hyphens
+      - resourceType -- for example, "instance"
+      - resourcePath -- path to resource, can use * wildcard
+    * Examples:
+      - specific instance:
+
+        "Resource": "arn:aws:ec2:us-east-1:123456789012:instance/i-la2b3c4d"
+
+      - All instances for a specific account:
+
+        "Resource": "arn:aws:ec2:us-east-1:123456789012:instance/*"
+
+      - All resources, or for an API not supporting ARNs:
+
+        "Resource": "*"
+
+    * ARNs for each type of resource used by EC2 API actions:
+
+      Type                        ARN
+      ---------------------------------------------------------
+      All EC2 resources           arn:aws:ec2:*
+      All EC2 resources owned     arn:aws:ec2:region:account:*
+        by account in region
+      Customer gateway            arn:aws:ec2:region:account:customer-gateway/cgw-id
+      DHCP options set            arn:aws:ec2:region:account:dhcp-options/dhcp-opt-id
+      Image                       arn:aws:ec2:region::image/image-id
+      Instance                    arn:aws:ec2:region:account:instance/instance-id
+      Instance Profile            arn:aws:iam::account:instance-profile/ins-prof-name
+      Internet gateway            arn:aws:ec2:region:account:internet-gateway/igw-id
+      Key pair                    arn:aws:ec2:region:account:key-pair/key-pair-name
+      Network ACL                 arn:aws:ec2:region:account:network-acl/nacl-id
+      Network interface           arn:aws:ec2:region:account:network-interface/eni-id
+      Placement group             arn:aws:ec2:region:account:placement-group/pg-name
+      Route table                 arn:aws:ec2:region:account:route-table/rt-id
+      Security Group              arn:aws:ec2:region:account:security-group/sg-id
+      Snapshot                    arn:aws:ec2:region::snapshot/snapshot-id
+      Subnet                      arn:aws:ec2:region:account:subnet/subnet-id
+      Volume                      arn:aws:ec2:region:account:volume/volume-id
+      VPC                         arn:aws:ec2:region:account:vpc/vpc-id
+      VPC peering connection      arn:aws:ec2:region:account:vpc-peering-connection/id
+
+    * To specify multiple volumes in a single statement, use comma separated list
+
+  Condition Keys for Amazon EC2
+    

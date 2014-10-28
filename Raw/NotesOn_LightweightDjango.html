@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Book Summary: Lightweight Django, Elman and Lavin, 2014</title>
+<link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
+<style type="text/css">
+  section section section section section section h1,
+  section section section section section h2,
+  section section section section h3,
+  section section section h4,
+  section section h5,
+  section h6 { font-size: 12px; }
+
+  section section section section section h1,
+  section section section section h2,
+  section section section h3,
+  section section h4 
+  section h5 { font-size: 18px; }
+  
+  section section section section h1,
+  section section section h2,
+  section section h3,
+  section h4 { font-size: 18px; }
+
+  section section section h1,
+  section section h2,
+  section h3 { font-size: 24px; }
+
+  section section h1,
+  section h2 { font-size: 30px; }
+  
+  section h1 { font-size: 36px; }
+</style>
+</head>
+<body>
+<div id="container">
+<article id="lightweight-django">
+  <header>
+    <h1>Lightweight Django</small>, Julia Elman; Mark Lavin, 2014</h1>
+    <p>O'Reilly Media, Inc.; Print ISBN: 978-1-4919-4594-0; Print ISBN-13: 978-1-4919-4594-0</p>
+  </header>
+
+  <section id="chapter-summaries">
+    <header>
+      <h1>Chapter Summaries</h1>
+    </header>
+
+    <section class="chapter" id="chapter-01">
+      <header>
+        <h1>Chapter 1: The World's Smallest Django Project</h1>
+      </header>
+
+      <ul>
+        <li>You don't actually have to use the <code>startproject</code> command to start a django project.</li>
+        <li>Chapter lays out an example of creating a simple project using the basic building blocks of Django to do a Hello World.</li>
+      </ul>
+
+      <h2>Hello Django</h2>
+
+      <ul>
+        <li>Starting with a single <code>hello.py</code> file, we can get a runnable dev server that will return an HTTP response:
+<pre>
+import sys
+
+from django.conf import settings
+
+settings.configure(
+  DEBUG=True,
+  SECRET_KEY='thisisthesecretkey',
+  ROOT_URLCONF=__name__,
+)
+
+from django.conf.urls import url
+from django.http import HttpResponse
+
+def index(request):
+  return HttpResponse('Hello World')
+
+urlpatterns = (
+  url(r'^$', index),
+)
+
+if __name__ == "__main__"
+  from django.core.management import execute_from_command_line
+
+  execute_from_command_line(sys.argv)
+</pre>
+        </li>
+        <li>Running <kbd>python hello.py runserver</kbd> will start the dev server on port 8000, hitting the root will return 'Hello World'.</li>
+      </ul>
+
+      <h2>Improvements</h2>
+      <ul>
+        <li><q>At its core Django is a Python framework for taking incoming HTTP requests and returning HTTP responses. [...] Django does provide additional utilities for common tasks in handling HTTP requests such as rendering HTML, parsing form data or persisting session state.</q></li>
+      </ul>
+
+      <h3>WSGI Application</h3>
+      <ul>
+        <li>Current example runs via <code>runserver</code>, which isn't appropriate for production deployment.</li>
+        <li>Web Server Gateway Interface (WSGI) is a spec for how web servers communicate with app frameworks. PEP 333, improved in PEP 3333.</li>
+        <li>Lots of servers speak WSGI:
+          <ul>
+            <li>Apache via mod_wsgi</li>
+            <li>Gunicorn</li>
+            <li>uWSGI</li>
+            <li>CherryPy</li>
+            <li>Tornado</li>
+            <li>Chaussette</li>
+          </ul>
+        </li>
+        <li>Each server needs a properly defined WSGI application before you can use it for an app. Django creates that through <code>get_wsgi_application</code>:
+<pre>
+from django.core.wsgi import get_wsgi_application
+...
+application = get_wsgi_application()
+</pre>
+        </li>
+        <li>That call is normally in <code>wsgi.py</code> created by <code>startproject</code>.
+      </ul>
+    </section>
+
+  </section><!-- /chapter-summaries -->
+</article>
+</div>
+</body>
+</html>

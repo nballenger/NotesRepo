@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Book Summary: Lightweight Django, Elman and Lavin, 2014</title>
+<link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
+<style type="text/css">
+  section section section section section section h1,
+  section section section section section h2,
+  section section section section h3,
+  section section section h4,
+  section section h5,
+  section h6 { font-size: 12px; }
+
+  section section section section section h1,
+  section section section section h2,
+  section section section h3,
+  section section h4
+  section h5 { font-size: 18px; }
+
+  section section section section h1,
+  section section section h2,
+  section section h3,
+  section h4 { font-size: 18px; }
+
+  section section section h1,
+  section section h2,
+  section h3 { font-size: 24px; }
+
+  section section h1,
+  section h2 { font-size: 30px; }
+
+  section h1 { font-size: 36px; }
+</style>
+</head>
+<body>
+<div id="container">
+<article id="nginx-http-server">
+  <header>
+  <h1>Book Notes: Nginx HTTP Server, 2nd Edition<small>, Nedelcu, 2013</small></h1>
+  <p>Clement Nedelcu, Packt Publishing, July 2013</p>
+  </header>
+
+  <section id="chapter-summaries">
+    <section class="chapter" id="preface">
+      <header>
+        <h1>Preface</h1>
+      </header>
+      <ul>
+        <li>Russian project, originally started in 2002. Now used for a number of very high traffic domains.</li>
+        <li>Uses asynchronous sockets, doesn't spawn a process per request. One process per core can handle thousands of connections.</li>
+        <li>Much simpler config and admin than Apache.</li>
+        <li>Open source, BSD license, has module system.</li>
+      </ul>
+      </section>
+
+      <section class="chapter" id="chapter-01">
+        <header>
+          <h1>Chapter 1: Downloading and Installing Nginx</h1>
+        </header>
+
+        <ul>
+          <li>Install common prerequisites:<br><kbd>aptitude install build-essentials libpcre3 libpcre3-dev zlib1g zlib1g-dev openssl openssl-dev</kbd></li>
+          <li>Download source.</li>
+          <li>Configure, make, make install. Make sure to check configure options for modules, SSL support, etc.</li>
+          <li>Test the config with the <code>-t</code> switch, then start it up.</li>
+          <li>Optionally set it up as a service with an init like the following, from <a href="http://wiki.nginx.org/Upstart" target="_blank">http://wiki.nginx.org/Upstart</a>:
+<pre>
+# nginx
+ 
+description "nginx http daemon"
+author "George Shammas &lt;georgyo@gmail.com&gt;"
+ 
+start on (filesystem and net-device-up IFACE=lo)
+stop on runlevel [!2345]
+ 
+env DAEMON=/usr/sbin/nginx
+env PID=/var/run/nginx.pid
+ 
+expect fork
+respawn
+respawn limit 10 5
+#oom never
+ 
+pre-start script
+        $DAEMON -t
+        if [ $? -ne 0 ]
+                then exit $?
+        fi
+end script
+ 
+exec $DAEMON
+</pre>
+          </li>
+        </ul>
+
+    </section>
+
+    <section class="chapter" id="chapter-02">
+      <header>
+        <h1>Chapter 2: Basic Nginx Configuration</h1>
+      </header>
+      <h2>Configuration File Syntax</h2>
+
+      <h3>Configuration Directives</h3>
+
+      <ul>
+        <li>Base conf file is in <code>[prefix]/conf/nginx.conf</code>.</li>
+        <li>Lines starting with <code>#</code> are comments.</li>
+        <li>Lines in the format <code>setting-name [whitespace] value[, value,...];</code> are directives.</li>
+        <li>Each module comes with a set of directives, including the Core module</li>
+      </ul>
+    </section>
+  </section>
+</article>
+</div>
+</body>
+</html>

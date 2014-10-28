@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Notes On Amazon Machine Images</title>
+<link rel="stylesheet" href="../../bootstrap/css/bootstrap.css">
+<style type="text/css">
+  section section section section section section h1,
+  section section section section section h2,
+  section section section section h3,
+  section section section h4,
+  section section h5,
+  section h6 { font-size: 12px; }
+
+  section section section section section h1,
+  section section section section h2,
+  section section section h3,
+  section section h4
+  section h5 { font-size: 18px; }
+
+  section section section section h1,
+  section section section h2,
+  section section h3,
+  section h4 { font-size: 18px; }
+
+  section section section h1,
+  section section h2,
+  section h3 { font-size: 24px; }
+
+  section section h1,
+  section h2 { font-size: 30px; }
+
+  section h1 { font-size: 36px; }
+</style>
+</head>
+<body>
+<div class="container">
+<article id="amazon-amis">
+  <header>
+    <h1>Amazon Machine Images (AMI)</h1>
+  </header>
+
+  <section>
+    <header>
+      <h1>Amazon Machine Images (AMI)</h1>
+      <p><a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html" target="_blank">http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html</a></p>
+    </header>
+
+    <ul>
+      <li>An AMI includes:
+        <ul>
+          <li>Template for the root volume for an instance (eg. OS + app server + apps)</li>
+          <li>Launch permissions for which AWS accounts can use the AMI to launch instances</li>
+          <li>Block device mapping for volumes to attach on launch</li>
+        </ul>
+      </li>
+      <li>AMI Lifecycle: Create &rarr; Register &rarr; Launch | Deregister | Copy</li>
+      <li><q>The root storage device of the instance determines the process you follow to create an AMI. The root volume of an instance is either an Amazon EBS volume or an instance store volume.</q></li>
+    </ul>
+  </section>
+
+  <section>
+    <header>
+      <h1>AMI Types</h1>
+      <p><a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ComponentsAMIs.html" target="_blank">http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ComponentsAMIs.html</a></p>
+    </header>
+
+    <ul>
+      <li>AMIs are differentiated on: Region, OS, Architecture, Launch Permissions, Root Device Storage</li>
+      <li>Three categories of launch permissions:
+        <ul>
+          <li>public &mdash; all AWS accounts</li>
+          <li>explicit &mdash; specific AWS accounts</li>
+          <li>implicit &mdash; owner only</li>
+        </ul>
+      </li>
+      <li>Two storage types for root device:
+        <ul>
+          <li>Amazon EBS-Backed &mdash; Amazon EBS volume created from an EBS snapshot</li>
+          <li>Instance store &mdash; volume created from a template stored in S3</li>
+        </ul>
+      </li>
+      <li>Find root device type in EC2 Console: AMIs &rarr; Your AMI &rarr; Details &rarr; Root Device Type</li>
+      <li>Find root device type from CLI: <code>describe-images</code> (AWS CLI), <code>ec2-describe-images</code> (EC2 CLI)</li>
+      <li>Instance-store AMIs limited to 10G storage for root device, EBS limited to 1T.</li>
+      <li>EBS-backed instances can be stopped, instance-store backed cannot.</li>
+      <li><q>Any data on an instance store is deleted when the instance fails or terminates (except for data on the root device). You can add persistent storage to your instance by attaching one or more EBS volumes.</q></li>
+      <li>EBS-backed instances will start faster since instance-store have to be fetched entirely from S3.</li>
+      <li>EBS-backed performance is slower for a short time during startup.</li>
+      <li>Creating AMIs backed by instance store is complicated because there are no API actions to assist. Creating EBS backed uses the <code>CreateImage</code> API action, which both creates and registers.</li>
+    </ul>
+  </section>
+
+  <section>
+    <header>
+      <h1>Virtualization Types</h1>
+      <p><a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/virtualization_types.html" target="_blank">http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/virtualization_types.html</a></p>
+    </header>
+
+    <ul>
+      <li>AMIs use one of two types of virtualization:
+        <ul>
+          <li>paravirtual (PV) &mdash; Load with PV-GRUB bootloader. Only Linux AMIs can use PV. PV guests can run on host hardware without explicit virtualization support, but get no special hardware extensions like enhanced networking or GPU processing.</li>
+          <li>Hardware Virtual Machine (HVM) &mdash; <strong>Recommended</strong>. Fully virtualized hardware, boots by executing master boot record of root block device of the image. Runs as though on bare-metal hardware, host system emulates hardware as necessary. Can take advantage of hardware extensions.</li>
+        </ul>
+      <li>PV was historically faster, but now PV drivers are available for HVM guests so HVM guests now get same or better performance.</li>
+    </ul>
+  </section>
+
+  <section>
+    <header>
+      <h1>Finding a Suitable AMI</h1>
+      <p><a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html" target="_blank">http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html</a></p>
+    </header>
+    
+    <ul>
+      <li>Requirements for instances: region, OS, architecture, root device type, provider</li>
+      <li>Finding an AMI from the console:
+        <ol>
+          <li>Select a region from the nav bar, where the instance will launch</li>
+          <li>Go to AMIs, filter if necessary, examine details, check for EBS-backed or instance-backed. Pick an AMI.</li>
+          <li>Select the AMI and click launch.</li>
+        </ol>
+      </li>
+      <li>From the CLI:
+        <ul>
+          <li>AWS CLI: <code>aws ec2 describe-images --owners self amazon</code></li>
+          <li>EC2 CLI: <code>ec2-describe-images -o self -o amazon</code></li>
+          <li>Filtering with AWS CLI: <code>--filters "Name=platform,Values=Windows,Name=root-device-type,Values=abs"</code></li>
+          <li>Filtering with EC2 CLI: <code>--filter "platform=windows" --filter "root-device-type=abs"</code></li>
+        </ul>
+      </li>
+      <li>After finding an AMI, write down its ID (ami-xxxxxxxx).</li>
+    </ul>
+  </section>
+
+  <section>
+    <header>
+      <h1>Shared AMIs</h1>
+      <p><a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/sharing-amis.html" target="_blank">http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/sharing-amis.html</a></p>
+    </header>
+    <ul>
+      <li>Shared AMIs are an easy way to get started, but they're use at your own risk.</li>
+      <li>Amazon's public images are aliased as <code>amazon</code>.</li>
+    </ul>
+
+    <h2>Finding Shared AMIs</h2>
+    <ul>
+      <li>From console: AMIs &rarr; (Private|Public) Images &rarr; Filter</li>
+      <li>FROM AWS and EC2 CLI:
+        <ul>
+          <li>Public AMIs you own:<br>
+          AWS: <code>aws ec2 describe-images --executable-users all</code><br>
+          EC2: <code>ec2-describe-images -x all</code>
+          </li>
+          <li>AMIs you have explicit launch permissions for: <br>
+          AWS: <code>aws ec2 describe-images --executable-users self</code><br>
+          EC2: <code>ec2-describe-images -x self</code>
+          </li>
+          <li>AMIs owned by amazon:<br>
+          AWS: <code>aws ec2 describe-images --owners amazon</code><br>
+          EC2: <code>ec2-describe-images -o amazon</code>
+          </li>
+          <li>AMIs owned by specific AWS account:<br>
+          AWS: <code>aws ec2 describe-images --owners 123456789012</code><br>
+          EC2: <code>ec2-describe-images -o target_uid</code>
+          </li>
+        </ul>
+      </li>
+      <li>Filtering in EC2 CLI: <code>--filter "platform=windows"</code></li>
+      <li>Security steps for using a shared AMI:
+        <ol>
+          <li>Remove unauthorized public SSH keys&mdash;only the key you used to launch the AMI should be in <code>authorized_keys</code> file: <br><kbd>sudo find / -name "authorized_keys" -print -exec cat {} \;</kbd></li>
+          <li>Disable password auth for the root user in <code>ssh_config</code>:
+<pre>
+PermitRootLogin without-password
+# Alternatively:
+# PermitRootLogin No       
+</pre>
+          </li>
+          <li>Restart sshd service.</li>
+          <li>Remove or lock any unknown accounts.</li>
+          <li>Lock down any open ports and listening network services you don't know the purpose of.</li>
+          <li>Delete the logging config file and restart rsyslog: <br><kbd>sudo rm /etc/rsyslog.config; sudo service rsyslog restart</kbd></li>
+          <li>Check all cron jobs to make sure they're legitimate.</li>
+        </ol>
+      </li>
+    </ul>
+
+    <h2>Making an AMI Public</h2>
+    <ul>
+      <li>From the console: AMIs &rarr; Select AMI &rarr; Actions &rarr; Modify Image Permissions.</li>
+      <li>From the AWS CLI:
+        <ul>
+          <li>Adding the <code>all</code> group to the <code>launchPermission</code> list for the AMI: <br><kbd>aws ec2 modify-image-attribute --image-id ami-01234567 --launch-permission "{\"Add\":[{\"Group\":\"all\"}]}"</kbd></li>
+          <li>Verify the launch permissions of an AMI: <br><kbd>aws ec2 describe-image-attribute --image-id ami-1234567 --attribute launchPermission</kbd></li>
+          <li>Make the AMI private again: <br><kbd>aws ec2 modify-image-attribute --image-id ami-01234567 "{\"Remove\":[{\"Group\":\"all\"}]}"</kbd></li>
+        </ul>
+      </li>
+      <li>From the EC2 CLI:
+        <ul>
+          <li>Adding the <code>all</code> group to the <code>launchPermission</code> list for the AMI: <br><kbd>ec2-modify-image-attribute ami-01234567 --launch-permission -a all</kbd></li>
+          <li>Verify the launch permissions of an AMI: <br><kbd>ec2-describe-image-attribute ami-01234567 -l</kbd></li>
+          <li>Make the AMI private again: <br><kbd>ec2-modify-image-attribute ami-01234567 -l -r all</kbd></li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Sharing an AMI with Specific AWS Accounts</h2>
+    <ul>
+      <li>From the console: AMIs &rarr; Select AMI &rarr; Actions &rarr; Modify Image Permissions, specify an account number, add the permission.</li>
+      <li>From the AWS CLI:
+        <ul>
+          <li>Grant launch permissions to an account: <br><kbd>aws ec2 modify-image-attribute --image-id ami-01234567 "{\"Add\":[{\"UserId\":\"123456789012\"}]}"</kbd></li>
+          <li>Remove launch permission for an account: <br><kbd>aws ec2 modify-image-attribute --image-id ami-01234567 "{\"Remove\":[{\"UserId\":\"123456789012\"}]}"</kbd></li>
+          <li>Remove all launch permissions: <br><kbd>aws ec2 reset-image-attribute --image-id ami-01234567 --attributes launchPermission</kbd></li>
+        </ul>
+      </li>
+      <li>From the EC2 CLI:
+        <ul>
+          <li>Grant to an account: <br><kbd>ec2-modify-image-attribute ami-01234567 -l -a 111122223333</kbd></li>
+          <li>Remove from account: <br><kbd>ec2-modify-image-attribute ami-01234567 -l -r 111122223333</kbd></li>
+          <li>Remove all launch permissions: <br><kbd>ec2-reset-image-attribute ami-01234567 -l</kbd></li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Using Bookmarks</h2>
+    <ul>
+      <li>For public or shared AMIs you can create a bookmark that lets users access the AMI and launch an instance in their own account immediately&mdash;it's an easy way to share AMI references.</li>
+      <li>To create, type a URL like:<br><code>https://console.aws.com/ec2/v2/home?region=&lt;region&gt;#LaunchInstanceWizard:ami=&lt;ami_id&gt;</code><br>where region is the region the AMI resides in and ami_id is the id of the AMI.</li>
+    </ul>
+
+    <h2>Guidelines for Shared Linux AMIs</h2>
+    <ul>
+      <li>Update the AMI tools at boot time by adding this to <code>/etc/rc.local</code>:
+<pre>
+# Update the Amazon EC2 AMI tools
+echo " + Updating EC2 AMI tools"
+yum update -y aws-amitools-ec2
+echo " + Updated EC2 AMI tools"
+</pre>
+      </li>
+      <li>Disable password-based logins for root, consider disabling root access, by editing <code>/etc/ssh/sshd_config</code> to have:
+<pre>
+PermitRootLogin without-password
+</pre>
+      and running<br><kbd>sudo passwd -l root</kbd>
+      </li>
+      <li>Remove SSH host key pairs in <code>/etc/ssh</code>:<br>
+        <kbd>sudo shred -u /etc/ssh/*_key /etc/ssh/*_key.pub</kbd>
+      </li>
+      <li>Install public key credentials by using the <code>cloud-init</code> package to inject public key credentials for a configured user. Provide user keys to a <code>RunInstances</code> API call to put public keys on the instance.</li>
+      <li>Disable sshd DNS checks (optional). Will make SSH logins work even if DNS fails. Change the file <code>/etc/ssh/sshd_config</code> to have:
+<pre>
+UseDNS no
+</pre>
+      </li>
+      <li>Post a description of your AMI and the AMI ID in the Amazon EC2 forum, so people can find out who provided the AMI.</li>
+      <li>To protect yourself from users of an AMI you provide, do not store sensitive data or software on it, and:
+        <ul>
+          <li>Always delete the shell history before bundling:<br>
+            <kbd>shred -u ~/.*history</kbd></li>
+          <li>Use the <code>--exclude directory</code> option to <code>ec2-bundle-vol<code> to skip anything you don't want to share, like your private key and X.509 certificate, and SSH authorized keys.</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <header>
+      <h1>Paid AMIs</h1>
+      <p><a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/paid-amis.html" target="_blank">http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/paid-amis.html</a></p>
+    </header>
+    <ul>
+      <li>Paid AMIs can be purchased from developers, and integrate with Amazon DevPay and AWS Marketplace.</li>
+      <li>Launching from a paid AMI is the same as launching from any other AMI.</li>
+      <li>All paid AMIs from DevPay are instance-store backed, AWS Marketplace supports EBS backed AMIs.</li>
+    </ul>
+  </section>
+
+  <section>
+    <header>
+      <h1>Creating an Amazon EBS-Backed Linux AMI</h1>
+      <p><a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html" target="_blank">http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html</a></p>
+    </header>
+    <ul>
+      <li>Start from an instance launched from an existing EBS-backed AMI.</li>
+      <li>Customize the AMI to suit your needs, then create and register a new AMI.</li>
+      <li>EC2 will snapshot the instance's root volume and any attached EBS volumes. To speed things up, create snapshots of your volumes right before creating an AMI.</li>
+      <li>The command line tools for this will be <code>create-image</code> (AWS) and <code>ec2-create-image</code> (EC2)</li>
+      <li>The command line tools for turning a snapshot into an AMI are <code>register-image</code> (AWS) and <code>ec2-register</code> (EC2)</li>
+    </ul>
+    </ul>
+  </section>
+
+  <section>
+    <header>
+      <h1>Creating an Instance Store-Backed Linux AMI</h1>
+    </header>
+  </section>
+</article>
+</div><!-- /container -->
+</body>
+</html>
+

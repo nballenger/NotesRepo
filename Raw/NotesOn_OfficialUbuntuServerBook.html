@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Summary: The Official Ubuntu Server Book, Rankin and Hill, 2013</title>
+<link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
+<style type="text/css">
+  section section section section section section h1,
+  section section section section section h2,
+  section section section section h3,
+  section section section h4,
+  section section h5,
+  section h6 { font-size: 12px; }
+
+  section section section section section h1,
+  section section section section h2,
+  section section section h3,
+  section section h4
+  section h5 { font-size: 18px; }
+
+  section section section section h1,
+  section section section h2,
+  section section h3,
+  section h4 { font-size: 18px; }
+
+  section section section h1,
+  section section h2,
+  section h3 { font-size: 24px; }
+
+  section section h1,
+  section h2 { font-size: 30px; }
+
+  section h1 { font-size: 36px; }
+</style>
+</head>
+<body>
+<div class="container">
+<article id="official-ubuntu-server-book">
+  <header>
+  <h1>The Official Ubuntu Server Book, Third Edition<small>, Rankin and Hill, 2013</small></h1>
+  <p><u>The Official Ubuntu Server Book, Third Edition</u>; Kyle Rankin; Benjamin Mako Hill; Prentice Hall; July 25, 2013<br>
+  Print ISBN-10: 0-13-301753-2; Print ISBN-13: 978-0-13-301753-3</p>
+  </header>
+
+  <section id="executive-summary">
+    <header>
+      <h1>Executive Summary</h1>
+    </header>
+  </section>
+
+  <section id="chapter-summaries">
+    <header>
+      <h1>Chapter Summaries</h1>
+    </header>
+
+    <section class="chapter" id="chapter-01">
+      <header>
+      <h1>Chapter 1: Installation</h1>
+      </header>
+      <h2>Disk Partitioning</h2>
+      <ul>
+        <li>Candidate directories for being separate partitions:
+          <ul>
+            <li><code>/home</code>: keeps distribution code separate from user code, so updates are seamless</li>
+            <li><code>/var</code>: data that varies in size; keep separate so if a log file spikes it doesn't create a space problem</li>
+            <li><code>/opt</code>: third party software; may grow a lot depending on installs</li>
+            <li><code>/usr</code>: Changes only when you upgrade programs or install packages. Consider mounting read only during normal operation for security purposes.</li>
+            <li><code>/tmp</code>: non-persisting files; can fill the root partition if not separate</li>
+            <li><code>/boot</code>: some file systems were historically unbootable, RAID5 still is, making a 64M-128M partition first on disk avoids the problem. Kernel lives here so the boot loader can access it while avoiding any exotic partitioning schemes.</li>
+          </ul>
+        </li>
+      </ul>
+    </section><!-- /#chapter-01 -->
+    <section class="chapter" id="chapter-02">
+      <header>
+        <h1>Chapter 2: Essential System Administration</h1>
+      </header>
+      <h2>Basic Command Line Administration</h2>
+      <ul>
+        <li>Covers <kbd>pwd ls cd chown chgrp chmod top ps kill sudo reboot</kbd></li>
+      </ul>
+
+      <h2>Ubuntu Boot Process</h2>
+      
+      <h3>GRUB</h3>
+      <ul>
+        <li>GRUB boot loader is a program at least partially within the boot code on the Master Boot Record, which is the first 512 bytes of the hard drive. It controls which Linux kernel the system boots from, and which options it uses at boot.</li>
+        <li>Since 9.10, Ubuntu Server has used GRUB2, which has substantial changes from GRUB:
+          <ul>
+            <li>Main conf file is now at <code>/boot/grub/grub.cfg</code></li>
+            <li>To edit, change <code>/etc/default/grub</code> and run <kbd>sudo update-grub</kbd> to change the conf file.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>The Kernel Boot Process</h3>
+      <ul>
+        <li>Once a kernel is selected, GRUB loads it into memory with the initrd (initial RAM disk) file.</li>
+        <li>That file is actually a gzipped cpio archive known as an initramfs file. Extracting it:
+<pre>
+cp initrd.img-3.2.0-29-generic-pae /tmp/initrd.img-3.2.0-29-generic-pae.gz
+cd /tmp
+gunzip initrd.img-3.2.0-29-generic-pae.gz
+mkdir initrd
+cd initrd
+cpio -idv &lt; /tmp/initrd.img-3.2.0-generic-pae
+</pre>
+        </li>
+        <li>That set of files is extracted into RAM, and the init script from that gz is run. Read that script if you want to know more about the boot process.</li>
+      </ul>
+
+      <h3>/sbin/init</h3>
+      <ul>
+        <li><code>/sbin/init</code> is the parent process of every program running on the system, has a PID of 1, starts all processes that make up a running Linux system.</li>
+        <li>Most *nix systems use the System V init model, but Ubuntu Server has switched to Upstart. Most of the System V outward structure is there in runlevels and etc/rc?.d directories, but Upstart is different underneat.</li>
+      </ul>
+      <h3>Classic System V Init</h3>
+      <ul>
+        <li>In this style of init, the init process reads <code>/etc/inittab</code> for the default runlevel.</li>
+        <li>It enters that runlevel, starts processes configured to run at that runlevel.</li>
+      </ul>
+
+      <h4>Runlevels</h4>
+      <ul>
+        <li>Each runlevel, 0 through 6, is a different system state:
+          <ul>
+            <li>0: halted</li>
+            <li>1: single-user mode</li>
+            <li>2-5: defined by distro and user</li>
+            <li>6: reboot</li>
+          </ul>
+        </li>
+        <li>Each mode 2-5 is a different state the server could enter.</li>
+        <li>To change to single user mode, do <kbd>sudo init 1</kbd></li>
+      </ul>
+
+      <h3>init Scripts</h3>
+      <ul>
+        <li>Important files in a System V init process:
+          <ul>
+            <li><code>/etc/init.d</code>: startup scripts for every service at every runlevel. Mostly shell scripts, standardized to accept at least <kbd>start</kbd> and <kbd>stop</kbd>, and often <kbd>restart</kbd>, <kbd>status</kbd>, <kbd>reload</kbd>, and <kbd>force-reload</kbd>.</li>
+            <li><code>/etc/rc0.d</code> through <code>/etc/rc6.d</code>: init scripts for each respective runlevel. Mostly symlinks to files in <code>/etc/init.d</code>. Each script starts with S (start), K (kill), or D (disable) and a number. On entering a runlevel, init runs every K script in numeric order and passes <kbd>stop</kbd>, but only if that init script was started in the previous runlevel. Then it runs S scripts, passes <kbd>start</kbd>. D scripts are ignored, which lets you temporarily disable a script in a runlevel.</li>
+            <li><code>/etc/rcS.d</code>: all system init scripts init runs at startup before changing to a particular runlevel.</li>
+            <li><code>/etc/rc.local</code>: shell script for the user to edit, generally executed at the end of the init process so you can put your own extra scripts in</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>Upstart</h3>
+      <ul>
+        <li>Drawbacks to System V init:
+          <ul>
+            <li>init scripts don't auto-respawn</li>
+            <li>init script generally affected only by changes in runlevel or on startup</li>
+          </ul>
+        <li>
+        <li>Upstart is supposed to fix those problems and be a robust service manager.</li>
+        <li>Upstart is event-driven--monitors system for events, can take action when they occur.</li>
+        <li>Does not completely replace System V init: replaces <code>init</code> and <code>/etc/inittab</code>, manages changes to runlevels, startup/shutdown, console ttys, and more, but some of the standard scripts still live in <code>/etc/init.d</code> and symlinks in <code>/etc/rc?.d</code>.</li>
+        <li>Upstart starts and stops services when runlevels change.</li>
+      </ul>
+
+      <h4>Upstart Scripts</h4>
+      <ul>
+        <li>Upstart scripts live in <code>/etc/init</code>, but aren't shell scripts, have different syntax</li>
+        <li>Lines with # as first char are comments</li>
+        <li>Takes a number of options:
+<pre>
+# System V runlevel compatibility
+# runs System V style rc script when changing runlevels
+
+description "System V runlevel compatibility"
+author "Scott James Remnant &lt;scott@netsplit.com&gt;"
+start on runlevel [0123456]
+stop on runlevel [!$RUNLEVEL]
+export RUNLEVEL
+export PREVLEVEL
+task
+exec /etc/init.d/rc $RUNLEVEL
+</pre>
+        </li>
+        <li>Options:
+          <ul>
+            <li><code>start on</code> / <code>stop on</code> &mdash; events that have to happen for script to start and stop. In this case start on any runlevel, stop when the runlevel is not set.</li>
+            <li><code>export</code> statements &mdash; export environment variables</li>
+            <li><code>task</code> &mdash; tells init the script will not be persistent, will execute and stop</li>
+            <li><code>script</code> and <code>exec</code> options &mdash; the actual programs the Upstart script will run. <code>exec</code> will execute command and all following args, will track the PID. <code>script</code> makes Upstart treat the lines that follow as a shell script until <code>end script</code></li>
+          </ul>
+        </li>
+        <li>Upstart gives methods to check status, stop and start jobs. Example checking status of tty1, which gives a console on Alt-F1:
+<pre>
+$ sudo status tty1
+tty1: start/running, process 789
+$ sudo stop tty1
+tty1 stop/waiting
+$ sudo start tty1
+tty1 start/running, process 2251
+</pre>
+        </li>
+        <li>Querying all Upstart jobs:
+<pre>
+$ sudo initctl list
+mountall-net stop/waiting
+rc stop/waiting
+[...]
+</pre>
+        </li>
+      </ul>
+
+      <h4>Change the Default Runlevel</h4>
+      <ul>
+        <li>Runlevels are really a holdover from System V. If everything was run from Upstart scripts, you could just set events to take the system from one state to another.</li>
+        <li>If you want to set up different runlevels, change the default from 2, the default is defined in <code>/etc/init/rc-sysinit.conf</code>, in an environment variable named <code>DEFAULT_RUNLEVEL</code>.</li>
+        <li>You can change the default runlevel by creating your own <code>/etc/inittab</code> file with an <code>initdefault</code> stanza, or you can edit <code>/etc/init/rc-sysinit.conf</code> to change <code>DEFAULT_RUNLEVEL</code>.</li>
+      </ul>
+
+      <h3>Services</h3>
+      <ul>
+        <li><q>[U]ltimately a server exists (and gets its name) because of services. A service is some function that your computer provides via software on the system.</q></li>
+        <li>Two ways to manage services in Ubuntu: init scripts, or the <code>xinetd</code> executable.</li>
+        <li>Init scripts are in <code>/etc/init.d</code>, symlinked from <code>/etc/rc?.d</code> directories. They accept <kbd>start</kbd> and <kbd>stop</kbd>, and some optionally accept <kbd>restart</kbd>, <kbd>reload</kbd>, <kbd>force-reload</kbd>, and <kbd>status</kbd> commands.</li>
+        <li>You can run scripts from the <code>/etc/rc?.d</code> directories, but it's better form generally to run from <code>/etc/init.d</code>.</li>
+        <li>Most init scripts start background programs that run until killed or shut down. They also track their PID, keep it in <code>/var/run/</code> in <code>.pid</code> files or directories.</li>
+        <li>When installing a new service on a machine it should:
+          <ul>
+            <li>set up its init scripts in <code>/etc/init.d</code></li>
+            <li>create appropriate symlinks in each runlevel directory</li>
+            <li>start itself once installation is complete</li>
+          </ul>
+        </li>
+        <li>Coming from RedHat/CentOS: there's no port of <code>chkconfig</code>, though the <code>service</code> command was ported, can be used as <kbd>sudo service networking restart</kbd>, as a shortcut instead of <kbd>sudo /etc/init.d/networking restart</kbd>.</li>
+        <li>Closest analog to <code>chkconfig</code> is <code>update-rc.d</code>, though it's meant for use by packages, not users. To use it to disable an init script from starting up: <kbd>sudo update-rc.d -f servicename remove</kbd>, to enable: <kbd>sudo update-rc.d servicename defaults</kbd>.</li>
+      </ul>
+
+      <h4>Write Your Own Init Script</h4>
+      <ul>
+        <li>Simplest way to run a startup script is to put it in <code>/etc/rc.local</code>.</li>
+        <li>If you need it to start at startup and stop as part of system shutdown, you need to write your own init script.</li>
+        <li>Steps:
+          <ol>
+            <li>Make a copy of Ubuntu's skeleton init script, name the file after your service: <kbd>sudo cp /etc/init.d/skeleton /etc/init.d/myservice</kbd>.</li>
+            <li>Edit the copy, replace the generic placeholders with your service's information. For basic applications you only really worry about the environment variables following the initial comments:
+            <blockquote>The initial set of comments in the skeleton script works for the basic case that your service is an executable program that exists in /usr/sbin. Change the DESC and NAME variables so they are equal to the description and the executable name of your service under /usr/sbin. If your service is installed elsewhere, such as in /usr/local/sbin/ or /opt/, then be sure to change the path in the DAEMON variable to reflect that. If your service needs any special arguments passed to it at runtime, set them in the DAEMON_ARGS variable or otherwise change it to be empty.</blockquote>
+            </li>
+            <li>After creating the script, create the symlinks at the appropriate runlevels in the <code>/etc/rc?.d</code> directories. Easiest way is to use the <code>update-rc.d</code> script. Decide on a point in the boot sequence when it should start (lower the number, the earlier it starts), then run <kbd>sudo update-rc.d myservice defaults 90</kbd>.</li>
+          </ol>
+        </li>
+      </ul>
+
+      <h4>Xinetd</h4>
+      <ul>
+        <li>Most services are started with init scripts, but some are managed by <code>xinetd</code>, which is an updated version of the classic <code>inetd</code> service.</li>
+        <li>Idea behind <code>xinetd</code> is to listen on all ports its child services use. If a connection happens, it spawns the service for that port, stops it when it isn't needed.</li>
+        <li><code>xinetd</code> is not installed by default, but you can bring it in with <kbd>sudo apt-get install xinetd</kbd>. Services for it are configured in <code>/etc/xinetd.d</code>, by default all are disabled.</li>
+        <li>To enable, edit the appropriate conf file, change <code>disable = yes</code> to <code>no</code>, then run <kbd>sudo serice xinetd reload</kbd>.</li>
+      </ul>
+
+      <h2>File System Hierarchy</h2>
+      <p>Non-exhaustive list of important directories in Ubuntu server:</p>
+
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Path</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th><code>/bin</code></th>
+            <td>Core binaries for both users and administrators.</td>
+          </tr>
+          <tr>
+            <th><code>/sbin</code></th>
+            <td>Core binaries for administrators only.</td>
+          </tr>
+          <tr>
+            <th><code>/lib</code></th>
+            <td>Core system libraries required for boot and to use the binaries under <code>/bin</code> and <code>/sbin</code>.</td>
+          </tr>
+          <tr>
+            <th><code>/usr</code></th>
+            <td>Short for UNIX System Resources. All non-critical binaries and libraries for the system. Could be mounted separately and read-only during normal operation, only write mounted for updating packages.</td>
+          </tr>
+          <tr>
+            <th><code>/usr/bin</code></th>
+            <td>Binaries that are not critical, for administrators and regular users.</td>
+          </tr>
+          <tr>
+            <th><code>/usr/sbin</code></th>
+            <td>Non-critical binaries for administrators.</td>
+          </tr>
+          <tr>
+            <th><code>/usr/lib</code></th>
+            <td>Libraries to support the binaries under <code>/usr/bin</code> and <code>/usr/sbin</code>.</td>
+          </tr>
+          <tr>
+            <th><code>/usr/local</code></th>
+            <td>Versions of /bin, /sbin, /lib intended for use by third party programs not provided by Ubuntu itself.</td>
+          </tr>
+          <tr>
+            <th><code>/opt</code></th>
+            <td>Same purpose as <code>/usr/local</code>&mdash;third party programs. Main difference is organizational: programs that install under <code>/opt</code> typically create their own subdirectory, with its own bin, sbin, lib directories. Heavy use of <code>/opt</code> means your <code>PATH</code> can grow quite large.</td>
+          </tr>
+          <tr>
+            <th><code>/boot</code></th>
+            <td>Kernel images, initramfs files, GRUB configuration files. Exists so those can potentially be on their own small mount point.</td>
+          </tr>
+          <tr>
+            <th><code>/etc</code></th>
+            <td>All configuration files for the system and services on the system. Should not contain any binaries or libraries. Back this up.</td>
+          </tr>
+          <tr>
+            <th><code>/var</code></th>
+            <td>Designed for files and directories that could be variable in size and change frequently. Can be mounted as a separate, very large partition on faster disks.</td>
+          </tr>
+          <tr>
+            <th><code>/var/log</code></th>
+            <td>All system logs.</td>
+          </tr>
+          <tr>
+            <th><code>/var/spool</code></th>
+            <td>Subdirectories with info such as user crontabs, printer spools, mail spools.</td>
+          </tr>
+          <tr>
+            <th><code>/var/www</code></th>
+            <td>If you run a web server, this is the default place for the docroot and cgi-bin directories.</td>
+          </tr>
+          <tr>
+            <th><code>/home</code></th>
+            <td>Home directories for all users. Can potentially grow quite large, may need to be mounted separately.</td>
+          </tr>
+          <tr>
+            <th><code>/root</code></th>
+            <td>Home directory for the root user.</td>
+          </tr>
+          <tr>
+            <th><code>/dev</code></th>
+            <td>Device files for the system. In modern systems these files are created on the fly by the <code>udev</code> program as devices or modules are added.</td>
+          </tr>
+          <tr>
+            <th><code>/mnt</code></th>
+            <td>Generic location for temporary disk mounts.</td>
+          </tr>
+          <tr>
+            <th><code>/media</code></th>
+            <td>Mount points for removable media.</td>
+          </tr>
+          <tr>
+            <th><code>/proc</code></th>
+            <td>Virtual file system in RAM, has live system information.</td>
+          </tr>
+          <tr>
+            <th><code>/sys</code></th>
+            <td>Virtual file system similar to <code>/proc</code>, with information about devices and drivers on the system.</td>
+          </tr>
+          <tr>
+            <th><code>/tmp</code></th>
+            <td>World writable temporary directory, wiped on system boot.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Networking</h2>
+
+      <h3>Network Configuration Files</h3>
+      <ul>
+        <li>Priamry network configuration file is <code>/etc/network/interfaces</code>, has conf for all networking devices on the system. Details via <kbd>man 5 interfaces</kbd>.</li>
+        <li>Two other core files for networking: <code>/etc/resolv.conf</code> and <code>/etc/hosts</code>. <code>resolv.conf</code> defines name servers to use, is managed by the <code>resolvconf</code> program. <code>hosts</code> can be used to override or supplement DNS routing.</li>
+      </ul>
+
+      <h3>Core Networking Programs</h3>
+      <ul>
+        <li>On boot, <code>/etc/init.d/networking</code> will read <code>/etc/network/interfaces</code> and bring up interfaces configured to load at startup.</li>
+        <li>If you want to manually bring up or down interfaces, you use the <code>ifup</code> and <code>ifdown</code> scripts, which will affect the interface you pass as an argument.</li>
+        <li>The <code>ifconfig</code> command is used to get network information. With no args, returns info on all interfaces.</li>
+        <li><code>route</code> will let you see and set network routes. With no args, it returns the complete routing table for your network, including the default route to your gateway.</li>
+        <li><code>nslookup</code> is a quick way to test what IP is associated with a name. <code>dig</code> is more full featured.</li>
+      </ul>
+    </section><!-- /chapter-02 -->
+
+    <section class="chapter" id="chapter-03">
+      <header>
+      <h1>Chapter 3: Package Management</h1>
+      </header>
+
+      <h2>Introduction to Package Management</h2>
+      <ul>
+        <li>Packages are an alternative to building from source, are typically RPM or Debian (DEB) format.</li>
+      </ul>
+
+      <h3>Background on Packages</h3>
+      <ul>
+        <li>Each flavor of GNU/Linux is a 'distribution'&mdash;a set of choices about what software to include with the Linux kernel.</li>
+        <li><q>The goal of all distributions is the automatic installation, configuration, removal, maintenance, and update of software&mdash;both through the creation of infrastructure for this purpose and in the creation of modified versions of the pre-existing software.</q></li>
+      </ul>
+
+      <h3>What Are Packages?</h3>
+      <ul>
+        <li>First step is obtaining the source code from an upstream author.</li>
+        <li>Packager's first addition is metadata, normally including
+          <ul>
+            <li>software name</li>
+            <li>upstream author, package creator info</li>
+            <li>software license</li>
+            <li>architecture(s) it'll run on</li>
+            <li>classification for browsing purposes</li>
+            <li>computer-parsable description</li>
+            <li>priority within overall ecosystem (essential, optional, etc.)</li>
+          </ul>
+        </li>
+        <li>Most important metadata added relates to documenting the relationship of the software in the package to other packages within the distribution:
+          <ul>
+            <li>software required for building</li>
+            <li>software required for installation and configuration</li>
+            <li>software required to run</li>
+            <li>conflicting software</li>
+            <li>software this package can replace</li>
+            <li>software that can enhance/improve this</li>
+          </ul>
+        </li>
+        <li>More recent goal of packages is to provide a structure around which package metadata can be localized for internationalization.</li>
+      </ul>
+
+      <h3>Basic Functions of Package Management</h3>
+      <ul>
+        <li><code>dpkg</code> is the primary historical tool for package management on Debian, though front ends to that (APT) have sprung up over time.</li>
+        <li><q>The first goal of packaging is automating the compilation of software.</q></li>
+        <li>DEB packages have two formats: source packages and binary packages.</li>
+        <li><q>Any number of binary packages can be created from a single source package.</q></li>
+        <li>When a binary package is installed:
+          <ul>
+            <li>Packages contents can be verified</li>
+            <li>Dependencies can be analyzed and installed.</li>
+            <li>User can be queried for configuration options.</li>
+            <li>Contents of the package are stored on the system.</li>
+            <li>Metadata is placed in a per-system database.</li>
+          </ul>
+        </li>
+        <li>Automatic upgrading can be done via dependency management.</li>
+      </ul>
+
+      <h3>Advanced Functions of Package Management Systems</h3>
+      <ul>
+        <li>APT is 'Advanced Package Tools,' created by Debian project to improve dependency management.</li>
+        <li>Ubuntu uses <code>apt-get</code>, <code>aptitude</code>, <code>dselect</code>, and the GUI Synaptic.</li>
+        <li>Advanced tools can track installation and upgrade status, search repositories of packages, remove packages safely.</li>
+      </ul>
+
+      <h2>Debian Packages</h2>
+      <ul>
+        <li>Ubuntu is based on Debian, and in many cases unmodified Debian packages can be installed on Ubuntu, and in almost all cases Debian source packages can be built on Ubuntu.</li>
+      </ul>
+
+      <h3>Source Packages</h3>
+      <ul>
+        <li>DEB source packages are usually three or two files, though some may have more.</li>
+        <li>DEB source packages can be 'native,' which is when there is no difference between the upstream version and the DEB package, or nonnative.</li>
+        <li>A source package will include a gzipped tar file of the source and a DSC file listing the contents of the package.</li>
+        <li>The DSC file will contain a crypto key, version of the source, name of the source, version of the package, name/email of the maintainer, architecture the package will run on, version of the policy/standards it was built against, dependencies, and a manifest of other files in the source package.</li>
+        <li>When unpacked and patched, DEB source packages unpack into a directory with a 'debian' subdirectory where changes to the source are made. Most important parts of that directory are the control file and the rules file.</li>
+        <li>Control file includes info that matches most of what's in the DSC file, and additional info on each binary package. Also has dependencies and conflicts.</li>
+        <li>The rules file is a makefile, has everything to create and build a package. In most cases the software will build and install into a series of subdirectories in the debian directory, and those files will be included as the package contents.</li>
+      </ul>
+
+      <h3>Binary Packages</h3>
+      <ul>
+        <li>Very simple in format, almost never manipulated by hand&mdash;just installed and removed.</li>
+        <li>Changes to a binary are made in the source and then new binary packages are built.</li>
+        <li>In Ubuntu/Debian, binary packages are one file in the ar format, with a control.tar.gz as well containing the package control info, and data.tar.gz with the file system archive.</li>
+      </ul>
+
+      <h2>Package Management in Ubuntu</h2>
+      <ul>
+        <li>Most admins use tools in the APT family for high level package management. <code>apt-get</code> is the original tool, <code>aptitude</code> is a frequently used alternative.</li>
+      </ul>
+
+      <h3>Staying Up-to-Date</h3>
+      <ul>
+        <li>There's a list of package repositories in <code>/etc/apt/sources.list</code>, which are places the package managers will look for updates to software.</li>
+        <li>Repos can be local, on removable media, or at a network location.</li>
+        <li>Update the package list with <kbd>apt-get update</kbd> or <kbd>aptitude update</kbd>.</li>
+        <li>Installing new package versions happens with <kbd>aptitude safe-upgrade</kbd>, which tries to upgrade all installed packages to their most recent versions.</li>
+        <li>APT can automatically download and upgrade packages, though this is subject to errors due to software or config status. Not recommended.</li>
+      </ul>
+
+      <h3>Searching and Browsing</h3>
+      <ul>
+        <li>Historically most searching was done with <code>dselect</code>.</li>
+        <li><code>apt-cache</code> provides statistics about and information on packages: <kbd>apt-cache search pager less</kbd></li>
+        <li>Can also display package information: <kbd>apt-cache show most</kbd>.</li>
+        <li>Called with no arguments, <code>aptitude</code> will give a Curses based text interface for browsing packages.</li>
+        <li>Also worth looking at <a href="http://packages.ubuntu.com" target="_blank">packages.ubuntu.com</a> for their search tools.</li>
+      </ul>
+
+      <h3>Installation and Removal</h3>
+      <ul>
+        <li>Unlike search, installation must be invoked with <code>sudo</code>.</li>
+        <li>Installing a specific package is <kbd>sudo aptitude install packagename</kbd></li>
+        <li>Removal is <kbd>sudo aptitude remove packagename</kbd>, though that will not remove installed dependencies. Unused packages can be removed with <kbd>apt-get autoremove</kbd></li>
+        <li>If you have already installed dependencies, you can call <code>dpkg</code> directly, since that's what the APT tools do behind the scenes after establishing dependencies and conflicts. Installing from a .deb file: <kbd>sudo dpkg -i most_5.0.0.0a-1_i386.deb</kbd></li>
+        <li><code>dpkg</code> will check dependencies and complain if they aren't met, but won't auto download or install them. Removal with <code>dpkg</code> is <kbd>dpkg -r packagename</kbd></li>
+      </ul>
+
+      <h3>Manipulating Installed Packages</h3>
+      <ul>
+        <li><code>dpkg</code> has a number of facilities for querying, searching, and manipulating installed packages.</li>
+        <li><kbd>dpkg -l</kbd> will show installation status, name, version, and description for all installed packages on the system. Providing a package name argument will narrow that down.</li>
+        <li><kbd>dpkg --contents somefile.deb</kbd> will show package contents</li>
+        <li><kbd>dpkg -L</kbd> will show the same information for installed packages.</li>
+        <li><q>If you have a particular file and you want to know which package "owns" it, you can use <kbd>dpkg -S</kbd> to query the database for that info. Example: <kbd>dpkg -S /usr/bin/most</kbd></li>
+      </ul>
+
+      <h3>Manipulating Repositories</h3>
+      <ul>
+        <li>APT only keeps up to date packages it already knows about, which means knowing about the repositories they come from. So to manage a package in APT, you need to add the repository that contains it to the system.</li>
+        <li>You do this by editing the <code>/etc/apt/sources.list</code>. Start of each line is <code>#</code> for comment, or <code>deb</code> or <code>deb-src</code>, which specifies whether a repo is a binary or source package repository.</li>
+        <li>Next item after the repository URL is the name of the distribution / distribution version, and the remaining parts are the list of components.</li>
+        <li>Example of adding a repository:
+          <ol>
+            <li>Add the repository locations to the sources.list file:
+<pre>
+deb http://ppa.launchpad.net/bzr/ubuntu lucid main
+deb-src http://ppa.launchpad.net/bzr/ubuntu lucid main
+</pre>
+            </li>
+            <li>Update. You get an error that you don't have the right GPG key to verify the packages in the repository you've added. Download the key file from a trusted source and save it to a file <code>/tmp/keyfile</code></li>
+            <li>Add the keyfile to the package manager's key database:
+<pre>
+apt-key add - &lt; /tmp/keyfile
+OK
+</pre>
+            </li>
+            <li>Update again&mdash;the repo should be successfully used.</li>
+          </ol>
+        </li>
+      </ul>
+
+      <h3>Ubuntu Default Repositories</h3>
+      <ul>
+        <li>Software packages for Ubuntu/Debian are separated into components:
+          <ul>
+            <li><strong>Main</strong> &mdash; Free software, redistributable, supported by the Ubuntu team. Will come with security updates and technical support.</li>
+            <li><strong>Restricted</strong> &mdash; Software very commonly used and supported by the Ubuntu team even though it is not available under a completely free license.</li>
+            <li><strong>Universe</strong> &mdash; Other open source and less-open licensed software. Should install and work, but there's no guarantee and no security fixes or support.</li>
+            <li><strong>Multiverse</strong> &mdash; Non-free software, unsupported. Use at your own risk.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>Using Other Repositories</h3>
+      <ul>
+        <li>The 'backports' repo is useful: has versions of software from the development version of Ubuntu that has been backported to install cleanly on stable Ubuntu. Can be added by installing a DEB package with <code>dpkg</code> or by editing <code>sources.list</code>.</li>
+        <li>Note that APT will try to install the latest version of everything by default, so adding the backports repo may open you to a number of versions newer than appear in the stable repo.</li>
+        <li>General solution to that problem is 'pinning' or 'apt pinning'. Can be quite complicated, full scope is outside this chapter.</li>
+        <li>Check the <code>apt_preferences</code> man page for info about pinning.</li>
+      </ul>
+
+      <h3>Upgrading a Whole System</h3>
+      <ul>
+        <li>In current releases of Ubuntu, the correct way to upgrade systems is with the <code>do-release-upgrade</code> program, which automates the upgrade-repo-then-upgrade-packages method.</li>
+      </ul>
+
+      <h3>Mirroring a System</h3>
+      <ul>
+        <li>Task is to mirror installed software from one machine to another.</li>
+        <li>Use <code>dpkg</code> to list all packages on the first machine: <kbd>dpkg --get-selections &gt; package_list</kbd>, then on the second machine load it with <kbd>dpkg --set-selections &lt; package_list</kbd>, and install with <kbd>apt-get dselect-upgrade</kbd>.</li>
+      </ul>
+
+      <h2>Making Your Own Packages</h2>
+
+      <h3>Rebuilding Packages</h3>
+
+      <h3>New Upstream Versions</h3>
+
+      <h3>Building Packages from Scratch</h3>
+
+      <h3>Hosting Your Own Packages</h3>
+
+    </section><!-- /chapter-03 -->
+
+    <section class="chapter" id="chapter-04">
+      <header>
+        <h1>Chapter 4: Automated Ubuntu Installs</h1>
+      </header>
+
+      <h2>Preseeding</h2>
+
+      <h3>Basic Preseed Configuration for CD-ROM</h3>
+
+      <h3>Networking Options</h3>
+
+      <h3>Partitioning</h3>
+
+      <h4>Expert Partition Recipes</h4>
+
+      <h4>LVM</h4>
+
+      <h3>Packages and Mirrors</h3>
+
+      <h4>Custom Package Repositories</h4>
+
+      <h3>User Settings</h3>
+
+      <h3>GRUB</h3>
+
+      <h3>Miscellaenous</h3>
+
+      <h3>Dynamic Preseeding</h3>
+
+      <h4>Chain Loading Preseed Files</h4>
+
+      <h4>Run Custom Commands During the Install</h4>
+
+
+      <h2>Kickstart</h2>
+
+      <h3>Basic Kickstart Configuration for CD-ROM</h3>
+
+      <h3>Changes and Limitations in Ubuntu Kickstart</h3>
+
+      <h4>New Options</h4>
+
+      <h4>Limitations</h4>
+
+      <h3>Run Custom Commands During the Install</h3>
+
+
+      <h2>PXE Boot Server Deployment</h2>
+
+      <h3>DHCP</h3>
+
+      <h3>TFTPD</h3>
+
+      <h3>Configure Pxelinux</h3>
+
+      <h3>Web</h3>
+
+      <h3>Test Your PXE Server</h3>
+
+
+      <h2>Customize Automated Installs</h2>
+
+      <h3>Multiple Kickstart Files</h3>
+
+      <h3>Boot Cheat Codes</h3>
+
+      <h3>DHCP Selection</h3>
+
+      <h3>DHCP Selection by Subnet</h3>
+
+    </section><!-- /chapter-04 -->
+
+    <section class="chapter" id="chapter-05">
+      <header>
+        <h1>Chapter 5: Guide to Common Ubuntu Servers</h1>
+      </header>
+
+    </section><!-- /chapter-05 -->
+  </section>
+</article>
+</div><!-- /.container -->
+</body>
+</html>

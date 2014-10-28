@@ -1,0 +1,5 @@
+# Notes on: Expert Python Programming by Tarek Ziadé, Published by Packt Publishing, 2008
+
+## Chapter 5: Writing a package
+
+### A Common Pattern for All Packages

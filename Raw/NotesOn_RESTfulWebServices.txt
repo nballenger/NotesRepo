@@ -1900,3 +1900,462 @@ Resource Design
       resource, so the requests aren't safe or idempotent. So you have to use POST,
       which means you need to expose different resources for async stuff than
       for synchronous operations.
+
+  Batch Operations
+    * Some ops, like GET on a list, pull back abbreviated versions of multiple reps
+    * 'Factory' resources can be the target of batch POST to create sub resources
+    * What about multiple delete? Expose a resource for every set of resources,
+      like http://www.example.com/sets/resource1;subdir/resource2
+    * Send a DELETE to that to delete both resources, or a PUT with two 
+      representations to create/update multiple resources
+    * Response codes for batch ops:
+      - create a series of async jobs, return 202, tell client how to see jobs
+      - use a WebDAV extension, 207 Multi-Status, which tells the client to
+        look in teh entity-body for a list of status codes. Entity-body is an XML
+        doc telling client which ops succeeded and which failed.
+
+  Transactions
+    * Some services expose operations that span multiple resources. Example:
+      operation that transfers money from a checking to savings account--in an
+      RDBMS you'd use a transaction, what's the ROA service equivalent?
+    * Consider exposing the transactions as resources.
+    * Example:
+      - send a POST to a transaction factory resource at 
+        POST /transactions/account-transfer
+      - That returns the URI of the new transaction with 201:
+        201 Created: /transactions/account-transfer/11a5
+      - PUT the first part of the transaction, the lower checking balance:
+        PUT /transactions/account-transfer/11a5/accounts/checking/11
+        balance=150
+      - PUT the second part of the transaction:
+        PUT /transaction/account-transfer/11a5/accounts/savings/55
+        balance=250
+      - Commit the transaction:
+        PUT /transactions/account-transfer/11a5
+        committed=true
+    * Problem with transactions in REST is that every HTTP request is supposed to
+      be a self-contained operation that operates on one resource.
+
+  When In Doubt, Make It a Resource
+    * "If there's a concept that's causing you design troubles, you can usually
+      fit it into the ROA by exposing it as a new kind of resource.
+
+URI Design
+  * URIs should be meaningful and well structured; clients should ideally be able
+    to construct the URI for the resource they want to access.
+  * Use path variables to separate elements of a hierarchy, or paths through a 
+    directed graph.
+  * Use punctuation to separate multiple pieces of data at the same hierarchy level
+  * Use commas when order matters, semicolons when it does not.
+  * Use query variables to suggest arguments being given to an algorithm, or if
+    the other two techniques have failed.
+  * URIs should designate resources, not operations on resources.
+
+Outgoing Representations
+  * Use HTTP codes to convey how the client should regard the document served.
+  * Content-Type header says what format the document is in.
+  * "Representations should be human readable, but computer-oriented."
+  * Representations should be useful--they should expose interesting data.
+  * "A single representation should contain all relevant information necessary
+    to fulfill a need."
+  * When in doubt, expose all the state you have for a resource.
+
+Incoming Representations
+  * Two main kinds: key-value pairs, or aggregates.
+  * A client should be able to fetch a representation, modify it, PUT it back
+
+Service Versioning
+  * Simplest way to include versioning information is via resource URIs:
+
+    http://www.example.com/api/v1/users/sam
+
+  * Make it the first path variable, or incorporate it into the hostname:
+    v1.service.example.com.
+
+Permanent URIs Versus Readable URIs
+  * Should be an intuitive correspondence between a URI and its resource
+  * Jakob Nielsen argues for meaningful URIs (which may change to represent state),
+    while Tim Berners-Lee wants URIs to be opaque and never change.
+  * Best argument for URI opacity is that a non-opaque URI incorporates resource
+    state that may change.
+  * Author's answer: "it depends." He comes down on the side of URI as UI.
+
+Standard Features of HTTP
+  Authentication and Authorization
+    * Both happen via headers, which are designed to be extensible
+
+    Basic authentication
+      * Simple challenge/response dealt with at the time you access the resource.
+      * If you don't include credentials with your request, you get a 401, which
+        will include a WWW-Authenticate header telling you the auth type and
+        the realm to authenticate to.
+      * Client needs, for a realm, a username and password, combined and encoded
+        as base 64.
+      * Ruby example:
+
+        #!/usr/bin/ruby
+        # calculate-base64.rb
+        USER="Alibaba"
+        PASSWORD="open sesame"
+
+        require 'base64'
+
+        puts Base64.encode64("#{USER}:#{PASSWORD}")
+        # outputs QWxpYmFiYTpvcGVuIHNlc2FtZQ==
+
+      * Sending the encoded header:
+
+        GET /resource.html HTTP/1.1
+        Host: www.example.com
+        Authorization: Basic QWxpYmFiYTpvcGVuIHNlc2FtZQ==
+
+      * Basic auth sends the encoded text in the clear, so is not secure unless over
+        HTTPS, which will encrypt all communications between client and server.
+
+    Digest authentication
+      * Secure even over HTTP, follows basic challenge/response pattern.
+      * Challenge:
+
+        401 Unauthorized
+        WWW-Authenticate: Digest realm="My Private Data",
+          qop="auth",
+          nonce="0cc175b9c0f1b6a831c399e269772661",
+          opaque="92eb5ffee6ae2fec3ad71c777531578f"
+
+      * nonce is a random, request specific string that the client will use to
+        prove the client knows the password without actually sending the password
+      * Client generates a client-side nonce and sequence number, makes a digest
+        string out of a huge amount of info: HTTP method, path, four pieces of
+        challenge info, username, password, client-side nonce, sequence number.
+      * Ruby digest calculation:
+
+        #!/usr/bin/ruby
+        # calculate-http-digest.rb
+        require 'md5'
+
+        # Information from the original request
+        METHOD="GET"
+        PATH="/resource.html"
+
+        # Information from the challenge
+        REALM="My Private Data"
+        NONCE="0cc175b9c0f1b6a831c399e269772661"
+        OPAQUE="92eb5ffee6ae2fec3ad71c777531578f"
+        QOP="auth"
+
+        # Information calculated by or known to the client
+        NC="00000001"
+        CNONCE="4a8a08f09d37b73795649038408b5f33"
+        USER="Alibaba"
+        PASSWORD="open sesame"
+
+        # Calculate the final digest in three steps
+        ha1 = MD5::hexdigest("#{USER}:#{REALM}:#{PASSWORD}")
+        ha2 = MD5::hexdigest("#{METHOD}:#{PATH}")
+        ha3 = MD5::hexdigest("#{ha1}:#{NONCE}:#{NC}:#{CNONCE}:#{QOP}:#{ha2}")
+
+        puts ha3
+
+      * Once the digest is calculated, client resends the requests with all the
+        constants except the password, as well as the output of the digest calc.
+      * Each request is actually two requests: one to fail and get the nonce
+        from the challenge, the second to succeed.
+      * You can do qop=auth-int optionally, which will cause the entity-body
+        to need to be part of the digest calculation to prevent man in the middle.
+
+    WSSE username token
+      * You can also define your own standards for what goes into the 
+        WWW-Authenticate and Authorization headers if Basic and Digest don't work
+        for your purposes.
+      * WSSE is a port of WS-Security UsernameToken to HTTP (instead of as part
+        of the SOAP envelope).
+      * Auth type is WSSE, works basically like digest with different hashing
+
+  Compression
+    * Use the Accept-Encoding header to indicate a request will take compressed
+      entity-body, like Accept-Encoding: gzip,compress
+
+  Conditional GET
+    * Only make a request if the content has changed since last GET
+    * Ruby script to make a normal request and then a conditonal one:
+
+      #!/usr/bin/ruby
+      # fetch-oreilly-conditional.rb
+
+      require 'rubygems'
+      require 'rest-open-uri'
+      uri = 'http://www.oreilly.com'
+
+      # Make an HTTP request, describe response
+      def request(uri, *args)
+        begin
+          response = open(uri, *args)
+        rescue OpenURI::HTTPError => e
+          response = e.io
+        end
+
+        puts " Status code: #{response.status.inspect}"
+        puts " Representation size: #{response.size}"
+        last_modified = response.meta['last-modified']
+        etag = response.meta['etag']
+        puts " Last-Modified: #{last_modified}"
+        puts " Etag: #{etag}"
+        return last_modified, etag
+      end
+
+      puts "First request:"
+      last_modified, etag = request(uri)
+
+      puts "Second request:"
+      request(uri, 'If-Modified-Since' => last_modified, 'If-None-Match' => etag)
+
+    * Output will look like:
+
+      First request:
+        Status code: ["200", "OK"]
+        Representation size: 41123
+        Last-Modified: Sun, 21 Jan 2007 09:35:19 GMT
+        Etag: "7359b7-a37c-45b333d7"
+
+      Second request:
+        Status code: ["304", "Not Modified"]
+        Representation size: 0
+        Last-Modified: 
+        Etag: "7359b7-a0a3-45b5d90e"
+
+  Caching
+    * Client may be able to return cached versions of representations.
+    * Server may send an Expires header, giving end time for caching, or a
+      Cache-Control header telling how many seconds to cache for.
+    * Sending Cache-Control: no cache will tell client not to cache resource.
+    
+    Default Caching Rules
+      * Client may cache successful GET and HEAD requests (200, 301, 410, etc)
+      * If the URI contains a query string, it will not auto-cache.
+      * If a client does a PUT, POST, or DELETE to a URI, all caches for that URI
+        immediately become stale.
+      * Same is true for any URI mentioned in the Location or Content-Location of
+        a response to a PUT, POST, or DELETE.
+      * If none of those rules apply and server does not specify cache length,
+        decision defaults to the client side.
+      * "Most realistically, a client-side cache should consider a response to
+        be stale after some time between an hour and a day."
+
+  Look-Before-You-Leap Requests
+    * There's a request type that can save the client from sending representations
+      to the server unnecessarily.
+    * Client sends a PUT or POST normally, omitting the entity-body and setting the
+      Expect request header to the string "100-continue":
+
+        PUT /filestore/myfile.txt HTTP/1.1
+        Host: example.com
+        Content-length: 534388000
+        Expect: 100-continue
+
+    * If the server says no, it sends 417 Expectation Failed and you don't
+      run the request with the full entity-body.
+
+  Partial GET
+    * Lets you fetch a subset of a representation, resume interrupted downloads.
+    * Two partial GET requests to the same URI:
+
+      #!/usr/bin/ruby
+      # fetch-oreilly-partial.rb
+
+      require 'rubygems'
+      require 'rest-open-uri'
+      uri = 'http://www.oreilly.com/'
+
+      # Make partial request, describe response
+      def partial_request(uri, range)
+        begin
+          response = open(uri, 'Range' => range)
+        rescue OpenURI::HTTPError => e
+          response = e.io
+        end
+
+        puts " Status code: #{response.status.inspect}"
+        puts " Representation size: #{response.size}"
+        puts " Content Range: #{response.meta['content-range']}"
+        puts " Etag: #{response.meta['etag']}"
+      end
+
+      puts "First request:"
+      partial_request(uri, "bytes=10-20")
+
+      puts "Second request:"
+      partial_request(uri, "bytes=40000-")
+
+Faking PUT and DELETE
+  * Recommends a tunneling technique of putting the 'real' method in query string
+  * For instance, POST to /my/resource?_method=delete, or include _method=delete
+    in the entity-body.
+  * Alternately, put the real method in the X-HTTP-Method-Override header.
+  * Recommends query string over header, as clients that don't support PUT/DELETE
+    are unlikely to support custom HTTP request headers either.
+
+The Trouble with Cookies
+  * Cookies violate statelessness.
+  * What if you were to serialize a session hash and send it as a cookie? That
+    can be RESTful, but generally isn't.
+  * Clients can typically choose which cookies to accept, and allow destruction of
+    cookies arbitrarily, but generally cannot modify a server's cookies.
+  * "Cookies are almost always a way for the server to force the client to do
+    what it wants, without explaining why. It's more RESTful for the server to guide
+    the client to new application states using hypermedia links and forms."
+  * "The only RESTful use of cookies is one where the client is in charge of
+    the cookie value."
+
+Why Should a User Trust the HTTP Client?
+  * Basic authentication asks the user to give up a lot of trust to the client.
+  * Most big services have user-client auth systems where the user delegates the
+    ability to make web service calls as herself. If the client abuses that ability,
+    its authorization token can be revoked without the user changing their password.
+
+
+Chapter 9: The Building Blocks of Services
+  * Services built on HTTP, URIs, XML
+  * Lots of stuff on top of those.
+
+Representation Formats
+  * Choose based on what your client wants and can handle.
+
+  XHTML
+    - Skipping this section as XHTML is deprecated in favor of HTML5.
+
+  XHTML with Microformats
+    - Same deal, using microformats works in html though, depending on the format
+
+  Atom
+    * XML vocabulary for describing lists of timestamped entries
+    * Gives semantics for publishing: authors, contributors, etc.
+
+  SVG
+    * Useful for vector stuff.
+
+  Form-Encoded Key-Value Pairs
+    * Mostly used in client representations to the server.
+
+  JSON
+    * Advantages within an AJAX context.
+
+  RDF and RDFa
+    * More abstract URI schemas than http, isbn, urn, etc.
+
+  Framework-Specific Serialization Formats
+    * Informal XML vocabularies tied to a framework.
+
+  Ad Hoc XHTML
+    * Whatever the hell you make up.
+
+  Other XML Standards and Ad Hoc Vocabularies
+    * There's lots to choose from.
+
+  Encoding Issues
+    * Default for HTML on the web is ISO-8859-1
+    * Unicode is a great bridge for different character sets--use it.
+    * UTF-8 unless you need east asian characters, then 16
+
+    XML and HTTP: Battle of the Encodings
+      * When serving XML the server can give the Content-Type response header
+        with an option charset parameter that may clash with the xml type:
+
+        Content-Type: application/xml; charset="ebcdic-fr-297+euro"
+
+        <?xml version="1.0" encoding="UTF-8"?>
+
+      * HTTP character encoding will take precedence over that of the document.
+      * Try not to send an encoding as part of Content-Type.
+
+    The Character encoding of a JSON document
+      * JSON is structured plain text.
+      * Should be encoded as UTF, 8 or 16 with byte order mark.
+      * ASCII will also work, because it's a subset of UTF-8
+      * First four bytes will show plain text encoding, so no need to set it.
+
+Prepackaged Control Flows
+  * "[These are] patterns that bring together advice about resource design, 
+    representation formats, and response codes to help you design real-world
+    services."
+
+  General Rules
+    * Should be able to implement these rules as common code running before 
+      normal request handling.
+    * If the client tries to do something without providing the correct auth,
+      send 401 Unauthorized with instructions for formatting Authorization header.
+    * If the cleint tries to access a URI without any corresponding resource,
+      send 404 Not Found.
+    * If client tries to use part of the uniform interface that a resource does
+      not support, send 405 Method Not Allowed.
+
+  Database Backed Control Flow
+    * If a request contains a nonsensical representation, response is usually
+      415 Unsupported Media Type or 400 Bad Request.
+    * With that in mind, this is a control flow for the uniform interface in a
+      database-backed application.
+
+    GET
+      * If the resource can be identified, send a representation along with a
+        response code of 200 OK. Make sure to support conditional GET.
+
+    PUT
+      * If the resource exists, parse the representation and turn it into a
+        series of changes to the state of the resource.
+      * If the changes would leave the resource incomplete/inconsistent, return
+        400 Bad Request.
+      * If the changes would cause the resource state to conflict with another
+        resource, send 409 Conflict.
+      * If there are no problems with the proposed changes, apply them to the
+        existing resource.
+      * If changes mean the resource is now available at a different URI, send 
+        301 Moved Permanently and include new URI in Location header.
+      * Requests to old URIs should give 301, 404, or 410 Gone.
+
+    POST for creating a new resource
+      * Parse the representation. If it doesn't make sense, send 400. Otherwise
+        modify resource state and send 200.
+
+    DELETE
+      * Send 200.
+
+  The Atom Publishing Protocol
+    * XML vocabulary particularly suited to online publishing.
+
+  GData
+    * Extension to Atom Publishing Protocol, adds new kind of resource and an
+      authorization mechanism.
+
+  POST Once Exactly
+    * POST is not safe or idempotent.
+    * POST Once Exactly (POE) makes POST idempotent, by making a resource only
+      respond to POST once in its entire lifetime. All subsequent POST requests
+      will get 405 Method Not Allowed.
+    * These are one-off resources exposed to handle a single POST.
+
+Hypermedia Technologies
+  * Two kinds: links and forms
+  * Two kinds of forms: application forms that show the client how to manipulate
+    application state, and resource forms that show a client how to format a
+    representation that modifies the state of a resource.
+  * Application forms are basically link formatters that may have more than one
+    destination possible as their output.
+
+  URI Templates
+    * Moved up to a Proposed Standard in RFC 6570
+    * Makes simple resource forms look like links.
+    * Placeholders are brace delimited, gives you a way to fill in blanks:
+
+      https://s3.amazonaws.com/{name-of-bucket}/{name-of-object}
+
+    * "URI Templates are not a data format, but any data format can improve its
+      hypermedia capabilities by allowing them."
+
+  XHTML 4
+    * Has bunch of hypermedia features, is extensible.
+
+  XHTML 5
+    * Got pushed into HTML5, doesn't exist as a separate thing anymore.
+
+  WADL
+    * XML vocabulary for expressing behavior of HTTP resources.
+    * Can provide a WADL file that describes every resource exposed by your service.
