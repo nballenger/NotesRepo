@@ -4,6 +4,27 @@ _By Erik Westra, Packt Publishing 2013_
 
 ## Executive Summary
 
+### Core Mapping and GIS Concepts
+
+There are two primary problems in geo-spatial work of any kind: 
+
+* Encoding geodetic (precise, physical) locations as internally coherent datasets
+* Visualizing those datasets as useful information
+
+#### Encoding Geodetic Points with Latitude/Longitude
+
+Any arbitrary point on the oblate spheroid of the Earth can be encoded as a latitude and longitude pair. Both numbers are expressed either as degrees-minutes-seconds, or decimal degrees.
+
+**Understanding Latitude and Longitude**:
+
+Imagine the Earth is a giant, hollow, translucent sphere. You are floating near its center. No, hold up, floating's no good. Ok, you're standing on a flat, translucent plane near the center of the big hollow sphere. Much better. The flat plane is at the level of the equator, so you've got a hemisphere above you and a hemisphere below you.
+
+Looking toward the absolute center of the sphere, you see a big telescope. It's mounted such that it can be cranked around in a circle to point anywhere along the ring of the equator. Also, a separate crank lets it be pointed vertically anywhere from straight up to straight down. In combination the cranks let you look from the center of the Earth at any point on its surface.
+
+
+
+#### Visualizing Geospatial Datasets via Projections and Datums
+
 ## Chapter Summaries
 
 ### Preface
@@ -617,3 +638,442 @@ mapnik.render_to_file(map, "map.png", "png")
     * It's a shapefile with a single layer, one feature per country
     * Has some useful attributes per feature like name, ISO, FIPS, UN codes, etc
     * You can get it from [http://thematicmapping.org/downloads/world_borders.php](http://thematicmapping.org/downloads/world_borders.php)
+
+
+#### Sources of geospatial data in raster format
+
+* Stuff in raster: satellite images, DEMs, shaded relief images
+* **Landsat**
+    * Images from dedicated satellites, dating back to 1972. Has BW, RGB, Infrared, and Thermal
+    * Typically 30m/pixel, BW from Landsat 7 are 15m/pixel
+    * Typically available as GeoTIFF, which is geospatially tagged TIFF
+    * Separate bands are stored in separate files because it's satellite data.
+    * Landsat 7 has red, green, blue, three different infrared, thermal, and high resolution black and white bands
+    * You combine the files using GDAL
+    * Raw data is distorted by earth's curvature, elevation, etc, so images have to be orthorectified prior to use (most images are downloadable as already orthorectified).
+    * Easiest way to get it is via University of Maryland's Global Land Cover Facility website
+    * That's at [http://glcf.umiacs.umd.edu/data/landsat](http://glcf.umiacs.umd.edu/data/landsat)
+    * They have an FTP site, and tools for selecting areas by "path and row number"
+    * Directory and file names include the world reference system (WRS) in use, the path and row number, the satellite number, date, and the band number
+    * ``p091r089_7t20001123_z55_nn10.tif.gz`` refers to path ``091``, row ``089``, ``7`` is the satellite number, ``20001123`` is the date, and ``nn10`` says the file is for band 1.
+* **Natural Earth**
+    * At [http://www.naturalearthdata.com](http://www.naturalearthdata.com)
+    * Has five types of raster map at 1:10,000,000 and 1:50,000,000 scales:
+        * Cross blended hypsometric tints &mdash; color by elevation/climate
+        * natural earth 1 &mdash; backdrops for other info, lightly shaded
+        * natural earth 2
+        * ocean bottom &mdash; shaed relief + depth-based coloring
+        * shaded relief &mdash; grayscale shades based on elevation data
+    * Data is in TIFF, except for bathymetry, which is in adobe photoshop
+    * all in lat/long projection, WGS84 datum
+    * Once you get it, you can open the TIFF via ``gdal_translate``, and the photoshop files with GIMP
+* **Global Land One-kilometer Base Elevation (GLOBE)**
+    * high quality, medium resolution DEM data for the entire world
+    * Data is a raster of 32-bit signed integers representing height above/below sea level in meters.
+    * Each pixel represents a square 30 arc-seconds of longitude wide by 30 arc-seconds of latitude high.
+    * Pixels are roughly a kilometer square.
+    * Raw globe data is just a list of integers in big-endian format, cells read left to right and then top to bottom, from x=0,y=0 to x=10800,y=6000. Can that be right? That's their example, but that's in no way a square.
+    * You can get it from [http://www.ngdc.noaa.gov/mgg/topo/globe.html](http://www.ngdc.noaa.gov/mgg/topo/globe.html)
+    * If you download a premade tile, you need the header (``.hdr``) file so it can be georeferenced and processed by GDAL. Make sure to export any custom areas in ESRI ArcView format so you get the appropriate header file for GDAL.
+    * If you need header files for premade tiles, you can get them from [http://www.ngdc.noaa.gov/mgg/topo/elev/esri/hdr](http://www.ngdc.noaa.gov/mgg/topo/elev/esri/hdr)
+    * Put the raw DEM file in the same directory as the header file and open with ``dataset = osgeo.gdal.Open("j10g.bil")``
+* **National Elevation Dataset (NED)**
+    * High res dem dataset from USGS, for continental US, alaska, hawaii, and US territories
+    * Most data at 30m/pixel or 10m/pixel, some areas at 3m/pixel
+    * Alaska generally at 60m/pixel
+    * Data is in GeoTIFF, ArcGRID, etc, can be processed with GDAL
+    * You can get it from [http://ned.usgs.gov](http://ned.usgs.gov) (descriptions) and [http://viewer.nationalmap.gov/viewer/](http://viewer.nationalmap.gov/viewer/) (downloading/viewing)
+    * You get a compressed zip via an email link.
+    * If you get GeoTIFF, you can open it in GDAL like any raster data
+    * If you get DEM data, you may want to look at the ``gdaldem`` utility that makes it easy to view and manipulate DEM raster data.
+
+
+#### Sources of other types of geospatial data
+
+* **GEOnet Names Server**
+    * Large database of place names; official repo of non-American place names
+    * Gives lat/long and codes for place type (populated place, administrative district, natural feature, etc), elevation, and code for name type (official, conventional, historical, etc)
+    * Data is a tab delimited text file with a header row
+    * You can get it info on field codes from [http://earth-info.nga.mil/gns/html/gis_countryfiles.html](http://earth-info.nga.mil/gns/html/gis_countryfiles.html)
+    * And the actual dataset at [http://earth-info.nga.mil/gns/html/namefiles.htm](http://earth-info.nga.mil/gns/html/namefiles.htm)
+* **Geographic Names Information System (GNIS)**
+    * US Equivalent of GEOnet Names Server
+    * Comes as pipe delimited text files with a header line
+    * You can get it at [http://geonames.usgs.gov/domestic](http://geonames.usgs.gov/domestic)
+
+#### Choosing your geospatial data source
+
+* Simple base maps == World Borders Dataset
+* Shaded relief maps == GLOBE or NED data processed with ``gdaldem``; Natural Earth images
+* Street map == OpenStreetMap
+* City outlines == TIGER; Natural Earth urban areas
+* Detailed country outlines == GSHHS level 1
+* Photorealistic Earth images == Landsat
+* City and place names == GNIS or GEOnet names server
+
+
+### Chapter 5: Working with Geospatial Data in Python
+
+* Chapter covers:
+    * Reading / writing vector and raster data
+    * Changing datums and projections used by data
+    * Representing and storing geospatial data
+    * Doing geospatial calculations on points/lines/polygons
+    * Converting/standardizing units of geometry and distance
+    
+#### Pre-requisites
+
+* GDAL/OGR 1.9+
+* pyproj 1.9.2+
+* Shapely 1.2+
+
+#### Reading and Writing Geospatial Data
+
+* **Task &mdash; calculate the bounding box for each country in the world**
+    * Get the World Borders Dataset
+    * Use python to calculate the bounding box by finding min/max lat/long:
+
+```Python
+#!/usr/bin/env python2.7
+
+# calcBoundingBoxes.py
+
+from osgeo import ogr
+
+shapefile = ogr.Open("../shared_data/world_borders/TM_WORLD_BORDERS-0.3.shp")
+layer = shapefile.GetLayer(0)
+
+countries = [] # List of tuples in format
+               # (code, name, minLat, maxLat, minLong, maxLong)
+
+for i in range(layer.GetFeatureCount()):
+    feature = layer.GetFeature(i)
+    countryCode = feature.GetField("ISO3")
+    countryName = feature.GetField("NAME")
+    geometry = feature.GetGeometryRef()
+    minLong, maxLong, minLat, maxLat = geometry.GetEnvelope()
+
+    countries.append((countryName, countryCode, minLat, 
+                      maxLat, minLong, maxLong))
+
+countries.sort()
+
+for name, code, minLast, maxLat, minLong, maxLong in countries:
+    print "%s (%s) lat=%0.4f..%0.4f, long=%0.4f..%0.4f" % \
+        (name, code, minLat, maxLat, minLong, maxLong)
+```
+
+* **Task &mdash; save country bounding boxes into a shapefile**
+
+```Python
+#!/usr/bin/env python2.7
+
+# boundingBoxesToShapefile.py
+
+import os, os.path, shutil
+
+from osgeo import ogr
+from osgeo import osr
+
+# Open the source shapefile
+
+srcFile = ogr.Open("../shared_data/world_borders/TM_WORLD_BORDERS-0.3.shp")
+srcLayer = srcFile.GetLayer(0)
+
+# Open output shapefile
+
+if os.path.exists("bounding-boxes"):
+    shutil.rmtree("bounding-boxes")
+os.mkdir("bounding-boxes")
+
+spatialReference = osr.SpatialReference()
+spatialReference.SetWellKnownGeogCS('WGS84')
+
+driver = ogr.GetDriverByName("ESRI Shapefile")
+dstPath = os.path.join("bounding-boxes", "boundingBoxes.shp")
+dstFile = driver.CreateDataSource(dstPath)
+dstLayer = dstFile.CreateLayer("layer", spatialReference)
+
+fieldDef = ogr.FieldDefn("COUNTRY", ogr.OFTString)
+fieldDef.SetWidth(50)
+dstLayer.CreateField(fieldDef)
+
+fieldDef = ogr.FieldDefn("CODE", ogr.OFTString)
+fieldDef.SetWidth(3)
+dstLayer.CreateField(fieldDef)
+
+# Read country features from source shapefile
+
+for i in range(srcLayer.GetFeatureCount()):
+    feature = srcLayer.GetFeature(i)
+    countryCode = feature.GetField("ISO3")
+    countryName = feature.GetField("NAME")
+    geometry = feature.GetGeometryRef()
+    minLong, maxLong, minLat, maxLat = geometry.GetEnvelope()
+
+    # Save bounding box as feature in output shapefile
+
+    linearRing = ogr.Geometry(ogr.wkbLinearRing)
+    linearRing.AddPoint(minLong, minLat)
+    linearRing.AddPoint(maxLong, minLat)
+    linearRing.AddPoint(maxLong, maxLat)
+    linearRing.AddPoint(minLong, maxLat)
+    linearRing.AddPoint(minLong, minLat)
+
+    polygon = ogr.Geometry(ogr.wkbPolygon)
+    polygon.AddGeometry(linearRing)
+
+    feature = ogr.Feature(dstLayer.GetLayerDefn())
+    feature.SetGeometry(polygon)
+    feature.SetField("COUNTRY", countryName)
+    feature.SetField("CODE", countryCode)
+    dstLayer.CreateFeature(feature)
+    feature.Destroy()
+
+srcFile.Destroy()
+dstFile.Destroy()
+```
+
+* **Task &mdash; analyze height data using a digital elevation map**
+    * Going to calculate a height histogram for New Zealand
+    * Get the DEM data from GLOBE
+```Python
+
+```
+
+### Chapter 6: GIS in the Database
+
+* Chapter covers:
+    * Spatially enabled databases, spatial indexes
+    * summary of open source spatial databases
+    * best practices, and working with geo dbs in python
+
+#### Spatially-Enabled Databases
+
+* Spatially-enabled databases are directly aware of spatial concepts
+* They can perform operations like:
+    * Storing spatial datatypes with their corresponding geometry
+    * Running spatial queries like radius search
+    * Joining data on spatial characteristics
+    * Executing spatial functions like intersection
+
+#### Spatial Indexes
+
+* Spatial indexes are created to speed up geometry based searching
+* They're defined the same way as normal indexes, but with the SPATIAL keyword for index type
+* All three open source databases with spatial indexes use R-Tree data structures to do it
+* PostGIS implements R-Trees using a Generalized Search Tree (GiST) index
+* R-Tree index details:
+    * They use a minimum bounding rectangle for each geometry
+    * The bounding boxes are grouped into a nested hierarchy based on proximity
+    * The hierarchy is then represented in a tree data structure
+    * That allows fast scanning to find a particular geometry or to compare positions/sizes of various geometries
+    * Since every geometry is reduced to a bounding box, R-Trees can support any geometry, not just polygons
+
+#### Open Source Spatially-Enabled Databases
+
+* **MySQL**
+    * Has some limited support for spatial features
+    * Must use MyISAM storage engine to use a spatial index
+    * Has support for spatial datatypes and functions
+    * Not always performant, has limited list of spatial functions
+* **PostGIS**
+    * Extension to PostgreSQL that lets you store geospatial data
+    * Install postgres, then postgis extension, then psycopg db adapter
+    * Create a role, create a database owned by that role
+    * Within that database schema, enable the extension with ``CREATE EXTENSION postgis;``
+    * 
+    * Example of using it from Python:
+
+```Python
+import psycopg2
+mydb = 'databaseName'
+myuser = 'databaseUser'
+
+conn = psycopg2.connect("dbname=mydb, user=myuser")
+c = conn.cursor()
+
+c.execute("DROP TABLE IF EXISTS cities")
+c.execute("CREATE TABLE cities (id INTEGER, name VARCHAR(255), PRIMARY KEY (id))")
+c.execute("SELECT AddGeometryColumn('cities', 'geom', -1, 'POLYGON', 2)")
+c.execute("CREATE INDEX cityIndex ON cities USING GIST (geom)")
+
+conn.commit()
+```
+
+* **SpatiaLite**
+    * Install the ``libspatialite`` library
+    * Use ``pysqlite`` package to access 
+    * Example of usage in Python:
+
+```Python
+from pysqlite2 import dbapi2 as sqlite
+
+db = sqlite.connect("myDatabase.db")
+db.enable_load_extension(True)
+db.execute('SELECT load_extension("libspatiallite")')
+
+cursor = db.cursor()
+```
+
+#### Commercial Spatially-enabled Databases
+
+* Basically Oracle and SQL Server.
+
+#### Recommended Best Practices
+
+* **Using the db to keep track of spatial references**
+    * You should store the spatial reference (coordinate system, datum, projection) for each feature directly in the database, with the feature.
+    * Spatial references are generally referenced with an integer value called a Spatial Reference Identifier (SRID)
+    * You should use the European Petroleum Survey Group (EPSG) numbers as SRID values.
+    * More info on that at [http://epsg-registry.org](http://epsg-registry.org)
+    * PostGIS and SpatiaLite add a table called ``spatial_ref_sys`` to any spatially enabled database, which is preloaded with 3,000+ common spatial references by EPSG number
+    * Tools that access the database can refer to that table to do on the fly coordinate transforms using the PROJ.4 library
+    * PostGIS lets you associate an SRID value with a geometry when importing from WKT with ``ST_GeometryFromText(wkt, [srid])``
+    * Use an SRID whenever possible to tell the database what spatial reference your geometry is uisng--PostGIS will do some validation on SRID if a column was set up to use that SRID, which keeps you from mixing spatial references in a table.
+* **Using the appropriate spatial reference for your data**
+    * With the exception of PostGIS's geography type, the databases assume you're storing projected coordinates
+    * You have three options for length and area calculations on geospatial data:
+        * Using a database that supports unprojected coordinates
+        * Transforming features into projected coordinates to do the math
+        * Storing geometries in projected coordinates from the start
+    * Using a database that supports geographies:
+        * Only PostGIS can work with unprojected coordinates
+        * Limitations on its geography datatype include:
+            * calculations on unprojected coordinates is order of magnitude slower than projected
+            * geography type only supports lat/long on WGS84 datum
+            * many functions are not yet supported for unprojected coordinates
+    * Transforming features as required:
+        * You have to always remember to transform before calculating
+        * On the fly transformation of large numbers of geometries is very time consuming
+    * Transforming features from the start:
+        * Pretty good solution
+        * Not always the best solution
+    * Using unprojected coordinates:
+        * Projected coordinates work best for a limited area of the Earth's surface at once
+        * Best to use a projected coordinate system that covers the part you're interested in
+* **Avoiding on-the-fly transformations within a query**
+    * Imagine a ``cities`` table with a ``geom`` column containing ``POLYGON`` entries in UTM 12N projection (EPSG 32612), with a spatial index.
+    * Also imagine a variable, ``pt`` that holds a ``POINT`` geometry in WGS84 unprojected coordinates (EPSG 4326).
+    * You want to find the city in ``cities`` that contains point ``pt``
+    * Make sure you avoid on-the-fly transformations of large sets of geometries.
+    * Example queries, one slow, one fast:
+
+```
+-- Very slow, because it transforms every row in cities:
+SELECT * FROM cities
+WHERE Contains(Transform(geom, 4326), pt);
+
+-- Fast, because it transforms only the single pt var:
+SELECT * FROM cities
+WHERE Contains(geom, Transform(pt, 32612));
+```
+
+* **Don't create geometries within a query**
+    * This query would force ``ST_Intersection`` to create and return a geometry to ``ST_IsEmpty`` for every row: ``SELECT * FROM cities WHERE NOT ST_IsEmpty(ST_Intersection(outline, poly));``
+    * Whereas this query would not: ``SELECT * FROM cities WHERE ST_Intersects(outline, poly);``
+    * General rule: **never call a function that returns a ``Geometry`` object within the ``WHERE`` portion of a query.**
+    * Using spatial indexes appropriately:
+        * Like any indexing, too few is slow and too many is slow
+        * Since spatial indexes are based on bounding boxes, they can only tell you if bounding boxes have relationships like overlap or intersection--not the underlying points, lines, and polygons.
+        * Spatial indexes are most efficient when dealing with lots of relatively small geometries. Big polygons intersect so many other geometries that the db will fall back to polygon to polygon comparisons outside the index.
+        * If your geometries consist of many thousands of vertices, polygon to polygon comparisons (instead of bounding box) will be really expensive. If possible, split large and complex polygons into smaller pieces to improve the usefulness of the spatial index.
+* **Knowing the limits of your database's query optimizer**
+    * Spatial databases have a spatial query optimizer
+    * PostGIS Query optimizer details:
+        * PostGIS looks at the amount of information in the database and how it is distributed
+        * The query optimizer needs up to date statistics on the database contents to work well
+        * It uses a genetic algorithm to determine the best way to run a query
+        * To enable it to do a good job, you need to run the ``VACUUM ANALYZE`` command regularly, which will gather statistics on the database so the query optimizer works better.
+        * You can see how the query optimizer works with ``EXPLAIN SELECT ...``, which will show you the query plan
+    * SpatiaLite query optimizer:
+        * Rather naive, only uses B*Tree indices
+        * You can create an R-Tree index, but it won't get used unless you explicitly put it in the query
+        * ``EXPLAIN QUERY PLAN`` will show you the query explanation
+
+#### Working with Geospatial Databases Using Python
+
+* **Prerequisites**
+    * Install MySQL, PostGIS, and SpatiaLite
+    * Get the GSHHS shoreline dataset
+    * Take a copy of the low resolution ``l`` shapefiles and put them in a separate directory called ``GSHHS_l``
+* **Working with PostGIS**
+
+```Python
+# Create the gshhs table:
+import psycopg2
+
+conn = psycopg2.connect("dbname=mydb, user=myuser")
+c = conn.cursor()
+
+c.execute("DROP TABLE IF EXISTS gshhs")
+c.execute("""CREATE TABLE gshhs
+              id        SERIAL,
+              level     INTEGER,
+              PRIMARY KEY (id))
+          """)
+c.execute("CREATE INDEX levelIndex ON gshhs(level)")
+c.execute("SELECT AddGeometryColumn('gshhs', 'geom', 4326, 'POLYGON', 2)")
+c.execute("CREATE INDEX geomIndex ON gshhs USING GIST (geom)")
+c.commit()
+
+
+# Import data from the shapefile into the db:
+import os.path
+from osgeo import ogr
+
+for level in [1,2,3,4]:
+    fName = os.path.join("GSHHS_l", "GSHHS_l_L"+str(level)+".shp")
+    shapefile = ogr.Open(fName)
+    layer = shapefile.GetLayer(0)
+    for i in range(layer.GetFeatureCount()):
+        feature = layer.GetFeature(i)
+        geometry = feature.GetGeometryRef()
+        wkt = geometry.ExportToWkt()
+        c.execute("INSERT INTO gshhs (level, geom) VALUES (%s, ST_GeomFromText(%s, 4326))", (level, wkt))
+    c.commit()
+
+
+# Run VACUUM ANALYZE to improve optimizer
+old_level = conn.isolation_level
+conn.set_isolation_level(0)
+c.execute("VACUUM ANALYZE")
+conn.set_isolation_level(old_level)
+
+
+# Search for UK shoreline with coordinates for London
+LONDON = 'POINT(-0.1263 51.4980)'
+
+c.execute("SELECT id, ST_AsText(geom) FROM gshhs " +
+          "WHERE (level=%s) AND " +
+          "(ST_Contains(geom, ST_GeomFromText(%s, 4326)))",
+          (1, LONDON))
+
+shoreline = None
+for id, wkt in c:
+    shoreline = wkt
+
+f = file("uk-shoreline.wkt", "w")
+f.write(shoreline)
+f.close()
+```
+
+### Chapter 7: Working with Spatial Data
+
+* Chapter is about creating a hypothetical web app called DISTAL (Distance-based Identification of Shorelines, Towns, and Lakes)
+
+#### About DISTAL
+
+* Basic workflow
+    1. User selects country, country map is displayed
+    2. User sets radius in miles, clicks inside country
+    3. System finds all cities/towns in radius of click
+    4. Resulting features displayed at higher resolution
+
+#### Designing and Building the Database
+
+* Data required
+    * List of countries with boundary map for each
+    * Shoreline and lake boundaries
+    * List of major cities and towns, with name+point data for each
+
