@@ -7,15 +7,22 @@ By Jeff Patton; Peter Economy, O'Reilly Media, Inc, 2014
 Story mapping is a technique for helping groups of people:
 
 * Create shared understanding of problems they are trying to solve and solutions they might work on together.
-* Turn that shared understanding into software products and features _without making the development process more important than solving problems in the lives of real people._
+* Turn that shared understanding into software products and features...
+* ..._without making the development process more important than solving problems in the lives of real people._
+
+### 10,000 Foot View of Story Mapping
+
+So we know what we're talking about, very roughly:
+
+A group gets together, preferably physically (though remote is possible if tricky). They try to visualize all the steps in a story they're interested in, writing the steps on cards or sticky notes as they think of them. The story could be anything from "making breakfast on a Sunday" to "a user creates an account and signs up to get email alerts about their account." As tasks accumulate, or after a brainstorming period, the cards are arranged into a left to right flow through time to represent the story. The group then walks through the story, filling in holes as they discover them. From there, the group tries to identify the goals that are being served in the story, like "getting fed," "spending time with family," or "enjoying the morning." The goals are put on cards and tasks are sorted into which goal(s) they support. Then the group removes all but the tasks necessary to making the goal achievable. What is left identifies the 'minimum viable solution' for that goal.
 
 ### The Problems Story Mapping Addresses
 
 Developers are exceptionally sensitive to management bullshit. That's good a lot of the time, since a huge amount of management technology exists purely to justify creating and keeping management jobs. It's bad when it makes developers ditch the baby with the bathwater on topics like "making sure we know who is going to use this thing," "seeing business mistakes before they bite us in the ass," and "am I going down a rat-hole that's going to derail the group?"
 
-Story mapping is structured to help devs (and managers, assorted hangers-on, etc)
+Story mapping is structured to help devs (and managers, assorted hangers-on, etc) address those crucial questions. One of the terms the author of the book uses is "minimum viable solution," which is a good alternative to "minimum viable product" because it keeps focus on solving a problem in someone's life. Story mapping is meant to be a tool for sparking conversations, and a way of retaining what the author calls "vacation photos" of the conversation for later. The hope is that by writing short, vital ideas down during a good conversation, participants will be able to refer to the record later and recall the shared understanding they achieved during the original conversation.
 
-The big problem that no management tech can really address is "how do we keep process from making itself the goal of what we're doing?" 
+The big problem that no management tech can really address is "how do we keep process from making itself the goal of what we're doing?" It is the responsibility of all participants to keep a focus on creating positive changes in the lives of users, rather than creating specific code, features, or products.
 
 ### The Story Mapping Process
 
@@ -43,6 +50,22 @@ The big problem that no management tech can really address is "how do we keep pr
     * Separate the map into horizontal slices.
     * Put a note to the left of each one with the desired outcome for that slice.
     * Put the minimum set of tasks into that slice to make that outcome possible.
+
+### Recommendations and Observations
+
+* Creating shared understanding on a development team is crucial to reducing wasted effort, feature creep, and mismanaged expectations.
+* Shared understanding should ideally encompass **who** you're trying to help, **what** they need help with, and **why** they need help at all.
+* Additional areas of shared understanding that are helpful to have: what might be happening outside the software to cause users to need help, what assumptions the user or developers might be 
+* Interesting question: "Of all the different users and the things they want to do, if we were to focus on thrilling just one of them, who would it be?"
+* Every time you try to create an outcome, it's a hypothesis until real users actually adopt it or not.
+* You should treat releases as hypothesis testing, and think in advance about what you might learn from them.
+* If you do story mapping in a small group, you need to expand your shared understanding to include the rest of the team by including them in a revised or guided version of the process. Be open to changes in that session.
+* Author suggests you remember these things:
+    * "Stories aren't a written form of requirements; telling stories through collaboration with words and pictures is a mechanism that builds shared understanding."
+    * "Stories aren't the requirements; they're discusssions about solving problems for our organization, our customers, and our users that lead to agreements on what to build."
+    * "Your job isn't to build more software faster: it's to maximize the outcome and impact you get from what you choose to build."
+
+---
 
 ## Chapter Summaries
 
