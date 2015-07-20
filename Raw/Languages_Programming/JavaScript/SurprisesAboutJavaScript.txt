@@ -33,8 +33,9 @@ Things about JavaScript I have found surprising or valuable to know:
         because you are essentially saying "run this function while using 'this' to refer
         to object X"
         
-    Note that there's a fifth case: when called as an event handler, this refers to the DOM
-        object that the handler was called on.
+    Note that there's another case, (a subset of the apply()/call() case), where 
+        when called as an event handler, this refers to the DOM object that the handler 
+        was called on.
         
 * To decrease work per iteration in a loop, minimize property lookups and do a reversal.
     (from High Performance JavaScript):
