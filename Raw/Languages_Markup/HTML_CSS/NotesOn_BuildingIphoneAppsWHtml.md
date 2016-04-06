@@ -61,11 +61,12 @@ Print ISBN-13: 978-0-596-80578-4
     * localStorage data is saved after a window is closed, is available to all windows or tabs loaded from the same source.
     * sessionStorage data is stored with the window object, and is discarded when the window is closed.
     * Setting a value:
-
+        ```
         localStorage.setItem('age',40);
         var age = localStorage.getItem('age');
         localStorage.removeItem('age');
         localStorage.clear();
+        ```
 
     * Saving User Settings to localStorage
     * Saving the Selected Date to sessionStorage
