@@ -67,12 +67,11 @@ Print ISBN-13: 978-0-596-80578-4
         localStorage.removeItem('age');
         localStorage.clear();
         ```
-
     * Saving User Settings to localStorage
     * Saving the Selected Date to sessionStorage
 * Client-Side Database
     * You can use relational data storage via the javascript database api.
-    * Creating a Database
+    * Creating a Database 
         ```
         var db;
         $(document).ready(function() {
