@@ -73,7 +73,7 @@ Print ISBN-13: 978-0-596-80578-4
 * Client-Side Database
     * You can use relational data storage via the javascript database api.
     * Creating a Database
-
+        ```
         var db;
         $(document).ready(function() {
             var shortName = 'Kilo';
@@ -93,9 +93,9 @@ Print ISBN-13: 978-0-596-80578-4
                 }
             );
         });
-           
+        ```
     * Inserting Rows
-        
+        ```
         function createEntry() {
             var date = sessionStorage.currentDate;
             var calories = $('#calories').val();
@@ -116,13 +116,14 @@ Print ISBN-13: 978-0-596-80578-4
             );
             return false;
         }
-
+        ```
     * Error Handling
-
+        ```
         function errorHandler(transaction, error) {
             alert("Whoops!: " + error.code);
             return true;
         }
+        ```
 
 ## Chapter 6: Going Offline
     
@@ -131,13 +132,13 @@ Print ISBN-13: 978-0-596-80578-4
     * You create a cache manifest file, which is a text document that's sent to the client with a content type of 'cache-manifest'.
     * The manifest contains a list of files that a user's device must download and save in order to function offline.
     * Example manifest:
-
+        ```
         CACHE MANIFEST
         index.html
         logo.jpg
         scripts/demo.js
         styles/screen.css
-
+        ```
     * Declaration: `<html manifest="demo.manifest">`
     * .htaccess or other apache declaration: `AddType text/cache-manifest .manifest`
 
