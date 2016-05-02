@@ -960,3 +960,255 @@ Cache is more effective if:
 * You can also use 'load shedding', which turns away some users so other users can continue to have a good user experience.
 * Version of load shedding is to temporarily disable some back end processing that can happen asynchronously, like db batch jobs, nightly bulk file transfers, etc.
 * If you delay activity in the interest of load shedding, there must
+
+### Chapter 7: Operations in a Distributed World
+
+#### 7.1 Distributed Systems Operations
+
+##### 7.1.1 SRE vs Traditional Enterprise IT
+
+* IT depts tend to have very broad responsibilities, SREs have a narrow band of responsibility regarding keeping a service or set of services running.
+* SREs manage for extremely high uptime, so focus on prevention
+* SREs maintain systems that are undergoing constant scaling
+
+##### 7.1.2 Change vs Stability
+
+* Dev priorities center on change, ops center on stability
+* Need to be mechanisms to balance those needs
+* One strategy is to prioritize work for stability over work for features--bug fixes are higher priority than feature additions
+* Align the goals of developers and operational staff, by having both parties responsible for SLA compliance and system change velocity
+* The premise of devops is that development and operations are integrated to function smoothly together.
+
+##### 7.1.3 Defining SRE
+
+* in 2014, Benjamin Treynor Sloss, VP of SRE at google, gave site reliability practices as:
+    1. Hire only coders
+    1. Have an SLA for your service
+    1. Measure and report performance against the SLA
+    1. Use Error Budgets and gate launches on them
+    1. Have a common staffing pool for SRE and Developers
+    1. Have excess Ops work overflow to the Dev team
+    1. Cap SRE operational load at 50 percent
+    1. Share 5 percent of Ops work with the Dev team
+    1. Oncall teams should have at least 8 people at one location, or six people at each of multiple locations
+    1. Aim for a maximum of two events per oncall shift
+    1. Do a postmortem for every event
+    1. Postmortems are blameless and focus on process and technology, not people
+* Each team is allocated both SRE and Dev members, who should be able to function somewhat interchangeably.
+* Having work overflow onto devs discourages them from using costly shortcuts
+
+##### 7.1.4 Operations at Scale
+
+* Manual operations do not scale.
+* You must have automation.
+* There are three categories of things that are not automated:
+    * Things that are not yet, but should be. These can be encapsulated in playbooks until they can be automated.
+    * Things not worth automating. Edge cases where ROI of automating doesn't make sense.
+    * Things that cannot be automated. These can be streamlined:
+        * Better documentation can eliminate interactions with stakeholders.
+        * Making things self-service can also do that.
+        * Standardize and automate the evaluation of new tech, because it's time consuming but can be worthwhile.
+        * Automating oncall scheduling and/or making it self-service will help with team process.
+        * Online systems can facilitate communication and status/process tracking.
+        * "The best process optimization is elimination."
+
+#### 7.2 Service Life Cycle
+
+* Stages:
+    * Service launch
+    * Emergency tasks, handling exceptional or unexpected events
+    * Nonemergency tasks - manual work as part of the normally functioning systme
+    * Upgrades - deploying new releases and platforms
+    * Decommissioning - turning off a service, opposite of launch
+    * Project work - doing tasks large enough to require allocation of dedicated resources and planning. 
+
+##### 7.2.1 Service Launches
+
+* Maintain a launch checklist or checklists.
+* Try to communicate the costs and time allocation of launch to other teams.
+* Beyond a checklist is using a Launch Readiness Review
+* Sample LRR survey:
+    * General: name, date, soft/hard launch
+    * Architecture: system architecture docs, failover plan, scaling plans
+    * Capacity: initial expected volume, plans for 2x, 5x, etc.; expected bandwidth requirements, and network and storage requirements at 1,3,12 months
+    * Dependencies: show dependencies and data flows with other systems; explain any limits on those dependencies and what will happen if they are exceeded, positively show acknowledgement of new service depending on existing services
+    * Monitoring: are all subsystems monitored? dashboards? how many false alarm alerts are there? How many real alerts?
+    * Documentation: playbooks for operational tasks and alerts? number of documentation related bugs?
+    * Oncall: is the oncall schedule complete for n months? How many alerts is each shift likely to get?
+    * Disaster preparedness: what if first day is 10x greater than expected? Do backups work? restores tested?
+    * Operational hygiene: alert tuning, bugs filed quickly, means of keeping open bugs low
+    * Approvals: has everything been approved by necessary people?
+
+##### 7.2.2 Service Decommissioning
+
+* Three major phases:
+    * removal of users
+    * deallocation of resources
+    * disposal of resources
+
+#### 7.3 Organizing Strategy for Operational Teams
+
+* Sources of work:
+    * life cycle management
+    * interacting with stakeholders
+    * process improvement and automation
+* Categories of work:
+    * Emergency issues
+    * Normal requests
+    * Project work
+* Recommended principle: "people should always be working on projects, with exceptions made to assure that emergency issues receive immediate attention and non-project customer requests are triaged and worked in a timely manner."
+* Make one person at any time the lead for emergencies, one lead for normal requests, and everybody else does project work.
+* Don't be tempted to silo into subteams along work type lines--the person who should be improving processes is the person using them.
+* Project work is best done in small teams. 
+* "Solo projects can damage a team by making members feel disconnected or by permitting individuals to work without constructive feedback."
+* There is also "meta-work" in the form of meetings, etc.
+
+##### 7.3.1 Team Member Day Types
+
+* Project focused days
+    * Mostly spent developing software that automates or optimizes aspects of the team's responsiblities
+* Oncall days
+    * Working on projects until an alert is received, then working that until it is resolved
+* Ticket duty days
+    * Working on requests from customers
+
+##### 7.3.2 Other Strategies
+
+* Focus or Theme
+    * Picking a category of issues to focus on for a month or two, changing themes periodically or when complete
+* Toil reduction
+    * ratio of toil to project work should be very low
+    * can consider setting a threshold such that if it goes above, the team pauses new features and works to decrease the toil
+* Fix-it days
+    * days set aside for reducing technical debt
+
+#### 7.4 Virtual Office
+
+* Remotes should communicate their status periodically
+* Everyone should be responsible for making sure remotes don't feel isolated
+
+##### 7.4.1 Communication Mechanisms
+
+* Use group chat, voice and video chat, screen sharing applications
+
+##### 7.4.2 Communication Policies
+
+* Make norms for which channels to use in what situations.
+
+### Chapter 8: DevOps Culture
+
+* Basic practice of devops is not having siloed developers and operations people--they work as a team with responsibility for a service or site.
+* Arguably devops is the result of needing to be efficient in a cloud environment.
+* "If hardware and software are sufficiently fault tolerant, the remaining problems are human."
+* From the 2003 paper "Why Do Internet Services Fail, and What Can Be Done about It?" by Oppenheimer, et al.: 
+    * "We find that (1) operator error is the largest single cause of failures in two of the three services, (2) operator errors often take a long time to repair, (3) configuration errors are the largest category of operator errors, (4) failures in custom-written front-end software are significant, and (5) more extensive online testing and more thoroughly exposing and detecting component failures would reduce failure rates in at least one service."
+* Recommends "The Phoenix Project" book, by Kim, Behr, and Spafford 2013 as novelization of principles behind quality management.
+
+#### 8.1 What is DevOps?
+
+##### 8.1.1 The Traditional Approach
+
+* Waterfall methodology, where information flows downward
+* "Unidirectional information flows are the antithesis of DevOps"
+* Operational requirements are not considered until late in the process.
+
+##### 8.1.2 The DevOps Approach
+
+* Traditional software development practices don't work real well for high availability.
+* Needed to more tightly couple operational concerns and development.
+* Web based software introduces features much more rapidly than packaged software.
+* Developers and operations people share responsibility for uptime.
+* "Team members are largely generalists with deep specialties."
+
+#### 8.2 The Three Ways of DevOps
+
+* Borrows from "lean manufacturing", popularized in "The Phoenix Project"
+
+##### 8.2.1 The First Way: Workflow
+
+* Looks at getting the process correct from beginning to end, and improving the speed of the process.
+* The process is thought of as a 'value stream', and speed is 'flow rate' or 'flow'.
+* To put an emphasis on getting the process correct from start to end:
+    * Ensure each step is done in a repeatable way.
+    * Never pass defects to the next step.
+    * Ensure no local optimizations degrade global performance.
+    * Increase the flow of work by analyzing and improving the repeatable process.
+
+##### 8.2.2 The Second Way: Improve Feedback
+
+* Feedback loops are created when information is communicated upstream or downstream.
+* Amplifying feedback loops means making sure that what goes one way is also communicated in the other direction, and feedback is made visible rather than hidden.
+* To put an emphasis on amplifying feedback loops:
+    * Understand and respond to all customers, internal and external
+    * Shorten feedback loops
+    * Amplify all feedback
+    * Embed knowledge where it is needed
+
+##### 8.2.3 The Third Way: Continual Experimentation and Learning
+
+* You must create a culture where everyone is encouraged to try new things.
+* Everybody understands two things:
+    * We learn from the failures that happen when we experiment
+    * To master a skill requires repetition and practice.
+* Within software development this can mean:
+    * Rituals are created that reward risk taking.
+    * Management allocates time for projects that improve the system
+    * Faults are introduced into the system to increase resilience
+    * You try crazy or audacious things
+
+##### 8.2.4 Small Batches are Better
+
+* Doing a lot of small releases with a few features rather than a small number of large releases with numerous features.
+* Small batches equals high velocity (how many times you ship) and low latency (how long it takes a change to get from dev to production).
+* There's a tendency to avoid this because releases feel risky, and we try to avoid risky behavior. You have to do it a lot to practice though.
+
+##### 8.2.5 Adopting the Strategies
+
+* First identify your value streams, the processes done for the business or requested by the business.
+* Go through each process from beginning to end several times, ensuring repeatability.
+* Once a process is defined, amplify the feedback loops--each step should have a way to raise the visibility of problems so they are worked on, not ignored.
+* Find the steps that are the most error prone or slow and replace or rework them.
+* Every process has a bottleneck, find it and improve it.
+
+#### 8.3 History of DevOps
+
+* Coined by Patrick Debois in 2008
+* Evolved via Agile, pair programming, developers getting access to deployment tools directly via stuff like AWS
+* Google started opening up about their SRE stuff
+
+#### 8.4 DevOps Values and Principles
+
+##### 8.4.1 Relationships
+
+* Gives more weight to relationships between teams and various roles in the organization than to the tools and scripts of operations.
+* "People over process over tools." Get the right people doing the right process, in order to create the right tool to automate the function.
+
+##### 8.4.2 Integration
+
+* Make sure processes are integrated across teams.
+* Operational duties become end-to-end processes that combine tools, data, and people processes.
+
+##### 8.4.3 Automation
+
+* Strive for simplicity and repeatability via automation.
+* Treat configurations and scripts as source code, and under version control.
+* Building and management of code are automated to the greatest degree possible.
+
+##### 8.4.4 Continuous Improvement
+
+* Goal of any process is to make it dependably repeatable and more functional.
+* Look for root causes rather than make local optimizations that degrade global performance.
+
+##### 8.4.5 Common Nontechnical DevOps Practices
+
+* People processes that may be useful:
+    * Early collaboration and involvement--bring ops staff into development planning, and make sure developers have access to all ops monitoring.
+    * New features review--ops staff help guide development toward best practices for operability
+    * Shared oncall responsibilities--pager, but also review of oncall trends. Everyone fully empowered to research any issues that come up.
+    * Postmortem process--thorough postmortem or failure analysis for every outage
+    * Game day exercises or fire drills--trigger disruptions and failures to actually test the failover and redundancy of the system
+    * Error budgets--you need a mechanism for balancing innovation and stability. Until your error budget is exhausted, you can do as many releases as you want. After it is exhausted you may only do emergency security patches.
+
+##### 8.4.6 Common Technical DevOps Practices
+
+
