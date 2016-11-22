@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+</head>
+<body>
+<h1>Notes on 3D Math Primer for Graphics and Game Development, 2nd Ed.</h1>
+
+<p>By Ian Parberry, Fletcher Dunn; AK Peters/CRC Press 2011</p>
+
+<p>ISBN 9781498759892</p>
+
+<h2>Chapter 1: Cartesian Coordinate Systems</h2>
+
+<h3>1.1 1D Mathematics</h3>
+
+<ul>
+<li>Number line, real numbers, etc.</li>
+</ul>
+
+<h3>1.2 2D Cartesian Space</h3>
+
+<ul><li>Origin, x/y coordinates</li></ul>
+
+<h3>1.3 3D Cartesian Space</h3>
+
+<ul>
+<li>x/y/z coordinates; xy, xz, yz planes</li>
+<li>Left handed and right handed 3D coordinate spaces
+  <ul>
+    <li>If two systems have the same handedness, they can be rotated to match</li>
+    <li>Left handed space:
+      <ul>
+        <li>Index finger points up at +y</li>
+        <li>Middle finger points forward at +z</li>
+        <li>Thumb points right at +x</li>
+      </ul>
+    </li>
+    <li>Right handed space, thumb points left at +x</li>
+    <li>In a left handed space, the direction of rotation about an axis of rotation is determined by making a closed fist, thumb pointing up at the + end of the axis of rotation. The rotation direction is in the same direction as the fingers curl.</li>
+    <li>To convert handedness, swap the positive and negative ends of a single axis, or exchange two axes.</li>
+    <li>This book uses left handed coordinate system
+      <ul>
+        <li>+x is right</li>
+        <li>+y is up</li>
+        <li>+z is forward</li>
+      </ul>
+    </li>
+  </ul>
+</li>
+<li>Summation notation using &Sigma;</li>
+<li>Product notation with &Pi;</li>
+<li>Closed and open intervals with [], ()
+  <ul>
+    <li>closed interval includes the endpoints, []</li>
+    <li>open interval excludes the endpoints, ()</li>
+  </ul>
+</li>
+<li>Degrees and radians</li>
+<li>Radian is arc length on a unit circle, meaning 2&pi;rads is 1 circumfrence</li>
+<li>The x,y endpoint of a ray rotated about the origin can be described as cos &Theta; = x, sin &Theta; = y, where &Theta; is the angle of rotation.</li>
+<li>The trig functions, defined in regards to a unit circle:
+  <ul>
+    <li>cos &Theta; = x</li>
+    <li>sin &Theta; = y</li>
+    <li>sec &Theta; = 1 / cos &Theta;</li>
+    <li>tan &Theta; = sin &Theta; / cos &Theta;</li>
+    <li>csc &Theta; = 1 / sin &Theta;</li>
+    <li>cot &Theta; = 1 / tan &Theta; = cos &Theta; / sin &Theta;</li>
+  </ul>
+</li>
+<li>The trig functions can also be defined in relation to hyp, opp, adj sides of a triangle, where the adj side is on the x axis, the opp follows the y axis, and the hyp connects the origin to the end of the opp side.
+  <ul>
+    <li>cos &Theta; = adj / hyp</li>
+    <li>sin &Theta; = opp / hyp</li>
+    <li>tan &Theta; = opp / adj</li>
+    <li>sec &Theta; = hyp / adj</li>
+    <li>csc &Theta; = hyp / opp</li>
+    <li>cot &Theta; = adj / opp</li>
+  </ul>
+</li>
+<li>Identities based on the symmetry of the unit circle
+  <ul>
+    <li>sin (- &Theta;) = - sin &Theta;</li>
+    <li>cos (- &Theta;) = cos &Theta;</li>
+    <li>tan (- &Theta;) = - tan &Theta;</li>
+    <li>sin (&pi;/2 - &Theta;) = cos &Theta;</li>
+    <li>cos (&pi;/2 - &Theta;) = sin &Theta;</li>
+    <li>tan (&pi;/2 - &Theta;) = cot &Theta;</li>
+  </ul>
+</li>
+</ul>
+
+<h2>Chapter 2: Vectors</h2>
+
+<h3>2.1 Mathematical Definition of Vector, and Other Boring Stuff</h3>
+
+<ul>
+  <li>Vectors are arrays of numbers</li>
+  <li>The dimension of a vector is how many numbers it contains</li>
+  <li>Vectors may be of any positive dimension</li>
+  <li>Vectors may be written horizontally or vertically, in brackets</li>
+	<li>Book conventions for different types of variable:
+		<ul>
+      <li>Scalar variables are lowercase, italic roman or greek letters</li>
+      <li>Vector variables are lowercase, boldface letters</li>
+      <li>Matrix variables are uppercase, boldface letters</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>2.2 Geometric Definition of Vector</h3>
+
+<ul>
+  <li>A vector is a directed line segment with magnitude and direction</li>
+  <li>Magnitude is the length of the vector</li>
+  <li>Direction is the way it points in space</li>
+  <li>Typically graphically represented as an arrow</li>
+  <li>Vectors do not have a position, because they represent things like displacement or velocity (I am traveling at 50mph northeast.)</li>
+</ul>
+
+<h3>2.3 Specifying Vectors with Cartesian Coordinates</h3>
+
+<ul>
+  <li>When using cartesian coordinates to describe a vector, each coordinate indicates a signed displacement off an axis.</li>
+  <li>For example, vector [<i>x</i>,<i>y</i>] is displaced <i>x</i> units along the <i>x</i>-axis, and <i>y</i> units along the <i>y</i>-axis.</li>
+</ul>
+
+<h4>2.3.1 Vector as a sequence of displacements</h4>
+
+<ul>
+  <li>A vector is a combination of all its displacements.</li>
+</ul>
+
+<h4>2.3.2 The Zero Vector</h4>
+
+<ul>
+  <li>For any given vector dimension there is a special vector (the zero vector) with zeroes in every position. 3d zero vector is [0,0,0], for instance.</li>
+  <li>Denoted by boldface 0 character, for any dimension.</li>
+  <li>Think of it as a way to communicate "no displacement."</li>
+  <li>The zero vector of a given dimension is the additive identify for the set of vectors in that dimension.</li>
+</ul>
+
+<h3>2.4 Vectors versus Points</h3>
+
+<ul>
+  <li>Vectors describe displacements, and therefore can describe relative position--a point displaced from some agreed upon origin.</li>
+  <li>Any point can be described as a vector from the origin.</li>
+</ul>
+
+<h3>2.5 Negating a Vector</h3>
+
+<ul>
+  <li>Every vector <b>v</b> has an additive inverse -<b>v</b> of the same dimension as <b>v</b> such that <b>v</b> + (-<b>v</b>) = <b>0</b>.</li>
+</ul>
+
+<h4>2.5.1 Official Linear Algebra Rules</h4>
+
+<ul>
+  <li>To negate a vector of any dimension, simply negate each component of the vector: -[a<sub>1</sub>, a<sub>2</sub>, ..., a<sub><i>n</i></sub>] = [-a<sub>1</sub>, -a<sub>2</sub>, ..., -a<sub><i>n</i></sub>]</li>
+</ul>
+
+<h4>2.5.2 Geometric Interpretation</h4>
+
+<ul>
+  <li>Same magnitude, opposite direction.</li>
+</ul>
+
+<h3>2.6 Vector Multiplication by a Scalar</h3>
+
+<h4>Official linear algebra rules</h4>
+
+<ul>
+  <li>Result of multiplying a vector and a scalar is a parallel vector, with a different length and possibly an opposite direction.</li>
+  <li>The process is to multiply each element of the vector by the scalar.</li>
+  <li>Dividing by a scalar is equivalent to multiplication by the reciprocal of the scalar.</li>
+  <li>Scalar/vector multiplication and division happen BEFORE addition and subtraction in OOP</li>
+  <li>A scalar may not be divided by a vector.</li>
+  <li>A vector may not be divided by another vector.</li>
+  <li>Vector negation can be viewed as multiplying by -1</li>
+</ul>
+
+<h2>Chapter 3: Multiple Coordinate Spaces</h2>
+
+<h2>Chapter 4: Introduction to Matrices</h2>
+
+<h3>4.1 Mathematical Definition of Matrix</h3>
+
+<h4>4.1.1 Matrix Dimensions and Notation</h4>
+
+<ul>
+  <li>Matrix of <i>r</i> rows and <i>c</i> columns is called an <i>r</i> by <i>c</i> matrix.</li>
+  <li>Notation is a grid in full height brackets.</li>
+  <li>In the book matrices are uppercase bold, element access is subscript notation of the type <i>m</i><sub><i>ij</i></sub></li>, where <i>i</i> is the row and <i>j</i> is the column.</li>
+  <li>A matrix in straight vertical lines is the determinant of a matrix.</li>
+</ul>
+
+<h4>4.1.2 Square Matrices</h4>
+
+<ul>
+  <li>Diagonal elements of a square matrix are those for which <i>i</i> == <i>j</i>. In aggregate they form the 'diagonal' of the matrix.</li>
+  <li>If all non-diagonal elements are zero, the matrix is a 'diagonal matrix.'</li>
+  <li>A diagonal matrix with all diagonal elements set to 1 is an 'identity matrix.'</li>
+  <li>Multiplication of a matrix by an identity matrix produces the original matrix.</li>
+</ul>
+
+<h4>4.1.3 Vectors as Matrices</h4>
+
+<ul>
+  <li>A 1 x <i>n</i> matrix is a 'row vector'.</li>
+  <li>An <i>n</i> by 1 matrix is a 'column vector'.</li>
+  <li>It is very important when dealing with matrices to be clear on whether you are using a row vector or column vector.</li>
+</ul>
+
+<h4>4.1.4 Matrix Transposition</h4>
+
+<ul>
+  <li>Given an <i>r</i> x <i>c</i> matrix <b>M</b>, the transpose (<b>M</b><sup>T</sup>) is the <i>c</i> x <i>r</i> matrix where the columns are formed by the rows of <b>M</b>.</li>
+  <li><b>M</b><sup>T</sup><sub><i>ij</i></sub> == <b>M</b><i>ji</i></li>
+  <li>Transposition of a row vector produces a column vector, and vice versa.</li>
+  <li>Transposition of a transpose matrix produces the original matrix.</li>
+  <li>Any diagonal matrix is equal to its transpose, including the identity matrix.</li>
+</ul>
+
+<h4>4.1.5 Multiplying a Matrix with a Scalar</h4>
+
+<ul>
+  <li>Multiplication of a matrix <b>M</b> by a scalar <i>k</i> results in a matrix of the same dimension as <b>M</b>, where each element of <i>k</i><b>M</b> is the product <i>k</i><b>M</b><sub><i>ij</i></sub>.</li>
+</ul>
+
+<h4>4.1.6 Multiplying Two Matrices</h4>
+
+<ul>
+  <li>Only some matrix products are defined. An <i>r</i> x <i>n</i> matrix <b>A</b> may be multiplied by an <i>n</i> x <i>c</i> matrix <b>B</b>.</li>
+  <li><b>AB</b> is an <i>r</i> x <i>c</i> matrix.</li>
+  <li>Example: <b>A</b> is 4 x 2, <b>B</b> is 2 x 5. <b>AB</b> is a 4 x 5 matrix.</li>
+  <li>The elements of <b>AB</b> are computed as follows, for product matrix <b>C</b>: <i>c</i><sub><i>ij</i></sub> = &Sigma; <i>a</i><sub><i>ik</i></sub><i>b</i><sub><i>kj</i></sub>, for <i>k</i> 1..<i>n</i></li>
+  <li>Written a different way, each element <i>c</i><sub><i>ij</i></sub> is the dot product of row <i>i</i> in <b>A</b> and column <i>j</i> in <b>B</b>.</li>
+  <li>Notes of interest about matrix multiplication:
+    <ul>
+      <li>Multiplying any matrix <b>M</b> by a square matrix <b>S</b> results in a matrix of the same size as <b>M</b>, if <b>MS</b> is defined.</li>
+      <li>Matrix multiplication is non-commutative. <b>AB</b> != <b>BA</b>.</li>
+      <li>Matrix multiplication is associative. (<b>AB</b>)<b>C</b> == <b>A</b>(<b>BC</b>)</li>
+      <li>Matrix multiplication is associative in multiplication by a scalar or vector. (<i>k</i><b>A</b>)<b>B</b> = <i>k</i>(<b>AB</b>) = <b>A</b>(<i>k</i><b>B</b>), and (<b>vA</b>)<b>B</b> = <b>v</b>(<b>AB</b>)</li>
+      <li>Transposing the product of two matrices is the same as the product of their transpose in reverse order. (<b>AB</b>)<sup>T</sup> = <b>B</b><sup>T</sup><b>A</b><sup>T</sup></li>
+    </ul>
+  </li>
+</ul>
+
+<h4>4.1.7 Multiplying a Vector and a Matrix</h4>
+
+<ul>
+  <li>Since a vector can be a row or column matrix, you can multiply it by another matrix if the product is defined.</li>
+  <li>In 3 dimensions, a 3 element vector may be multiplied by a 3 x 3 square matrix.</li>
+  <li>The defined products for a 3 x 3 <b>M</b>, a row vector <b>r</b>, and a column vector <b>c</b> are <b>rM</b> = row vector and <b>Mc</b> = column vector.</li>
+  <li>Case <b>rM</b>: Take the row vector <b>r</b> and the three column vectors that comprise <b>M</b>. The three terms of the output vector that is the product of <b>rM</b> are each sum of the products of x times the first element, y times the second, and z times the third.</li>
+  <li>Case <b>Mc</b>: Take the column vector <b>c</b> and the three row vectors that make up <b>M</b>. The three terms of the output vector that is the product of <b>Mc</b> are each the sum of the products of x time the first element, y times the second element, and z times the third element of the first, second, and third row vectors.</li>
+  <li>Vector times matrix multiplication distributes over vector addition. (<b>v</b> + <b>w</b>)<b>M</b> == <b>vM</b> + <b>wM</b></li>
+  <li>The result of the multiplication is a linear combination of the rows or columns of the matrix.</li>
+</ul>
+
+<h4>4.1.8 Row versus Column Vectors</h4>
+
+<ul>
+  <li><b>rM</b> and <b>Mc</b> both produce three element vectors, but they do not produce the same vector elements, so it is very important to know which of <b>rM</b> or <b>Mc</b> you are performing.</li>
+  <li>Because the output of the operations is in each case a vector, you can concatenate multiplication operations with multiplie matrices. For a row vector that reads left to right, as in <b>rABC</b>, whereas a column vector will concatenate right to left: <b>CBAc</b>.</li>
+  <li>Row vectors lead to very wide equations, so are out of favor in mathematics--column vectors make for more readable equations.</li>
+  <li>For most video game programming, readable code is more important, so row vectors are a more typical choice.</li>
+  <li>Different books use different conventions, so be careful. Same goes for APIs.</li>
+  <li>Well encapsulated code prevents the need to access individual matrix elements, which prevents mistakes.</li>
+</ul>
+
+<h3>4.2 Geometric Interpretation of Matrix</h3>
+
+<ul>
+  <li>A square matrix can describe most or all linear transformations.</li>
+  <li>A linear translation preserves straight and parallel lines, and the origin does not move (there is no translation).</li>
+  <li>Other geometric properties like length, angle, area, volume, are possibly altered by the transformation.</li>
+  <li>A linear transformation may stretch the coordinate space, but does not curve or warp it.</li>
+  <li>The transformations this includes:
+    <ul>
+      <li>rotation</li>
+      <li>scale</li>
+      <li>orthographic projection</li>
+      <li>reflection</li>
+      <li>shearing</li>
+    </ul>
+  </li>
+  <li>It is important to be able to visualize the transformation that a matrix represents, and vice versa.</li>
+  <li>Example is given of multiplying the three standard basis vectors by an arbitrary matrix <b>M</b>:
+<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+  <mrow>
+  <mi mathvariant='bold'>i</mi>
+  <mi mathvariant='bold'>M</mi>
+  <mo>=</mo>
+  <mfenced open='[' close=']' separators=''>
+    <mtable>
+      <mtr>
+        <mtd><mn>1</mn></mtd>
+        <mtd><mn>0</mn></mtd>
+        <mtd><mn>0</mn></mtd>
+      </mtr>
+    </mtable>
+  </mfenced>
+  <mfenced open='[' close=']' separators=''>
+    <mtable>
+      <mtr>
+        <mtd><msub><mi>m</mi><mrow><mn>1</mn><mn>1</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>1</mn><mn>2</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>1</mn><mn>3</mn></mrow></msub></mtd>
+      </mtr>
+      <mtr>
+        <mtd><msub><mi>m</mi><mrow><mn>2</mn><mn>1</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>2</mn><mn>2</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>2</mn><mn>3</mn></mrow></msub></mtd>
+      </mtr>
+      <mtr>
+        <mtd><msub><mi>m</mi><mrow><mn>3</mn><mn>1</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>3</mn><mn>2</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>3</mn><mn>3</mn></mrow></msub></mtd>
+      </mtr>
+    </mtable>
+  </mfenced>
+  </mrow>
+  <mo>=</mo>
+  <mfenced open='[' close=']' separators=''>
+    <mtable>
+      <mtr>
+        <mtd><msub><mi>m</mi><mrow><mn>1</mn><mn>1</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>1</mn><mn>2</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>1</mn><mn>3</mn></mrow></msub></mtd>
+      </mtr>
+    </mtable>
+  </mfenced>
+  <mspace linebreak='newline' />
+  <mrow>
+  <mi mathvariant='bold'>j</mi>
+  <mi mathvariant='bold'>M</mi>
+  <mo>=</mo>
+  <mfenced open='[' close=']' separators=''>
+    <mtable>
+      <mtr>
+        <mtd><mn>0</mn></mtd>
+        <mtd><mn>1</mn></mtd>
+        <mtd><mn>0</mn></mtd>
+      </mtr>
+    </mtable>
+  </mfenced>
+  <mfenced open='[' close=']' separators=''>
+    <mtable>
+      <mtr>
+        <mtd><msub><mi>m</mi><mrow><mn>1</mn><mn>1</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>1</mn><mn>2</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>1</mn><mn>3</mn></mrow></msub></mtd>
+      </mtr>
+      <mtr>
+        <mtd><msub><mi>m</mi><mrow><mn>2</mn><mn>1</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>2</mn><mn>2</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>2</mn><mn>3</mn></mrow></msub></mtd>
+      </mtr>
+      <mtr>
+        <mtd><msub><mi>m</mi><mrow><mn>3</mn><mn>1</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>3</mn><mn>2</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>3</mn><mn>3</mn></mrow></msub></mtd>
+      </mtr>
+    </mtable>
+  </mfenced>
+  </mrow>
+  <mo>=</mo>
+  <mfenced open='[' close=']' separators=''>
+    <mtable>
+      <mtr>
+        <mtd><msub><mi>m</mi><mrow><mn>2</mn><mn>1</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>2</mn><mn>2</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>2</mn><mn>3</mn></mrow></msub></mtd>
+      </mtr>
+    </mtable>
+  </mfenced>
+  <mspace linebreak='newline' />
+  <mrow>
+  <mi mathvariant='bold'>k</mi>
+  <mi mathvariant='bold'>M</mi>
+  <mo>=</mo>
+  <mfenced open='[' close=']' separators=''>
+    <mtable>
+      <mtr>
+        <mtd><mn>0</mn></mtd>
+        <mtd><mn>0</mn></mtd>
+        <mtd><mn>1</mn></mtd>
+      </mtr>
+    </mtable>
+  </mfenced>
+  <mfenced open='[' close=']' separators=''>
+    <mtable>
+      <mtr>
+        <mtd><msub><mi>m</mi><mrow><mn>1</mn><mn>1</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>1</mn><mn>2</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>1</mn><mn>3</mn></mrow></msub></mtd>
+      </mtr>
+      <mtr>
+        <mtd><msub><mi>m</mi><mrow><mn>2</mn><mn>1</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>2</mn><mn>2</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>2</mn><mn>3</mn></mrow></msub></mtd>
+      </mtr>
+      <mtr>
+        <mtd><msub><mi>m</mi><mrow><mn>3</mn><mn>1</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>3</mn><mn>2</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>3</mn><mn>3</mn></mrow></msub></mtd>
+      </mtr>
+    </mtable>
+  </mfenced>
+  </mrow>
+  <mo>=</mo>
+  <mfenced open='[' close=']' separators=''>
+    <mtable>
+      <mtr>
+        <mtd><msub><mi>m</mi><mrow><mn>3</mn><mn>1</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>3</mn><mn>2</mn></mrow></msub></mtd>
+        <mtd><msub><mi>m</mi><mrow><mn>3</mn><mn>3</mn></mrow></msub></mtd>
+      </mtr>
+    </mtable>
+  </mfenced>
+</math>
+  </li>
+  <li>The first row of <b>M</b> contains the result of the transformation on <b>i</b>, the second row on <b>j</b>, and the third row on <b>k</b>.</li>
+  <li>Any vector can be written as a linear combination of the standard basis, <b>v</b> = <i>v</i><sub><i>x</i></sub><b>i</b> + <i>v</i><sub><i>y</i></sub><b>j</b> + <i>v</i><sub><i>z</i></sub><b>k</b></li>
+  <li>"The result of a vector x matrix multiplication is a linear combination of the rows of the matrix. The key is to <i>interpret those row vectors as basis vectors.</i> In this interpretation, matrix multiplication is simply a compact way to encode the operations for coordinate space transformations.</li>
+  <li>Substituting <b>p</b>, <b>q</b>, and <b>r</b> as names for our basis vectors, we can write vector <b>v</b> times matrix <b>M</b> as:
+
+<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+<mrow>
+  <mi mathvariant="bold">v</mi>
+  <mi mathvariant="bold">M</mi>
+  <mo>=</mo>
+  <mfenced open='[' close=']' separators=''>
+    <mtable>
+      <mtr>
+        <mtd><msub><mi>v</mi><mi>x</mi></msub></mtd>
+        <mtd><msub><mi>v</mi><mi>y</mi></msub></mtd>
+        <mtd><msub><mi>v</mi><mi>z</mi></msub></mtd>
+      </mtr>
+    </mtable>
+  </mfenced>
+  <mfenced open='[' close=']' separators=''>
+    <mtable>
+      <mtr><mtd><mi mathvariant="bold">p</mi></mtd></mtr>
+      <mtr><mtd><mi mathvariant="bold">q</mi></mtd></mtr>
+      <mtr><mtd><mi mathvariant="bold">r</mi></mtd></mtr>
+    </mtable>
+  </mfenced>
+  <mo>=</mo>
+  <msub><mi>v</mi><mi>x</mi></msub><mi mathvariant="bold">p</mi>
+  <mo>+</mo>
+  <msub><mi>v</mi><mi>y</mi></msub><mi mathvariant="bold">q</mi>
+  <mo>+</mo>
+  <msub><mi>v</mi><mi>z</mi></msub><mi mathvariant="bold">r</mi>
+</mrow>
+</math>
+  </li>
+  <li>If you understand how a matrix transforms the standard basis vectors, you understand the transformation it represents. Since the results of transforming the standard basis are the rows of the matrix, you interpret those rows as the basis vectors of a coordinate space.</li>
+  <li>Given a desired transformation, you can derive a matrix that represents it by figuring out what the transformation does to the basis vectors, and then put those transformed vectors into the matrix as rows.</li>
+  <li>"Once we understand that coordinates are best understood as coefficients in a linear combination of the basis vectors, we really know all the math we need to know to do transformations.</li>
+  <li>Core concepts of this section:
+    <ul>
+      <li>The rows of a square matrix can be interpreted as the basis vectors of a coordinate space.</li>
+      <li>To transform a vector from the original coordinate space to the new coordinate space, we multiply the vector by the matrix.</li>
+      <li>The transformation from the original coordinate space to the coordinate space defined by these basis vectors is a linear transformation. A linear transformation preserves straight lines, and parallel lines remain parallel. However, angles, lengths, areas, and volumes may be altered.</li>
+      <li>Multiplying the zero vector by any square matrix results in the zero vector. Therefore, the linear transformation represented by a square matrix has the same origin as the original coordinate space--the transformation does not contain translation.</li>
+      <li>We can visualize a matrix by visualizing the basis vectors of the coordinate space after transformation. These basis vectors form an 'L' in 2D, and a tripod in 3D. Using a box or auxiliary object also helps in visualization.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>4.3 The Bigger Picture of Linear Algebra</h3>
+<ul>
+  <li>Linear algebra was invented to manipulate and solve systems of linear equations.</li>
+  <li>Matrix notation was invented to avoid having to write out all the symbols in a system of equations.</li>
+  <li>Examples of large systems of equations that must be solved are within the physics engine of a 3D game, or in least squares approximation and data-fitting applications.</li>
+  <li>Many problems which have traditionally been neither discrete or linear are being approximated through systems of linear equations given the amount of computing power we have now.</li>
+  <li>The challenge is most often figuring out how to transform a problem into a matrix.</li>
+  <li>This book is intended to bridge a gap between linear algebra texts and game programming texts, but there are tons of advanced areas we're not touching on.</li>
+  <li>Great resource is Prof. Gilbert Strang's lectures from MIT OpenCourseWare. He also writes textbooks aimed at engineers, though they may require the lectures to really understand.</li>
+</ul>
+
+<h2>Chapter 5: Matrices and Linear Transformations</h2>
+
+<ul>
+  <li>Chapter is about expressing linear transformations in 3D with 3 x 3 matrices.</li>
+  <li>Note that transformations containing translation ('affine' transformations) are not expressible as 3 x 3 matrices, and are covered some here and in chapter 6.</li>
+  <li>Covers multiple operations like scaling, rotation, shearing, etc. Common strategy is to determine what happens to the standard basis vectors as a result of the transformation and then put those transformed basis vectors into the rows of a matrix.</li>
+</ul>
+
+<h3>5.1 Rotation</h3>
+
+<h4>5.1.1 Rotation in 2D</h4>
+
+<ul>
+  <li>2D rotation is rotation about a point. Since this is about linear transformations, this means rotation about the origin.</li>
+  <li>A 2D rotation about the origin has one parameter, &Theta;, which defines the angle rotated by. Standard convention is counterclockwise rotation for positive &Theta;, clockwise rotation for negative.</li>
+  <li>In rotation about the origin, the basis vectors of your transformation matrix can be derived in relation to &Theta;:
+<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+  <mrow>
+    <mi mathvariant="bold">R</mi>
+    <mfenced><mi>&Theta;</mi></mfenced>
+    <mo>=</mo>
+    <mfenced open="[" close="]" separators="">
+      <mtable>
+        <mtr><mtd><mi mathvariant="bold">p</mi><mo>'</mo></mtd></mtr>
+        <mtr><mtd><mi mathvariant="bold">q</mi><mo>'</mo></mtd></mtr>
+      </mtable>
+    </mfenced>
+    <mo>=</mo>
+    <mfenced open="[" close="]" separators="">
+      <mtable>
+        <mtr>
+          <mtd><mi>cos</mi><mi>&Theta;</mi></mtd>
+          <mtd><mi>sin</mi><mi>&Theta;</mi></mtd>
+        </mtr>
+        <mtr>
+          <mtd><mo>-</mo><mi>sin</mi><mi>&Theta;</mi></mtd>
+          <mtd><mi>cos</mi><mi>&Theta;</mi></mtd>
+        </mtr>
+      </mtable>
+    </mfenced>
+  </mrow>
+</math>
+  </li>
+</ul>
+
+<h4>5.1.2 3D Rotation about Cardinal Axes</h4>
+
+<ul>
+  <li>In 3D rotation occurs around an axis rather than a point.</li>
+  <li>An axis of rotation does not have to be one of the cardinal axes, though this section only looks at those.</li>
+  <li>There's no translation, so this is all about rotation about an axis passing through the origin.</li>
+  <li>For rotation you need to know which direction is positive and which is negative--use the left hand rule to find this.</li>
+  <li>Rotation about the x axis:
+
+<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+  <mrow>
+    <mi mathvariant="bold">R</mi>
+    <mfenced><mi>&Theta;</mi></mfenced>
+    <mo>=</mo>
+    <mfenced open="[" close="]" separators="">
+      <mtable>
+        <mtr><mtd><mi mathvariant="bold">p</mi><mo>'</mo></mtd></mtr>
+        <mtr><mtd><mi mathvariant="bold">q</mi><mo>'</mo></mtd></mtr>
+        <mtr><mtd><mi mathvariant="bold">r</mi><mo>'</mo></mtd></mtr>
+      </mtable>
+    </mfenced>
+    <mo>=</mo>
+    <mfenced open="[" close="]" separators="">
+      <mtable>
+        <mtr>
+          <mtd><mn>1</mn></mtd>
+          <mtd><mn>0</mn></mtd>
+          <mtd><mn>0</mn></mtd>
+        </mtr>
+        <mtr>
+          <mtd><mn>0</mn></mtd>
+          <mtd><mi>cos</mi><mi>&Theta;</mi></mtd>
+          <mtd><mi>sin</mi><mi>&Theta;</mi></mtd>
+        </mtr>
+        <mtr>
+          <mtd><mn>0</mn></mtd>
+          <mtd><mo>-</mo><mi>sin</mi><mi>&Theta;</mi></mtd>
+          <mtd><mi>cos</mi><mi>&Theta;</mi></mtd>
+        </mtr>
+      </mtable>
+    </mfenced>
+  </mrow>
+</math>
+  </li>
+  <li>Rotation about the y axis:
+
+<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+  <mrow>
+    <mi mathvariant="bold">R</mi>
+    <mfenced><mi>&Theta;</mi></mfenced>
+    <mo>=</mo>
+    <mfenced open="[" close="]" separators="">
+      <mtable>
+        <mtr><mtd><mi mathvariant="bold">p</mi><mo>'</mo></mtd></mtr>
+        <mtr><mtd><mi mathvariant="bold">q</mi><mo>'</mo></mtd></mtr>
+        <mtr><mtd><mi mathvariant="bold">r</mi><mo>'</mo></mtd></mtr>
+      </mtable>
+    </mfenced>
+    <mo>=</mo>
+    <mfenced open="[" close="]" separators="">
+      <mtable>
+        <mtr>
+          <mtd><mi>cos</mi><mi>&Theta;</mi></mtd>
+          <mtd><mn>0</mn></mtd>
+          <mtd><mo>-</mo><mi>sin</mi><mi>&Theta;</mi></mtd>
+        </mtr>
+        <mtr>
+          <mtd><mn>0</mn></mtd>
+          <mtd><mn>1</mn></mtd>
+          <mtd><mn>0</mn></mtd>
+        </mtr>
+        <mtr>
+          <mtd><mi>sin</mi><mi>&Theta;</mi></mtd>
+          <mtd><mn>0</mn></mtd>
+          <mtd><mi>cos</mi><mi>&Theta;</mi></mtd>
+        </mtr>
+      </mtable>
+    </mfenced>
+  </mrow>
+</math>
+  </li>
+  <li>Rotation about the z axis:
+
+<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+  <mrow>
+    <mi mathvariant="bold">R</mi>
+    <mfenced><mi>&Theta;</mi></mfenced>
+    <mo>=</mo>
+    <mfenced open="[" close="]" separators="">
+      <mtable>
+        <mtr><mtd><mi mathvariant="bold">p</mi><mo>'</mo></mtd></mtr>
+        <mtr><mtd><mi mathvariant="bold">q</mi><mo>'</mo></mtd></mtr>
+        <mtr><mtd><mi mathvariant="bold">r</mi><mo>'</mo></mtd></mtr>
+      </mtable>
+    </mfenced>
+    <mo>=</mo>
+    <mfenced open="[" close="]" separators="">
+      <mtable>
+        <mtr>
+          <mtd><mi>cos</mi><mi>&Theta;</mi></mtd>
+          <mtd><mi>sin</mi><mi>&Theta;</mi></mtd>
+          <mtd><mn>0</mn></mtd>
+        </mtr>
+        <mtr>
+          <mtd><mo>-</mo><mi>sin</mi><mi>&Theta;</mi></mtd>
+          <mtd><mi>cos</mi><mi>&Theta;</mi></mtd>
+          <mtd><mn>0</mn></mtd>
+        </mtr>
+        <mtr>
+          <mtd><mn>0</mn></mtd>
+          <mtd><mn>0</mn></mtd>
+          <mtd><mn>1</mn></mtd>
+        </mtr>
+      </mtable>
+    </mfenced>
+  </mrow>
+</math>
+  </li>
+</ul>
+
+<h4>5.1.3 3D Rotation about an Arbitrary Axis</h4>
+
+<ul>
+  <li>If an axis passes through the origin, we can rotate around it without translating.</li>
+  <li>Again, &Theta; is the amount of rotation about the axis, and the axis of rotation is defined by the unit vector 
+  <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><mover><mi mathvariant="bold">n</mi><mo>^</mo></mover></math>
+  </li>
+  <li>Our goal is, for a vector <b>v</b> to produce a matrix <b>R</b> such that the result <b>v'</b> is equivalent to rotating <b>v</b> about 
+  <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><mover><mi mathvariant="bold">n</mi><mo>^</mo></mover></math> by the angle &Theta;:
+
+<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+  <mi mathvariant="bold">v</mi><mo>'</mo>
+  <mo>=</mo>
+  <mi mathvariant="bold">v</mi>
+  <mi mathvariant="bold">R</mi>
+  <mfenced separators=",">
+    <mover>
+      <mi mathvariant="bold">n</mi>
+      <mo>^</mo>
+    </mover>
+    <mi>&Theta;</mi>
+  </mfenced>
+</math>
+  </li>
+  <li>
+</ul>
+
+<div style="height: 200px;">&nbsp;</div>
+</body>
+</html>

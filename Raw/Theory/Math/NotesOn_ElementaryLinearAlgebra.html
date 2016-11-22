@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+</head>
+<body>
+<h1>Notes on Elementary Linear Algebra: Applications Version</h1>
+
+<p>By Howard Anton, Chris Rorres; John Wiley &amp; sons 2013; ISBN 9781118434413</p>
+
+<h2>Chapter 1: Systems of Linear Equations and Matrices</h2>
+
+<h3>1.1 Introduction to Systems of Linear Equations</h3>
+
+<ul>
+  <li>Equation of a line in a rectangular xy-coordinate system: <i>ax</i> + <i>by</i> = <i>c</i></li>
+  <li><b>Linear Equation</b> - An equation in the <i>n</i> variables <i>x<sub>1</sub></i>, <i>x<sub>2</sub></i>, ..., <i>x<sub>n</sub></i> that can be expressed in the form <i>a</i><sub>1</sub><i>x</i><sub>1</sub> + <i>a</i><sub>2</sub><i>x</i><sub>2</sub> + ... + <i>a<sub>n</sub>x<sub>n</sub></i> = <i>b</i>, where the <i>a</i> and <i>b</i> terms are constants, and the <i>a</i> terms are not all zero.</li>
+  <li><b>System of linear equations</b>, <i>or</i> <b>linear system</b> - A finite set of linear equations.</li>
+  <li><b>Solution of a linear system</b> - a sequence of <i>n</i> numbers <i>s</i><sub>1</sub>, <i>s</i><sub>2</sub>, ..., <i>s</i><sub><i>n</i></sub> for which the substitution <i>x</i><sub>1</sub> = <i>s</i><sub>1</sub>, <i>x</i><sub>2</sub> = <i>s</i><sub>2</sub>, ..., <i>x<sub>n</sub></i> = <i>s<sub>n</sub></i> makes each equation in the system a true statement.</li>
+  <li><b>Ordered <i>n</i>-tuple</b> - format for a solution to a system of linear equations of the form (<i>s</i><sub>1</sub>, <i>s</i><sub>2</sub>, ..., <i>s</i><sub><i>n</i></sub>)</li>
+  <li><b>Ordered pair</b> - ordered tuple where <i>n</i> = 2</li>
+  <li><b>Ordered triple</b> - ordered tuple where <i>n</i> = 3</li>
+  <li>Linear systems of two unknowns (x,y) graph lines in the x,y plane, and each solution to the system corresponds to a point of intersection of the lines. There are three possibilities:
+    <ol>
+      <li>The lines may be parallel and distinct, having no intersection and no solution.</li>
+      <li>The lines may intersect at one and only one point, giving exactly one solution.</li>
+      <li>The lines may coincide, giving infinitely many points of intersection and solutions.</li>
+    </ol>
+  </li>
+  <li><b>Consistent linear system</b> - A system with at least one solution.</li>
+  <li><b>Inconsistent linear system</b> - A system with no solutions.</li>
+  <li>The same is true for planes in a system of three unknowns:
+    <ol>
+      <li>No solutions:
+        <ul>
+          <li>Three parallel planes, thus no common intersection</li>
+          <li>Two parallel planes, and no common intersection</li>
+          <li>Two coincident planes parallel to the third, no common intersection</li>
+        </ul>
+      </li>
+      <li>One solution, where the intersection of planes is a single point</li>
+      <li>Infinitely many solutions:
+        <ul>
+          <li>The intersection of three planes is a line, like the spine of a book</li>
+          <li>Planes are all coincident</li>
+          <li>Two coincident planes intersecting the third, making a line.</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+  <li>Every system of linear equations (of any number of unknowns) has zero, one, or infinitely many solutions.</li>
+  <li>As a system of linear equations grows, it becomes increasingly complex to represent as formulae. You can represent it as a matrix of coefficients:
+<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+  <mfenced open='[' close=']' separators=''>
+    <mtable>
+      <mtr>
+        <mtd><msub>
+          <mi>a</mi>
+          <mrow><mn>1</mn><mo>&InvisibleComma;</mo><mn>1</mn></mrow>
+        </msub></mtd>
+        <mtd><msub>
+          <mi>a</mi>
+          <mrow><mn>1</mn><mo>&InvisibleComma;</mo><mn>2</mn></mrow>
+        </msub></mtd>
+        <mtd><mi>&ctdot;</mi></mtd>
+        <mtd><msub>
+          <mi>a</mi>
+          <mrow><mn>1</mn><mo>&InvisibleComma;</mo><mi>n</mi></mrow>
+        </msub></mtd>
+      </mtr>
+
+      <mtr>
+        <mtd><msub>
+          <mi>a</mi>
+          <mrow><mn>2</mn><mo>&InvisibleComma;</mo><mn>1</mn></mrow>
+        </msub></mtd>
+        <mtd><msub>
+          <mi>a</mi>
+          <mrow><mn>2</mn><mo>&InvisibleComma;</mo><mn>2</mn></mrow>
+        </msub></mtd>
+        <mtd><mi>&ctdot;</mi></mtd>
+        <mtd><msub>
+          <mi>a</mi>
+          <mrow><mn>2</mn><mo>&InvisibleComma;</mo><mi>n</mi></mrow>
+        </msub></mtd>
+      </mtr>
+
+      <mtr>
+        <mtd><mi>&vellip;</mi></mtd>
+        <mtd><mi>&vellip;</mi></mtd>
+        <mtd><mi>&dtdot;</mi></mtd>
+        <mtd><mi>&vellip;</mi></mtd>
+      </mtr>
+
+      <mtr>
+        <mtd><msub>
+          <mi>a</mi>
+          <mrow><mi>m</mi><mo>&InvisibleComma;</mo><mn>1</mn></mrow>
+        </msub></mtd>
+        <mtd><msub>
+          <mi>a</mi>
+          <mrow><mi>m</mi><mo>&InvisibleComma;</mo><mn>2</mn></mrow>
+        </msub></mtd>
+        <mtd><mi>&ctdot;</mi></mtd>
+        <mtd><msub>
+          <mi>a</mi>
+          <mrow><mi>m</mi><mo>&InvisibleComma;</mo><mi>n</mi></mrow>
+        </msub></mtd>
+      </mtr>
+    </mtable>
+  </mfenced>
+</math>
+	which is called the <b>augmented matrix</b> for the system.
+  </li>
+	<li>There are several <b>elementary row operations</b> that can be performed on a matrix:
+    <ol>
+      <li>Multiply an equation / row through by a nonzero constant</li>
+      <li>Interchange two equations / rows</li>
+      <li>Add a constant times one equation / row to another</li>
+    </ol>
+  </li>
+</ul>
+
+
+</body>
+</html>

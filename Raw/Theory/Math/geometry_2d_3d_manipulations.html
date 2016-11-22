@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+<article id="matrix_transformations">
+  <header>
+    <h1>Manipulating 2D and 3D Objects and Spaces</h1>
+  </header>
+
+
+  <nav>
+    <ul>
+      <li>Trigonometry</li>
+      <li>Vectors</li>
+      <li>Coordinate Spaces / Basis Vectors</li>
+      <li>Matrices
+        <ul>
+          <li>Definitions</li>
+          <li>Addition and Subtraction</li>
+          <li>Transposition</li>
+          <li>Multiplication by a Scalar</li>
+          <li>Multiplication by a Matrix (or Vector)</li>
+        </ul>
+      </li>
+      <li>Linear Transformations
+        <ul>
+          <li>2 Dimensions
+            <ul>
+              <li>Rotation about the origin</li>
+              <li>Scaling
+                <ul>
+                  <li>Along a cardinal axis</li>
+                  <li>In an arbitrary direction</li>
+                </ul>
+              </li>
+              <li>Projection 
+                <ul>
+                  <li>Onto a cardinal axis</li>
+                  <li>Onto an arbitrary line</li>
+                </ul>
+              </li>
+              <li>Reflection
+                <ul>
+                  <li>About a cardinal axis</li>
+                  <li>About an arbitrary axis passing through the origin</li>
+                </ul>
+              </li>
+              <li>Shearing</li>
+            </ul>
+          </li>
+          <li>3 Dimensions
+            <ul>
+              <li>Rotation
+                <ul>
+                  <li>About the x axis</li>
+                  <li>About the y axis</li>
+                  <li>About the z axis</li>
+                  <li>About an arbitrary axis</li>
+                </ul>
+              </li>
+              <li>Scaling
+                <ul>
+                  <li>Along a cardinal axis</li>
+                  <li>In an arbitrary direction</li>
+                </ul>
+              </li>
+              <li>Projection
+                <ul>
+                  <li>Onto a cardinal plane</li>
+                  <li>Onto an arbitrary plane</li>
+                </ul>
+              </li>
+              <li>Reflection
+                <ul>
+                  <li>About a cardinal plane</li>
+                  <li>About an arbitrary plane</li>
+                </ul>
+              </li>
+              <li>Shearing</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Affine Transformations
+      </li>
+    </ul>
+  </nav>
+  <div class="panel panel-default">
+  <div class="panel-body">
+  <section id="trigonometry">
+    <h2>Trigonometry</h2>
+
+    <ul>
+      <li>Posit a triangle with sides a, b, and c, where:
+        <ul>
+          <li>&ang;ab = 90&deg;</li>
+          <li>&ang;ac = &Theta;&deg;</li>
+          <li>&ang;bc = (90 - &Theta;)&deg;</li>
+        </ul>
+      </li>
+      <li>Given those angles, let:
+        <ul>
+          <li>a be termed the <b>adjacent</b> (to &Theta;) side</li>
+          <li>b be termed the <b>opposite</b> (from &Theta;) side</li>
+          <li>c be termed the <b>hypoteneuse</b></li>
+        </ul>
+      </li>
+      <li>Further, posit a circle on a cartesian plane, centered at the origin and with a radius of 1. Call this the <b>unit circle</b>.</li>
+      <li>For any given point on a unit circle, a right triangle may be created where the hypoteneuse is the radius of the unit circle.</li>
+      <li>There exist six possible ratios of the length of the sides of a right triangle:
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>&fnof;</th>
+              <th>Ratio</th>
+              <th>WRT a Unit Circle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>Sine</th>
+              <td>sin &Theta;</td>
+              <td><math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><mfrac><mi>opp</mi><mi>hyp</mi></mfrac></math></td>
+              <td><i>x</i></td>
+            </tr>
+            <tr>
+              <th>Cosine</th>
+              <td>cos &Theta;</td>
+              <td><math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><mfrac><mi>adj</mi><mi>hyp</mi></mfrac></math></td>
+              <td><i>y</i></td>
+            </tr>
+            <tr>
+              <th>Tangent</th>
+              <td>tan &Theta;</td>
+              <td><math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><mfrac><mi>opp</mi><mi>adj</mi></mfrac></math></td>
+              <td><math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><mfrac><mrow><mi>sin</mi><mi>&Theta;</mi></mrow><mrow><mi>cos</mi><mi>&Theta;</mi></mrow></mfrac></math></td>
+            </tr>
+            <tr>
+              <th>Cosecant</th>
+              <td>csc &Theta;</td>
+              <td>
+              <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'>
+                <mfrac><mi>hyp</mi><mi>opp</mi></mfrac>
+              </math>
+              </td>
+              <td>
+              <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'>
+                <mfrac><mn>1</mn><mrow><mi>sin</mi><mi>&Theta;</mi></mrow></mfrac>
+              </math>
+              </td>
+            </tr>
+            <tr>
+              <th>Secant</th>
+              <td>sec &Theta;</td>
+              <td>
+              <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'>
+                <mfrac><mi>hyp</mi><mi>adj</mi></mfrac>
+              </math>
+              </td>
+              <td>
+              <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'>
+                <mfrac><mn>1</mn><mrow><mi>cos</mi><mi>&Theta;</mi></mrow></mfrac>
+              </math>
+              </td>
+            </tr>
+            <tr>
+              <th>Cotangent</th>
+              <td>cot &Theta;</td>
+              <td>
+              <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'>
+                <mfrac><mi>adj</mi><mi>opp</mi></mfrac>
+              </math>
+              </td>
+              <td>
+              <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'>
+              <mfrac><mrow><mi>cos</mi><mi>&Theta;</mi></mrow><mrow><mi>sin</mi><mi>&Theta;</mi></mrow></mfrac>
+                <mo>=</mo>
+                <mfrac><mn>1</mn><mrow><mi>tan</mi><mi>&Theta;</mi></mrow></mfrac>
+              </math>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </li>
+    </ul>
+  </section>
+  </div>
+  </div>
+
+  <div class="panel panel-default">
+  <div class="panel-body">
+  <section id="vectors">
+    <h2>Vectors</h2>
+
+    <ul>
+      <li>A <b>vector</b> is an array of numbers representing a <b>magnitude</b> (length) and <b>direction</b> in a coordinate space, but without a specific position in space.</li>
+      <li>Vectors are shown in brackets, and may be represented horizontally (a <b>row vector</b>) or vertically (a <b>column vector</b>).</li>
+      <li>Each number in a vector represents a displacement along an axis (basis vector) of the coordinate space it is used in. A vector is a combination of all its displacements. For example, vector [<i>x</i> <i>y</i>] represents a displacement <i>x</i> units along the <i>x</i>-axis, and <i>y</i> units along the <i>y</i>-axis.</li>
+      <li>For any given vector dimension there exists a special vector called the <b>zero vector</b>, for which each dimension's displacement is zero. It represents the concept of "zero displacement."</li>
+      <li>Every vector <b>v</b> has an additive inverse -<b>v</b> of the same dimension as <b>v</b> such that <b>v</b> + (-<b>v</b>) = 0. To derive the inverse of a vector, negate each component of the vector, producing a vector of equal magnitude but opposite direction.</li>
+    </ul>
+
+    <h3>Magnitude / Length</h3>
+
+    <ul>
+      <li>The magnitude of a vector is signed ||<b>v</b>||.</li>
+      <li>The magnitude of a vector of arbitrary dimension is calculated by:
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+          <mfenced open="&Vert;" close="&Vert;">
+          <mi mathvariant="bold">v</mi>
+          </mfenced>
+          <mo>=</mo>
+          <msqrt>
+            <munderover>
+              <mo>&sum;</mo>
+              <mrow>
+                <mi>i</mi>
+                <mo>=</mo>
+                <mn>1</mn>
+              </mrow>
+              <mi>n</mi>
+            </munderover>
+            <msup>
+              <msub>
+                <mi>v</mi>
+                <mi>i</mi>
+              </msub>
+              <mn>2</mn>
+            </msup>
+              
+          </msqrt>
+        </math>
+      </li>
+      <li>Translated: the square root of the sum of the squares of each element.</li>
+    </ul>
+
+    <h3>Addition and Subtraction</h3>
+
+    <ul>
+      <li>Vectors may be added or subtracted if they are of equal dimension; addition and subtraction are undefined for vectors of unequal dimension.</li>
+      <li>Each element of the sum vector is made by adding the equivalent elements of the two input vectors:
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+          <mfenced open='[' close=']'>
+            <mtable>
+              <mtr><mtd><mi>a</mi></mtd></mtr>
+              <mtr><mtd><mi>b</mi></mtd></mtr>
+              <mtr><mtd><mi>c</mi></mtd></mtr>
+            </mtable>
+          </mfenced>
+          <mo>+</mo>
+          <mfenced open='[' close=']'>
+            <mtable>
+              <mtr><mtd><mi>x</mi></mtd></mtr>
+              <mtr><mtd><mi>y</mi></mtd></mtr>
+              <mtr><mtd><mi>z</mi></mtd></mtr>
+            </mtable>
+          </mfenced>
+          <mo>=</mo>
+          <mfenced open='[' close=']'>
+            <mtable>
+              <mtr><mtd><mi>a</mi><mo>+</mo><mi>x</mi></mtd></mtr>
+              <mtr><mtd><mi>b</mi><mo>+</mo><mi>y</mi></mtd></mtr>
+              <mtr><mtd><mi>c</mi><mo>+</mo><mi>z</mi></mtd></mtr>
+            </mtable>
+          </mfenced>
+        </math>
+      </li>
+      <li>Subtraction is performed by inverting the second vector before adding it.</li>
+      <li>The 'triangle rule' of vector addition states that starting at a point and applying the displacements of two vectors produces the same result as applying the combination of those two vectors. Visually plotting <b>a</b>, <b>b</b>, and <b>a</b>+<b>b</b> will produce a triangle, unless <b>a</b> == -<b>b</b> or <b>a</b> &spar; <b>b</b>.</li>
+      <li>Vector addition is commutative, but vector subtraction is not.</li>
+    </ul>
+
+    <h3>Multiplication and Division by a Scalar</h3>
+
+    <ul>
+      <li>Multiplying a vector by a scalar produces a vector.</li>
+      <li>Each element of the product is formed by multiplying the scalar value by the equivalent element of the input vector:
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+          <mi>k</mi>
+          <mfenced open='[' close=']'>
+            <mtable>
+              <mtr><mtd><mi>x</mi></mtd></mtr>
+              <mtr><mtd><mi>y</mi></mtd></mtr>
+              <mtr><mtd><mi>z</mi></mtd></mtr>
+            </mtable>
+          </mfenced>
+          <mo>=</mo>
+          <mfenced open='[' close=']'>
+            <mtable>
+              <mtr><mtd><mi>k</mi><mi>x</mi></mtd></mtr>
+              <mtr><mtd><mi>k</mi><mi>y</mi></mtd></mtr>
+              <mtr><mtd><mi>k</mi><mi>z</mi></mtd></mtr>
+            </mtable>
+          </mfenced>
+        </math>
+      </li>
+      <li>Division may be performed by multiplying the vector by the reciprocal of the scalar.</li>
+      <li>Multiplication of a vector by a scalar is commutative: <i>k</i><b>v</b> = <b>v</b><i>k</i></li>
+      <li>Geometrically the effect of multiplying a vector by a scalar is to increase or decrease the magnitude of the vector.</li>
+    </ul>
+
+    <h3>Normalization</h3>
+    
+    <ul>
+      <li>A normalized vector has magnitude 1 and is symbolized 
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'>
+          <mover><mi mathvariant="bold">v</mi><mo>^</mo></mover>
+        </math>
+      .</li>
+      <li>For any nonzero vector <b>v</b>, the normalized vector 
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'>
+          <mover><mi mathvariant="bold">v</mi><mo>^</mo></mover>
+        </math>
+        is arrived at by dividing <b>v</b> by its magnitude:
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+          <mover><mi mathvariant="bold">v</mi><mo>^</mo></mover>
+          <mo>=</mo>
+          <mfrac>
+            <mi mathvariant="bold">v</mi>
+            <mfenced open="&Vert;" close="&Vert;">
+            <mi mathvariant="bold">v</mi>
+            </mfenced>
+          </mfrac>
+          <mo>=</mo>
+          <mfrac>
+            <mi mathvariant="bold">v</mi>
+          <msqrt>
+            <munderover>
+              <mo>&sum;</mo>
+              <mrow>
+                <mi>i</mi>
+                <mo>=</mo>
+                <mn>1</mn>
+              </mrow>
+              <mi>n</mi>
+            </munderover>
+            <msup>
+              <msub>
+                <mi>v</mi>
+                <mi>i</mi>
+              </msub>
+              <mn>2</mn>
+            </msup>
+              
+          </msqrt>
+
+          </mfrac>
+        </math>
+      </li>
+    </ul>
+
+    <h3>Dot Product / Inner Product</h3>
+
+    <ul>
+      <li>There are two methods of multiplying vectors--the dot/inner product (which produces a scalar) and the cross product (which produces a vector).</li>
+      <li>The dot product is the sum of the products of corresponding components, and is only defined for vectors of equal dimension.</li>
+      <li>Example:
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+          <mfenced open='[' close=']'>
+            <mtable>
+              <mtr><mtd><mi>a</mi></mtd></mtr>
+              <mtr><mtd><mi>b</mi></mtd></mtr>
+              <mtr><mtd><mi>c</mi></mtd></mtr>
+            </mtable>
+          </mfenced>
+          <mo>&sdot;</mo>
+          <mfenced open='[' close=']'>
+            <mtable>
+              <mtr><mtd><mi>x</mi></mtd></mtr>
+              <mtr><mtd><mi>y</mi></mtd></mtr>
+              <mtr><mtd><mi>z</mi></mtd></mtr>
+            </mtable>
+          </mfenced>
+          <mo>=</mo>
+          <mi>a</mi><mi>x</mi><mo>+</mo>
+          <mi>b</mi><mi>y</mi><mo>+</mo>
+          <mi>c</mi><mi>z</mi>
+        </math>
+      </li>
+      <li>There are some important ways to visualize the dot product:
+        <ul>
+          <li>As a representation of one vector's length when projected onto the axis of another vector. The product <b>a</b>&sdot;<b>b</b> is equal to the signed length of the projection of <b>b</b> onto any line parallel to <b>a</b>, multiplied by the length of <b>a</b>.  Since the product is a signed scalar, a negative value for <b>a</b>&sdot;<b>b</b> indicates <b>b</b> points in the opposite direction from <b>a</b>. If <b>a</b>&sdot;<b>b</b> has zero length, <b>a</b> and <b>b</b> are perpendicular.</li>
+          <li>As a representation of the angle between two vectors, via cosine. Posit that <b>a</b> and <b>b</b> are unit vectors. Therefore, a right triangle can be formed with sides <b>b</b> and <b>a</b>&sdot;<b>b</b>, where <b>b</b> is the hypoteneuse, <b>a</b>&sdot;<b>b</b> is the adjacent side, and &Theta; is the angle between them. Therefore the dot product becomes equivalent to cos &Theta;:
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+          <mfrac><mi>adj</mi><mi>hyp</mi></mfrac>
+          <mo>=</mo>
+          <mfrac>
+            <mrow>
+              <mover><mi>a</mi><mo>^</mo></mover>
+              <mo>&sdot;</mo>
+              <mover><mi>b</mi><mo>^</mo></mover>
+            </mrow>
+            <mn>1</mn>
+          </mfrac>
+          <mo>=</mo>
+          <mover><mi>a</mi><mo>^</mo></mover>
+          <mo>&sdot;</mo>
+          <mover><mi>b</mi><mo>^</mo></mover>
+          <mo>=</mo>
+          <mi>cos</mi><mi>&Theta;</mi>
+        </math>
+        More generally, you can say that the dot product of two vectors (normal or otherwise) is equal to the cosine of the angle &Theta; between them, multiplied by the length of the vectors: <b>a</b>&sdot;<b>b</b> = &Vert;<b>a</b>&Vert; &Vert;<b>b</b>&Vert; cos &Theta;. Solving for &Theta; gives us an easy way to compute the angle between the two vectors:
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+          <mi>&Theta;</mi><mo>=</mo>
+          <mi>arccos</mi>
+          <mfenced open='(' close=')'>
+            <mfrac>
+              <mrow><mi mathvariant="bold">a</mi><mo>&sdot;</mo><mi mathvariant="bold">b</mi></mrow>
+              <mrow>
+                <mo>&Vert;</mo><mi mathvariant="bold">a</mi><mo>&Vert;</mo>
+                <mo>&Vert;</mo><mi mathvariant="bold">b</mi><mo>&Vert;</mo>
+              </mrow>
+            </mfrac>
+          </mfenced>
+        </math>
+          </li>
+        </ul>
+      </li>
+      <li>Projection of a vector onto an axis gives you the displacement on that axis alone, so if you project onto a cardinal axis you get one part of the coordinates that the vector displaces to. Projecting onto a vector <b>x</b> that lies on the <i>x</i>-axis, for instance, gives the units of <i>x</i> that the vector head end displaces to.</li>
+      <li>By projecting <b>b</b> onto <b>a</b>, you can separate <b>b</b> into two parts--the part parallel to <b>a</b> and the part perpendicular to <b>a</b>.</li>
+      <li>Properties of the dot product:
+        <ul>
+          <li>The dot product is commutative: <b>a</b> &sdot; <b>b</b> = <b>b</b> &sdot; <b>a</b></li>
+          <li>The dot product is associative with multiplication by a scalar. <b>a</b> &sdot; (<i>k</i><b>b</b>) = <i>k</i>(<b>a</b> &sdot; <b>b</b>)</li>
+          <li>The dot product is distributive over addition and subtraction: <b>a</b> &sdot; (<b>b</b> + <b>c</b>) = <b>a</b> &sdot; <b>b</b> + <b>a</b> &sdot; <b>c</b></li>
+        </ul>
+      </li>
+    </ul>
+
+    <h3>Tensor / Dyadic Product</h3>
+
+    <p>The tensor product is a special case of the dot product, in which a column vector is multiplied by a row vector to produce a full sized matrix:</p>
+
+    <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+      <mi>a</mi>
+      <mo>&sdot;</mo>
+      <msup><mi>b</mi><mi mathvariant='normal'>T</mi></msup>
+      <mo>=</mo>
+      <mfenced open='[' close=']'>
+        <mtable>
+          <mtr><mtd><msub><mi>a</mi><mn>1</mn></msub></mtd></mtr>
+          <mtr><mtd><mo>&vellip;</mo></mtd></mtr>
+          <mtr><mtd><msub><mi>a</mi><mi>m</mi></msub></mtd></mtr>
+        </mtable>
+      </mfenced>
+      <mo>&sdot;</mo>
+      <mfenced open='[' close=']'>
+        <msub><mi>b</mi><mn>1</mn></msub>
+        <mo>&hellip;</mo>
+        <msub><mi>b</mi><mi>n</mi></msub>
+      </mfenced>
+      <mo>=</mo>
+      <msubsup>
+        <mfenced open='{' close='}' separators=''>
+          <msub><mi>c</mi><mi>ij</mi></msub>
+          <mo>=</mo>
+          <msub><mi>a</mi><mi>ij</mi></msub>
+          <msub><mi>b</mi><mi>ij</mi></msub>
+        </mfenced>
+        <mrow>
+          <mi>i</mi><mo>=</mo><mn>1</mn>
+          <mo>,</mo>
+          <mi>j</mi><mo>=</mo><mn>1</mn>
+        </mrow>
+        <mrow><mi>m</mi><mo>,</mo><mi>n</mi></mrow>
+      </msubsup>
+    </math>
+
+    <h3>Cross Product</h3>
+
+    <ul>
+      <li>The cross product can only be defined in 3 dimensions, and is symbolized <b>a</b> &otimes; <b>b</b>.</li>
+      <li>The equation for the cross product is:
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+          <mfenced open='[' close=']'>
+            <mtable>
+              <mtr><mtd><mi>a</mi></mtd></mtr>
+              <mtr><mtd><mi>b</mi></mtd></mtr>
+              <mtr><mtd><mi>c</mi></mtd></mtr>
+            </mtable>
+          </mfenced>
+          <mo>&otimes;</mo>
+          <mfenced open='[' close=']'>
+            <mtable>
+              <mtr><mtd><mi>x</mi></mtd></mtr>
+              <mtr><mtd><mi>y</mi></mtd></mtr>
+              <mtr><mtd><mi>z</mi></mtd></mtr>
+            </mtable>
+          </mfenced>
+          <mo>=</mo>
+          <mfenced open='[' close=']'>
+            <mtable>
+              <mtr><mtd><mi>b</mi><mi>z</mi><mo>-</mo><mi>c</mi><mi>y</mi></mtd></mtr>
+              <mtr><mtd><mi>c</mi><mi>x</mi><mo>-</mo><mi>a</mi><mi>z</mi></mtd></mtr>
+              <mtr><mtd><mi>a</mi><mi>y</mi><mo>-</mo><mi>b</mi><mi>x</mi></mtd></mtr>
+            </mtable>
+          </mfenced>
+        </math>
+      </li>
+      <li>The cross product is not commutative--it is actually anti-commutative: <b>a</b> &otimes; <b>b</b> = -(<b>b</b> &otimes; <b>a</b>)</li>
+      <li>The cross product is not associative, and in general (<b>a</b> &otimes; <b>b</b>) &otimes; <b>c</b> != <b>a</b> &otimes; (<b>b</b> &otimes; <b>c</b>)</li>
+      <li>Geometrically the cross product yields a vector which is perpendicular to the original two vectors, which are (because any two vectors are) co-planar.</li>
+      <li>The length of the cross product vector is equal to the magnitudes of <b>a</b> and <b>b</b> and the sine of the angle between them:
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+          <mo>&Vert;</mo>
+          <mi mathvariant="bold">a</mi>
+          <mo>&otimes;</mo>
+          <mi mathvariant="bold">b</mi>
+          <mo>&Vert;</mo>
+          <mo>=</mo>
+          <mo>&Vert;</mo><mi mathvariant="bold">a</mi><mo>&Vert;</mo>
+          <mo>&Vert;</mo><mi mathvariant="bold">b</mi><mo>&Vert;</mo>
+          <mo>sin</mo>
+          <mi>&Theta;</mi>
+        </math>
+      </li>
+      <li>The cross product is also the area of the parallelogram formed starting with sides <b>a</b> and <b>b</b> and angle &Theta;</li>
+      <li>If the vectors are parallel, or either is the zero vector, the cross product is the zero vector. The zero vector is parallel to all other vectors under the cross product, in contrast to the dot product which considers it perpendicular to all other vectors.</li>
+      <li>There are two possible directions for <b>a</b> &otimes; <b>b</b> to point given that it is perpendicular to a plane. To determine the direction of the cross product, place the tail of <b>b</b> at the head of <b>a</b>, and determine whether you make a clockwise or counterclockwise turn. In a left handed system, <b>a</b> &otimes; <b>b</b> points towards you on a clockwise turn; right handed systems are the opposite.</li>
+    </ul>
+
+
+    <h3>Axioms, Rules, Identities</h3>
+
+    <p>The following apply for scalars <i>r</i> and <i>s</i> and vectors <b>a</b>, <b>b</b>, and <b>c</b>, and the null vector <b>0</b>.</p>
+
+    <table class="table">
+      <tbody>
+        <tr><th colspan="2">Multiplication of a vector by a scalar</th></tr>
+        <tr>
+          <td><i>r</i><b>a</b> is a vector</td>
+          <td>Existence of the vector by scalar product</td>
+        </tr>
+        <tr>
+          <td>0<b>a</b> = <b>a</b>0 = <b>0</b></td>
+          <td>Existence of the null vector</td>
+        </tr>
+        <tr>
+          <td>1<b>a</b> = <b>a</b>1 = <b>a</b></td>
+          <td>Existence of the neutral element / vector identity</td>
+        </tr>
+        <tr>
+          <td><i>r</i>(<i>s</i><b>a</b>) = (<i>rs</i>)<b>a</b></td>
+          <td>Associative law of vector by scalar multiplication</td>
+        </tr>
+        <tr>
+          <td>
+            (<i>r</i> &plusmn; <i>s</i>)<b>a</b> = <i>r</i><b>a</b> &plusmn; <i>s</i><b>a</b><br>
+            <i>r</i>(<b>a</b> &plusmn; <b>b</b>) = <i>r</i><b>a</b> &plusmn; <i>r</i><b>b</b>
+          </td>
+          <td>Distributive law of vector by scalar multiplication</td>
+        </tr>
+        <tr><th colspan="2">Vector Addition</th></tr>
+        <tr>
+          <td><b>a</b> &plusmn; <b>b</b> is a vector</td>
+          <td>Existence of the vector sum</td>
+        </tr>
+        <tr>
+          <td><b>0</b> &plusmn; <b>a</b> = <b>a</b> &plusmn; <b>0</b> = <b>a</b></td>
+          <td>Existence of the neutral element</td>
+        </tr>
+        <tr>
+          <td><b>a</b> + (-<b>a</b>) = (-<b>a</b>) + <b>a</b> = <b>0</b></td>
+          <td>Existence of the inverse element</td>
+        </tr>
+        <tr>
+          <td><b>a</b> &plusmn; <b>b</b> = <b>b</b> &plusmn; <b>a</b></td>
+          <td>Vector addition is commutative</td>
+        </tr>
+        <tr>
+          <td>(<b>a</b> &plusmn; <b>b</b>) &plusmn; <b>c</b> = <b>a</b> &plusmn; (<b>b</b> &plusmn; <b>c</b>)</td>
+          <td>Vector addition is associative</td>
+        </tr>
+        <tr>
+          <td>-(<b>a</b> - <b>b</b>) = <b>b</b> - <b>a</b></td>
+          <td>Change of direction rule</td>
+        </tr>
+        <tr><th colspan="2">Scalar / Dot Product</th></tr>
+        <tr>
+          <td><b>a</b> &sdot; <b>b</b> = |<b>a</b>| * |<b>b</b>| * cos &Theta;</td>
+          <td>Existence</td>
+        </tr>
+        <tr>
+          <td><b>a</b> &sdot; <b>b</b> = 
+            <i>a</i><sub><i>x</i></sub><i>b</i><sub><i>x</i></sub> +
+            <i>a</i><sub><i>y</i></sub><i>b</i><sub><i>y</i></sub> +
+            <i>a</i><sub><i>z</i></sub><i>b</i><sub><i>z</i></sub></td>
+          <td>Existence by components</td>
+        </tr>
+        <tr>
+          <td><b>a</b>&sup2; = <b>a</b> &sdot; <b>a</b> = |<b>a</b>|&sup2;</td>
+          <td>Powers of a vector</td>
+        </tr>
+        <tr>
+          <td><b>a</b> &sdot; <b>b</b> = <b>b</b> &sdot; <b>a</b></td>
+          <td>Commutative law</td>
+        </tr>
+        <tr>
+          <td>(<i>r</i><b>
+      </tbody>
+    </table>
+    
+  </section>
+  </div>
+  </div>
+
+  <div class="panel panel-default">
+  <div class="panel-body">
+  <section id="coordinate_spaces">
+    <h2>Coordinate Spaces / Basis Vectors</h2>
+
+    <ul>
+      <li>A coordinate space is defined by axes, fundamental vectors which establish cardinal directions and units, and an origin, where those vectors intersect.</li>
+      <li>The position of a coordinate space is defined by the position of its origin relative to any parent coordinate space. Relative to itself, a local coordinate space always has an origin of (0, 0, [0, ..., 0]).</li>
+      <li>Axes (basis vectors) are typically unit vectors.</li>
+      <li>Any vector in a dimensional space can be decomposed into a sequence of axially aligned displacements, as coefficients of the basis vectors for that space:
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+          <mi mathvariant="bold">v</mi>
+          <mo>=</mo>
+          <mi>x</mi>
+          <mi mathvariant="bold">p</mi>
+          <mo>+</mo>
+          <mi>y</mi>
+          <mi mathvariant="bold">q</mi>
+          <mo>+</mo>
+          <mi>z</mi>
+          <mi mathvariant="bold">r</mi>
+        </math>
+      </li>
+      <li>In orthonormal 3D space, the basis vectors are:
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+          <mi mathvariant="bold">p</mi>
+          <mo>=</mo>
+          <mfenced open='[' close=']'><mn>1</mn><mn>0</mn><mn>0</mn></mfenced>
+          <mspace linebreak='newline' />
+          <mi mathvariant="bold">q</mi>
+          <mo>=</mo>
+          <mfenced open='[' close=']'><mn>0</mn><mn>1</mn><mn>0</mn></mfenced>
+          <mspace linebreak='newline' />
+          <mi mathvariant="bold">r</mi>
+          <mo>=</mo>
+          <mfenced open='[' close=']'><mn>0</mn><mn>0</mn><mn>1</mn></mfenced>
+        </math>
+      </li>
+    </ul>
+  </section>
+  </div>
+  </div>
+
+  <div class="panel panel-default">
+  <div class="panel-body">
+  <section id="matrices">
+    <h2>Matrices</h2>
+
+    <ul>
+      <li>A matrix is typically a representation of the coefficients for a system of linear equations, arranged in a grid.</li>
+      <li>Linear systems may be represented in the form <b>Ax</b> = <b>B</b>, where <b>A</b> is a matrix of coefficients, <b>x</b> is a column vector of unknowns, and <b>B</b> is a column vector of constants.</li>
+      <li>The following representations are equivalent:
+        <ul>
+          <li>Algebraic form:
+            <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+              <mtable>
+                <mtr>
+                  <mtd>
+                    <mn>3</mn><mi>x</mi><mo>+</mo><mi>y</mi><mo>-</mo><mn>2</mn><mi>z</mi><mo>=</mo><mn>8</mn>
+                    <mspace linebreak='newline' />
+                    <mo>-</mo><mi>x</mi><mo>+</mo><mn>2</mn><mi>y</mi><mo>+</mo><mn>3</mn><mi>z</mi><mo>=</mo><mn>6</mn>
+                    <mspace linebreak='newline' />
+                    <mn>4</mn><mi>x</mi><mo>+</mo><mn>3</mn><mi>y</mi><mo>-</mo><mi>z</mi><mo>=</mo><mn>2</mn>
+                  </mtd>
+                </mtr>
+              </mtable>
+            </math>
+          </li>
+          <li>Matrix form, row picture:
+            <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+              <mtable>
+                <mtr>
+                  <mtd>
+                    <mfenced open='[' close=']'>
+                      <mtable>
+                        <mtr>
+                          <mtd><mn>3</mn></mtd>
+                          <mtd><mn>1</mn></mtd>
+                          <mtd><mo>-</mo><mn>2</mn></mtd>
+                        </mtr>
+                        <mtr>
+                          <mtd><mo>-</mo><mn>1</mn></mtd>
+                          <mtd><mn>2</mn></mtd>
+                          <mtd><mn>3</mn></mtd>
+                        </mtr>
+                        <mtr>
+                          <mtd><mn>4</mn></mtd>
+                          <mtd><mn>3</mn></mtd>
+                          <mtd><mo>-</mo><mn>1</mn></mtd>
+                        </mtr>
+                      </mtable>
+                    </mfenced>
+                    <mfenced open='[' close=']'>
+                      <mtable>
+                        <mtr><mtd><mi>x</mi></mtd></mtr>
+                        <mtr><mtd><mi>y</mi></mtd></mtr>
+                        <mtr><mtd><mi>z</mi></mtd></mtr>
+                      </mtable>
+                    </mfenced>
+                    <mo>=</mo>
+                    <mfenced open='[' close=']'>
+                      <mtable>
+                        <mtr><mtd><mn>8</mn></mtd></mtr>
+                        <mtr><mtd><mn>6</mn></mtd></mtr>
+                        <mtr><mtd><mn>2</mn></mtd></mtr>
+                      </mtable>
+                    </mfenced>
+                  </mtd>
+                </mtr>
+              </mtable>
+            </math>
+          </li>
+          <li>Matrix form, column picture:
+            <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+              <mi>x</mi>
+              <mfenced open='[' close=']'>
+                <mtable>
+                  <mtr><mtd><mn>3</mn></mtd></mtr>
+                  <mtr><mtd><mo>-</mo><mn>1</mn></mtd></mtr>
+                  <mtr><mtd><mn>4</mn></mtd></mtr>
+                </mtable>
+              </mfenced>
+              <mo>+</mo>
+              <mi>y</mi>
+              <mfenced open='[' close=']'>
+                <mtable>
+                  <mtr><mtd><mn>1</mn></mtd></mtr>
+                  <mtr><mtd><mn>2</mn></mtd></mtr>
+                  <mtr><mtd><mn>3</mn></mtd></mtr>
+                </mtable>
+              </mfenced>
+              <mo>+</mo>
+              <mi>z</mi>
+              <mfenced open='[' close=']'>
+                <mtable>
+                  <mtr><mtd><mo>-</mo><mn>2</mn></mtd></mtr>
+                  <mtr><mtd><mn>3</mn></mtd></mtr>
+                  <mtr><mtd><mo>-</mo><mn>1</mn></mtd></mtr>
+                </mtable>
+              </mfenced>
+              <mo>=</mo>
+              <mfenced open='[' close=']'>
+                <mtable>
+                  <mtr><mtd><mn>8</mn></mtd></mtr>
+                  <mtr><mtd><mn>6</mn></mtd></mtr>
+                  <mtr><mtd><mn>2</mn></mtd></mtr>
+                </mtable>
+              </mfenced>
+            </math>
+          </li>
+        </ul>
+      </li>
+      <li>A matrix is described as being an "<i>m</i> by <i>n</i> matrix," where <i>m</i> is the number of rows and <i>n</i> is the number of columns.</li>
+      <li>Individual elements of matrix <b>A</b> are addressed at <i>a</i><sub><i>ij</i></sub>, where <i>i</i> is the row number and <i>j</i> is the column number.</li>
+    </ul>
+
+    <h3>Matrix Types</h3>
+    <ul>
+      <li><b>Square matrix</b> - where <i>m</i> = <i>n</i></li>
+      <li><b>Column matrix</b> - where <i>n</i> = 1</li>
+      <li><b>Row matrix</b> - where <i>m</i> = 1</li>
+      <li><b>Null / Zero matrix</b> - where all elements = 0, denoted <b>0</b></li>
+      <li><b>Identity matrix</b> - denoted <b>I</b>, a square matrix where all elements <i>i</i>=<i>j</i> are 1 and all elements <i>i</i>!=<i>j</i> are 0.</li>
+      <li><b>Lower triangular matrix</b> - denoted <b>L</b>, a matrix where all elements <i>i</i>&lt;<i>j</i> are 0.</li>
+      <li><b>Upper triangular matrix</b> - denoted <b>U</b>, a matrix where all elements <i>i</i>&gt;<i>j</i> are 0.</li>
+      <li><b>Transpose matrix</b> - for matrix <b>A</b>, denoted <b>A</b><sup>T</sup>. If <b>B</b> = <b>A</b><sup>T</sup>, then all elements <i>b</i><sub><i>ij</i></sub> = <i>a</i><sub><i>ji</i></sub>.</li>
+      <li><b>Symmetric matrix</b> - when <b>A</b><sup>T</sup> = <b>A</b>.</li>
+      <li><b>Skew symmetric / antisymmetric matrix</b> - when <b>A</b><sup>T</sup> = -<b>A</b>.</li>
+    </ul>
+
+    <h3>Matrix Equality</h3>
+
+    <p>Matrix <b>A</b> is equal to matrix <b>B</b> if and only if each element of <b>A</b> is equal to the equivalent element of <b>B</b>:</p>
+ 
+    <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+      <msub>
+        <mi mathvariant="bold">A</mi>
+        <mfenced open='(' close=')'><mi>m</mi><mi>n</mi></mfenced>
+      </msub>
+      <mo>=</mo>
+      <msub>
+        <mi mathvariant="bold">B</mi>
+        <mfenced open='(' close=')'><mi>m</mi><mi>n</mi></mfenced>
+      </msub>
+      <mo>iff</mo>
+      <msub><mi>a</mi><mi>ij</mi></msub>
+      <mo>=</mo>
+      <msub><mi>b</mi><mi>ij</mi></msub>
+      <mo>for</mo>
+      <mi>i</mi>
+      <mo>&isin;</mo>
+      <mfenced open='{' close='}' separators='&hellip;'>
+        <mn>1</mn>
+        <mi>m</mi>
+      </mfenced>
+      <mo>&and;</mo>
+      <mi>j</mi>
+      <mo>&isin;</mo>
+      <mfenced open='{' close='}' separators='&hellip;'>
+        <mn>1</mn>
+        <mi>n</mi>
+      </mfenced>
+    </math>
+
+    <h3>Algebraic Identities</h3>
+
+    <p>The following apply for scalars <i>r</i> and <i>s</i> and matrices <b>A</b>, <b>B</b>, <b>C</b>, and <b>I</b> (the identity matrix).</p>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Identity</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>A</b> &plusmn; <b>B</b> = <b>B</b> &plusmn; <b>A</b></li></td>
+          <td>Addition is commutative</td>
+        </tr>
+        <tr>
+          <td><b>A</b> &plusmn; (<b>B</b> &plusmn; <b>C</b>) = (<b>A</b> &plusmn; <b>B</b>) &plusmn; <b>C</b></td>
+          <td>Addition is associative</td>
+        </tr>
+        <tr>
+          <td><b>A</b> - <b>B</b> = <b>A</b> + (-<b>B</b>)</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>-(-<b>A</b>) = <b>A</b></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><i>s</i>(<b>A</b> &plusmn; <b>B</b>) = <i>s</i><b>A</b> &plusmn; <i>s</i><b>B</b></td>
+          <td>Scalar multiplication is distributive</td>
+        </tr>
+        <tr>
+          <td>(<i>r</i> &plusmn; <i>s</i>)<b>A</b> = <i>r</i><b>A</b> &plusmn; <i>s</i><b>A</b></td>
+          <td>Scalar multiplication is associative</td>
+        </tr>
+        <tr>
+          <td><i>r</i>(<i>s</i><b>A</b>) = <i>s</i>(<i>r</i><b>A</b>) = (<i>rs</i>)<b>A</b></td>
+          <td>Scalar multiplication is commutative</td>
+        </tr>
+        <tr>
+          <td><b>AI</b> = <b>IA</b> = <b>A</b></td>
+          <td>Matrix identity</td>
+        </tr>
+        <tr>
+          <td><b>A</b>(<b>BC</b>) = (<b>AB</b>)<b>C</b></td>
+          <td>Matrix multiplication is associative</td>
+        </tr>
+        <tr>
+          <td>(<b>A</b> &plusmn; <b>B</b>)<b>C</b> = <b>AC</b> &plusmn; <b>BC</b></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>(<i>s</i><b>A</b>)<b>B</b> = <i>s</i>(<b>AB</b>) = <b>A</b>(<i>s</i><b>B</b>)</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>(<b>A</b> &plusmn; <b>B</b>)<sup>T</sup> = <b>A</b><sup>T</sup> &plusmn; <b>B</b><sup>T</sup></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>(<i>s</i><b>A</b>)<sup>T</sup> = <i>s</i><b>A</b><sup>T</sup></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>(<b>AB</b>)<sup>T</sup> = <b>B</b><sup>T</sup><b>A</b><sup>T</sup></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Addition and Subtraction</h3>
+
+    <ul>
+      <li>Addition and subtraction are only defined for matrices of the same dimensions.</li>
+      <li>For <b>A</b> &plusmn; <b>B</b> = <b>C</b>, each element <i>c</i><sub><i>ij</i></sub> = <i>a</i><sub><i>ij</i></sub> &plusmn; <i>b</i><sub><i>ij</i></sub></li>
+      <li>Example:
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+          <mfenced open='[' close=']'>
+            <mtable>
+              <mtr>
+                <mtd><msub><mi>a</mi><mn>11</mn></msub></mtd>
+                <mtd><msub><mi>a</mi><mn>12</mn></msub></mtd>
+                <mtd><msub><mi>a</mi><mn>13</mn></msub></mtd>
+              </mtr>
+              <mtr>
+                <mtd><msub><mi>a</mi><mn>21</mn></msub></mtd>
+                <mtd><msub><mi>a</mi><mn>22</mn></msub></mtd>
+                <mtd><msub><mi>a</mi><mn>23</mn></msub></mtd>
+              </mtr>
+              <mtr>
+                <mtd><msub><mi>a</mi><mn>31</mn></msub></mtd>
+                <mtd><msub><mi>a</mi><mn>32</mn></msub></mtd>
+                <mtd><msub><mi>a</mi><mn>33</mn></msub></mtd>
+              </mtr>
+            </mtable>
+          </mfenced>
+          <mo>&plusmn;</mo>
+          <mfenced open='[' close=']'>
+            <mtable>
+              <mtr>
+                <mtd><msub><mi>b</mi><mn>11</mn></msub></mtd>
+                <mtd><msub><mi>b</mi><mn>12</mn></msub></mtd>
+                <mtd><msub><mi>b</mi><mn>13</mn></msub></mtd>
+              </mtr>
+              <mtr>
+                <mtd><msub><mi>b</mi><mn>21</mn></msub></mtd>
+                <mtd><msub><mi>b</mi><mn>22</mn></msub></mtd>
+                <mtd><msub><mi>b</mi><mn>23</mn></msub></mtd>
+              </mtr>
+              <mtr>
+                <mtd><msub><mi>b</mi><mn>31</mn></msub></mtd>
+                <mtd><msub><mi>b</mi><mn>32</mn></msub></mtd>
+                <mtd><msub><mi>b</mi><mn>33</mn></msub></mtd>
+              </mtr>
+            </mtable>
+          </mfenced>
+          <mo>=</mo>
+          <mfenced open='[' close=']'>
+            <mtable>
+              <mtr>
+                <mtd><msub><mi>a</mi><mn>11</mn></msub><mo>&plusmn;</mo><msub><mi>b</mi><mn>11</mn></msub></mtd>
+                <mtd><msub><mi>a</mi><mn>12</mn></msub><mo>&plusmn;</mo><msub><mi>b</mi><mn>12</mn></msub></mtd>
+                <mtd><msub><mi>a</mi><mn>13</mn></msub><mo>&plusmn;</mo><msub><mi>b</mi><mn>13</mn></msub></mtd>
+              </mtr>
+              <mtr>
+                <mtd><msub><mi>a</mi><mn>21</mn></msub><mo>&plusmn;</mo><msub><mi>b</mi><mn>21</mn></msub></mtd>
+                <mtd><msub><mi>a</mi><mn>22</mn></msub><mo>&plusmn;</mo><msub><mi>b</mi><mn>22</mn></msub></mtd>
+                <mtd><msub><mi>a</mi><mn>23</mn></msub><mo>&plusmn;</mo><msub><mi>b</mi><mn>23</mn></msub></mtd>
+              </mtr>
+              <mtr>
+                <mtd><msub><mi>a</mi><mn>31</mn></msub><mo>&plusmn;</mo><msub><mi>b</mi><mn>31</mn></msub></mtd>
+                <mtd><msub><mi>a</mi><mn>32</mn></msub><mo>&plusmn;</mo><msub><mi>b</mi><mn>32</mn></msub></mtd>
+                <mtd><msub><mi>a</mi><mn>33</mn></msub><mo>&plusmn;</mo><msub><mi>b</mi><mn>33</mn></msub></mtd>
+              </mtr>
+            </mtable>
+          </mfenced>
+        </math>
+      </li>
+    </ul>
+
+    <h3>Multiplication and Division by a Scalar</h3>
+
+    <p>The product of multiplying a matrix by a scalar is a matrix of the same dimension, with each element individually multiplied by the scalar:</p>
+
+    <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+      <msub>
+        <mi mathvariant="bold">B</mi>
+        <mfenced open='(' close=')'><mi>m</mi><mi>n</mi>
+      </msub>
+      <mo>=</mo>
+      <mi>s</mi>
+      <msub>
+        <mi mathvariant="bold">A</mi>
+        <mfenced open='(' close=')'><mi>m</mi><mi>n</mi>
+      </msub>
+      <mo>&#8658;</mo>
+      <msub><mi>b</mi><mi>ij</mi></msub>
+      <mo>=</mo>
+      <msub><mi>a</mi><mi>ij</mi></msub>
+      <mo>&sdot;</mo>
+      <mi>s</mi>
+      <mo>for</mo>
+      <mi>i</mi>
+      <mo>&isin;</mo>
+      <mfenced open='{' close='}' separators='&hellip;'>
+        <mn>1</mn>
+        <mi>m</mi>
+      </mfenced>
+      <mo>&and;</mo>
+      <mi>j</mi>
+      <mo>&isin;</mo>
+      <mfenced open='{' close='}' separators='&hellip;'>
+        <mn>1</mn>
+        <mi>n</mi>
+      </mfenced>
+    </math>
+
+    <p>Division is done by multiplication with the inverse of the scalar.</p>
+
+    <h3>Multiplication by a Vector</h3>
+
+    <h3>Multiplication of Matrices</h3>
+
+    <ul>
+      <li><b>AB</b> is defined for those matrix pairs where <b>A</b> is <i>m</i> by <i>n</i> and <b>B</b> is <i>n</i> by <i>p</i>.</li>
+      <li>The dimensions of the matrix product of <b>AB</b> will be <i>m</i> by <i>p</i>.</li>
+      <li>Each element <i>c</i><sub><i>ij</i></sub> is the sum of the products of each pair <i>a</i><sub><i>ik</i></sub> * <i>b</i><sub><i>kj</i></sub> for k=1 through k=<i>n</i>:
+        <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+          <msub>
+            <mi>c</mi>
+            <mi>ij</mi>
+          </msub>
+          <mo>=</mo>
+          <munderover>
+            <mo>&sum;</mo>
+            <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
+            <mi>n</mi>
+          </munderover>
+          <msub>
+            <mi>a</mi>
+            <mi>ik</mi>
+          </msub>
+          <msub>
+            <mi>b</mi>
+            <mi>kj</mi>
+          </msub>
+        </math>
+      </li>
+      <li>Each element in <i>c</i><sub><i>ij</i></sub> can also be phrased as the dot product of row <i>i</i> of <b>A</b> and column <i>j</i> of <b>B</b>.</li>
+      <li>Each column of <b>C</b> is a combination of the columns of <b>A</b>. Each column of <b>B</b> produces a column in <b>C</b> which is the combination of the columns of <b>A</b>.</li>
+      <li>Each row of <b>C</b> is a combination of the rows of <b>B</b> for the same reasons.</li>
+      <li><b>AB</b> also equals the sum of the columns of <b>A</b> times the rows of <b>B</b>, since each column by row multiplication is a full size matrix, and you can add full size matrices of the same size.</li>
+      <li>It is possible to section matrices into blocks, and do block row times block column multiplication, then recombine them to form the output matrix.</li>
+    </ul>
+
+    <h3>Inverses</h3>
+
+    <h3>Determinants</h3>
+  </section>
+  </div>
+  </div>
+
+  <div class="panel panel-default">
+  <div class="panel-body">
+  <section id="geometric_tests">
+    <h2>Geometric Tests</h2>
+
+    <h3>Point Inclusion Tests</h3>
+
+    <h4>Point in Sphere</h4>
+
+    <p>A sphere may be considered to be a point with a radius. For a sphere S of radius R, and a point P, P is inside S if and only if the distance from P to the center of S is less than R:</p>
+
+    <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+      <mo>(</mo><msub><mi>P</mi><mi>x</mi></msub><mo>-</mo><msub><mi>S</mi><mi>x</mi></msub><mo>)</mo><mo>&sup2;</mo>
+      <mo>+</mo>
+      <mo>(</mo><msub><mi>P</mi><mi>y</mi></msub><mo>-</mo><msub><mi>S</mi><mi>y</mi></msub><mo>)</mo><mo>&sup2;</mo>
+      <mo>+</mo>
+      <mo>(</mo><msub><mi>P</mi><mi>z</mi></msub><mo>-</mo><msub><mi>S</mi><mi>z</mi></msub><mo>)</mo><mo>&sup2;</mo>
+
+      <mo>&lt;</mo>
+      <mi>R</mi>
+      <mo>&sup2;</mo>
+    </math>
+
+    <h4>Point in AABB (Axis-Aligned Bounding Box)</h4>
+
+
+  </section>
+  </div>
+  </div>
+</article>
+</div>
+</body>
+</html>

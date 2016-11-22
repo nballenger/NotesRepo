@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+<article id="physics_for_gamedevs">
+  <header>
+    <h1>Notes on <u>Physics for Game Developers, 2nd Edition</u></h1>
+  </header>
+  
+  <h2>Chapter 1: Basic Concepts</h2>
+
+  <h3>Newton's Laws of Motion</h3>
+
+  <ol>
+    <li>Body at rest tends to remain at rest or continue to move in a straight line at constant velocity unless acted upon by an external force.</li>
+    <li>Acceleration of a body is proportional to the resultant force acting on the body, and this acceleration is in the same direction as the resultant force. Written as F(orce) = m(ass) * a(cceleration)</li>
+    <li>For every force acting on a body (action) there is an equal and opposite reacting force (reaction), where the reaction is collinear to the acting force.</li>
+  </ol>
+
+  <h3>Units and Measures</h3>
+
+  <p>It's vital to use the right units and measures for the right physical attribute.</p>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Quantity</th>
+        <th>Symbol</th>
+        <th>Dimensions</th>
+        <th>Units, SI</th>
+        <th>Units, English</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Acceleration, linear</td>
+        <td>A</td>
+        <td>L/T&sup2;</td>
+        <td>m/s&sup2;</td>
+        <td>ft/s&sup2;</td>
+      </tr>
+      <tr>
+        <td>Acceleration, angular</td>
+        <td>&alpha;</td>
+        <td>radian/T&sup2;</td>
+        <td>radian/s&sup2;</td>
+        <td>radian/s&sup2;</td>
+      </tr>
+      <tr>
+        <td>Density</td>
+        <td>&rho;</td>
+        <td>M/L&sup3;</td>
+        <td>kg/m&sup3;</td>
+        <td>slug/ft&sup3;</td>
+      </tr>
+      <tr>
+        <td>Force</td>
+        <td>F</td>
+        <td>M(L/T)&sup2;</td>
+        <td>newton, N</td>
+        <td>pound, lbs</td>
+      </tr>
+      <tr>
+        <td>Kinematic viscosity</td>
+        <td>&upsilon;</td>
+        <td>L&sup2;/T</td>
+        <td>m&sup2;/s</td>
+        <td>ft&sup2;/s</td>
+      </tr>
+      <tr>
+        <td>Length</td>
+        <td>L (or x,y,z)</td>
+        <td>L</td>
+        <td>m</td>
+        <td>ft</td>
+      </tr>
+      <tr>
+        <td>Mass</td>
+        <Td>m</td>
+        <td>M</td>
+        <td>kg</td>
+        <td>slug</td>
+      </tr>
+      <tr>
+        <td>Moment (torque)</td>
+        <td>M<sup>[a]</sup></td>
+        <td>M(L&sup2;/T&sup2;)</td>
+        <td>N-m</td>
+        <td>ft-lbs</td>
+      </tr>
+      <tr>
+        <td>Mass Moment of Inertia</td>
+        <Td>I</td>
+        <td>ML&sup2;</td>
+        <Td>kg-m&sup2;</td>
+        <td>lbs-ft-s&sup2;</td>
+      </tr>
+      <tr>
+        <td>Pressure</td>
+        <td>P</td>
+        <td>M/LT&sup2;)</td>
+        <td>N/m&sup2;</td>
+        <td>lbs/ft&sup2;</td>
+      </tr>
+      <tr>
+        <td>Time</td>
+        <td>T</td>
+        <td>T</td>
+        <td>seconds, s</td>
+        <td>seconds, s</td>
+      </tr>
+      <tr>
+        <td>Velocity, linear</td>
+        <td>V</td>
+        <td>L/T</td>
+        <td>m/s</td>
+        <td>ft/s</td>
+      </tr>
+      <tr>
+        <td>Velocity, angular</td>
+        <td>&omega;</td>
+        <td>radian/T</td>
+        <td>radian/s</td>
+        <td>radian/s</td>
+      </tr>
+      <tr>
+        <td>Viscosity</td>
+        <Td>&mu;</td>
+        <td>M/(LT)</td>
+        <td>N s/m&sup2;</td>
+        <td>lbs * s/ft&sup2;</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Coordinate System</h3>
+
+  <p>Book uses a standard, right-handed Cartesian coordinate system, in which rotations are measured positive counterclockwise.</p>
+
+  <h3>Vectors</h3>
+
+  <ul>
+    <li>Vector is a quantity with magnitude and direction.</li>
+    <li>Indicated with boldface for the whole vector, standard type for the magnitude only, possibly separated by coordinate axis components. <b>F</b>, F, F<sub>x</sub></li>
+    <li>Asterisk indicated vector dot product</li>
+    <li>Caret indicates vector cross product</li>
+  </ul>
+
+  <h3>Derivatives and Integrals</h3>
+
+  <ul>
+    <li>Derivative is the rate of change in one variable WRT another variable.</li>
+    <li>Integrals are the reverse/inverse, represented by symbol &int;</li>
+  </ul>
+
+  <h3>Mass, Center of Mass, and Moment of Inertia</h3>
+</article>
+</div>
+</body>
+</html>
