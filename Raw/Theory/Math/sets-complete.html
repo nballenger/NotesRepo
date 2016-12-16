@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <title>Set Theory</title>
+  <style type="text/css">
+  body { padding-top: 70px; }
+  .set-name {
+    font-weight: bold;
+    font-style: italic;
+    text-transform: uppercase;
+  }
+  .set-name sup, .set-name sub { text-transform: none; }
+  .element-name {
+    font-style: italic;
+  }
+  .serif {
+    font-family: serif;
+    font-weight: bold;
+  }
+  table.table-no-top-border tbody td { border-top: 0px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <article id="set-theory">
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <a class="navbar-brand" href="#">Math: Set Theory</a>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sets <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#sets-definitions">Definitions</a></li>
+                <li><a href="#sets-notation">Notation</a></li>
+                <li><a href="#sets-notation-declaration">&nbsp;&nbsp;&nbsp;&nbsp;Declaration</a></li>
+                <li><a href="#sets-notation-membership">&nbsp;&nbsp;&nbsp;&nbsp;Membership</a></li>
+                <li><a href="#sets-notation-operations">&nbsp;&nbsp;&nbsp;&nbsp;Operations</a></li>
+                <li><a href="#sets-notation-logic">&nbsp;&nbsp;&nbsp;&nbsp;Logic</a></li>
+                <li><a href="#sets-operations">Operations</a></li>
+                <li><a href="#sets-theorems">Theorems</a></li>
+                <li><a href="#sets-algebra">Algebra</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">The Numeric Sets <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#numeric-sets-notation">Notation</a></li>
+                <li><a href="#numeric-sets-properties">Properties</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Intervals <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#intervals-notation">Notation</a></li>
+                <li><a href="#intervals-properties">Properties</a></li>
+              </ul>
+            </li> 
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Functions <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#functions-notation">Notation</a></li>
+                <li><a href="#functions-properties">Properties</a></li>
+              </ul>
+            </li>           
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div>
+    </nav>
+    <header>
+      <div class="page-header">
+        <h1>Set Theory</h1>
+      </div>
+    </header>
+    
+    <div class="jumbotron">
+      <p>Some summary text here.</p>
+    </div>
+
+		<section id="sets">
+      <header>
+        <h2>Sets</h2>
+      </header>
+      
+      <section id="sets-definitions">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Definitions</h3>
+          </div>
+
+          <div class="panel-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Term</th>
+                  <th>Definition</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>set</th>
+                  <td>A collection with clear and unambiguous rules for membership, 
+                      in which order and multiplicity has no significance.</td>                            
+                </tr>
+                <tr>
+                  <th>element / member</th>
+                  <td>An object in a set.</td>
+                </tr>
+                <tr>
+                  <th>subset</th>
+                  <td>For sets <span class="set-name">A</span> and <span class="set-name">B</span>, <span class="set-name">A</span> is a subset of <span class="set-name">B</span> if every element in <span class="set-name">A</span> also appears in <span class="set-name">B</span>.</td>
+                </tr>
+                <tr>
+                  <th>superset</th>
+                  <td>If <span class="set-name">A</span> is a subset of <span class="set-name">B</span>, then <span class="set-name">B</span> is a superset of <span class="set-name">A</span>.</td>
+                </tr>
+                <tr>
+                  <th>proper subset</th>
+                  <td><span class="set-name">A</span> is a proper subset of <span class="set-name">B</span> if it is both a subset of <span class="set-name">B</span> and not equal to <span class="set-name">B</span>.</td>
+                </tr>
+                <tr>
+                  <th>proper superset</th>
+                  <td><span class="set-name">B</span> is a proper subset of <span class="set-name">A</span> if it is both a superset of <span class="set-name">A</span> and not equal to <span class="set-name">A</span>.</td>
+                </tr>
+                <tr>
+                  <th>null or empty set</th>
+                  <td>The empty set contains no elements, and is denoted &emptyset;.</td>
+                </tr>
+                <tr>
+                  <th>universal set</th>
+                  <td>The universal set is the superset of all elements under consideration, and is denoted <span class="serif">U</span>.</td>
+                </tr>                
+                <tr>
+                  <th>comparable sets</th>
+                  <td>when <span class="set-name">A</span> is a proper superset of <span class="set-name">B</span> (<span class="set-name">A</span> &Superset; <span class="set-name">B</span>) or <span class="set-name">B</span> is a proper superset of <span class="set-name">A</span> (<span class="set-name">B</span> &Superset; <span class="set-name">A</span>)</td>
+                </tr>
+                <tr>
+                  <th>disjoint sets</th>
+                  <td>when <span class="set-name">A</span> and <span class="set-name">B</span> have no common elements</td>
+                </tr>
+                <tr>
+                  <th>closure</th>
+                  <td>A set <span class="set-name">S</span> is closed under operation x if and only if the result of x on two elements of <span class="set-name">S</span> is also an element of <span class="set-name">S</span>.<br /><br />iff &forall;<span class="element-name">s<sub>1</sub></span>,<span class="element-name">s<sub>2</sub></span> &Element; <span class="set-name">S</span> &DoubleRightArrow; (<span class="element-name">s<sub>1</sub></span> [operation x] <span class="element-name">s<sub>2</sub></span>) &Element; <span class="set-name">S</span>
+                  </td>
+                </tr>
+                <tr>
+                  <th>family&nbsp;of&nbsp;indexed&nbsp;sets</th>
+                  <td>
+                    a set <span class="set-name">I</span> whose members index elements of another set <span class="set-name">S</span><br>
+                    Ex: <span class="set-name">S<sub>i</sub></span> = { <span class="element-name">s</span> | <span class="element-name">s</span> = i<sup>n</sup> <sup>&and;</sup>n &Element; &Nopf;<sup>+</sup> } which gives rise to:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="set-name">S<sub>0</sub></span> = { 0<sup>1</sup>, 0<sup>2</sup>, 0<sup>3</sup>, 0<sup>4</sup>,&ctdot; }<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="set-name">S<sub>1</sub></span> = { 1<sup>1</sup>, 1<sup>2</sup>, 1<sup>3</sup>, 1<sup>4</sup>,&ctdot; }<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="set-name">S<sub>2</sub></span> = { 2<sup>1</sup>, 2<sup>2</sup>, 2<sup>3</sup>, 2<sup>4</sup>,&ctdot; }<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&vellip;
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div><!-- /panel-body -->
+        </div><!-- /panel -->      
+      </section>
+      
+      <section id="sets-notation">
+        <div class="panel panel-default" id="sets-notation-declaration">
+        <div class="panel-heading">
+          <h3 class="panel-title">Notation: Set Declaration</h3>
+        </div>
+
+        <div class="panel-body">
+					<table class="table">
+            <thead>
+              <tr>
+                <th>Notation</th>
+                <th>Meaning</th>
+                <th>Entities</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="set-name">A</span> = { 2, 3, 6, 8 }</td>
+                <td colspan="2">set in tabular form</td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="set-name">B</span> = { <span class="element-name">x</span> | <span class="element-name">x</span> is an odd integer }<br />
+                  <span class="set-name">B</span> = { <span class="element-name">x</span> : <span class="element-name">x</span> is an odd integer }<br /> 
+                  <span class="set-name">S</span> = { <span class="element-name">x</span> : &pfr;(<span class="element-name">x</span>) } (where proposition &pfr; holds)
+                </td>
+                <td colspan="2">set in comprehension form</td>
+              </tr>
+              <tr>
+                <td>&pfr;</td>
+                <td>a proposition</td>
+                <td>&pfr;&nbsp;=&nbsp;&amp;pfr;</td>                    
+              </tr>
+              <tr>
+                <td>&emptyset;&nbsp;or&nbsp;{}</td>
+                <td>the null / empty set</td>
+                <td>&emptyset;&nbsp;=&nbsp;&amp;emptyset;</td>
+              </tr>
+              <tr>
+                <td><span class="serif">U</span></td>
+                <td>the universal set (superset of all sets under examination)</td>
+                <td></td>
+              </tr>
+            </tbody>
+					</table>
+				</div>
+      </div>
+
+      <div class="panel panel-default" id="sets-notation-membership">
+        <div class="panel-heading">
+          <h3 class="panel-title">Notation: Set Membership</h3>
+        </div>
+
+        <div class="panel-body">
+					<table class="table">
+            <thead>
+              <tr>
+                <th>Notation</th>
+                <th>Meaning</th>
+                <th>Entities</th>
+              </tr>
+            </thead>
+            <tbody>
+							<tr>
+								<td><span class="element-name">x</span> &Element; <span class="set-name">A</span></td>
+								<td><span class="element-name">x</span> is an element of <span class="set-name">A</span></td>
+								<td>&Element;&nbsp;=&nbsp;&amp;Element;</td>
+							</tr>
+							<tr>
+								<td><span class="element-name">x</span> &NotElement; <span class="set-name">A</span></td>
+								<td><span class="element-name">x</span> is not an element of <span class="set-name">A</span></td>
+								<td>&NotElement;&nbsp;=&nbsp;&amp;NotElement;</td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> &ReverseElement; <span class="element-name">x</span></td>
+								<td><span class="set-name">A</span> contains <span class="element-name">x</span> as a member</td>
+								<td>&ReverseElement;&nbsp;=&nbsp;&amp;ReverseElement;</td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> &NotReverseElement; <span class="element-name">x</span></td>
+								<td><span class="set-name">A</span> does not contain <span class="element-name">x</span> as a member</td>
+								<td>&NotReverseElement;&nbsp;=&nbsp;&amp;NotReverseElement;</td>
+							</tr>    
+							<tr>
+								<td><span class="set-name">A</span> = <span class="set-name">B</span></td>
+								<td><span class="set-name">A</span> contains every <span class="element-name">b</span> and <span class="set-name">B</span> contains every <span class="element-name">a</span></td>
+								<td></td>                        
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> &NotEqual; <span class="set-name">B</span></td>
+								<td><span class="set-name">A</span> does not contain every <span class="element-name">b</span> or <span class="set-name">B</span> does not contain every <span class="element-name">a</span></td>
+								<td>&NotEqual;&nbsp;=&nbsp;&amp;NotEqual;</td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> &SubsetEqual; <span class="set-name">B</span></td>
+								<td><span class="set-name">A</span> is a subset of <span class="set-name">B</span></td>
+								<td>&SubsetEqual;&nbsp;=&nbsp;&amp;SubsetEqual;</td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> &SupersetEqual; <span class="set-name">B</span></td>
+								<td><span class="set-name">A</span> is a superset of <span class="set-name">B</span></td>
+								<td>&SupersetEqual;&nbsp;=&nbsp;&amp;SupersetEqual;</td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> &subset; <span class="set-name">B</span></td>
+								<td><span class="set-name">A</span> is a proper subset of <span class="set-name">B</span></td>
+								<td>&subset;&nbsp;=&nbsp;&amp;subset;</td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> &Superset; <span class="set-name">B</span></td>
+								<td><span class="set-name">A</span> is a proper superset of <span class="set-name">B</span></td>
+								<td>&Superset;&nbsp;=&nbsp;&amp;Superset;</td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> &nsub; <span class="set-name">B</span></td>
+								<td><span class="set-name">A</span> is not a subset of <span class="set-name">B</span></td>
+								<td>&nsub;&nbsp;=&nbsp;&amp;nsub;</td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> &nsup; <span class="set-name">B</span></td>
+								<td><span class="set-name">A</span> is not a superset of <span class="set-name">B</span></td>
+								<td>&nsup;&nbsp;=&nbsp;&amp;nsup;</td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> &nsubseteq; <span class="set-name">B</span></td>
+								<td><span class="set-name">A</span> is not a subset or equal to <span class="set-name">B</span></td>
+								<td>&nsubseteq;&nbsp;=&nbsp;&amp;nsubseteq;</td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> &nsupseteq; <span class="set-name">B</span></td>
+								<td><span class="set-name">A</span> is not a superset or equal to <span class="set-name">B</span></td>
+								<td>&nsupseteq;&nbsp;=&nbsp;&amp;nsupseteq;</td>
+							</tr> 
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel panel-default" id="sets-notation-operations">
+        <div class="panel-heading">
+          <h3 class="panel-title">Notation: Set Operations</h3>
+        </div>
+
+        <div class="panel-body">
+					<table class="table">
+            <thead>
+              <tr>
+                <th>Notation</th>
+                <th>Meaning</th>
+                <th>Entities</th>
+              </tr>
+            </thead>
+            <tbody>
+							<tr>
+								<td><span class="set-name">A</span> &Union; <span class="set-name">B</span></td>
+								<td>union: <span class="set-name">S</span> = { <span class="element-name">x</span> : <span class="element-name">x</span> &Element; <span class="set-name">A</span> &vee; <span class="element-name">x</span> &Element; <span class="set-name">B</span> }</td>
+								<td>&Union;&nbsp;=&nbsp;&amp;Union;</td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> &Intersection; <span class="set-name">B</span></td>
+								<td>intersection: <span class="set-name">S</span> = { <span class="element-name">x</span> : <span class="element-name">x</span> &Element; <span class="set-name">A</span> &and; <span class="element-name">x</span> &Element; <span class="set-name">B</span> }</td>
+								<td>&Intersection;&nbsp;=&nbsp;&amp;Intersection;</td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> - <span class="set-name">B</span></td>
+								<td>set difference: <span class="set-name">A</span> - <span class="set-name">B</span> = { <span class="element-name">x</span> | <span class="element-name">x</span> &Element; <span class="set-name">A</span> &and; <span class="element-name">x</span> &NotElement; <span class="set-name">B</span> }</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A'</span></td>
+								<td>complement of <span class="set-name">A</span>, <span class="serif">U</span> - <span class="set-name">A</span></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A*</span></td>
+								<td>the dual identity of <span class="set-name">A</span> (switch every &Union; for &Intersection; and <span class="serif">U</span> for &emptyset;)</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> &Delta; <span class="set-name">B</span></td>
+								<td>symmetric difference of <span class="set-name">A</span> and <span class="set-name">B</span><br />
+										<span class="element-name">x</span> &Element; <span class="set-name">A</span> + <span class="element-name">x</span> &Element; <span class="set-name">B</span> (in <span class="set-name">A</span> XOR in <span class="set-name">B</span>)<br />
+										<span class="set-name">S</span> = { <span class="element-name">x</span> : (<span class="element-name">x</span> &Element; <span class="set-name">A</span> &and; <span class="element-name">x</span> &NotElement; <span class="set-name">B</span>) &vee; (<span class="element-name">x</span> &NotElement; <span class="set-name">A</span> &and; <span class="element-name">x</span> &Element; <span class="set-name">B</span>) }</td>
+								<td>&Delta;&nbsp;=&nbsp;&amp;Delta;</td>
+							</tr>
+							<tr>
+								<td><span class="set-name">A</span> &times; <span class="set-name">B</span>
+								<td>the cartesian product of <span class="set-name">A</span> and <span class="set-name">B</span></td>
+								<td>&times;&nbsp;=&nbsp;&amp;times;</td>
+							</tr>
+
+							<tr>
+								<td><span class="stacked">&Product;<sup>n</sup><sub>i=1</sub></span><span class="set-name">S<sub>i</sub></span></td>
+								<td>n-ary cartesian product of sets</td>
+								<td>&Product;&nbsp;=&nbsp;&amp;Product;</td>
+							</tr>
+							<tr>
+								<td><span class="stacked">&Union;<sup>n</sup><sub>i=1</sub></span><span class="set-name">S<sub>i</sub></span></td>
+								<td>the generalized set union operation</td>
+								<td>&Union;&nbsp;=&nbsp;&amp;Union;</td>
+							</tr>
+							<tr>
+								<td><span class="stacked">&Intersection;<sup>n</sup><sub>i=1</sub></span><span class="set-name">S<sub>i</sub></span></td>
+								<td>the generalized set intersection operation</td>
+								<td>&Intersection;&nbsp;=&nbsp;&amp;Intersection;</td>
+							</tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel panel-default" id="sets-notation-logic">
+        <div class="panel-heading">
+          <h3 class="panel-title">Notation: Logic</h3>
+        </div>
+
+        <div class="panel-body">
+					<table class="table">
+            <thead>
+              <tr>
+                <th>Notation</th>
+                <th>Meaning</th>
+                <th>Entities</th>
+              </tr>
+            </thead>
+            <tbody>
+							<tr>
+								<td>&and;</td>
+								<td>logical AND</td>
+								<td>&and;&nbsp;=&nbsp;&amp;and;</td>
+							</tr>
+							<tr>
+								<td>&vee;</td>
+								<td>logical OR</td>
+								<td>&vee;&nbsp;=&nbsp;&amp;vee;</td>
+							</tr>
+							<tr>
+								<td>+</td>
+								<td>logical XOR</td>
+								<td></td>
+							</tr>
+
+							<tr>
+								<td>&forall;</td>
+								<td>for all</td>
+								<td>&forall;&nbsp;=&nbsp;&amp;forall;</td>
+							</tr>
+							<tr>
+								<td>&Exists;</td>
+								<td>there exists</td>
+								<td>&Exists;&nbsp;=&nbsp;&amp;Exists;</td>
+							</tr>
+							<tr>
+								<td>&NotExists;</td>
+								<td>there does not exist</td>
+								<td>&NotExists;&nbsp;=&nbsp;&amp;NotExists;</td>
+							</tr>
+							<tr>
+								<td>iff</td>
+								<td>if and only if</td>
+								<td></td>                            
+							</tr>                        
+							<tr>
+								<td>&Therefore;</td>
+								<td>therefore</td>
+								<td>&Therefore;&nbsp;=&nbsp;&amp;Therefore;</td>
+							</tr>
+							<tr>    
+								<td>&because;</td>
+								<td>because</td>
+								<td>&because;&nbsp;=&nbsp;&amp;because;</td>
+							</tr>
+							<tr>
+								<td>&DoubleRightArrow;</td>
+								<td>if..then</td>
+								<td>&DoubleRightArrow;&nbsp;=&nbsp;&amp;DoubleRightArrow;</td>
+							</tr>
+							<tr>
+								<td>&iff;</td>
+								<td>if..then, reciprocally</td>
+								<td>&iff;&nbsp;=&nbsp;&amp;iff;</td>
+							</tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      </section>
+      
+      <section id="sets-operations">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Operations</h3>
+          </div>
+
+          <div class="panel-body">
+            <table class="table table-condensed table-no-top-border">
+              <thead></thead>
+              <tbody>
+                <tr><td colspan="2"><h4>Equality</h4></td></tr>
+                <tr>
+                  <td><span class="set-name">A</span> = <span class="set-name">B</span></td>
+                  <td><i><span class="set-name">A</span> is equal to <span class="set-name">B</span> if every element that appears in <span class="set-name">A</span> also appears in <span class="set-name">B</span>, and every element that appears in <span class="set-name">B</span> also appears in <span class="set-name">A</span>.</i></td>
+                </tr>
+                <tr><td colspan="2"><hr></td></tr>
+                <tr><td colspan="2"><h4>Union</h4></td></tr>
+                <tr>
+                  <td><span class="set-name">A</span> &Union; <span class="set-name">B</span> = { <span class="element-name">x</span> : <span class="element-name">x</span> &Element; <span class="set-name">A</span> &vee; <span class="element-name">x</span> &Element; <span class="set-name">B</span> }</td>
+                  <td><i>The union of <span class="set-name">A</span> and <span class="set-name">B</span> is made of every element that occurs in either <span class="set-name">A</span> or <span class="set-name">B</span>. Therefore:</i></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;<span class="set-name">A</span> &Union; <span class="set-name">B</span> = <span class="set-name">B</span> &Union; <span class="set-name">A</span></td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the union operation is commutative, and</i></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;<span class="set-name">A</span> &SubsetEqual; <span class="set-name">A</span> &Union; <span class="set-name">B</span></td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;<span class="set-name">A</span> is a subset of the union of <span class="set-name">A</span> and <span class="set-name">B</span>, and</i></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;<span class="set-name">B</span> &SubsetEqual; <span class="set-name">A</span> &Union; <span class="set-name">B</span></td>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;<span class="set-name">B</span> is a subset of the union of <span class="set-name">A</span> and <span class="set-name">B</span>.</td>
+                </tr>
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>Generalized Union</h4></td>
+                </tr>
+                <tr>
+                  <td><span class="stacked">&Union;<sup>n</sup><sub>i=1</sub></span><span class="set-name">S<sub>i</sub></span> = <span class="set-name">S<sub>1</sub></span> &Union; <span class="set-name">S<sub>2</sub></span> &Union; <span class="set-name">S<sub>3</sub></span> &Union; &ctdot; &Union; <span class="set-name">S<sub>n</sub></span></td>
+                  <td><i>A generalized union of sets is made of every element that appears in any of the member sets.</i></td>
+                </tr>
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>Intersection</h4></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &Intersection; <span class="set-name">B</span> = { <span class="element-name">x</span> : <span class="element-name">x</span> &Element; <span class="set-name">A</span> &and; <span class="element-name">x</span> &Element; <span class="set-name">B</span> }</td>
+                  <td><i>The intersection of <span class="set-name">A</span> and <span class="set-name">B</span> is made of every element that occurs in both <span class="set-name">A</span> and <span class="set-name">B</span>. Therefore:</i></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;<span class="set-name">A</span> &Intersection; <span class="set-name">B</span> = <span class="set-name">B</span> &Intersection; <span class="set-name">A</span></td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the intersection operation is commutative, and</i></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;(<span class="set-name">A</span> &Intersection; <span class="set-name">B</span>) &SubsetEqual; <span class="set-name">A</span></td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the intersection of <span class="set-name">A</span> and <span class="set-name">B</span> is a subset of <span class="set-name">A</span>, and</i></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;(<span class="set-name">A</span> &Intersection; <span class="set-name">B</span>) &SubsetEqual; <span class="set-name">B</span></td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the intersection of <span class="set-name">A</span> and <span class="set-name">B</span> is a subset of <span class="set-name">B</span>.</i></td>
+                </tr>
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>Generalized Intersection</h4></td>
+                </tr>
+                <tr>
+                  <td><span class="stacked">&Intersection;<sup>n</sup><sub>i=1</sub></span><span class="set-name">S<sub>i</sub></span> = <span class="set-name">S<sub>1</sub></span> &Intersection; <span class="set-name">S<sub>2</sub></span> &Intersection; <span class="set-name">S<sub>3</sub></span> &Intersection; &ctdot; &Intersection; <span class="set-name">S<sub>n</sub></span></td>
+                  <td><i>A generalized intersection of sets is made of every element appearing in all of the member sets.</i></td>
+                </tr>
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>Difference</h4></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> - <span class="set-name">B</span> = { <span class="element-name">x</span> : <span class="element-name">x</span> &Element; <span class="set-name">A</span> &and; <span class="element-name">x</span> &NotElement; <span class="set-name">B</span> }</td>
+                  <td><i>The difference of <span class="set-name">A</span> and <span class="set-name">B</span> is made of every element which appears in <span class="set-name">A</span> and not in <span class="set-name">B</span>. Therefore:</i></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;(<span class="set-name">A</span> - <span class="set-name">B</span>) &SubsetEqual; <span class="set-name">A</span></td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the difference of <span class="set-name">A</span> and <span class="set-name">B</span> is a subset of <span class="set-name">A</span>, and</i></td>
+                </tr>
+                <tr>              
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;(<span class="set-name">A</span> - <span class="set-name">B</span>) &Intersection; (<span class="set-name">A</span> &Intersection; <span class="set-name">B</span>) = &emptyset;</td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the difference of <span class="set-name">A</span> and <span class="set-name">B</span>, when intersected with the intersection of <span class="set-name">A</span> and <span class="set-name">B</span>, produces the null set, and</i></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;(<span class="set-name">B</span> - <span class="set-name">A</span>) &Intersection; (<span class="set-name">A</span> &Intersection; <span class="set-name">B</span>) = &emptyset;</td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the difference of <span class="set-name">B</span> and <span class="set-name">A</span>, when intersected with the intersection of <span class="set-name">A</span> and <span class="set-name">B</span>, produces the null set, and</i></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;(<span class="set-name">B</span> - <span class="set-name">A</span>) &Intersection; (<span class="set-name">A</span> - <span class="set-name">B</span>) = &emptyset;</td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the difference of <span class="set-name">B</span> and <span class="set-name">A</span>, intersected with the difference of <span class="set-name">A</span> and <span class="set-name">B</span>, produces the null set.</i></td>
+                </tr>
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>Cartesian Product</h4></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &times; <span class="set-name">B</span> = { (a,b) | a &Element; <span class="set-name">A</span> &and; b &Element; <span class="set-name">B</span> }</td>
+                  <td><i>The cartesian product of <span class="set-name">A</span> and <span class="set-name">B</span> is an ordered series of pairs (a,b), where element a is drawn from <span class="set-name">A</span> and element b is drawn from <span class="set-name">B</span>.</i></td>
+                </tr>
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>N-ary Cartesian Product</h4></td>
+                </tr>
+                <tr>
+                  <td><span class="stacked">&Product;<sup>n</sup><sub>i=1</sub></span><span class="set-name">S<sub>i</sub></span> = <span class="set-name">S<sub>1</sub></span> &times; <span class="set-name">S<sub>2</sub></span> &times; &ctdot; &times; <span class="set-name">S<sub>n</sub></span> = { (<span class="element-name">s<sub>1</sub></span>,<span class="element-name">s<sub>2</sub></span>,&ctdot;,<span class="element-name">s<sub>n</sub></span>) | <span class="element-name">s<sub>1</sub></span> &Element; <span class="set-name">S<sub>1</sub></span> &and; <span class="element-name">s<sub>2</sub></span> &Element; <span class="set-name">S<sub>2</sub></span> &and; &ctdot; &and; <span class="element-name">s<sub>n</sub></span> &Element; <span class="set-name">S<sub>n</sub></span> }</td>
+                  <td><i>The n-ary cartesian product of a series of sets is an ordered series of tuples of length n, where each element is drawn from the input sets in order.</i></td>
+                </tr>
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>Symmetric Difference</h4></td>
+                </tr>            
+                <tr>
+                  <td><span class="set-name">A</span>&nbsp;&Delta;&nbsp;<span class="set-name">B</span> = { <span class="element-name">x</span> : (<span class="element-name">x</span> &Element; <span class="set-name">A</span> &and; <span class="element-name">x</span> &NotElement; <span class="set-name">B</span>) &vee; (<span class="element-name">x</span> &NotElement; <span class="set-name">A</span> &and; <span class="element-name">x</span> &Element; <span class="set-name">B</span>) }</td>
+                  <td><i>The symmetric difference of <span class="set-name">A</span> and <span class="set-name">B</span> is made of all elements which appear in <span class="set-name">A</span> but not <span class="set-name">B</span>, or which appear in <span class="set-name">B</span> but not <span class="set-name">A</span> or, stated differently</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span>&nbsp;&Delta;&nbsp;<span class="set-name">B</span> = (<span class="set-name">A</span> &Intersection; <span class="set-name">B'</span>) &Union; (<span class="set-name">A'</span> &Intersection; <span class="set-name">B</span>)</td>
+                  <td><i>&hellip;the union of <span class="set-name">A</span> intersected with the complement of <span class="set-name">B</span> and the complement of <span class="set-name">A</span> intersected with <span class="set-name">B</span>, or</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span>&nbsp;&Delta;&nbsp;<span class="set-name">B</span> = (<span class="set-name">A</span> - <span class="set-name">B</span>) &Union; (<span class="set-name">B</span> - <span class="set-name">A</span>)</td>
+                  <td><i>&hellip;the union of the difference of <span class="set-name">A</span> and <span class="set-name">B</span> with the difference of <span class="set-name">B</span> and <span class="set-name">A</span>, or</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span>&nbsp;&Delta;&nbsp;<span class="set-name">B</span> = (<span class="set-name">A</span> &Union; <span class="set-name">B</span>) - (<span class="set-name">B</span> &Intersection; <span class="set-name">A</span>)</td>
+                  <td><i>&hellip;the difference between the union of <span class="set-name">A</span> and <span class="set-name">B</span> and the intersection of <span class="set-name">B</span> and <span class="set-name">A</span>. Therefore:</i></td>
+                </tr>
+                <tr>              
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;<span class="set-name">A</span> &Delta; <span class="set-name">B</span> = <span class="set-name">B</span> &Delta; <span class="set-name">A</span></td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the symmetric difference operation is commutative, and</i></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;(<span class="set-name">A</span> &Delta; <span class="set-name">B</span>) &Delta; <span class="set-name">C</span> = <span class="set-name">A</span> &Delta; (<span class="set-name">B</span> &Delta; <span class="set-name">C</span>)</td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the symmetric difference operation is associative, and</i></td>
+                </tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;<span class="set-name">A</span> &Intersection; (<span class="set-name">B</span> &Delta; <span class="set-name">C</span>) = (<span class="set-name">A</span> &Intersection; <span class="set-name">B</span>) &Delta; (<span class="set-name">A</span> &Intersection; <span class="set-name">C</span>)</td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the intersection operation is distributive over symmetric difference, and</i></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;<span class="set-name">A</span> &Delta; &emptyset; = <span class="set-name">A</span></td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the symmetric difference of a set with the null set is the set itself, and</i></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;<span class="set-name">A</span> &Delta; <span class="set-name">A</span> = &emptyset;</td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the symmetric difference of a set with itself is the null set.</i></td>
+                </tr>
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>Complement</h4></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A'</span> = <span class="set-name">A<sup>c</sup></span> = <span class="serif">U</span> - <span class="set-name">A</span> = { <span class="element-name">x</span> | <span class="element-name">x</span> &Element; <span class="serif">U</span> &and; <span class="element-name">x</span> &NotElement; <span class="set-name">A</span> }</td>
+                  <td><i>The complement of a set <span class="set-name">A</span> is made of all elements in the universal set which do not appear in <span class="set-name">A</span> itself. Therefore:</i></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;<span class="set-name">A</span> &Union; <span class="set-name">A'</span> = <span class="serif">U</span></td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the union of a set and its complement is the universal set, and</i></td>
+                </tr>
+                <tr>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&Therefore;&nbsp;<span class="set-name">A</span> &Intersection; <span class="set-name">A'</span> = &emptyset;</td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the intersection of a set and its complement is the null set.</i></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>      
+      </section>
+      
+      <section id="sets-theorems">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Theorems on Comparable Sets</h3>
+          </div>
+
+          <div class="panel-body">      
+            <table class="table table-condensed table-no-top-border">
+              <thead></thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td><i>For the following, if <span class="set-name">A</span> is a subset of <span class="set-name">B</span>, then:</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &SubsetEqual; <span class="set-name">B</span> &DoubleRightArrow; <span class="set-name">A</span> &Intersection; <span class="set-name">B</span> = <span class="set-name">A</span></td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the intersection of <span class="set-name">A</span> and <span class="set-name">B</span> is equal to <span class="set-name">A</span>, and</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &SubsetEqual; <span class="set-name">B</span> &DoubleRightArrow; <span class="set-name">A</span> &Union; <span class="set-name">B</span> = <span class="set-name">B</span></td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the union of <span class="set-name">A</span> and <span class="set-name">B</span> is equal to <span class="set-name">B</span>, and</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &SubsetEqual; <span class="set-name">B</span> &DoubleRightArrow; <span class="set-name">B'</span> &SubsetEqual; <span class="set-name">A'</span></td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the complement of <span class="set-name">B</span> is a subset of the complement of <span class="set-name">A</span>, and</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &SubsetEqual; <span class="set-name">B</span> &DoubleRightArrow; <span class="set-name">A</span> &Union; (<span class="set-name">B</span> - <span class="set-name">A</span>) = <span class="set-name">B</span></td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the union of <span class="set-name">A</span> with the difference of <span class="set-name">B</span> and <span class="set-name">A</span> is equal to <span class="set-name">B</span>, and</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &SubsetEqual; <span class="set-name">B</span> &DoubleRightArrow; (<span class="set-name">B</span> - <span class="set-name">A</span>) = (<span class="set-name">B</span> &Intersection; <span class="set-name">A'</span>)</td>
+                  <td><i>&nbsp;&nbsp;&nbsp;&nbsp;&hellip;the difference of <span class="set-name">B</span> and <span class="set-name">A</span> is equal to the union of <span class="set-name">B</span> and the complement of <span class="set-name">A</span>.</i></td>
+                </tr>
+              </tbody>
+            </table>   
+          </div>
+        </div>
+      </section>
+      
+      <section id="sets-algebra">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Rules of Algebra for Sets</h3>
+          </div>
+
+          <div class="panel-body">      
+            <p>Given universe <span class="serif">U</span> and subsets <span class="set-name">A</span>, <span class="set-name">B</span>, and <span class="set-name">C</span>, and rules &Union;, &Intersection;, and <span class="set-name">S'</span>:</p>
+
+            <table class="table table-condensed table-no-top-border">
+              <thead></thead>
+              <tbody>   
+                <tr>
+                  <td colspan="2"><h4>Identity Rules</h4></td>
+                </tr>   
+                <tr>
+                  <td><span class="set-name">A</span> &Union; &emptyset; = <span class="set-name">A</span></td>
+                  <td><i>The union of a set <span class="set-name">A</span> with the empty set is <span class="set-name">A</span>.</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &Intersection; <span class="serif">U</span> = <span class="set-name">A</span></td>
+                  <td><i>The intersection of a set <span class="set-name">A</span> with the universal set is <span class="set-name">A</span>.</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &Union; <span class="serif">U</span> = <span class="serif">U</span></td>
+                  <td><i>The union of a set <span class="set-name">A</span> with the universal set is the universal set.</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &Intersection; &emptyset; = &emptyset;</td>
+                  <td><i>The intersection of a set <span class="set-name">A</span> with the empty set is the empty set.</i></td>
+                </tr>
+
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>Complement Rules</h4></td>
+                </tr>   
+                <tr>
+                  <td><span class="set-name">A</span> &Union; <span class="set-name">A'</span> = <span class="serif">U</span></td>
+                  <td><i>The union of a set with its complement is the universal set.</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &Intersection; <span class="set-name">A'</span> = &emptyset;</td>
+                  <td><i>The intersection of a set with its complement is the empty set.</i></td>
+                </tr>
+                <tr>
+                  <td><span class="serif">U'</span> = &emptyset;</td>
+                  <td><i>The complement of the universal set is the empty set.</i></td>
+                </tr>
+                <tr>
+                  <td>&emptyset;' = <span class="serif">U</span></td>
+                  <td><i>The complement of the empty set is the universal set.</i></td>
+                </tr>
+                <tr>
+                  <td>(<span class="set-name">A'</span>)' = <span class="set-name">A</span></td>
+                  <td><i>The complement of a set's complement is the set itself.</i></td>
+                </tr>
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>Idempotent Rules</h4></td>
+                </tr>   
+                <tr>
+                  <td><span class="set-name">A</span> &Union; <span class="set-name">A</span> = <span class="set-name">A</span></td>
+                  <td><i>The union of a set with itself is the set itself.</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &Intersection; <span class="set-name">A</span> = <span class="set-name">A</span></td>
+                  <td><i>The intersection of a set with itself is the set itself.</i></td>
+                </tr>                                    
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>Commutative Rules</h4></td>
+                </tr>   
+                <tr>
+                  <td><span class="set-name">A</span> &Union; <span class="set-name">B</span> = <span class="set-name">B</span> &Union; <span class="set-name">A</span></td>
+                  <td><i>Union operations are commutative.</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &Intersection; <span class="set-name">B</span> = <span class="set-name">B</span> &Intersection; <span class="set-name">A</span></td>
+                  <td><i>Intersection operations are commutative.</i></td>
+                </tr>                
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>Associative Rules</h4></td>
+                </tr>
+                <tr>
+                  <td>(<span class="set-name">A</span> &Union; <span class="set-name">B</span>) &Union; <span class="set-name">C</span> = <span class="set-name">A</span> &Union; (<span class="set-name">B</span> &Union; <span class="set-name">C</span>)</td>
+                  <td><i>Union operations are associative.</i></td>
+                </tr>
+                <tr>
+                  <td>(<span class="set-name">A</span> &Intersection; <span class="set-name">B</span>) &Intersection; <span class="set-name">C</span> = <span class="set-name">A</span> &Intersection; (<span class="set-name">B</span> &Intersection; <span class="set-name">C</span>)</td>
+                  <td><i>Intersection operations are associative.</i></td>
+                </tr>                   
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>Distributive Rules</h4></td>
+                </tr>   
+                <tr>
+                  <td><span class="set-name">A</span> &Union; (<span class="set-name">B</span> &Intersection; <span class="set-name">C</span>) = (<span class="set-name">A</span> &Union; <span class="set-name">B</span>) &Intersection; (<span class="set-name">A</span> &Union; <span class="set-name">C</span>)</td>
+                  <td><i>Union operations are distributive over intersections.</i></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &Intersection; (<span class="set-name">B</span> &Union; <span class="set-name">C</span>) = (<span class="set-name">A</span> &Intersection; <span class="set-name">B</span>) &Union; (<span class="set-name">A</span> &Intersection; <span class="set-name">C</span>)</td>
+                  <td><i>Intersection operations are distributive over unions.</i></td>
+                </tr>                
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>DeMorgan Rules</h4></td>
+                </tr>   
+                <tr>
+                  <td>(<span class="set-name">A</span> &Union; <span class="set-name">B</span>)' = <span class="set-name">A'</span> &Intersection; <span class="set-name">B'</span></td>
+                  <td><i>The complement of a union between two sets is equal to the intersection of those sets' complements.</i></td>
+                </tr>
+                <tr>
+                  <td>(<span class="set-name">A</span> &Intersection; <span class="set-name">B</span>)' = <span class="set-name">A'</span> &Union; <span class="set-name">B'</span></td>
+                  <td><i>The complement of an intersection between two sets is equal to the union of those sets' complements.</i></td>
+                </tr>                  
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>Sub- and Supersets Under These Rules</h4></td>
+                </tr>
+                <tr>
+                  <td><span class="set-name">A</span> &SubsetEqual; <span class="set-name">B</span> &vee; <span class="set-name">B</span> &SupersetEqual; <span class="set-name">A</span> &DoubleRightArrow; <span class="set-name">A</span> &Intersection; <span class="set-name">B</span> = <span class="set-name">A</span></td>
+                  <td><i>If <span class="set-name">A</span> is a subset of <span class="set-name">B</span>, then the intersection of <span class="set-name">A</span> and <span class="set-name">B</span> is <span class="set-name">A</span>.</i></td>
+                </tr>
+                <tr><td colspan="2"><hr></td></tr>
+                <tr>
+                  <td colspan="2"><h4>Proper Sub- and Supersets Under These Rules</h4></td>
+                </tr>   
+                <tr>
+                  <td><span class="set-name">A</span> &subset; <span class="set-name">B</span> &vee; <span class="set-name">B</span> &Superset; <span class="set-name">A</span> &DoubleRightArrow; <span class="set-name">A</span> &Intersection; <span class="set-name">B</span> = <span class="set-name">A</span> &and; <span class="set-name">B</span> - <span class="set-name">A</span> = &emptyset;</td>
+                  <td><i>If <span class="set-name">A</span> is a proper subset of <span class="set-name">B</span>, then the intersection of <span class="set-name">A</span> and <span class="set-name">B</span> is <span class="set-name">A</span>, and additionally the difference of <span class="set-name">B</span> and <span class="set-name">A</span> is non-empty.</i></td>
+                </tr>                
+              </tbody>
+            </table>
+          </div>
+        </div>    
+      </section>
+    </section>
+    
+    <section id="numeric-sets">
+      <header>
+        <h2>The Numeric Sets</h2>
+      </header>
+      
+      <section id="numeric-sets-notation">
+        <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Notation</h3>
+        </div>
+
+        <div class="panel-body">
+					<table class="table">
+            <thead>
+              <tr>
+                <th>Notation</th>
+                <th>Meaning</th>
+                <th>Entities</th>
+              </tr>
+            </thead>
+            <tbody>
+							<tr>
+								<td>&Nopf;</td>
+								<td>Natural numbers {0, 1, 2, 3, ... }</td>
+								<td>&Nopf;&nbsp;=&nbsp;&amp;Nopf;</td>
+							</tr>
+							<tr>
+								<td>&Nopf;<sup>+</sup></td>
+								<td>Positive natural numbers {1, 2, 3, ... }</td>
+								<td>&Nopf;&nbsp;=&nbsp;&amp;Nopf;</td>
+							</tr>
+							<tr>
+								<td>&Zopf;</td>
+								<td>Integers {..., -3, -2, -1, 0, 1, 2, 3, ...}</td>
+								<td>&Zopf;&nbsp;=&nbsp;&amp;Zopf;</td>
+							</tr>
+							<tr>
+								<td>&Qopf;</td>
+								<td>Rational numbers, expressible as the ratio of two integers (divisor&NotEqual;0)</td>
+								<td>&Qopf;&nbsp;=&nbsp;&amp;Qopf;</td>
+							</tr>
+							<tr>
+								<td>&Qopf;'</td>
+								<td>Irrational numbers, those with non-periodic decimal expansions</td>
+								<td>&Qopf;&nbsp;=&nbsp;&amp;Qopf;</td>
+							</tr>
+							<tr>
+								<td>&Ropf;</td>
+								<td>Real numbers, numbers with a 1:1 correspondence with a number line</td>
+								<td>&Ropf;&nbsp;=&nbsp;&amp;Ropf;</td>
+							</tr>
+							<tr>
+								<td>&Copf;</td>
+								<td>Complex numbers, { <span class="element-name">x</span> | <span class="element-name">x</span> = a+bi &and; a,b &Element; &Ropf; &and; i = &radic;-1 }</td>
+								<td>&Copf;&nbsp;=&nbsp;&amp;Copf;</td>
+							</tr>
+							<tr>
+								<td>&Aopf;</td>
+								<td>Algebraic numbers: real numbers that are the solution of a polynomial with integer coefficients of the form<br>
+								c<sub>n</sub>x<sup>n</sup> + c<sub>n-1</sub>x<sup>n-1</sup> + c<sub>n-2</sub>x<sup>n-2</sup> + &ctdot; + c<sub>2</sub>x<sup>2</sup> + c<sub>1</sub>x<sup>1</sup> + c<sub>0</sub>x<sup>0</sup><br>
+								for n &gt; 0 where c<sub>i</sub> &Element; &Zopf; &and; c<sub>n</sub> &NotEqual; 0</td>
+								<td>&Aopf;&nbsp;=&nbsp;&amp;Aopf;</td>
+							</tr>
+							<tr>
+								<td>&Topf;</td>
+								<td>Transcendental numbers, irrational numbers that are not the solution of any polynomial equation with integer coefficients, like &pi;, e, sin(&pi;), cos(2&pi;), tan(&pi;/4)</td>
+								<td>&Topf;&nbsp;=&nbsp;&amp;Topf;</td>
+							</tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      </section>
+      
+      <section id="numeric-sets-properties">
+        <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Properties</h3>
+        </div>
+
+        <div class="panel-body">
+              <ul>
+                  <li>&Nopf;, natural numbers:
+                      <ul>
+                          <li>Closed under addition and multiplication.</li>
+                      </ul>
+                  </li>
+                  <li>&Zopf;, integer numbers:
+                      <ul>
+                          <li>Union of &Nopf; and whole negative numbers.</li>
+                          <li>Closed under addition, multiplication, and subtraction.</li>
+                      </ul>
+                  </li>
+              
+                  <li>&Qopf;, rational numbers:
+                      <ul>
+                          <li>&Qopf; = { <span class="element-name">x</span> | <span class="element-name">x</span> = a/b &and; a,b &Element; &Zopf; &and; b &NotEqual; 0 }</li>
+                          <li>All numbers that can be expressed as the ratio of two integers, where the divisor is nonzero.</li>
+                          <li>All rational numbers have a periodic decimal expansion.</li>
+                          <li>Closed under addition, subtraction, multiplication, and nonzero division.</li>
+                      </ul>
+                  </li>
+                  <li>&Qopf;', irrational numbers:
+                      <ul>
+                          <li>Numbers with non-periodic decimal expansions.</li>
+                      </ul>
+                  </li>
+                  <li>&Ropf;, real numbers:
+                      <ul>
+                          <li>Loosely defined as the set of numbers with a 1:1 relationship with evenly spaced points on a straight line.</li>
+                          <li>Closed under addition, subtraction, multiplication, and division.</li>
+                      </ul>
+                  </li>
+
+                  <li>&Copf;, complex numbers:
+                      <ul>
+                          <li>&Copf; &subset; &Ropf;</li>
+                          <li>Complex numbers are those in which all non-constant polynomials have real roots.</li>
+                          <li>&Copf; = { <span class="element-name">x</span> | <span class="element-name">x</span> = a + bi &and; a,b &Element; &Ropf; &and; i = &sqrt;-1 }</li>
+                      </ul>
+                  </li>
+                  <li>&Aopf;, algebraic numbers:
+                      <ul>
+                          <li>Any real number that is the solution of a polynomial with integer coefficients of the form <br /><br />&nbsp;&nbsp;&nbsp;&nbsp;c<sub>n</sub>x<sup>n</sup> + c<sub>n-1</sub>x<sup>n-1</sup> + c<sub>n-2</sub>x<sup>n-2</sup> + &ctdot; + c<sub>2</sub>x<sup>2</sup> + c<sub>1</sub>x<sup>1</sup> + c<sub>0</sub>x<sup>0</sup> = 0<br /><br />
+                          for n > 0 where c<sub>i</sub> are integer coefficients and c<sub>n</sub> &NotEqual; 0</li>
+                      </ul>
+                  </li>
+                  <li>&Topf;, transcendental numbers:
+                      <ul>
+                          <li>Any irrational number that is not the solution of any polynomial equation with integer coefficients.</li>
+                          <li>Examples are &pi;, e, sin(&pi;), cos(2&pi;), tan(&pi;/4)</li>
+                          <li>&Ropf; = &Aopf; &Union; &Topf;</li>
+                      </ul>
+                  </li>
+              </ul>      
+            </div>
+          </div>
+      </section>
+    </section>
+    
+    <section id="intervals">
+      <header>
+        <h2>Intervals</h2>
+      </header>
+
+      <section id="intervals-notation">
+        <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Intervals</h3>
+        </div>
+
+        <div class="panel-body">
+					<table class="table">
+            <thead>
+              <tr>
+                <th>Notation</th>
+                <th>Meaning</th>
+                <th>Entities</th>
+              </tr>
+            </thead>
+            <tbody>
+							<tr>
+								<td>(...)</td>
+								<td>open bounded set</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>[...]</td>
+								<td>closed bounded set</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>(...]<br>[...)</td>
+								<td>mixed bounded sets</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>&infin;</td>
+								<td>infinity</td>
+								<td>&infin;&nbsp;=&nbsp;&amp;infin;</td>
+							</tr>
+							<tr>
+								<td>&Ffr;</td>
+								<td>family of all real number intervals including singleton and zero length</td>
+								<td>&Ffr;&nbsp;=&nbsp;&amp;Ffr;</td>
+							</tr>
+	          </tbody>
+          </table>
+        </div>
+      </div>      
+      </section>
+      
+      <section id="intervals-properties">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Properties of Ordering Relations / Inequalities</h3>
+          </div>
+
+          <div class="panel-body">
+                <p>Given real numbers a and b, their ordering relations may be:</p>
+                <ul>
+                    <li>a = b</li>
+                    <li>a &gt; b</li>
+                    <li>a &lt; b</li>
+                    <li>a &ge; b</li>
+                    <li>a &le; b</li>
+                </ul>
+                
+                <p>Inequalities of real numbers have these properties:</p>
+                <table>
+                    <tr>
+                        <th>Reflexivitiy</th>
+                        <td>a &le; a</td>                        
+                    </tr>
+                    <tr>
+                        <th>Trichotomy</th>
+                        <td>a &lt; b XOR a = b XOR a &gt; b</td>
+                    </tr>
+                    <tr>
+                        <th>Antisymmetry</th>
+                        <td>a &le; b &and; b &le; a &DoubleRightArrow; a = b</td>
+                    </tr>
+                    <tr>
+                        <th>Transitivity</th>
+                        <td>a &le; b &and; b &le; c &DoubleRightArrow; a &le; c</td>
+                    </tr>
+                    <tr>
+                        <th>Addition/Subtraction</th>
+                        <td>
+                            a &le; b &DoubleRightArrow; a + c &le; b + c<br />
+                            a &le; b &DoubleRightArrow; a - c &le; b - c<br />
+                            a &ge; b &DoubleRightArrow; a + c &ge; b + c<br />
+                            a &ge; b &DoubleRightArrow; a - c &ge; b - c
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Multiplication/Division</th>
+                        <td>
+                            a &le; b &and; c &ge; 0 &DoubleRightArrow; ac &le; bc<br>
+                            a &ge; b &and; c &ge; 0 &DoubleRightArrow; ac &ge; bc<br>
+                            a &le; b &and; c &le; 0 &DoubleRightArrow; ac &ge; bc<br>
+                            a &ge; b &and; c &le; 0 &DoubleRightArrow; ac &le; bc<br><br>
+                            a &le; b &and; c &ge; 0 &DoubleRightArrow; a/c &le; b/c<br>
+                            a &ge; b &and; c &ge; 0 &DoubleRightArrow; a/c &ge; b/c<br>
+                            a &le; b &and; c &le; 0 &DoubleRightArrow; a/c &ge; b/c<br>
+                            a &ge; b &and; c &le; 0 &DoubleRightArrow; a/c &le; b/c
+                        </td>
+                    </tr>
+                </table>
+                <br />
+                <p>Given a,b &Element; &Ropf; &and; a &le; b, the following intervals can be defined:</p>
+                <table>
+                    <tr>
+                        <th>bounded:</th>
+                        <td>
+                        I<sub>1</sub> = (a,b) = { <span class="element-name">x</span> | a &lt; <span class="element-name">x</span> &lt; b }<br />
+                        I<sub>2</sub> = [a,b] = { <span class="element-name">x</span> | a &le; <span class="element-name">x</span> &le; b }<br />
+                        I<sub>3</sub> = (a,b] = { <span class="element-name">x</span> | a &lt; <span class="element-name">x</span> &le; b }<br />
+                        I<sub>4</sub> = [a,b) = { <span class="element-name">x</span> | a &le; <span class="element-name">x</span> &lt; b }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>unbounded:</th>
+                        <td>
+                        I<sub>5</sub> = (-&infin;,b) = { <span class="element-name">x</span> | <span class="element-name">x</span> &lt; b }<br />
+                        I<sub>6</sub> = [-&infin;,b] = { <span class="element-name">x</span> | <span class="element-name">x</span> &le; b }<br />
+                        I<sub>7</sub> = (a,&infin;] = { <span class="element-name">x</span> | a &lt; <span class="element-name">x</span> }<br />
+                        I<sub>8</sub> = [a,&infin;) = { <span class="element-name">x</span> | a &le; <span class="element-name">x</span> }<br />                        
+                        I<sub>9</sub> = (-&infin;,&infin;) = { <span class="element-name">x</span> | <span class="element-name">x</span> &Element; &Ropf; }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>degenerate:</th>
+                        <td>
+                        I<sub>10</sub> = { a } (singleton set)<br />
+                        I<sub>11</sub> = &emptyset; (zero length interval)
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <p>For the family of all real number intervals, &Ffr;, given two intervals I<sub>1</sub> and I<sub>2</sub>:<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;I<sub>1</sub>,I<sub>2</sub> &Element; &Ffr; &DoubleRightArrow; I<sub>1</sub> &Intersection; I<sub>2</sub> &Element; &Ffr;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;I<sub>1</sub>,I<sub>2</sub> &Element; &Ffr; &and; I<sub>1</sub> &Intersection; I<sub>2</sub> &NotEqual; &emptyset; &DoubleRightArrow; I<sub>1</sub> &Union; I<sub>2</sub> &Element; &Ffr;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;I<sub>1</sub>,I<sub>2</sub> &Element; &Ffr; &and; I<sub>1</sub> &nsub; I<sub>2</sub> &and; I<sub>2</sub> &nsub; I<sub>1</sub> &DoubleRightArrow; (I<sub>1</sub> - I<sub>2</sub>) &Element; &Ffr;<br />
+                </p>                
+                
+                <p>Given two closed, real number intervals A = [a<sub>L</sub>,a<sub>U</sub>] and B = [b<sub>L</sub>,b<sub>U</sub>], arithmetic operations are:<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;C = [a<sub>L</sub>,a<sub>U</sub>] + [b<sub>L</sub>,b<sub>U</sub>] = [a<sub>L</sub> + b<sub>L</sub>, a<sub>U</sub> + b<sub>U</sub>]<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;C = [a<sub>L</sub>,a<sub>U</sub>] - [b<sub>L</sub>,b<sub>U</sub>] = [a<sub>L</sub> - b<sub>L</sub>, a<sub>U</sub> - b<sub>U</sub>]<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;C = AB = [min(a<sub>L</sub>*b<sub>L</sub>, a<sub>L</sub>*b<sub>U</sub>, a<sub>U</sub>*b<sub>L</sub>, a<sub>U</sub>*b<sub>U</sub>), max(a<sub>L</sub>*b<sub>L</sub>, a<sub>L</sub>*b<sub>U</sub>, a<sub>U</sub>*b<sub>L</sub>, a<sub>U</sub>*b<sub>U</sub>)]<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;C = A/B = [min(a<sub>L</sub>/b<sub>L</sub>, a<sub>L</sub>/b<sub>U</sub>, a<sub>U</sub>/b<sub>L</sub>, a<sub>U</sub>/b<sub>U</sub>), max(a<sub>L</sub>/b<sub>L</sub>, a<sub>L</sub>/b<sub>U</sub>, a<sub>U</sub>/b<sub>L</sub>, a<sub>U</sub>/b<sub>U</sub>)]
+                </p>  
+          </div>
+        </div>    
+      </section>
+    </section>
+
+    <section id="functions">
+      <header>
+        <h2>Functions</h2>
+      </header>
+      
+      <section id="functions-notation">
+        <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Notation</h3>
+        </div>
+
+        <div class="panel-body">
+					<table class="table">
+            <thead>
+              <tr>
+                <th>Notation</th>
+                <th>Meaning</th>
+                <th>Entities</th>
+              </tr>
+            </thead>
+            <tbody>
+							<tr>
+								<th>&centerdot;</th>
+								<td>function composition operator: f<sub>2</sub> &centerdot; f<sub>1</sub> = f<sub>2</sub>(f<sub>1</sub>(i))</td>
+								<td>&centerdot;&nbsp;=&nbsp;&amp;centerdot;</td>
+							</tr>
+							<tr>
+								<th>&fnof;</th>
+								<td>a function</td>
+								<td>&fnof;&nbsp;=&nbsp;&amp;fnof;</td>
+							</tr>
+							<tr>
+								<th>&fnof;:<span class="set-name">I</span>&rarr;<span class="set-name">O</span><br>
+										<span class="set-name">I</span> &fnof;&mapsto; <span class="set-name">O</span></th>
+								<td>&fnof; maps <span class="set-name">I</span> into <span class="set-name">O</span></td>
+								<td>&rarr;&nbsp;=&nbsp;&amp;rarr;<br>
+								&fnof;&mapsto;&nbsp;=&nbsp;&amp;fnof;&amp;mapsto;</td>
+							</tr>
+							<tr>
+								<th>&fnof;<sup>n</sup></th>
+								<td>a function composed with itself n times, (&fnof;&centerdot;&fnof;&centerdot;&ctdot;&centerdot;&fnof;)(<span class="element-name">i</span>)</td>
+								<td></td>
+							</tr>
+							<tr>
+								<th>&fnof;<sup>-1</sup></th>
+								<td>the inverse of a function</td>
+								<td></td>
+							</tr>
+							<tr>
+								<th>&fnof;*</th>
+								<td>the graph of a function, the set of all ordered pairs (<span class="element-name">i</span>,<span class="element-name">o</span>) where <span class="element-name">i</span> &Element; <span class="set-name">I</span> &and; <span class="element-name">o</span> &Element; <span class="set-name">O</span></td>
+								<td></td>
+							</tr>  
+            </tbody>
+          </table>
+        </div>
+      </div>
+		</section>
+      
+      <section id="functions-properties">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Properties</h3>
+          </div>
+
+          <div class="panel-body">
+            <p>&fnof;<sub>1</sub> = &fnof;<sub>2</sub> &iff; <span class="set-name">I<sub>&fnof;<sub>1</sub></sub></span> = <span class="set-name">I<sub>&fnof;<sub>2</sub></sub></span> &and; <sup>&forall;</sup><span class="element-name">i</span> &Element; <span class="set-name">I</span>: &fnof;<sub>1</sub>(<span class="element-name">i</span>) = &fnof;<sub>2</sub>(<span class="element-name">i</span>)
+
+            </p>
+            <p>&fnof;(<span class="set-name">I</span>) &SubsetEqual; <span class="set-name">O</span></p>
+
+            <p>(&fnof;<sub>n</sub>&centerdot;&ctdot;&centerdot;&fnof;<sub>2</sub>&centerdot;&fnof;<sub>1</sub>) = &fnof;<sub>n</sub>(&ctdot;&fnof;<sub>2</sub>(&fnof;<sub>1</sub>))&ctdot;)</p>
+
+            <p>&fnof;* &subset; <span class="set-name">I</span> &times; <span class="set-name">O</span></p>
+          </div>
+        </div>
+      </section>
+
+    </section>
+  </article>
+</div>
+<script   src="https://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+</html>
