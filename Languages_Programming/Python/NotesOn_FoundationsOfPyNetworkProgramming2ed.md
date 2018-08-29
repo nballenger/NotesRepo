@@ -1,22 +1,22 @@
 # Foundations of Python Network Programming: The comprehensive guide to building network applications with Python, 2nd ed.
 
-## Chapter 1. Introduction to Client/Server Networking
+# Chapter 1. Introduction to Client/Server Networking
 
 * virtualenv is a very useful package for testing libraries
 
-## Chapter 2. UDP
+# Chapter 2. UDP
 
-### 2.1 Should You Read This Chapter?
+## 2.1 Should You Read This Chapter?
 
 * "If you even think you want to use the UDP protocol, then you probably want to use a message queue system instead."
 * "Use UDP only if you really want to be interacting with a very low level of the IP network stack."
 
-### 2.2 Addresses and Port Numbers
+## 2.2 Addresses and Port Numbers
 
 * IPv4 addresses are four dot separated quads
 * port numbers follow a colon
 
-### 2.3 Port Number Ranges
+## 2.3 Port Number Ranges
 
 * Many port numbers are already spoken for--see /etc/services
 * DHCP is capable of some auto configuration on connection
@@ -25,21 +25,21 @@
     * Registered, 1024-49151, available to any user
     * Free pool, 49152-65535, used by the OS randomly
 
-### 2.4 Sockets
+## 2.4 Sockets
 
 * Sockets are sort of like file descriptors, for networking
 * You ask for a socket to be bound to a port
 * Basic socket usage example, server:
 
-```Python
-import socket
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.bind(('127.0.0.1', 1060))
-print 'Listening at', s.getsockname()
-while True:
-    data, address = s.recvfrom(65535)
-```
-        
+    ```Python
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.bind(('127.0.0.1', 1060))
+    print 'Listening at', s.getsockname()
+    while True:
+        data, address = s.recvfrom(65535)
+    ```
+
 * Opening a UDP socket happens via ``socket.SOCK_DGRAM``
 * ``bind()`` requests a UDP network address, which is a combo of an IP address or hostname and a UDP port number
 * Basic socket usage example, client:
