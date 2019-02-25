@@ -127,4 +127,101 @@ ISBN 9781491963418
         REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA my_schema FROM PUBLIC;
         ```
 
+* Default Privileges
+    * Setting defaults doesn't change existing objects
+    * Example where you want all users to have EXECUTE and SELECT on any future tables and functions in a particular schema:
+
+        ```
+        GRANT USAGE ON SCHEMA my_schema TO PUBLIC;
+
+        ALTER DEFAULT PRIVILEGES IN SCHEMA my_schema
+        GRANT SELECT, REFERENCES ON TABLES TO PUBLIC;
+
+        ALTER DEFAULT PRIVILEGES IN SCHEMA my_schema
+        GRANT ALL ON TABLES TO mydb_admin WITH GRANT OPTION;
+
+        ALTER DEFAULT PRIVILEGES IN SCHEMA my_schema
+        GRANT SELECT, UPDATE ON SEQUENCES TO PUBLIC;
+
+        ALTER DEFAULT PRIVILEGES IN SCHEMA my_schema
+        GRANT ALL ON FUNCTIONS TO mydb_admin WITH GRANT OPTION;
+
+        ALTER DEFAULT PRIVILEGES IN SCHEMA my_schema
+        GRANT USAGE ON TYPES TO PUBLIC;
+        ```
+    
+* Privilege idiosyncracies
+    * Being the owner of a database does not give you access to all objects in it
+    * After you grant privileges to tables and functions in a schema, don't forget to grant usage on the schema itself.
+
+## Extensions
+
+* Not all extensions need to be in all databases
+* Install to your individual database on an as-needed basis
+* If you want all your databases to have a set of extensions, create a template db
+* Prune extensions you no longer need to avoid bloat.
+* Show extensions installed in a database:
+
+    ```
+    SELECT name, default_version, installed_version, LEFT(comment,30) AS comment
+    FROM pg_available_extensions
+    WHERE installed_version IS NOT NULL
+    ORDER BY name;
+    ```
+
+* To see all installed extensions, leave out `WHERE installed_version IS NOT NULL`
+* To get more info about an extension: `\dx+ extensionname`
+* Or use a query:
+
+    ```
+    SELECT pg_describe_object(D.classid, D.objid, 0) AS description
+    FROM pg_catalog.pg_depend AS D INNER JOIN pg_catalog.pg_extension AS E
+    ON D.refobjid = E.oid
+    WHERE D.refclassid = 'pg_catalog.pg_extension'::pg_catalog.regclass
+      AND deptype = 'e'
+      AND E.extname = 'fuzzystrmatch';
+    ```
+
+* Extensions can include:
+    * functions
+    * tables
+    * data types
+    * casts
+    * languages
+    * operators
+    * other object types
+* Typically functions are the majority of the extension
+* Installing extensions
+    * Two steps: download and install to server, then install to database
+    * Install to server:
+        * Download binaries and libraries
+        * copy binaries to `bin`
+        * copy libraries to `lib`
+        * copy script files to `share/extension`
+    * Which makes it available for step 2, install to DB:
+        * Use `CREATE EXTENSION` to install into each databases
+        * `CREATE EXTENSION fuzzystrmatch;`
+        * alternatively: `psql -p 5432 -d mydb -c "CREATE EXTENSION fuzzystrmatch;"
+    * Note that C based extensions require superuser privileges to install.
+    * It's good practice to create a schema to house extensions
+    * Create the schema, then do `CREATE EXTENSION foo SCHEMA my_extensions;`
+* Popular Extensions
+    * `btree_gist` - gives GiST index operator classes that implement B-Tree equivalent behavior for common B-Tree services data types
+    * `btree_gin` - gives GIN index operator classes that implement B-Tree equivalent behavior for common B-Tree serviced data types
+    * `postgis` - spatial database extension
+    * `fuzzystrmatch` - functions like `soundex`, `levenshtein`, metaphone algorithms
+    * `hstore` - adds key-value pair storage and index support. In many cases replaced by the `jsonb` datatype
+    * `pg_trgm` (trigram) - fuzzy string search library
+    * `dblink` - lets you query a Postgres db on another server
+    * `pgcrypto` - encryption tools
+
+## Backup and Restore
+
+* Ships with three utils for backup, in the postgres bin folder:
+    * `pg_dump` - back up specific databases
+    * `pg_dumpall` - back up all databases in plain text, plus server globals
+    * `pg_basebackup` - system-level disk backup of all databases
+
+## Managing Disk Storage with Tablespaces
+
 

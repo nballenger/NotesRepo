@@ -467,3 +467,393 @@ Source: [http://www.spatialanalysisonline.com/HTML/](http://www.spatialanalysiso
 * One way to have static models do more work is to add some stochastic element, such that repeated runs don't produce the exact same results, and then look at results over multiple runs.
 
 # Chapter 4: Building blocks of spatial analysis
+
+## 4.1 Spatial and spatio-temporal data models and methods
+
+### Spatial data models and methods
+
+Longley, et al. 2015 provide a summary of spatial data models in GIS:
+
+| Data Model | Example application |
+| ---------- | ------------------- |
+| CAD | Automated engineering design and drafting |
+| Graphical (non-topological) | Simple mapping |
+| Image | Image processing, grid analysis |
+| Raster / grid | Spatial analysis and modeling, esp. environmental/natural |
+| Vector / Georelational topological | cartography, socioeconomic and resource, modeling |
+| Network | Network analysis for transport, hydrology, utilities |
+| Triangulated irregular network | Surface / terrain visualization |
+| Object | Many operations on all types of entities in all types of apps |
+
+OGC's OpenGIS Simple Features Specification, Principal methods for spatial relations:
+
+| Method | Description |
+| ------ | ----------- |
+| Equals | spatially equal to |
+| Disjoint | spatially disjoint |
+| Intersects | spatially intersects |
+| Touches | spatially touches (N/A for point to point) |
+| Crosses | spatially crosses |
+| Within | spatially within |
+| Contains | spatially contains |
+| Overlaps | spatially overlaps |
+| Relate | spatially relates, tested by checking for intersections between the interior, boundary, and exterior of the two components |
+
+
+OGC's OpenGIS Simple Features Specification, Principal methods for spatial analysis:
+
+| Method | Description |
+| ------ | ----------- |
+| Distance | shortest distance between any two points in two geometries |
+| Buffer | all points whose distance from the geometry is lte some value |
+| Convex Hull | convex hull of the geometry |
+| Intersection | point set intersection of the current geometry with another |
+| Union | point set union of the current geometry with another |
+| Difference | point set difference of the current geometry with another |
+| Symmetric difference | XOR point set difference |
+
+### Spatio-temporal data models and methods
+
+* Most software has historically dealt with spatial data, and not spatio-temporal
+* Examples of spatio-temporal data, and representation/analysis:
+    * Complete spatial fields recorded at distinct points in time, viewed as a set of time slices. Sometimes referred to as a T-mode data model. Analysis has tended to focus on the difference between slices.
+    * Complete spatial fields recorded at distinct points in time, viewed as a set of point locations or pixels, each of which has a temporal profile. Similar to multi-spectral datasets. Known as S-mode analysis.
+    * Incomplete spatial fields recorded at regular, distinct points in space and time (often very frequently). Typical of environmental monitoring.
+    * Mobile objects (points) tracked in space-time. Also called "track data."
+    * Network-based data
+    * Patterns of points (events) over time. Common in epidemiology
+    * patterns of regions / zones over time.
+
+## 4.2 Geometric and Related Operations
+
+### 4.2.1 Length and area for vector data
+
+* Since most GIS datasets are in projected plane coordinates, distances and associated operations are done with Euclidean geometry
+* Polygon areas are calculated using integration by the trapezoidal or Simpson's rule.
+
+### 4.2.2 Length and area for raster datasets
+
+* Distance is pretty simple, basically euclidean distance modified by grid sizing
+* Areas and perimeters are a little harder
+* Can use membership functions to determine boundaries
+* The gridding itself imposes a certain distortion on the data
+* Distortions primarily fall into three categories:
+    * Orientation - Allocation of source data values to cells (and thus length and area calculations) will alter if the grid is rotated. It's common to rotate them when using two or more data sources, to get the orientations to align.
+    * Metrics - to compute distances it is common to add up the number of cells comprising a line or boundary and multiplying this number by the cell edge length. That's for a "rook's move" calculation that zigzags on the grid, though it may be adjusted by allowing diagonal or "bishop's move" movements, where diagonal lengths are considered to be edge-length * sqrt(2)
+    * Resolution
+        * Finer resolution grids provide more detailed representations of points, lines, and areas, and a finer breakdown of attribute data
+        * As you get finer resolution though your processing cost increases
+        * Question of whether an attribute value for a cell applies throughout that cell or not
+
+### 4.2.3 Projected surfaces
+
+* Most GIS software reports planar area, not surface area
+* Surface area computations are always gte planar area
+* The ratio of surface area to planar area gives a crude index of "roughness"
+* For surfaces in TIN form, the surface area is the sum of the areas of teh triangles
+* If the surface representation is a grid or DEM, surface area can be computed by TIN like methods. You can remap the centers of adjacent squares to make triangles, and work from there.
+
+#### Terrestrial (unprojected) surface area
+
+* For rectangular regions with sides greater than several hundred KM, surface areas are noticeably affected by the curvature of the earth.
+* The area of a spherical rectangular region defined by fixed lat/lon coordinates is greater than the area bounded by lines of constant latitude, which are not great circles
+* Packages can account for this by using different measurement calculations, but it's good to be aware of it and explicitly account for it.
+
+### 4.2.4 Line Smoothing and Point-weeding
+
+* Polylines and polygons with large numbers of segments may be over complex, bad representations of the original features, or unsuitable for display at all map scales.
+* Point weeding is largely from Douglas and Peuker 1973.
+    * Connect point 1 (the anchor) to point N (call it 10) with a temporary line
+    * That creates an initial segment
+    * Identify the point between 1 and 10 that deviates from the line segment by the greatest distance (and more than some tolerance level)
+    * Call that point 8--then point 10 would be directly connected to 8, and 9 would be dropped
+    * Now a new temp line is drawn between 1 and 8 (the new floating point) and the process repeats
+* Simple smoothing uses a family of procedures in which the set of points is replaced by a smooth line consisting of a set of curves and straight line segments, closely following but not necessarily passing through the nodes of the original polyline.
+* Spline smoothing replaces the original polyline with a curve passing through the nodes of the polyline, though it may not align with it anywhere else.
+
+### 4.2.5 Centroids and Centers
+
+* Centroids are often defined as the nominal center of gravity for an object or collection of objects
+* Lots of other definitions are used in GIS
+* Often 'center' is more appropriate than 'centroid'
+
+#### Polygon centroids and centers
+
+* Different ways of finding them
+    * Mean Center, or M1, is the mean of all vertices
+    * Mean Center Weighted, M1\*, is a weighted average of hte vertices
+    * RMS variation of the point set about the mean center is the 'standard distance'
+    * Centroid is 'center of gravity', if the polygon were an infinitely thin shape of constant density
+    * That point is called M2
+* For triangles, M2 is at the mean of the vertices
+* For general polygons there are M2 formulae
+* It arises as the weighted average of the centroids of triangles in a standard triangularization of the polygon, where the weights correspond to the triangle areas
+* M3 is the center of the Minimum Bounding Rectangle
+* The MBR center is fastest to compute, but not invariant under rotation, and is the most subject to outliers.
+* With polygons of complex shape, M2 may lie outside hte boundary
+* Alternative to MBR is to find the smallest circle that completely encloses the polygon, taking the center of the polygon as the polygon center, call that M4
+* Another alternative is to find the center of the largest inscribed circle, M5
+
+#### Point sets
+
+* M1 mean center is just the average of coordinate values
+* You can use weighted average if it makes more sense
+
+#### Lines
+
+* Center is the point equidistant from the ends
+* Polyline center is in the plane, not necessarily on the line
+* No accepted formula for collections of lines.
+
+### 4.2.6 Point (object) in polygon (PIP)
+
+* Line in polygon and polygon in polygon are related problems
+* Standard algorithm for PIP in vectors (the semi-line algorithm) is to extend a line vertically upwards (or horizontally) and then count the number of times this line crosses the polygon boundary. If it crosses an odd number, it's inside the polygon.
+* Special cases are points on the boundary or at a vertex, or directly below a vertical segment of the boundary.
+* Second PIP algorithm that requires trig (and is therefore more processor intensive) is the winding number method
+    * A line is extended to each vertex of the polygon from the sample point in turn (traversing counterclockwise). If the sum of the angles from the point to the vertices, vi, is 0 the point lies outside the polygon, otherwise inside.
+
+### 4.2.7 Polygon decomposition
+
+* Lots of ways to do it, lots of reasons to do it.
+* Most GIS packages support some decomp procedures, through overlay of template or cookie cutter polygons, and/or through the explicit decom procedures
+* Complex polygons with convoluted boundaries may be divided up into a series of non-overlapping convex polygons
+
+### 4.2.8 Shape
+
+* In practice defining some form of shape measure that provides an adequate description is difficult and many indices and procedures have been proposed."
+* Shape measures can be applied to polygon forms or grid patches
+* Comment from 5.3.4 about Landscape metrics, that also applies to vector/polygonal: "The most common measuresof shape complexity are based on the relative amount of perimeter per unit area, usually indexed in terms of a perimeter-to-area ratio, or as a fractal dimension, and often standardized to a simple Euclidean shape (e.g., circle or square). The interpretation varies among the various shape metrics, but in general, higher values mean greater shape complexity or greater departure from simple Euclidean geometry."
+* Most GIS software packages don't provide shape index measures directly, so you have to roll your own.
+* Example measures:
+    * Perimeter / Area Ratio (P1A) - perimeter length / area
+    * Perimeter^2 / Area Ratio (P2A) - perimeter length squared / area
+    * Shape Index or Compactness Ratio (C)
+    * Related bounding figure (RBF) - 1 - (area / area of bounding figure)
+
+### 4.2.9 Overlay and combination operations
+
+* Involve putting a map A on top of some other map B to create a layer C that is some combination of A and B. C is normally a new layer, but may be a modification of B.
+* Typically A i spoints, lines, and/or polygons, B is polygons
+* Assumption is that all objects are planar enforced
+* Functions include:
+    * Intersection
+    * Union
+    * Not
+    * Exclusive OR (XOR)
+    * Contained
+    * Containing
+    * Boundary
+    * Touching
+    * Neighboring
+    * Split
+    * Append / Merge
+    * Integrate
+
+### 4.2.10 Areal interpolation
+
+* Problem in polygon on polygon overlays: how should attributes be assigned from input polygons to newly created polygons whose size and shape differ from the original set?
+* Lots of related techniques:
+    * Kernel density estimation
+    * Proportional assignment
+    * Weighted assignment based on distance decay function 
+
+### 4.2.11 Districting and Re-districting
+
+* Common analysis problem involves the combination of many small zones (typically stored as polygons) into a smaller number of merged larger zones or districts.
+* The merge process is usually subject to spatial and attribute related constraints
+    * Spatial constraints might be:
+        * Districts must be comprised of adjacent (coterminous) regions
+        * Districts must be sensible shapes (e.g., reasonably compact)
+    * Attribute constraints might be:
+        * No district may have less than 100 people
+        * All districts must have a similar number of people
+* This is a common, generalized problem
+* For non-trivial numbers of regions, there are usually only heuristics
+* "Districting and re-districting are generally processes of agglomeration or construction. The initial set of regions is reduced to a smaller set, according to selected rules. Automating this process involves a series of initial allocations, comparison of hte results with the constraints and targets, and then re-allocation of selected smaller regions until the targets are met as closely as possible."
+* Additional problem types:
+    * Scale effects (grouping or statistical) - Proportional makeup of areas may be similar but combining them creates odd effects because their absolute numbers scale the proportional effect in an odd way.
+    * Zoning (arrangement) effects - the districting may have a bias at creation for some particular effect (electing a specific party, for instance)
+* Automated zoning based on a 7 step approach, called AZP:
+    1. Start by generating a random zoning system of N small zones into M regions, M lt N
+    1. Make a list of the M regions
+    1. Select and remove any region K at random from the list
+    1. Identify a set of zones bordering on members of region K that could be moved into K without destroying the internal contiguity of the donor region(s)
+    1. Randomly select zones from this list until either there is a local improvement in the current value of the objective function or a move that is equivalently as good as the current best. Then make the move, update the list of candidate zones, and return to step 4 or else repeat step 5 until the list is exhausted.
+    1. When the list for region K is exhausted return to step 3, select another region, and repeat steps 4 to 6
+    1. Repeat steps 2 to 6 until no further improving moves are made
+
+### 4.2.12 Classification and Clustering
+
+* Harvey, 1969: "Classification is, perhaps, _the_ basic procedure by which we impose some sort of order and cohereence upon the vast inflow of information from the real world."
+* For the basics of classification within a GIS context, see Mitchell 1999 and Longley et al 2015
+* "Classification needs to be seen in terms of purpose as well as method."
+
+#### Univariate classification schemes
+
+* In GIS software, univariate classification facilities are tools to:
+    * aid in the production of chloropleth or thematic maps
+    * explore untransformed or transformed datasets
+    * Analyze (classify and reclassify) image data
+    * display continuous field data
+* Most classification is on discrete, distinct items that can belong to one class at a time
+* There are other schemes for classifying objects with uncertain class membership
+* Also things which require classification on multiple attributes
+* Fundamental decisions include
+    * what classification scheme(s) to use
+    * what breakpoints to employ
+* Some univariate classification schemes:
+    * Unique values - each value is treated separately, mapped to a different color
+    * Manual classification - analyst specifics the boundaries between classes required as a list, or specifies a lower bound and interval or lower and upper bound plus number of intervals
+    * Equal interval, slice - attribute values are divided into n classes with each interval having the same width (range / n). Called 'slice' for raster maps.
+    * Defined interval - variant of manual and equal interval, user defines each interval
+    * Exponential interval - intervals are selected so that the number of observations in each successive interval increases or decreases exponentially
+    * Equal count or quartile - Intervals selected so that the number of observations in each interval is the same. If each contains 25% of the total, it's quartile classification.
+    * Percentile - variant of equal count or quantile. Equal percentages are included in each class (1-10%, 11-20%, etc)
+    * Natural breaks / Jenks - forms of variance minimization classification. Breaks are uneven, and are selected to separate values where large changes in value occur.
+    * Standard deviation - mean and std dev of the attribute values are calculated, and values are classified according to the deviation from the mean
+    * Box - variant of quartile designed to highlight outliers. Typically six classes are created, which is 4 quartiles plus two further based on outliers. Outliers are data items whose value is more than 1.5 times the inter-quartile range from the median.
+* The Jenks Natural Breaks algorithm:
+    1. User selects an attribute x to be classified and specifies the number of classes, k
+    1. A set of k-1 random or uniform values are generated in the range [min{x},max{x}]. These are used as initial class boundaries.
+    1. The mean values for each initial class are computed and the sum of squared deviations of class members from the mean values is computed. The tottal sum of squared deviations (TSSD) is recorded
+    1. Individual values in each class are then systematically assigned to adjacent classes by adjusting the class boundaries to see if the TSSD can be reduced. This is an iterative process, which ends when improvement in TSSD falls below a threshold level, i.e., when the within class variance is as small as possible and between class variance is as large as possible. True optimization is not assured. The entire process can optionally be repeated from tep 1 or 2 and TSSD values compared.
+
+#### Multivariate classification and clustering
+
+* Harvey, 1969, describes the key steps of multivariate classification:
+    * quantitative analysis of the inter-relationships among the attributes or among the objects
+    * transformation or reductino of the correlations to a geometric structure with known properties (usually Euclidean)
+    * grouping or clustering of the objects or attributes on the basis of the distance measured in this transformed space, and once the classes have been firmly identified
+    * the development of rules for assigning phenomena to classes
+* Most statistical and mathematical libraries give you tools for classification and assignment outside a spatial context, including:
+    * facilities used to reduce complexity / dimensionality of the source datasets, like factor analysis, principal components analysis, and multidimensional scaling
+    * facilities to identify clusters within the dataset, either on a single level for a fixed number of clusters (K-means) or on a hierarchical basis
+    * facilities for optimally assigning new observations to existing classes (linear discriminant analysis)
+* K-means clustering attempts to partition a multivariate dataset into K distinct clusters such that points within a cluster are as close as possible in multi-dimensional space, and as far away as possible from points in other clusters.
+* The cluster procedure is:
+    * Start with a set of K initial cluster centers. These may be assigned as:
+        * random locations in n-space within the observed data ranges
+        * K uniformly sited locations within the observed data ranges
+        * a user defined set of K locations
+        * by selecting K datapoints at random from the observed set
+        * a set of K locations obtained by clustering a small subset of the data using random or uniform allocation. 
+    * A minimum separation distance for starting points may be specified
+    * The distance between every point and each of the K means is computed, based on some predefined metric (typically Minkowski / city block distance)
+    * Points are assigned to the nearest center. Any entirely empty clusters may be discarded, and optionally a new start point included.
+    * The location of the center of each cluster is then recomputed based on the set of points allocated to that center, and the previous step is repeated.
+    * This is repeated until 
+        * no further reassignments occur
+        * or a preset number of iterations is reached
+        * or no cluster center is moved by more than a pre-specified amount
+    * The total distance (DSUM) of all points to their K centers is calculated
+    * Each point is re-examined in turn and checked to see if DSUM is reduced if the point is assigned to another cluster. If DSUM is reduced the point is reassigned to the cluster that results in the maximum overall reduction.
+    * Stopping criteria may be determined by setting a limit to the number of iterations of the process, or the level of change in DSUM, or the number or percentage of data points that continue to be reallocated, or some combination of those criteria.
+    * Special consideration may be given to the re-allocation of data items where the cluster membership is very small (lt 1% of all data). Option to remove low membership clusters and reallocate their members is quite common.
+    * Entire process may then be repeated with a different choice of starting points. 
+    * Generic clustering algorithms (like K means) may result in many spatially isolated pixels or zones, which may be members of a well-represented class (gt 1%). In some instances a smoothing filter can consolidate such occurrences with their surrounding zones, but must be applied with care since the resultant classification will knowingly contain mixtures.
+    * It is often done to assign different weights to clusters when finalizing the classes, in accordance with a priori interpretation of the resulting outcomes. The benefits of doing that should be set out in a clear and transparent manner to aid interpretation.
+* Linear Discriminant Analysis (LDA) is done in Idrisi
+* LDA assumes you have P classes and P linear discriminant functions
+* The functions are like linear regression equations, and are computed by analysis of training site data comprised of m image bands.
+* Once you have the weights for each linear function, a set of P weighted sums is then calculated for each pixel in the target image and the sum that has the highest value/score is take as the class to which the pixel is to be assigned.
+
+#### Multi-band image classification
+
+TODO: RETURN HERE 
+
+# Chapter 5: Data Exploration and Spatial Statistics
+
+## 5.1 Statistical Methods and Spatial Data
+
+* R Spatial is an R package with facilities for:
+    * point pattern analysis
+    * geostatistics
+    * disease mapping and analysis
+    * spatial regression
+    * ecological analysis
+* "The nature of these [R] extensions is different from the ways in which multivariate statistics are dervied from their univariate counterparts because of the ways in which they depend upon the fundamental organizing concepts of distance, direction, contiguity, and scale."
+* Crossey (1993) gave a taxonomy of spatial statistics based on the underlying data model being considered. Three main topics he identified:
+    * point pattern analysis - corresponding to a location-specific view of the data
+    * lattice or regional analysis - corresponding to zonal models of space, notably planar enforced sets of regions
+    * geostatistical modeling - applying to a continuous field view of the underlying dataset
+* Anselin (2002) revises and furthers Crossey's taxonomy.
+* Implications of data models after Anselin 2002:
+
+    |   | Object | Field |
+    |---|--------|-------|
+    | GIS | vector | raster |
+    | Spatial Data | points, lines, polygons | surfaces |
+    | Location | discrete | continuous |
+    | Observations | process realization | sample |
+    | Spatial Arrangement | spatial weights | distance function |
+    | Statistical Analysis | lattice | geostatistics |
+    | Prediction | extrapolation | interpolation |
+    | Models | lag and error | error |
+    | Asymptotics | expanding domain | infill |
+
+* Perry et al 2002 gives an excellent review of spatial pattern analysis and statistical methods
+
+### 5.1.1 Descriptive Statistics
+
+* Almost all GIS packages have univariate statistical measures for tabular attribute data associated with vector objects.
+* Often tools are provided for frequency histograms, with or without data transformation
+* For image or grid datasets, many packages have both spatial and non-spatial statistical methods
+* Purely non-spatial stuff treats grid cell values as attribute values
+* Some tools include facilities for data reduction and modeling / regression
+* Much of what is commonly called 'spatial statistics' deals with vector datasets, and many of the tools and techniques apply directly or indirectly to point rather than line/area based data.
+* Increasingly you see integrated tools like GeoDa, PySal, and SAM for direct exploration, analysis, and modeling of zone-based data and small area (local) patterns.
+
+### 5.1.2 Spatial sampling
+
+* This section focuses on 2D sampling, but similar concepts apply to 1D (transect) and 3D (volumetric) sampling.
+* When analyzing spatial samples, you have to consider factors like:
+    * sample size
+    * how representative the sample is
+    * whether the sample might be biased in any way
+    * whether temporal factors are important
+    * to what extent edge effects might influence the sample and analysis
+    * whether sampled data has been aggregated
+    * how the original measurements were conducted
+    * whether sampling order or arrangement is important
+    * to what extent can the measured data samples be regarded as being from a population
+* Basically the classical set of sampling concerns plus some spatial issues
+* Some of the most common sampling schemes are those based on point sampling within a regular grid framework:
+    * A. Regular point based sampling: grid the 2D space, sample the center of each grid square
+    * B. Random point based sampling: randomly sample n points in the space
+    * C. Random offset from regular: within each grid square, randomly sample one point
+    * D. Regular with random start of sequence (y offset): instead of sampling each grid square center, sample at regular x and y intervals with a randomized initial y offset, so that you might sample at (0.5,0.24), then at (0.5, 0.74), etc.
+* A and D suffer from two major problems:
+    1. the sampling interval may coincide with some periodicity of the data under study
+    1. the set of distances sampled is effectively fixed, so important distance related effects like dispersal, contagion, etc may be missed entirely.
+* Purely random sampling (B) can be useful but almost inevitably forms clusters and voids
+* C attempts to short-cut some of these issues by randomizing the offset from regularly spaced intervals in the study space
+* There are also adaptive schemes (as opposed to the fixed ones above) that can offer improvements in terms of estimating mean values and reducing uncertainty / variances
+* Typically adaptive schemes have four steps:
+    1. apply a coarse resolution fixed scheme (as in C above)
+    1. Record data at each sampled location
+    1. Compute decision criteria for continued sampling
+    1. Extend sampling in the neighborhood of locations that meet the decision criteria
+
+#### Sampling Frameworks
+
+* Most commonly 'sampling' and 'resampling' in GIS tools refer to the frequency with which an existing dataset is sampled for simple display or processing purposes (overlay, computing surface transects)
+* Those ops are not related to statistical sampling
+* Two aspects of statistical sampling are explicitly supported in several GIS packages:
+    1. selection (sampling) of specific point or grid cell locations in an existing dataset
+    1. removal of spatial bias from collected datasets via 'declustering'
+* Different packages have different tools for assisting in sample selection
+* ENVI - takes a raster image file as input, gives three sampling types:    
+    * stratified random sampling, proportionate or disproportionate
+    * equalized random sampling, which selects an equal number of observations at random from each class or region of interest (ROI)
+    * random sampling that ignores ROIs and classes
+* Idrisi - similar to ENVI via its SAMPLE function, which gives random, systematic, or stratified random point sampling from an input image / grid
+* GRASS - gives random sampling that may be combined with masking to create forms of stratified random samples. Also gives a tool for generating random sets of cells at least D units apart
+* TNTMips - range of point sampling facilities to be used within vector polygons
+* Random points in the plane may be used as sampling points in connection with modeling, as in a Monte Carlo simulation of a probability distribution
+* 'Quadrat sampling' - schemes in which information on all static point data (eg trees, bird nests, etc) is collected using an overlay of regular form (square or hexagonal grid). Collected data are aggregated at the level of the quadrat.
+* Alternatively you can randomly drop quadrats onto the study space. They can be any size or shape, though circular forms are invariant under rotation. You can get repeat sampling this way if you're not careful.
+
+#### Declustering
+
+
