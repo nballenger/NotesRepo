@@ -1,0 +1,81 @@
+<section class="algorithm well" id="algorithms_foo">
+  <header><h1>The Something Problem</h1><header>
+  <p><strong>Input:</strong> Some items <i>A</i>, <i>B</i></p>
+  <p><strong>Problem:</strong> Do something.</p>
+  <p><strong>Variant 1:</strong> Do a different thing.</p>
+</section>
+
+<section id="graph_algorithms">
+  <header><h1>Graph Algorithms</h1></header>
+
+  <h2>Definitions and Terminology</h2>
+
+  <p>A graph <i>G</i> = (<i>V</i>, <i>E</i>) is a set of vertices <i>V</i> and a set <i>E</i> of edges, typically expressed as vertex pairs.</p>
+  <p>Graph properties:</p>
+  <ul>
+    <li><strong>Directed</strong> vs. <strong>Undirected</strong> - A graph <i>G</i> is undirected if the presence of some edge (<i>x</i>, <i>y</i>) automatically implies the presence of the edge (<i>y</i>, <i>x</i>). If edges (<i>x</i>, <i>y</i>) and (<i>y</i>, <i>x</i>) are distinct and do not imply each other, the graph is directed.</li>
+    <li><strong>Weighted</strong> vs. <strong>Unweighted</strong> - Edges may, in a weighted graph, be assigned a numeric value (weight).</li>
+    <li><strong>Simple</strong> vs. <strong>Non-simple</strong> - Simple graphs are those which avoid both self-loops (edge (<i>x</i>, <i>x</i>)) and multiedges (when the same edge occurs more than once).</li>
+    <li><strong>Sparse</strong> vs. <strong>Dense</strong> - Sparse graphs are those where only a small portion of the possible edges are defined. Dense graphs have a large portion of possible edges defined. There is no official boundary between sparse and dense.</li>
+    <li><strong>Cyclic</strong> vs. <strong>Acyclic</strong> - Acyclic graphs contain no cycles (circular routes). Trees are acyclic graphs.</li>
+    <li><strong>Embedded</strong> vs. <strong>Topological</strong> - An embedded graph's edges are assigned geometric positions.</li>
+    <li><strong>Implicit</strong> vs. <strong>Explicit</strong> - An implicit graph is constructed as it is used, and reflects the state of current computation.</li>
+    <li><strong>Labeled</strong> vs. <strong>Unlabeled</strong> - A labeled graph assigns unique names or identifiers to each vertex.</li>
+  </ul>
+
+  <h2>Graph Data Structures</h2>
+
+  <p>Basic choices for representing graphs are <strong>adjacency matrices</strong> and <strong>adjacency lists</strong>.</p>
+
+  <p>A graph <i>G</i> can be represented using an <i>n</i> x <i>n</i> matrix <i>M</i>, where element <i>M</i>[<i>i</i>, <i>j</i>] = 1 if (<i>i</i>, <i>j</i>) is an edge of <i>G</i>, and 0 if it is not.</p>
+
+  <p>Sparse graphs can be represented using linked lists to store neighbors that are adjacent to each vertex.</p>
+
+  <h3>Comparisons for Graph Operations</h3>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Comparison</th>
+        <th>Winner</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Faster to test if (<i>x</i>, <i>y</i>) is in graph?</td>
+        <td>adjacency matrices</td>
+      </tr>
+      <tr>
+        <td>Faster to find the degree of a vertex?</td>
+        <td>adjacency lists</td>
+      </tr>
+      <tr>
+        <td>Less memory on small graphs?</td>
+        <td>adjacency lists (<i>m</i> + <i>n</i>) vs (<i>n</i><sup>2</sup>)</td>
+      </tr>
+      <tr>
+        <td>Less memory on big graphs?</td>
+        <td>adjancency matrices (small win)</td>
+      </tr>
+      <tr>
+        <td>Edge insertion or deletion?</td>
+        <td>adjacency matrices <i>O</i>(1) vs <i>O</i>(d)</td>
+      </tr>
+      <tr>
+        <td>Faster to traverse the graph?</td>
+        <td>adjacency lists &Theta;(<i>m</i> + <i>n</i>) vs. &Theta;(<i>n</i><sup>2</sup>)</td>
+      </tr>
+      <tr>
+        <td>Better for most problems?</td>
+        <td>adjacency lists</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <section class="algorithm well" id="algorithms_foo">
+    <header><h1>The Something Problem</h1><header>
+    <p><strong>Input:</strong> Some items <i>A</i>, <i>B</i></p>
+    <p><strong>Problem:</strong> Do something.</p>
+    <p><strong>Variant 1:</strong> Do a different thing.</p>
+  </section>
+</section>

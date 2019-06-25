@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Statistics Formulae</title>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script>hljs.initHighlightingOnLoad();</script>
+  </head>
+  <body>
+    <div class="container">
+    <article id="statistics-formulae">
+      <header>
+        <h1>Statistics Formulae</h1>
+      </header>
+      <section>
+        <header>
+          <h2>Estimates of Location</h2>
+        </header>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Description</th>
+              <th>Formula</th>
+              <th>Python Code</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>Mean<br>
+                <em class="font-weight-normal">Symbol:</em>&nbsp;<math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'>
+                  <mover accent="true">
+                    <mi>x</mi>
+                    <mo>-</mo>
+                  </mover>
+                </math>
+              </th>
+              <td><em>The sum of all values divided by the number of values.</em></td>
+              <td>
+                <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+                <mover accent="true"><mi>x</mi><mo>-</mo></mover>
+                <mo>=</mo>
+                <mfrac>
+                  <mrow>
+                    <munderover align="right">
+                      <mo>&sum;</mo>
+                      <mi>i</mi>
+                      <mi>n</mi>
+                    </munderover>
+                    <msub>
+                      <mi>x</mi>
+                      <mi>i</mi>
+                    </msub>
+                  </mrow>
+                  <mi>n</mi>
+                </mfrac>
+                </math>
+              </td>
+              <td>
+<pre><code class="python">x = [1,2,3,4,5,6,7,8,9]
+
+def mean(numbers: list):
+    return sum(x) / len(x)
+
+mean(x) # Returns 5.0
+</code></pre>
+              </td>
+            </tr>
+            <tr>
+              <th>Trimmed Mean<br>
+                <em class="font-weight-normal">Symbol:</em>&nbsp;<math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'>
+                  <mover accent="true">
+                    <mi>x</mi>
+                    <mo>-</mo>
+                  </mover>
+                </math>
+              </th>
+              <td><em>The average of all values after dropping a fixed number of extreme values.</em></td>
+              <td>
+                <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+                <mover accent="true"><mi>x</mi><mo>-</mo></mover>
+                <mo>=</mo>
+                <mfrac>
+                  <mrow>
+                    <munderover align="right">
+                      <mo>&sum;</mo>
+                      <mrow><mi>i</mi><mo>=</mo><mi>p</mi><mo>+</mo><mn>1</mn></mrow>
+                      <mrow><mi>n</mi><mo>-</mo><mi>p</mi></mrow>
+                    </munderover>
+                    <msub>
+                      <mi>x</mi>
+                      <mfenced><mi>i</mi></mfenced>
+                    </msub>
+                  </mrow>
+                  <mrow><mi>n</mi><mo>-</mo><mn>2</mn><mi>p</mi></mrow>
+                </mfrac>
+                </math>
+              </td>
+              <td>
+<pre><code class="python">x = [-100,-5,1,2,3,4,5,6,7,30,100]
+
+def trimmed_mean(numbers: list, drop_n_outliers: int):
+    p = drop_n_outliers
+    return sum(numbers[p:-p]) / (len(numbers) - (2 * p))
+
+trimmed_mean(x, 2) # Returns 4.0
+</code></pre>
+              </td>
+            </tr>
+            <tr>
+              <th>Weighted Mean
+                <em class="font-weight-normal">Symbol:</em>&nbsp;<math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'>
+                  <msub>
+                    <mover accent="true">
+                      <mi>x</mi>
+                      <mo>-</mo>
+                    </mover>
+                    <mi>w</mi>
+                  </msub>
+                </math>
+              </th>
+              <td><em>The sum of all values times a weight divided by the sum of the weights.</em></td>
+              <td>
+                <math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>
+                  <msub>
+                    <mover accent="true">
+                      <mi>x</mi>
+                      <mo>-</mo>
+                    </mover>
+                    <mi>w</mi>
+                  </msub>
+                <mo>=</mo>
+                <mfrac>
+                  <mrow>
+                    <munderover align="right">
+                      <mo>&sum;</mo>
+                      <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow>
+                      <mi>n</mi>
+                    </munderover>
+                    <mrow>
+                      <msub><mi>w</mi><mi>i</mi></msub>
+                      <msub><mi>x</mi><mi>i</mi></msub>
+                    </mrow>
+                  </mrow>
+                  <mrow>
+                    <munderover align="right">
+                      <mo>&sum;</mo>
+                      <mi>i</mi>
+                      <mi>n</mi>
+                    </munderover>
+                    <msub><mi>w</mi><mi>i</mi></msub>
+                  </mrow>
+                </mfrac>
+                </math>
+              </td>
+              <td>
+<pre><code class="python">x = [1,2,3,4,5,6,7,8,9]
+w = [0,0,0,1,1,1,2,2,2]
+
+def weighted_mean(numbers: list, weights: list):
+    weighted_values = [ numbers[x] * weights[x] 
+                        for x in range(len(numbers)) ]
+    return sum(weighted_values) / sum(weights)
+
+weighted_mean(x, w) # Returns 7.0
+</code></pre>
+              </td>
+            </tr>
+            <tr>
+              <th>Median</th>
+              <td>The middle number on a sorted list of the data. In a list with an even number of elements, the average of the two middle elements.</td>
+              <td></td>
+              <td>
+<pre><code class="python">x = [5,4,1,2,3]
+y = [6,5,4,1,2,3]
+
+def median(numbers: list):
+    n_len = len(numbers)
+    is_even = bool(int(str(n_len)[-1]) in [0,2,4,6,8])
+    idx = int(n_len/2)
+    if not is_even:
+        return sorted(numbers)[idx]
+    else:
+        n_sorted = sorted(numbers)
+        return (n_sorted[idx-1] + n_sorted[idx]) / 2
+
+median(x) # Returns 3
+median(y) # Returns 3.5
+</code></pre>
+              </td>
+            </tr>
+            <tr>
+              <th>Trimmed Median</th>
+              <td>The middle number on a sorted list of the data, having removed some number of outliers. In a list with an even number of elements, the average of the two middle elements.</td>
+              <td></td>
+              <td>
+<pre><code class="python">x = [5,4,1,2,3,100,-40]
+y = [6,5,4,1,2,3,200,-80]
+
+def trimmed_median(numbers: list, drop_n_outliers: int):
+    p = drop_n_outliers
+    trimmed_numbers = sorted(numbers)[p:-p]
+    n_len = len(trimmed_numbers)
+    is_even = bool(int(str(n_len)[-1]) in [0,2,4,6,8])
+    idx = int(n_len/2)
+    if not is_even:
+        return trimmed_numbers[idx]
+    else:
+        return (trimmed_numbers[idx-1] + trimmed_numbers[idx]) / 2
+
+trimmed_median(x,2) # Returns 3
+trimmed_median(y,2) # Returns 3.5
+</code></pre>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </article>
+    </div><!-- end .container -->
+  </body>
+</html>

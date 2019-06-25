@@ -1,0 +1,55 @@
+A piece of paper can be represented in 3d space as a bounded plane
+A fold of that plane will:
+    Introduce one or more fold lines, or 'hinges'
+    move at least a portion of the plane either above or below the rest of the plane
+    not lengthen or shorten the distance on the paper between any two points
+    
+A fold introduces an arc along which one side of the fold may move relative to the other
+A fold's hinge represents an axis of rotation about which a portion of the piece may be rotated WRT the rest of the piece
+
+Folds have to happen in relation to landmarks, because you have to establish an axis of rotation between two co-planar points, and you need something to place those marks in relation to
+
+On a blank sheet the landmarks are the corners; your first step is to bring two corners together
+Landmarks are typically vertices or existing creases
+
+Terms:
+    fold
+    crease
+    corner
+    
+Ways to establish a fold axis:
+    * vertex to meet vertex
+    * vertex to meet point on line
+    * line to meet line
+    
+How is a compound fold, like a squash fold, described?
+    * orient the piece pre-fold
+    * establish the end state of at least two landmarks
+    * find the planar surfaces that connect the landmarks
+    * bisect those surfaces to establish axes of rotation for the folds
+    * rotate pieces individually
+    
+    
+    
+    
+    Steps for a paper crane
+
+ORIENT white side up
+
+ORIENT corner to north
+    
+FOLD
+    axis of rotation landmarks:
+        east corner
+        west corner
+    fold type: valley
+
+FOLD
+    axis of rotation landmarks:
+        midpoint between east corner and west corner
+        south corner
+    fold type: valley
+    
+OPEN
+    axis of rotation landmarks:
+        
