@@ -25,13 +25,13 @@ Important features of C are:
 * The uppermost level of organization in a program is the 'main' function
 * The form of main is:
 
-```C
-int main( )
-{
-    statement block
-    return 0;
-}
-```
+    ```C
+    int main( )
+    {
+        statement block
+        return 0;
+    }
+    ```
 
 * Every function must be declared and defined.
 * Declarations involve writing a prototype of the function interface
