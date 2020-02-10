@@ -26,11 +26,11 @@ Important features of C are:
 * The form of main is:
 
     ```C
-int main( )
-{
-    statement block
-    return 0;
-}
+    int main( )
+    {
+        statement block
+        return 0;
+    }
     ```
 
 * Every function must be declared and defined.
@@ -40,18 +40,18 @@ int main( )
 * Declarations consist of the return type, the name, and a parameter type list:
 
     ```C
-int round(float);
+    int round(float);
     ```
 
 * Definitions start with a header that is an example of the prototype consisting of return type, function name and formal arguments (parameters) inside parens. Followed by a function body in braces:
 
     ```C
-int round(float x)
-{
-    int y;
-    y = (int) (x + 0.5);
-    return(y);
-}
+    int round(float x)
+    {
+        int y;
+        y = (int) (x + 0.5);
+        return(y);
+    }
     ```
 
 ### 2.1.3 Statically Typed Language
@@ -121,13 +121,13 @@ int round(float x)
 * Arrays are defined with:
 
     ```C
-int loc[] = {1,2,3};  <-- x/y/z point in space
+    int loc[] = {1,2,3};  <-- x/y/z point in space
     ```
 
 * Strings are defined with:
 
     ```C
-char digits[] = {'0','1','2','3','\0'}; <-- characters ending in a null character
+    char digits[] = {'0','1','2','3','\0'}; <-- characters ending in a null character
     ```
 
 ### 2.2.5 Pointer and Pointer Variables
@@ -139,21 +139,21 @@ char digits[] = {'0','1','2','3','\0'}; <-- characters ending in a null characte
 * Asterisks denote pointer variables:
 
     ```C
-float var1 = 460.5;
-float *ptrvar1;
+    float var1 = 460.5;
+    float *ptrvar1;
     ```
 
 * To store a memory address into a pointer variable post declaration, use the address operator, &:
 
     ```C
-ptrvar1 = &var1;
+    ptrvar1 = &var1;
     ```
 
 * To access the value of a memory address a pointer refers to, use the dereference operator, *:
 
     ```C
-*ptrvar1 = 723.14;
-*ptrvar1 = *ptrvar1 + 200;
+    *ptrvar1 = 723.14;
+    *ptrvar1 = *ptrvar1 + 200;
     ```
 
 ## 2.3 Arithmetic Operations and Expressions
@@ -205,20 +205,20 @@ ptrvar1 = &var1;
 * Example:
 
     ```C
-int     var1;
-float   var2;
-(float) var1;   <-- casts the stored int as float
-(int)   var2;   <-- casts the stored float as int
+    int     var1;
+    float   var2;
+    (float) var1;   <-- casts the stored int as float
+    (int)   var2;   <-- casts the stored float as int
     ```
 
 * `sizeof` operator: determines at run time the number of bytes of storage for a variable or data type
 * Example:
 
     ```C
-int var, varsize;
-varsize = sizeof(int);
--- or --
-varsize = sizeof(var);
+    int var, varsize;
+    varsize = sizeof(int);
+    -- or --
+    varsize = sizeof(var);
     ```
 
 ### 2.3.7 Accuracy of Computation
@@ -252,7 +252,7 @@ varsize = sizeof(var);
 * The return statement in main indicates the end of the program
 * Every C program has the general form:
 
-    ```
+```
 documenation describing the entire program
 preprocessor directives
 defined constants /* optional, explained later */
@@ -269,11 +269,11 @@ int main()
 }
 
 function implementations
-    ```
+```
 
 * The structure of a subordinate function is:
 
-    ```
+```
 documenation describing the function
 external variables /* not recommended, explained later */
 return type     function name(parameter list)
@@ -284,7 +284,7 @@ return type     function name(parameter list)
     ...
     return;
 }
-    ```
+```
 
 ### 2.4.3 Data Design
 
@@ -306,18 +306,18 @@ return type     function name(parameter list)
 
 * General form:
 
-    ```
+```
 function-name("format control string", var1, var2, ..., varN);
-    ```
+```
 
 ### 3.1.2 Standard Input Function
 
 * Getting data from the keyboard: scanf()
 * General form:
 
-    ```
+```
 scanf("format string", &var1, &var2, ..., &varN);
-    ```
+```
 
 * Format specials: `%d` for int, `%f` for float, `%e` for scientific notation
 
@@ -327,7 +327,7 @@ scanf("format string", &var1, &var2, ..., &varN);
 * General form:
 
     ```C
-printf("format string", var1, var2, ..., varN);
+    printf("format string", var1, var2, ..., varN);
     ```
 
 ## 3.2 File Input and Output
@@ -340,7 +340,7 @@ printf("format string", var1, var2, ..., varN);
 * Internal names are file pointers, which are declared:
 
     ```C
-FILE *fptr;
+    FILE *fptr;
     ```
 
 * `FILE` is a keyword for the file pointer type
@@ -348,7 +348,7 @@ FILE *fptr;
 * Multiple pointers can be declared:
 
     ```C
-FILE *inptr, *outptr;
+    FILE *inptr, *outptr;
     ```
 
 ### 3.2.2 open and close Statements
@@ -360,8 +360,8 @@ FILE *inptr, *outptr;
 * General form of fopen:
 
     ```C
-FILE *fptr;
-fptr = fopen("myfile.dat", mode);
+    FILE *fptr;
+    fptr = fopen("myfile.dat", mode);
     ```
 
 * List of modes:
@@ -377,7 +377,7 @@ fptr = fopen("myfile.dat", mode);
 * general form of the `fclose()` statement:
 
     ```C
-fclose(file pointer);
+    fclose(file pointer);
     ```
 
 ### 3.2.3 Input from a Data File
@@ -385,21 +385,21 @@ fclose(file pointer);
 * Obtained with `fscanf()` in the program
 * General form:
 
-    ```
+```
 fscanf(file pointer, "format control string", &var1, &var2, ..., &varN);
-    ```
+```
 
 * If there is not enough data in the file, fscanf() returns an EOF flag
 * Example read:
 
     ```C
-FILE *inptr;
-int var1, var2;
-float var3;
-double var4;
-
-inptr = fopen("myfile1.dat", "r");
-fscanf(inptr, "%d %d %f %e", &var1, &var2, &var3, &var4);
+    FILE *inptr;
+    int var1, var2;
+    float var3;
+    double var4;
+    
+    inptr = fopen("myfile1.dat", "r");
+    fscanf(inptr, "%d %d %f %e", &var1, &var2, &var3, &var4);
     ```
 
 * Amount of data read by an input statement is an 'input record', same for 'output record'
@@ -408,19 +408,19 @@ fscanf(inptr, "%d %d %f %e", &var1, &var2, &var3, &var4);
 * Example of failsafe input:
 
     ```C
-FILE *inptr;
-float var1, var2, var3, var4;
-inptr = fopen("myfile2.dat", "r");
-
-if (inptr)
-{
-    fscanf(inptr, "%f %f", &var1, &var2);
-    fscanf(inptr, "%f %f", &var3, &var4);
-}
-else
-{
-    printf("file myfile2.dat not available\n");
-}
+    FILE *inptr;
+    float var1, var2, var3, var4;
+    inptr = fopen("myfile2.dat", "r");
+    
+    if (inptr)
+    {
+        fscanf(inptr, "%f %f", &var1, &var2);
+        fscanf(inptr, "%f %f", &var3, &var4);
+    }
+    else
+    {
+        printf("file myfile2.dat not available\n");
+    }
     ```
 
 ### 3.2.4 Output to a Data File
@@ -429,66 +429,66 @@ else
 * General form:
 
     ```C
-fprintf(file pointer, "format control string", var1, var2, ..., varN);
+    fprintf(file pointer, "format control string", var1, var2, ..., varN);
     ```
 
 * Example of output:
 
     ```C
-int var1, var4,;
-float var2, var3;
-FILE *outptr;
-outptr = fopen("myfile3.dat", "w");
-fprintf(outptr, "%d %f %f %d", var1, var2, var3, var4);
+    int var1, var4,;
+    float var2, var3;
+    FILE *outptr;
+    outptr = fopen("myfile3.dat", "w");
+    fprintf(outptr, "%d %f %f %d", var1, var2, var3, var4);
     ```
 
 * Building a data file from pairs of numbers entered at the keyboard:
 
     ```C
-#include <stdio.h>
-int main()
-{
-    float x, y;
-    FILE *graphptr;
-
-    graphptr = fopen("graph.dat", "w");
-
-    if (graphptr)
+    #include <stdio.h>
+    int main()
     {
-        while(scanf("%f %f", &x, &y))
+        float x, y;
+        FILE *graphptr;
+    
+        graphptr = fopen("graph.dat", "w");
+    
+        if (graphptr)
         {
-            fprintf(graphptr, "%f %f", x, y);
+            while(scanf("%f %f", &x, &y))
+            {
+                fprintf(graphptr, "%f %f", x, y);
+            }
+            fclose(graphptr);
         }
-        fclose(graphptr);
+        else
+            printf("File <graph.dat> is not available");
+        return 0;
     }
-    else
-        printf("File <graph.dat> is not available");
-    return 0;
-}
     ```
 
 * Outputting a data file:
 
     ```C
-#include <stdio.h>
-int main()
-{
-    float x, y;
-    FILE *fptr;
-
-    fptr = fopen("myfile.dat", "r");
-
-    if (fptr)
+    #include <stdio.h>
+    int main()
     {
-        printf("  x  y\n");
-        while ((fscanf(fptr, "%f %f", &x, &y)) != EOF)
-            printf("%f %f\n", x, y);
-        fclose(fptr);
+        float x, y;
+        FILE *fptr;
+    
+        fptr = fopen("myfile.dat", "r");
+    
+        if (fptr)
+        {
+            printf("  x  y\n");
+            while ((fscanf(fptr, "%f %f", &x, &y)) != EOF)
+                printf("%f %f\n", x, y);
+            fclose(fptr);
+        }
+        else
+            printf("File <myfile.dat> not available\n");
+        return 0;
     }
-    else
-        printf("File <myfile.dat> not available\n");
-    return 0;
-}
     ```
 
 ## 3.3 Field Width Specification
@@ -510,7 +510,7 @@ int main()
 * Characters are defined as:
 
     ```C
-char ch1, ch2, ch3;
+    char ch1, ch2, ch3;
     ```
 
 ### 3.4.1 Standard Input and Output
@@ -519,14 +519,14 @@ char ch1, ch2, ch3;
 * Input:
 
     ```C
-scanf("%c%c%c", &ch1, &ch2, &ch3);
+    scanf("%c%c%c", &ch1, &ch2, &ch3);
     ```
 
 * Output:
 
     ```C
-printf("%c %c %c", ch1, ch2, ch3);  <-- as characters
-printf("%d %d %d", ch1, ch2, ch3);  <-- as ascii code integers
+    printf("%c %c %c", ch1, ch2, ch3);  <-- as characters
+    printf("%d %d %d", ch1, ch2, ch3);  <-- as ascii code integers
     ```
 
 ### 3.4.2 File Input and Output
@@ -534,19 +534,19 @@ printf("%d %d %d", ch1, ch2, ch3);  <-- as ascii code integers
 * Input example:
 
     ```C
-FILE *inptr;
-inptr = fopen("myfile7.dat", "r");
-char ch1, ch2, ch3, ch4;
-fscanf(inptr, "%c%c%c%c", &ch1, &ch2, &ch3, &ch4);
+    FILE *inptr;
+    inptr = fopen("myfile7.dat", "r");
+    char ch1, ch2, ch3, ch4;
+    fscanf(inptr, "%c%c%c%c", &ch1, &ch2, &ch3, &ch4);
     ```
 
 * Output example:
 
     ```C
-char ch1='3', ch2=' ', ch3='X', ch4='Y';
-FILE *outptr;
-outptr = fopen("myfile8.dat", "w");
-fprintf(outptr, "%c%c%c%c", ch1, ch2, ch3, ch4);
+    char ch1='3', ch2=' ', ch3='X', ch4='Y';
+    FILE *outptr;
+    outptr = fopen("myfile8.dat", "w");
+    fprintf(outptr, "%c%c%c%c", ch1, ch2, ch3, ch4);
     ```
 
 ### 3.4.3 Unformatted Input and Output
@@ -557,9 +557,9 @@ fprintf(outptr, "%c%c%c%c", ch1, ch2, ch3, ch4);
 * Example:
 
     ```C
-char ch;
-while(( ch = getchar()) != '\n')
-    putchar(ch);
+    char ch;
+    while(( ch = getchar()) != '\n')
+        putchar(ch);
     ```
 
 ## 3.5 Sample Programs
@@ -585,10 +585,10 @@ while(( ch = getchar()) != '\n')
 * Good to use approximate equality for comparing real numbers, like:
 
     ```C
-float a;
-a = 1.0 / 3.0;
-a = 3 * a;
-if (fabs(a - 1.0) < 0.0001) /* is approximately equal */
+    float a;
+    a = 1.0 / 3.0;
+    a = 3 * a;
+    if (fabs(a - 1.0) < 0.0001) /* is approximately equal */
     ```
 
 ### 4.1.2 Logical Operators and Logical Expressions
@@ -601,114 +601,114 @@ if (fabs(a - 1.0) < 0.0001) /* is approximately equal */
 
 ### 4.2.1 Two Way Selection Structures
 
-```C
-if (cond1) {
-    stmt1;
-}
-else if (cond2) {
-    stmt2;
-}
-else if (cond3) {
-    stmt3;
-}
-else {
-    stmt4;
-}
-
-
-switch (expression) {
-    case 1:
-        sequence1;
-        break;
-    case 2:
-        sequence2;
-        break;
-    case 3:
-        sequence3;
-        break;
-    default:
-        sequence4;
-}
-```
+    ```C
+    if (cond1) {
+        stmt1;
+    }
+    else if (cond2) {
+        stmt2;
+    }
+    else if (cond3) {
+        stmt3;
+    }
+    else {
+        stmt4;
+    }
+    
+    
+    switch (expression) {
+        case 1:
+            sequence1;
+            break;
+        case 2:
+            sequence2;
+            break;
+        case 3:
+            sequence3;
+            break;
+        default:
+            sequence4;
+    }
+    ```
 
 * Case codes must be `int` or `char`
 * To combine cases:
 
     ```C
-switch (expression) {
-    case 1:
-        stmt1;
-        break;
-    case 2:
-    case 3:
-        printf("case 2 or 3: %d\n" expression);
-        break;
-    default:
-        stmt3;
-}
+    switch (expression) {
+        case 1:
+            stmt1;
+            break;
+        case 2:
+        case 3:
+            printf("case 2 or 3: %d\n" expression);
+            break;
+        default:
+            stmt3;
+    }
     ```
 
 ## 4.3 Repetition Structures
 
 ### 4.3.1 Iterative Loops
 
-```C
-int i;
-for (i = 1; i < 6; i++)
-{
-    funcall();
+    ```C
+    int i;
+    for (i = 1; i < 6; i++)
+    {
+        funcall();
+        printf("i = %d\n", i);
+    }
     printf("i = %d\n", i);
-}
-printf("i = %d\n", i);
-```
+    ```
 
 ### 4.3.2 Nested Iterative Loops
 
-```C
-int i, j;
-for (i = 0; i < 3; i++)
-{
-    for (j = 0; j < 40; j++)
+    ```C
+    int i, j;
+    for (i = 0; i < 3; i++)
     {
-        funcall();
-        printf("i = %d  j = %d\n", i, j);
+        for (j = 0; j < 40; j++)
+        {
+            funcall();
+            printf("i = %d  j = %d\n", i, j);
+        }
+        printf("\n");
     }
-    printf("\n");
-}
-```
+    ```
 
 ### 4.3.3 Conditional Loops
 
-```C
-float r, a;
-const float PI = 3.141593;
-
-scanf("%f", &r);
-while (r != 0)
-{
-    a = PI * r * r;
-    printf("radius = %f area = %f\n", r, a);
+    ```C
+    float r, a;
+    const float PI = 3.141593;
+    
     scanf("%f", &r);
-}
-
-/* Flag controlled (EOF) while loop: */
-int num;
-while ((fscanf(inptr, "%d", &num)) != EOF)
-{
-    stmt1;
-    stmt2;
-    stmtN;
-}
-
-/* do while loop */
-do
-{
-    stmt1;
-    stmt2;
-    stmtN;
-}
-while (condition);
-```
+    while (r != 0)
+    {
+        a = PI * r * r;
+        printf("radius = %f area = %f\n", r, a);
+        scanf("%f", &r);
+    }
+    
+    /* Flag controlled (EOF) while loop: */
+    int num;
+    while ((fscanf(inptr, "%d", &num)) != EOF)
+    {
+        stmt1;
+        stmt2;
+        stmtN;
+    }
+    
+    /* do while loop */
+    do
+    {
+        stmt1;
+        stmt2;
+        stmtN;
+    }
+    while (condition);
+    ```
 
 ## 4.4 Stacking and Nesting of Control Structures
 
@@ -738,29 +738,29 @@ while (condition);
 * Every function except main must be declared/prototyped
 * General form of a prototype:
 
-    ```
+```
 return-data-type function-name(list of parameter data-types);
-    ```
+```
 
 * Example:
 
     ```C
-int funcsort(int, float, int, double, char);
+    int funcsort(int, float, int, double, char);
     ```
 
 * Parameter names can be specified in the prototype, but are optional
 
     ```C
-int funcsort(int input_int, float length_in_ft, double height_in_ft, char site_id);
+    int funcsort(int input_int, float length_in_ft, double height_in_ft, char site_id);
     ```
 
 ### 5.2.2 Function Definition
 
 * General form of a function definition header:
 
-    ```
+```
 return-data-type function-name(list of parameters with their data type)
-    ```
+```
 
 * Header must match prototype:
     * return data type must match
@@ -770,35 +770,35 @@ return-data-type function-name(list of parameters with their data type)
 * Header is followed by body of function in braces:
 
     ```C
-int funcsort(int var1, float var2, double var3, char var4)
-{
-    int result;
-    result = ...;
-    return result;
-}
+    int funcsort(int var1, float var2, double var3, char var4)
+    {
+        int result;
+        result = ...;
+        return result;
+    }
     ```
 
 * Example full C program:
 
     ```C
-#include <stdio.h>
-float compute_area(float);
-
-int main()
-{
-    float r, area;
-    area = compute_area(r);
-    outputf(area);
-    return 0;
-}
-
-float compute_area(float radius)
-{
-    const float PI = 3.141593;
-    float area;
-    area = PI * radius * radius;
-    return area;
-}
+    #include <stdio.h>
+    float compute_area(float);
+    
+    int main()
+    {
+        float r, area;
+        area = compute_area(r);
+        outputf(area);
+        return 0;
+    }
+    
+    float compute_area(float radius)
+    {
+        const float PI = 3.141593;
+        float area;
+        area = PI * radius * radius;
+        return area;
+    }
     ```
 
 ### 5.2.3 Scope of Names
@@ -823,25 +823,25 @@ float compute_area(float radius)
 * Example:
 
     ```C
-int funcsum(int *, int *, int *);
-
-int main()
-{
-    int var1, var2, var3, sum;
-    var1 = 10;
-    var2 = 20;
-    var3 = 30;
-    sum = funcsum(&var1, &var2, &var3);
-    printf("var1= %d var2 = %d var3 = %d sum = %d\n", var1, var2, var3, sum);
-    return 0;
-}
-
-int funcsum(int *varx, int *vary, int *varz)
-{
-    int sum1;
-    sum1 = *varx + *vary + varz;
-    return sum1;
-}
+    int funcsum(int *, int *, int *);
+    
+    int main()
+    {
+        int var1, var2, var3, sum;
+        var1 = 10;
+        var2 = 20;
+        var3 = 30;
+        sum = funcsum(&var1, &var2, &var3);
+        printf("var1= %d var2 = %d var3 = %d sum = %d\n", var1, var2, var3, sum);
+        return 0;
+    }
+    
+    int funcsum(int *varx, int *vary, int *varz)
+    {
+        int sum1;
+        sum1 = *varx + *vary + varz;
+        return sum1;
+    }
     ```
 
 ## 5.4 Input and Output Functions
@@ -851,49 +851,49 @@ int funcsum(int *varx, int *vary, int *varz)
 * Example of standard input:
 
     ```C
-void funcinput(int *, int *, float *, float *);
-int main()
-{
-    int var1, var2;
-    float var3, var4;
-
-    funcinput(&var1, &var2, &var3, &var4);
-    printf("var1 = %d var2 = %d var3 = %f var4 = %f\n", var1, var2, var3, var4);
-    return 0;
-}
-
-void funcinput(int *varx, int *vary, float *varz, float *varw)
-{
-    scanf("%d %d %f %f", varx, vary, varz, varw);
-    return;
-}
+    void funcinput(int *, int *, float *, float *);
+    int main()
+    {
+        int var1, var2;
+        float var3, var4;
+    
+        funcinput(&var1, &var2, &var3, &var4);
+        printf("var1 = %d var2 = %d var3 = %f var4 = %f\n", var1, var2, var3, var4);
+        return 0;
+    }
+    
+    void funcinput(int *varx, int *vary, float *varz, float *varw)
+    {
+        scanf("%d %d %f %f", varx, vary, varz, varw);
+        return;
+    }
     ```
 
 * Example of validating input:
 
     ```C
-int get_pos_nums(int *n, int *m)
-{
-    int i, j, flag;
-    flag = printf("\n enter two positive numbers");
-    if (flag)       /* prompt displays successfully */
+    int get_pos_nums(int *n, int *m)
     {
-        flag = scanf("%d %d", &i, &j);
-        if (flag)       /* input successfully */
+        int i, j, flag;
+        flag = printf("\n enter two positive numbers");
+        if (flag)       /* prompt displays successfully */
         {
-            if (i > 0 && j > 0)
+            flag = scanf("%d %d", &i, &j);
+            if (flag)       /* input successfully */
             {
-                *n = i;     /* store the numbers */
-                *m = j;
+                if (i > 0 && j > 0)
+                {
+                    *n = i;     /* store the numbers */
+                    *m = j;
+                }
+                else
+                    flag = 0;
             }
-            else
-                flag = 0;
+            else;               /* null else input unsuccessful */
         }
-        else;               /* null else input unsuccessful */
+        else;                   /* null else prompt unsuccessful */
+        return flag;
     }
-    else;                   /* null else prompt unsuccessful */
-    return flag;
-}
     ```
 
 ### 5.4.2 Output Using Functions
@@ -901,42 +901,42 @@ int get_pos_nums(int *n, int *m)
 * Example of standard output from a function:
 
     ```C
-void funcoutput(int, int, float, float);
-
-int main()
-{
-    int var1, var2, var3, var4;
-    funcoutput(var1, var2, var3, var4);
-    return 0;
-}
-
-void funcoutput(int varx, int vary, float varz, float varw)
-{
-    printf("varx = %d vary = %d varz = %f varw = %f\n", varx, vary, varz, varw);
-    return;
-}
+    void funcoutput(int, int, float, float);
+    
+    int main()
+    {
+        int var1, var2, var3, var4;
+        funcoutput(var1, var2, var3, var4);
+        return 0;
+    }
+    
+    void funcoutput(int varx, int vary, float varz, float varw)
+    {
+        printf("varx = %d vary = %d varz = %f varw = %f\n", varx, vary, varz, varw);
+        return;
+    }
     ```
 
 * Example of output to a data file declared global:
 
     ```C
-FILE *outptr;
-void funcoutput(int, int, float, float);
-
-int main()
-{
-    int var1, var2;
-    float var3, var4;
-    outptr = fopen("myfile.dat", "w");
-    funcoutput(var1, var2, var3, var4);
-    return 0;
-}
-
-void funcoutput(int varx, int vary, float varz, float varw)
-{
-    fprintf(outptr, "%d %d %f %f", varx, vary, varz, varw);
-    return;
-}
+    FILE *outptr;
+    void funcoutput(int, int, float, float);
+    
+    int main()
+    {
+        int var1, var2;
+        float var3, var4;
+        outptr = fopen("myfile.dat", "w");
+        funcoutput(var1, var2, var3, var4);
+        return 0;
+    }
+    
+    void funcoutput(int varx, int vary, float varz, float varw)
+    {
+        fprintf(outptr, "%d %d %f %f", varx, vary, varz, varw);
+        return;
+    }
     ```
 
 ## 5.5 Recursive Functions
@@ -946,23 +946,23 @@ void funcoutput(int varx, int vary, float varz, float varw)
 * Classic example of recursion is `n!`
 * Defined mathematically as:
 
-    ```
+```
       /  1          for n = 1   <-- base condition
 n! = |
       \ n(n-1)!     for n > 1   <-- recursive formula
-    ```
+```
 
 * Simple implemetation:
 
     ```C
-int fact(int);
-int fact(int n)
-{
-    if (n == 1)
-        return 1;
-    else
-        return (n * fact(n-1));
-}
+    int fact(int);
+    int fact(int n)
+    {
+        if (n == 1)
+            return 1;
+        else
+            return (n * fact(n-1));
+    }
     ```
 
 ### 5.5.2 Relationship between Iteration and Recursion
@@ -1007,19 +1007,19 @@ int fact(int n)
 * Example:
 
     ```C
-int main()
-{
-    extern int x;   /* Allows you to access the x declared before func1 */
-    x = 5;
-    func1();
-    return 0;       /* x is now 15 */
-}
-
-int x;
-void func1(void)
-{
-    x = 15;
-}
+    int main()
+    {
+        extern int x;   /* Allows you to access the x declared before func1 */
+        x = 5;
+        func1();
+        return 0;       /* x is now 15 */
+    }
+    
+    int x;
+    void func1(void)
+    {
+        x = 15;
+    }
     ```
 
 ### 6.2.3 Storage Class static
@@ -1045,40 +1045,40 @@ void func1(void)
 * File A:
 
     ```C
-#include <stdio.h>
-
-void func1(void);
-void func2(void);
-
-int main()
-{
-    extern int a;           /* a is made visible */
-    func1();
-    a = a + 5;
-    printf("In main a = %d\n", a);
-    func2();
-    a = a + 25;
-    printf("In main a = %d\n, a);
-    return 0;
-}
-
-int a;                      /* a is declared and defined */
-void func1(void)
-{
-    a = 15;
-    printf("In func1 a = %d\n", a);
-    return;
-}
+    #include <stdio.h>
+    
+    void func1(void);
+    void func2(void);
+    
+    int main()
+    {
+        extern int a;           /* a is made visible */
+        func1();
+        a = a + 5;
+        printf("In main a = %d\n", a);
+        func2();
+        a = a + 25;
+        printf("In main a = %d\n, a);
+        return 0;
+    }
+    
+    int a;                      /* a is declared and defined */
+    void func1(void)
+    {
+        a = 15;
+        printf("In func1 a = %d\n", a);
+        return;
+    }
     ```
 
 * File B:
 
     ```C
-extern int a;
-void func2(void)
-{
-    a = a + 10;
-    printf("In func2 a = %d\n", a);
-    return;
-}
+    extern int a;
+    void func2(void)
+    {
+        a = a + 10;
+        printf("In func2 a = %d\n", a);
+        return;
+    }
     ```
