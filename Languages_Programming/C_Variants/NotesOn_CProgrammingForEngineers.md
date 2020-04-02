@@ -1,5 +1,7 @@
 # Notes on C Programming for Scientists and Engineers with Applications
 
+By Reddy; Jones &amp; Bartlett Learning, August 2009; ISBN 9780763782931
+
 # Chapter 1: Introduction to Computers and Programming
 
 # Chapter 2: Basic Elements of the C Programming Language
@@ -397,7 +399,7 @@ fscanf(file pointer, "format control string", &var1, &var2, ..., &varN);
     int var1, var2;
     float var3;
     double var4;
-    
+
     inptr = fopen("myfile1.dat", "r");
     fscanf(inptr, "%d %d %f %e", &var1, &var2, &var3, &var4);
     ```
@@ -411,7 +413,7 @@ fscanf(file pointer, "format control string", &var1, &var2, ..., &varN);
     FILE *inptr;
     float var1, var2, var3, var4;
     inptr = fopen("myfile2.dat", "r");
-    
+
     if (inptr)
     {
         fscanf(inptr, "%f %f", &var1, &var2);
@@ -450,9 +452,9 @@ fscanf(file pointer, "format control string", &var1, &var2, ..., &varN);
     {
         float x, y;
         FILE *graphptr;
-    
+
         graphptr = fopen("graph.dat", "w");
-    
+
         if (graphptr)
         {
             while(scanf("%f %f", &x, &y))
@@ -475,9 +477,9 @@ fscanf(file pointer, "format control string", &var1, &var2, ..., &varN);
     {
         float x, y;
         FILE *fptr;
-    
+
         fptr = fopen("myfile.dat", "r");
-    
+
         if (fptr)
         {
             printf("  x  y\n");
@@ -601,114 +603,114 @@ fscanf(file pointer, "format control string", &var1, &var2, ..., &varN);
 
 ### 4.2.1 Two Way Selection Structures
 
-    ```C
-    if (cond1) {
-        stmt1;
-    }
-    else if (cond2) {
-        stmt2;
-    }
-    else if (cond3) {
-        stmt3;
-    }
-    else {
-        stmt4;
-    }
-    
-    
-    switch (expression) {
-        case 1:
-            sequence1;
-            break;
-        case 2:
-            sequence2;
-            break;
-        case 3:
-            sequence3;
-            break;
-        default:
-            sequence4;
-    }
-    ```
+```C
+if (cond1) {
+    stmt1;
+}
+else if (cond2) {
+    stmt2;
+}
+else if (cond3) {
+    stmt3;
+}
+else {
+    stmt4;
+}
+
+
+switch (expression) {
+    case 1:
+        sequence1;
+        break;
+    case 2:
+        sequence2;
+        break;
+    case 3:
+        sequence3;
+        break;
+    default:
+        sequence4;
+}
+```
 
 * Case codes must be `int` or `char`
 * To combine cases:
 
-    ```C
-    switch (expression) {
-        case 1:
-            stmt1;
-            break;
-        case 2:
-        case 3:
-            printf("case 2 or 3: %d\n" expression);
-            break;
-        default:
-            stmt3;
-    }
-    ```
+```C
+switch (expression) {
+    case 1:
+        stmt1;
+        break;
+    case 2:
+    case 3:
+        printf("case 2 or 3: %d\n" expression);
+        break;
+    default:
+        stmt3;
+}
+```
 
 ## 4.3 Repetition Structures
 
 ### 4.3.1 Iterative Loops
 
-    ```C
-    int i;
-    for (i = 1; i < 6; i++)
-    {
-        funcall();
-        printf("i = %d\n", i);
-    }
+```C
+int i;
+for (i = 1; i < 6; i++)
+{
+    funcall();
     printf("i = %d\n", i);
-    ```
+}
+printf("i = %d\n", i);
+```
 
 ### 4.3.2 Nested Iterative Loops
 
-    ```C
-    int i, j;
-    for (i = 0; i < 3; i++)
+```C
+int i, j;
+for (i = 0; i < 3; i++)
+{
+    for (j = 0; j < 40; j++)
     {
-        for (j = 0; j < 40; j++)
-        {
-            funcall();
-            printf("i = %d  j = %d\n", i, j);
-        }
-        printf("\n");
+        funcall();
+        printf("i = %d  j = %d\n", i, j);
     }
-    ```
+    printf("\n");
+}
+```
 
 ### 4.3.3 Conditional Loops
 
-    ```C
-    float r, a;
-    const float PI = 3.141593;
-    
+```C
+float r, a;
+const float PI = 3.141593;
+
+scanf("%f", &r);
+while (r != 0)
+{
+    a = PI * r * r;
+    printf("radius = %f area = %f\n", r, a);
     scanf("%f", &r);
-    while (r != 0)
-    {
-        a = PI * r * r;
-        printf("radius = %f area = %f\n", r, a);
-        scanf("%f", &r);
-    }
-    
-    /* Flag controlled (EOF) while loop: */
-    int num;
-    while ((fscanf(inptr, "%d", &num)) != EOF)
-    {
-        stmt1;
-        stmt2;
-        stmtN;
-    }
-    
-    /* do while loop */
-    do
-    {
-        stmt1;
-        stmt2;
-        stmtN;
-    }
-    while (condition);
-    ```
+}
+
+/* Flag controlled (EOF) while loop: */
+int num;
+while ((fscanf(inptr, "%d", &num)) != EOF)
+{
+    stmt1;
+    stmt2;
+    stmtN;
+}
+
+/* do while loop */
+do
+{
+    stmt1;
+    stmt2;
+    stmtN;
+}
+while (condition);
+```
 
 ## 4.4 Stacking and Nesting of Control Structures
 
@@ -738,9 +740,9 @@ fscanf(file pointer, "format control string", &var1, &var2, ..., &varN);
 * Every function except main must be declared/prototyped
 * General form of a prototype:
 
-```
-return-data-type function-name(list of parameter data-types);
-```
+    ```
+    return-data-type function-name(list of parameter data-types);
+    ```
 
 * Example:
 
@@ -758,9 +760,9 @@ return-data-type function-name(list of parameter data-types);
 
 * General form of a function definition header:
 
-```
-return-data-type function-name(list of parameters with their data type)
-```
+    ```
+    return-data-type function-name(list of parameters with their data type)
+    ```
 
 * Header must match prototype:
     * return data type must match
@@ -783,7 +785,7 @@ return-data-type function-name(list of parameters with their data type)
     ```C
     #include <stdio.h>
     float compute_area(float);
-    
+
     int main()
     {
         float r, area;
@@ -791,7 +793,7 @@ return-data-type function-name(list of parameters with their data type)
         outputf(area);
         return 0;
     }
-    
+
     float compute_area(float radius)
     {
         const float PI = 3.141593;
@@ -824,7 +826,7 @@ return-data-type function-name(list of parameters with their data type)
 
     ```C
     int funcsum(int *, int *, int *);
-    
+
     int main()
     {
         int var1, var2, var3, sum;
@@ -835,7 +837,7 @@ return-data-type function-name(list of parameters with their data type)
         printf("var1= %d var2 = %d var3 = %d sum = %d\n", var1, var2, var3, sum);
         return 0;
     }
-    
+
     int funcsum(int *varx, int *vary, int *varz)
     {
         int sum1;
@@ -856,12 +858,12 @@ return-data-type function-name(list of parameters with their data type)
     {
         int var1, var2;
         float var3, var4;
-    
+
         funcinput(&var1, &var2, &var3, &var4);
         printf("var1 = %d var2 = %d var3 = %f var4 = %f\n", var1, var2, var3, var4);
         return 0;
     }
-    
+
     void funcinput(int *varx, int *vary, float *varz, float *varw)
     {
         scanf("%d %d %f %f", varx, vary, varz, varw);
@@ -902,14 +904,14 @@ return-data-type function-name(list of parameters with their data type)
 
     ```C
     void funcoutput(int, int, float, float);
-    
+
     int main()
     {
         int var1, var2, var3, var4;
         funcoutput(var1, var2, var3, var4);
         return 0;
     }
-    
+
     void funcoutput(int varx, int vary, float varz, float varw)
     {
         printf("varx = %d vary = %d varz = %f varw = %f\n", varx, vary, varz, varw);
@@ -922,7 +924,7 @@ return-data-type function-name(list of parameters with their data type)
     ```C
     FILE *outptr;
     void funcoutput(int, int, float, float);
-    
+
     int main()
     {
         int var1, var2;
@@ -931,7 +933,7 @@ return-data-type function-name(list of parameters with their data type)
         funcoutput(var1, var2, var3, var4);
         return 0;
     }
-    
+
     void funcoutput(int varx, int vary, float varz, float varw)
     {
         fprintf(outptr, "%d %d %f %f", varx, vary, varz, varw);
@@ -1014,7 +1016,7 @@ n! = |
         func1();
         return 0;       /* x is now 15 */
     }
-    
+
     int x;
     void func1(void)
     {
@@ -1046,10 +1048,10 @@ n! = |
 
     ```C
     #include <stdio.h>
-    
+
     void func1(void);
     void func2(void);
-    
+
     int main()
     {
         extern int a;           /* a is made visible */
@@ -1061,7 +1063,7 @@ n! = |
         printf("In main a = %d\n, a);
         return 0;
     }
-    
+
     int a;                      /* a is declared and defined */
     void func1(void)
     {
@@ -1082,3 +1084,563 @@ n! = |
         return;
     }
     ```
+
+# Chapter 7: One-Dimensional Arrays
+
+## 7.1 One-Dimensional Arrays
+
+* zero indexed, one datatype
+
+### 7.1.2 Declaration of Arrays
+
+* General form of an array declaration:
+
+    ```
+    element-data-type array-name[number of elements];
+    ```
+
+* Example of the C form:
+
+    ```C
+    int a[10];
+    ```
+
+* Multiple declaration:
+
+    ```C
+    int value, constant, velocity[100];  /* all the same type, two vars and array */
+    ```
+
+### 7.1.3 Initialization of Arrays
+
+* Three different ways: in declaration, by assignment, using for loops:
+
+    ```C
+    int a[5] = {1,2,3,4,5};             /* five element array */
+    int a[]  = {1,2,3,4,5};             /* five element array */
+    int a[5] = {1,2,3};                 /* five elements, two are 0 */
+
+    int a[5];
+    a[0] = 1;
+    a[1] = 2;
+
+    int i, cons[10];
+    for (i = 0; i < 10; i++)
+    {
+        cons[i] = 0;
+    }
+    ```
+
+## 7.2 Input of One-Dimensional Arrays
+
+### 7.2.1 Array Input
+
+* From standard in:
+
+    ```C
+    #define SIZE 5
+    int i, a[SIZE];
+
+    for (i = 0; i < SIZE; i++)
+    {
+        scanf("%d", &a[i]);
+    }
+    ```
+
+* From a file:
+
+    ```C
+    #define SIZE 5;
+    FILE *inptr;
+    int i, a[SIZE];
+
+    inptr = fopen("myfile.dat", "r");
+
+    for (i = 0; i < SIZE; i++)
+    {
+        fscanf(inptr, "%d", &a[i]);
+    }
+    ```
+
+### 7.2.2 Input of Parallel Arrays
+
+* Arrays of the same size that contain related data points like x,y coords
+* Example:
+
+    ```C
+    #define ARR 5
+    int i;
+    int x[ARR], y[ARR];
+
+    for (i = 0; i < ARR; i++)
+    {
+        scanf("%d", &x[i]);
+    }
+
+    for (i = 0; i < ARR; i++)
+    {
+        scanf("%d", &y[i]);
+    }
+    ```
+
+## 7.3 Output of One-Dimensional Arrays
+
+### 7.3.1 Array Output
+
+* Output of a one-dimensional array using an index:
+
+    ```C
+    #define N 5
+    int i;
+    int a[N] = {12, 13, 25, 16, 43};
+
+    for (i = 0; i < N; i++)
+    {
+        printf("%d    ", a[i]);
+    }
+    printf("\n");
+    ```
+
+* To a file:
+
+    ```C
+    #define A 5
+    FILE *outptr;
+    int i;
+    int a[A] = {12, 13, 25, 16, 43};
+
+    outptr = fopen("myfile.dat", "w");
+
+    for (i = 0; i < A; i++)
+        fprintf(outptr, "%d    ", a[i]);
+    ```
+
+### 7.3.2 Output of Parallel Arrays
+
+```C
+#define N 5
+int i;
+int x[N] = {10, 15, 18, 45, 62};
+int y[N] = {26, 45, 53, 98, 70};
+
+printf("Array x: ");
+for (i = 0; i < N; i++)
+{
+    printf("%d    ", x[i]);
+}
+
+printf("\n\n");
+
+printf("Array y: ");
+for (i = 0; i < N; i++)
+{
+    printf("%d    ", y[i]);
+}
+printf("\n");
+```
+
+## 7.4 Manipulation of Arrays
+
+### 7.4.1 Array Assignment
+
+* Copying an array into another array:
+
+    ```C
+    #define SIZE 5
+    int i;
+    float a[SIZE], b[SIZE];
+    for (i = 0; i < SIZE; i++)
+    {
+        b[i] = a[i];
+    }
+    ```
+
+* Reverse copy:
+
+    ```C
+    #define SIZE 5
+    int i;
+    int a[SIZE], b[SIZE];
+    for (i = 0; i < SIZE; i++)
+    {
+        b[SIZE - 1 - i] = a[i];
+    }
+    ```
+
+* Exchanging one for another:
+
+    ```C
+    #define SIZE 5
+    int i;
+    float x[SIZE], y[SIZE], temp;
+
+    for (i = 0; i < SIZE; i++)
+    {
+        temp = x[i];
+        x[i] = y[i];
+        y[i] = temp;
+    }
+    ```
+
+* Shifting elements down an index to insert something:
+
+    ```C
+    #define SIZE 5
+    int i, j = 0, k = 4, SIZE = 5;
+    int a[SIZE], temp;
+
+    temp = a[k];
+    for (i = k; i > j; i--)
+    {
+        a[i] = a[i-1];
+    }
+    a[j] = temp;
+    ```
+
+### 7.4.2 Array Arithmetic
+
+* Addition of a scalar constant to elements of an array:
+
+    ```C
+    #define SIZE 5
+    int i;
+    int a[SIZE];
+    for (i = 0; i < SIZE; i++)
+    {
+        a[i] = a[i] + 5;
+    }
+    ```
+
+* Adding elements of two arrays together:
+
+    ```C
+    #define SIZE 5
+    int i;
+    int a[SIZE], b[SIZE], c[SIZE];
+    for (i = 0; i < SIZE; i++)
+    {
+        c[i] = a[i] + b[i];
+    }
+    ```
+
+* Summing array elements:
+
+    ```C
+    #define SIZE 5
+    int i, total;
+    int a[SIZE];
+    total = 0;
+    for (i = 0; i < SIZE; i++)
+    {
+        sum += a[i];
+    }
+    ```
+
+* Inner product of two vectors x and y
+* defined mathematically as sum from i=1 to i=n of x[i]*y[i]
+
+    ```C
+    int i, n;
+    float sum = 0;
+    for (i = 0; i < n; i++)
+    {
+        sum += x[i] * y[i];
+    }
+    ```
+
+## 7.5 Passing Arrays to Functions
+
+### 7.5.1 Passing Fixed-size arrays
+
+* Pass an entire array to a function:
+
+    ```C
+    void func1 (int [], float [], int);
+    int main()
+    {
+        int a[5], arsize = 5;
+        float b[5];
+        ...
+        func1(a, b, arsize);
+        ...
+        return 0;
+    }
+
+    void func1(int p[], float q[], int n)
+    {
+        ...
+        return;
+    }
+    ```
+
+* Input of an array into a function:
+
+    ```C
+    #include <stdio.h>
+    #define ARSIZE 5
+    void funcinput(int a[], int n);
+
+    int main()
+    {
+        int i, x[ARSIZE];
+
+        funcinput(x, ARSIZE);
+
+        for(i = 0; i < ARSIZE; i++)
+            printf("%d    ", x[i]);
+
+        return 0;
+    }
+
+    void funcinput(int y[], int n)
+    {
+        int i;
+        for (i = 0; i < n; i++)
+            scanf("%d", &y[i]);
+        return;
+    }
+    ```
+
+* Output of An Array in a Function
+
+    ```C
+    #include <stdio.h>
+    #define ARSIZE 5
+    void funcoutput(int a[], int n);
+
+    int main()
+    {
+        int x[ARSIZE];
+        funcoutput(x, ARSIZE);
+        return 0;
+    }
+
+    void funcoutput(int y[], int n)
+    {
+        int i;
+        for (i = 0; i < n; i++)
+            printf("%d    ", y[i]);
+        return;
+    }
+    ```
+
+* Manipulation of Arrays in a function:
+
+    ```C
+    #include <stdio.h>
+    #define SIZE 5
+
+    void funcompute(int a[], int b[], int c[], int n);
+
+    int main()
+    {
+        int i, x[ARSIZE], y[ARSIZE], z[ARSIZE];
+
+        for (i = 0; i < ARSIZE; i++)
+            scanf("%d  %d", &x[i], &y[i]);
+
+        funcompute(x, y, z, ARSIZE);
+
+        for (i = 0; i < ARSIZE; i++)
+            printf("%d %d %d\n", x[i], y[i], z[i]);
+
+        return 0;
+    }
+
+    void funcompute(int p[], int r[], int s[], int n)
+    {
+        int i;
+
+        for (i = 0; i < n; i++)
+            s[i] = p[i] + r[i];
+        return;
+    }
+    ```
+
+### 7.5.2 Passing Array Elements
+
+* Array elements passed by value and by reference:
+
+    ```C
+    #include <stdio.h>
+    #define ARSIZE 5
+
+    void funcscalar(int, int *);
+
+    int main()
+    {
+        int i;
+        int a[] = {1, 2, 3, 4, 5};
+        int b[] = {6, 7, 8, 9, 10};
+
+        for (i = 0; i < ARSIZE; i++)
+            funcscalar(a[i], &b[i]);
+
+        for (i = 0; i < ARSIZE; i++)
+            printf("%d    %d\n", a[i], b[i]);
+
+        return 0;
+    }
+
+    void funcscalar(int x, int *y)
+    {
+        x = x + 2;
+        *y = x + *y;
+        return;
+    }
+    ```
+
+# Chapter 8: Multidimensional Arrays
+
+## 8.1 Introduction to Multidimensional Arrays
+
+### 8.1.1 Declaration Statement
+
+* General case:
+
+    ```
+    datatype name[# of rows][# of columns];
+    ```
+
+* Example:
+
+    ```C
+    int a[4][5];
+    ```
+
+### 8.1.2 Storage Allocation
+
+* Determined when the declaration statement is compiled
+* Two dimensional arrays are stored sequentially in row-major order
+
+### 8.1.3 Array Initialization
+
+* Examples of initialization of a two dimensional array:
+
+    ```C
+    int a[3][4] = {1, 4, 2, 7, 5, 9, 6, 10, 12, 15, 1, 18};  /* assigned in row-major order */
+
+    int a[3][4] = {{1,4,2,7}, {5,9,6,10}, {12,15,1,18}};  /* braced sections are rows */
+    ```
+
+# Chapter 9: Characters and Strings
+
+## 9.1 Introduction to Character Data
+
+### 9.1.1 Declaration of Character Data
+
+### 9.1.2 Initialization of Character Data
+
+* Examples of declaration and initialization:
+
+    ```C
+    char chararray[10];
+    chararray[0] = 'a';
+
+    char mystate[2] = {'C', 'A'};
+    ```
+
+* Example of printing a two dimensional axis:
+
+    ```C
+    #include <stdio.h>
+
+    int main()
+    {
+        char graph[51][51];
+        int x, y;
+
+        for (x = 1; y < 51; x++)
+        {
+            for (y = 1; y < 51; y++)
+            {
+                graph[y][x] = ' ';
+            }
+        }
+
+        for (x = 1; x < 51; x++)
+        {
+            graph[0][x] = '-';
+        }
+
+        for (y = 1; y < 51; y++)
+        {
+            graph[y][0] = '|';
+        }
+
+        graph[0][0] = '+';
+
+        return 0;
+    }
+    ```
+
+### 9.1.3 I/O of Character Data:
+
+* Functions from stdio:
+    * `scanf()`                 get from standard in
+    * `printf()`                print to standard in
+    * `fscanf()`                get from file
+    * `fprintf()`               print to file
+
+* Example of reading an input name into a character array:
+
+    ```C
+    #include <stdio.h>
+
+    int main()
+    {
+        char name[20];
+
+        printf("Enter the name:\n");
+        scanf("%15c\n", name);
+        printf("The name entered is: %15c\n", name);
+
+        return 0;
+    }
+    ```
+
+* Reading characters into an array one by one:
+
+    ```C
+    #include <stdio.h>
+
+    int main()
+    {
+        char name[15];
+        int k;
+
+        printf("Enter the name:\n");
+        for (k = 0; k < 15; k++)
+        {
+            scanf("%c", &name[k]);
+        }
+        printf("\nThe string entered is:");
+
+        for (k = 0; k < 15; k++)
+        {
+            printf("%c", name[k]);
+        }
+
+        printf("\n");
+
+        return 0;
+    }
+    ```
+
+## 9.2 Introduction to Strings
+
+* String constants in C are zero or more characters including blanks, enclosed in double quotes
+* Strings can be stored in character arrays, but must be shorter than the array and end in a null terminating character, \0
+* String initialization examples:
+
+    ```C
+    char ID[4] = {'7','9','4','\0'};
+    char ID[4] = "794";
+
+    char strname[8] = {'J','o','n','e','s','\0'};
+    char strname[8] = "Jones";
+    ```
+
+### 9.2.1 Declaration and Initialization of Strings
+
+* Stored in an array of datatype char
