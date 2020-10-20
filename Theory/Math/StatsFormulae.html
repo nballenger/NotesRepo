@@ -176,8 +176,8 @@ weighted_mean(x, w) # Returns 7.0
               <td>The middle number on a sorted list of the data. In a list with an even number of elements, the average of the two middle elements.</td>
               <td></td>
               <td>
-<pre><code class="python">x = [5,4,1,2,3]
-y = [6,5,4,1,2,3]
+<pre><code class="python">x = [ 5, 4, 1, 2, 3    ]
+y = [ 6, 5, 4, 1, 2, 3 ]
 
 def median(numbers: list):
     n_len = len(numbers)
@@ -199,8 +199,8 @@ median(y) # Returns 3.5
               <td>The middle number on a sorted list of the data, having removed some number of outliers. In a list with an even number of elements, the average of the two middle elements.</td>
               <td></td>
               <td>
-<pre><code class="python">x = [5,4,1,2,3,100,-40]
-y = [6,5,4,1,2,3,200,-80]
+<pre><code class="python">x = [   5,   4,   1,   2,   3, 100, -40      ]
+y = [   6,   5,   4,   1,   2,   3, 200, -80 ]
 
 def trimmed_median(numbers: list, drop_n_outliers: int):
     p = drop_n_outliers
@@ -221,6 +221,27 @@ trimmed_median(y,2) # Returns 3.5
           </tbody>
         </table>
       </section>
+      <section>
+        <header>
+          <h2>Estimates of Variability</h2>
+        </header>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Description</th>
+              <th>Formula</th>
+              <th>Python Code</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>Mean Absolute Deviation</th>
+              <td>The average of the absolute values of the deviations from the mean.</td>
+              <td>
+          </tbody>
+        </table>
+      </section><!-- /estimates of location -->
     </article>
     </div><!-- end .container -->
   </body>

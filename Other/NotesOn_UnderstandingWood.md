@@ -151,5 +151,32 @@ By R. Bruce Hoadley, The Taunton Press, Inc. ISBN 1-56158-358-8
 * In sapwood the resin in canals is quite fluid, and can take years to solidify in the wood
 * Kiln drying above 175F is needed to set the resin and minimize bleed-out
 * Resin spots tend to bleed through paint films
-* Rays in softwood are narrow, typically one cell wide
+* Rays in softwood are narrow, typically one cell wide, typically invisible
+
+### Hardwoods
+
+* Most lack resin canals, though some tropical species have gum ducts
+* Rays vary widely in size, some visible
+* Many more cell types, much more variation in their arrangement
+* Believed to have evolved later than softwoods
+* Cells are more specialized by function; conduction and support are done by specialized cells
+* `vessel elements` - specialized cells, relatively large in diameter with thin walls. Formed in end to end arrangements, which create continuous vessels, ideal for sap conduction
+* `fibers` - small diameter, closed ends, thick walls, create strength and support
+* `pore` - the cut end of a vessel
+* All hardwoods have vessels, so they are also known as 'porous woods' (softwoods being 'nonporous')
+* `ring-porous woods` - oak, ash, elm, chestnut, catalpa; largest pores are in the earlywood; usually pronounced uneven grain, distinct figures and patterns
+* `diffuse-porous woods` - maple, birch, basswood, yellow-poplar; pores evenly distributed; typically small diameter pores
+* `semi-ring-porous woods` - pores are large in the earlywood, get smaller in the latewood but with no distinct zoning
+* Pore size is a measure of texture; red oak is coarse, sweetgum is fine
+* `tyloses` - bubblelike structures in the cavities of vessel elements, in the transition from sapwood to heartwood
+* Other longitudinal cells are uniform diameter, smaller than visible to the naked eye
+* Fiber masses are darker, tracheids and parenchyma cells are lighter
+* Ray structure in some woods represents planes of structural weakness
+* `ray fleck` - Ray appearance on the radial surface of the wood, characteristic of certain woods
+
+## Chapter 2: Figure in Wood
+
+* `figure` - distinctive or characteristic markings on longitudinal or side-grain surfaces
+* Results from a combination of normal / abnormal growth and the orientation of the surface revealed by cutting
+* 
     

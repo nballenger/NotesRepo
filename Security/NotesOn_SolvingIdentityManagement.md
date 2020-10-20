@@ -464,4 +464,436 @@ By Yvonne Wilson, Abhishek Hingnikar; Apress, Dec. 2019; ISBN 9781484250952
 
 * Uses two requests from the app to the auth server to get an access token
 * First request redirects the user's browser to the auth endpoint at the auth server, with a request to authorize an API call to be made on the user's behalf
-* 
+* After getting permission, redirects back to app with an authorization code
+* App uses the auth code to send a second, backchannel request to the auth server's token endpoint, to get an access token
+* Auth server response with access token, app can use it to call the API
+* Process:
+    1. User/Resource Owner accesses Application
+    1. Application redirects to Authorization Server's authorize endpoint with authorization request
+    1. Authorization Server prompts user for authentication and consent
+    1. User authenticates, provides consent for authuroization request
+    1. Authorization Server redirects back to Application's callback URL with authorization code
+    1. Application calls Authorization Server's token endpoint, passing authorization code
+    1. Authorization Server response with Access Token / Refresh Token
+    1. Application calls Resource Server / API using the Access Token
+* Originally optimized for confidential clients
+* Second request could be made by application back end directly to Authorization Server, to authenticate itself when getting an Access Token
+* Proof Key for Code Exchange (PKCE) allows public clients to use this grant type
+
+#### Authorization Code Grant Type + PKCE
+
+* PKCE is a mechanism used with authorization/token requests to ensure that the Application that requested an auth code is the same application that uses that code to get an Access Token
+* App creates a cryptographically random string ('code verifier'), long enough to provide protection against brute force guessing
+* App computes a derived value ('code challenge') from the code verifier
+* When the App sends an authorization request in step 2, it includes the code challenge and the method used to derive it
+* When the App sends the auth code to the auth server's token endpoint, it includes the code verifier
+* Auth server transforms the code verifier value using the transformation method received in the auth request, and checks that the result matches the code challenge sent with the auth request
+* Only the legitimate App knows the code verifier to pass in step 6 that will match the code challenge in step 2
+* PKCE spec has 2 transform methods: plain and S256
+    * Plain - code challenge and verifier are identical (no protection from compromise)
+    * Apps using code grant + PKCE should use S256, which uses a base64 URL encoded SHA256 has of the code verifier to protect it
+
+#### The Authorization Request
+
+* Sample App's API Authorization Request with PKCE, sent to an Authorization Server's authorization endpoint:
+
+    ```
+    GET /authorize?
+
+    response_type=code
+    & client_id=<client_id>
+    & state=<state>
+    & scope=<scope>
+    & redirect_uri=<callback_uri>
+    & resource=<API_identifier>
+    & code_challenge=<PKCE_code_challenge>
+    & code_challenge_method=S256 HTTP/1.1
+    Host: authorizationserver.com
+    ```
+
+* Parameters in an Authorization Request:
+    * `response_type` - OAuth 2.0 grant type. `code` used for authorization code grant type
+    * `client_id` - identifier for the Application, assigned when it registered with the Authorization Server
+    * `state` - Non-guessable string, unique for each call, opaque to the Authorization Server, used by the client to track state between a corresponding request and response to mitigate CSRF attacks.
+    * `scope` - Scope of access privileges being requested, like `get:documents`
+    * `redirect_uri` - where the Authorization Server should send its response
+    * `resource` - Identifier for a specific API registered at an Authorization Server for which the access token is requested. Defined in 'Resource Indicators for OAuth 2.0' extension. Mostly used in deployments with custom APIs, not needed unless there are multiple possible APIs.
+    * `code_challenge` - PKCE code challenge derived from the PKCE code verifier
+    * `code_challenge_method` - 'S256' or 'plain'. Use 'S256'.
+
+#### Response
+
+* Sends to the callback uri:
+
+    ```
+    HTTP/1.1 302 Found
+    Location: https://clientapplication.com/callback?code=<authcode>&state=<state>
+    ```
+
+* Parameters
+    * `code` - authorization code to be used by the application to request an access token
+    * `state` - state value, unmodified, sent in the authorization request. The app must validate that the state value in the response matches the state value sent in the original request.
+
+#### Calling the Token Endpoint
+
+* Sent to token endpoint:
+
+    ```
+    POST /token HTTP/1.1
+    Host: authorizationserver.com
+    Content-Type: application/x-www-form-urlencoded
+
+    grant_type=authorization_code
+    & code=<authorization_code>
+    & client_id=<client_id>
+    & code_verifier=<code_verifier>
+    & redirect_uri=<callback_uri>
+    ```
+
+* Parameters
+    * `grant_type` - must be `authorization_code` for the auth code grant
+    * `code` - authorization code received in response to authorization call
+    * `client_id` - identifier for the app
+    * `code_verifier` - PKCE code verifier value from which the code challenge was derived. Unguessable, cryptographically random string between 43 and 128 characters, characters `A-Za-z0-9` and `-._~`
+    * `redirect_uri` - callback URI for the authorization server's response
+* Response from the token endpoint:
+
+    ```
+    HTTP/1.1 200 OK
+    Content-Type: application/json;charset=UTF-8
+    Cache-Control: no-store
+    Pragma: no-cache
+
+        {
+            "access_token":"<access_token_for_API>",
+            "token_type":"Bearer",
+            "expires_in":<token_expiration>,
+            "refresh_token":"<refresh_token>"
+        }
+    ```
+
+* Parameters
+    * `access_token` - access token to use for API calls
+    * `token_type` - type of token issues, e.g. `Bearer`
+    * `expires_in` - how long the token is valid
+    * `refresh_token` - optional, up to the auth server's discretion to return
+
+### Implicit Grant
+
+* Implicit grant type, optimized for use with public clients like single page apps
+* Returns an access token in one request
+* Designed when CORS (Cross-Origin Resource Sharing) wasn't widely implemented, so web pages could only make calls to the domain they were loaded from, so they couldn't call an auth server's token endpoint.
+* To compensate for that, the implicit grant type has the auth server respond to an authorization request by returning tokens to the app in a redirect with a URL hash fragment.
+* Process:
+    1. Resource Owner accesses the Application
+    1. Application redirects browser to Authorization Server's authorize endpoint, with Authorization Request
+    1. Authorization Server prompts user to authenticate and provide consent
+    1. User authenticates, provides consent
+    1. Authorization Server redirects to app's callback URL with access token
+    1. App uses access token to call Resource Server (API)
+* CORS is generally supported now, so the implicit grant type isn't needed for its original purpose, and returning an access token in a URL hash fragment potentially leaks via browser history or referer headers.
+* Use the authorization code grant type + PKCE instead.
+* New specs define alternate response modes that can mitigate some of the issues with this grant type.
+
+#### The Authorization Request
+
+* Params similar to the previous grant type, but a response type of `token` indicates use of the implicit grant type, and `response_mode` set to `form_post`
+
+    ```
+    GET /authorize?
+
+    response_type=token
+    & response_mode=form_post
+    & client_id=<client_id>
+    & scope=<scope>
+    & redirect_uri=<callback_uri>
+    & resource=<API identifier>
+    & state=<state> HTTP/1.1
+    Host: authorizationserver.com
+    ```
+
+### Resource Owner Password Credentials Grant
+
+* Supports situations where an app is trusted to handle end-user creds and no other grant type is possible
+* App collects user's credentials directly, does not redirect to authorization server
+* App passes the collected creds to the auth server for validation during request for an access token
+* This type is discouraged, as it exposes the user's creds to the application
+* Does not include a user consent step, so the app can request any access at all
+* Primarily recommended for user migration use cases where they have to go from one repo to another with incompatible hashing methods
+* Process:
+    1. Resource owner accesses the application
+    1. App prompts user for credentials
+    1. User provides credentials to App
+    1. App sends token request to the Authorization Server's token endpoint
+    1. Authorization Server responds with access token
+    1. Application calls the resource server (API), using the access token
+
+### Client Credentials Grant
+
+* Used when an app calls an API to access resources the application owns
+* Process:
+    1. App sends authorization request including app's creds to the auth server
+    1. Authorization Server validates creds, responds with access token
+    1. App calls resource server (API) using access token
+    1. Steps repeat if the access token has expired by the next time the app calls the API
+* No end-user interaction with the auth server is required
+* App credentials serve as the authorization for the app
+
+### Calling an API
+
+* Typical call using an access token:
+
+    ```
+    GET /api-endpoint HTTP/1.1
+    Host: api-server.com
+    Authorization: Bearer <access_token>
+    ```
+
+### Refresh Token
+
+* OAuth tokens have an expiration. An app could make a new auth request on token expiry, but there's an alternative approach for traditional web apps and native clients that involve a refresh token.
+* You can use a refresh token to get a new access token when the old one expires
+* Not used in all scenarios:
+    * Not with client credentials grant, because an app can simply request an access token any time with no need for user interaction
+    * Static refresh tokens are not used with public clients
+* There is a document, "OAuth 2.0 Security Best Current Practice" that specifies, you know, best practices.
+* The 2.0 spec didn't include a mechanism for apps to request refresh tokens, so the issuance is at the discretion of authorization servers
+* Sample call to a token endpoint to get a new access token:
+
+    ```
+    POST /token HTTP/1.1
+    Host: authorizationserver.com
+    Authorization: Basic <encoded app credentials>
+    Content-Type: application/x-www-form-urlencoded
+
+    grant_type=refresh_token
+    & refresh_token=<refresh_token>
+    ```
+
+### Guidance
+
+* An SDK may abstract some of the underlying communication mechanisms
+* Recommended that access token duration be short lived, and a new token obtained if necessary on expiry
+* Exact durating should be based on the sensitivity of the resources guarded
+
+# Chapter 6: OpenID Connect
+
+* OAuth 2.0 provides a framework for authorizing apps to call APIs, but is not designed for authenticating users to applications.
+* OIDC provides an identity service layer on top of OAuth 2.0
+
+## Problem to Solve
+
+* A user needs to be authenticated to access an application
+* OIDC enables an app to delegate user authentication to an OAuth 2.0 authorization server, and have it return claims about the authenticated user and authentication event in a standard format.
+* Process
+    1. User accesses an application
+    1. App redirects browser to an authorization server that implements OIDC (which OIDC calls an OpenID Provider)
+    1. The OpenID Provider interacts with the user to authenticate them
+    1. After authentication, the user's browser is redirected back to the app. App can request that claims about the authenticated user be returned in a security token called an ID Token.
+    1. Alternatively it can request an OAuth token, and use it to call the OpenID Provider's UserInfo endpoint to get the claims.
+* Because OIDC is a layer on top of OAuth, an app can use an OpenID Provider for both user authentication and authorization to call the OpenID Provider's API.
+
+## Terminology
+
+### Roles
+
+* End User - a subject to be authenticated
+* OpenId Provider (OP) - an OAuth authorization server that implements OIDC and can authenticate a user and return claims about the authenticated user and the authentication event to a relying party (application).
+* Relying Party (RP) - OAuth client which delegates user authentication to an OP and requests claims about the user from the OP. (Generally we use 'application' for the relying party, but it could be another IdP)
+
+### Client Types
+
+* Has Public and Confidential application types similar to OAuth 2.0
+
+### Tokens and Authorization Code
+
+* OIDC uses the authorization code, access token, and refresh token as OAuth does
+* ID Token - token used to convey claims about an authentication event and user to a relying party
+
+### Endpoints
+
+* Uses authorization and token endpoints as in OAuth
+* UserInfo Endpoint - returns claims about an authenticated user. Requires an access token, claims returned are governed by the access token.
+
+### ID Token
+
+* Security token used by an OP to convey claims to an app
+* Encoded in JSON Web Token (JWT) format
+* Sample:
+
+    ```
+    Header (algorithm and type of token)
+    {
+        "alg":"RS256",
+        "Typ":"JWT"
+    }
+
+    Payload (claims)
+    {
+        "iss":"http://openidprovider.com",
+        "sub":"1234567890",
+        "aud":"<base_64_string>",
+        "nonce":"<base_64_string>",
+        "exp":1516239322,
+        "iat":1516239022,
+        "name":"Fred Doe",
+        "admin":true,
+        "auth_time":1516239021,
+        "acr":"1",
+        "amr":"pwd"
+    }
+
+    Signature
+    ```
+
+* JWT is designed to convey claims between two parties
+* An ID Token consist of header, payload, and signature
+* Header has info on type of object (JWT), and the algorithm used to protect the integrity of the claims in the payload.
+* Common algorithms:
+    * HS256 (HMAC with SHA256)
+    * RS256 (RSA Signature with SHA256)
+* Payload contains claims about the user and the authentication event
+* Signature contains a digital signature based on the payload section of the ID Token and a secret key known to the OpenID Provider
+* The OP signs the JWT in accordance with the JSON Web Signature (JWS) spec
+* A relying party can validate the signature
+* For confidentiality, the OP can optionally encrypt the JWT using JSON Web Encryption (JWE), which produces a nested JWT
+* Parameters in the claims section:
+    * `iss` - issuer of the token, in URL format, typically the OP
+    * `sub` - Unique (to OP), case-sensitive string ID for the authenticated user or subject entity, no more than 255 ASCII characters. Never reassinged.
+    * `aud` - Client ID of the relying party (app). Single, case-sensitive string or an array of the same if multiple audiences
+    * `exp` - expiration time for the ID token, as epoch time
+    * `iat` - Time of issuance, as epoch time
+    * `auth_time` - Time of authentication in epoch time
+    * `nonce` - Unguessable, case-sensitive string value passed in authentication request from relying party and added by OP to an ID Token, to link the token to a relying party application session and facilitate detection of replayed ID tokens.
+    * `amr` - String with an authentication method reference. Comes from Authentication Method Reference Values specification
+    * `acr` - String with an authentication context class reference, indicates authentication context class for the auth mechanism used to authenticate the subject of the ID Token.
+    * `azp` - Client ID of the authorized party to which the ID Token is issued. Typically not used unless the token only has a single audience in `aud` claim, and that audience is different from the authorized party.
+* Tokens can have additional claims beyond the above. Examples of standard claims:
+    * user name and variants
+    * email address, email verified
+    * locale
+    * picture
+* A list is in the OIDC core specification, section 5.1
+* Specific OIDC request types may involve additional claims
+
+## How it Works
+
+* OIDC defines three different flows by which an app can interact with an OP to make an authentication request
+
+### OIDC Flows
+
+* Designed around the constraints of different types of apps, are somewhat similar to the OAuth grant types. OIDC core spec defines these flows:
+    * Authorization Code Flow
+    * Implicit Flow
+    * Hybrid Flow
+
+### OIDC Authorization Code Flow
+
+* Similar to OAuth authorization code grant, relies on two requests and an intermediary authorization code
+
+#TODO: Finish this chapter
+
+# Chapter 7: SAML 2.0
+
+* Security Assertion Markup Language
+* Provides two important features: Cross-domain single sign on (SSO, and ID federation
+
+## Problem to Solve
+
+* Most common use case is cross domain SSO: user needs to access apps in different domains, without having to establish an account and authentication identity in each.
+* Designed as an "XML-based framework for describing and exchanging security information between online business partners."
+* Allows delegation of user authentication to a remote identity provider, which returns a post-authentication assertion about the authenticated user and authentication event.
+* Also lets an app and IdP use a common, shared identifier for a user, to exchange information about the user--this is 'federated identity.'
+* Federation can use the same identifier across systems, or an opaque, internal identifier which is mapped to the identifier used by the user in each system.
+
+## Terminology
+
+* Subject - entity about which security information will be exchanged, typically a user
+* SAML Assertion - XML-based message containing security info about a subject
+* SAML Profile - Spec that defines how to use SAML messages for a business use case, like cross-doman SSO
+* Identity Provider - Role defined for the SAML SSO profile. An IdP is a server which issues SAML assertions about an authenticated subject in the context of x-domain SSO
+* Service Provider - Role for SAML x-domain SSO. The SP delegates authentication to an IdP and relies on information about an authenticated subject in a SAML assertion
+* Trust Relationship - Agreement between a SAML service provider and a SAML IdP, whereby the service provider trusts assertions issued by the IdP
+* SAML Protocol Binding - Description of how SAML message elements are mapped onto standard communication protocols like HTTP, for transmission between service providers and identity providers. In practice, SAML request/response is typically over HTTPS using either HTTP-Redirect or HTTP-POST, using those bindings respectively.
+
+## How it Works
+
+* Most common scenario is x-domain SSO:
+    * User wants to use an application
+    * Application is a SAML Service Provider (SP)
+    * Application delegates user authentication to a SAML identity provider (IdP), which may be in a different domain.
+    * IdP authenticates a user, returns a security token (a SAML assertion) to the app
+    * The SAML assertion provides info on the authentication event and subject
+* Note that an entity acting as an IdP can also act as an SP, by further delegating to yet another IdP
+* To establish the ability to do x-domain SSO, the orgs owning the SP and IdP exchange metadata containing info like URL endpoints and certificates with which to validate digitally signed messages.
+* The metadata allows the creation/configuration of a trust relationship, and must be done before the IdP can authenticate users for the SP
+* Once the trust relationship is configured, when a user accesses the SP, the SP redirects the user's browser to the IdP with a SAML authentication request message
+* The IdP authenticates the user and redirects them back to the SP with a SAML authentication response message.
+* The response contains a SAML assertion about the user and auth event, or an error
+
+### SP-Initiated SSO
+
+* Simplest form of x-domain SSO:
+    1. User starts at the SP (thus 'SP-initiated')
+    1. SP redirects to IdP with SAML authentication request
+    1. IdP interacts with user for authentication
+    1. User authenticates, IdP validates creds
+    1. IdP redirects browser back to SP with SAML response with SAML authentication assertion. Response is sent to the SP's Assertion Consumer Service (ACS) URL
+    1. SP consumes and validates the SAML response, responds to user's original request
+
+### Single Sign-On
+
+* Multiple SPs can delegate to the same IdP
+* A user can authenticate for App A, and use the same browser session to access App B without having to authenticate again, since the IdP will recognize their session.
+
+### IdP-Initiated Flow
+
+* User starts at the IdP, IdP redirects to the SP with a SAML response message, without the SP having requested authentication
+* Found in some enterprise environments with access via corporate portal.
+* Useful in enterprises, makes sure user goes to correct SP to avoid phishing.
+* Process:
+    1. User visits corporate portal
+    1. Portal redirects to IdP with SAML authentication request
+    1. IdP interacts with user for authentication
+    1. User authenticates, IdP validates creds
+    1. IdP redirects back to portal with a SAML response (response #1)
+    1. User is logged into the portal, shown content including list of applications
+    1. User clicks through to an app. Link directs browser to the IdP with a parameter indicating the desired SP/app, IdP checks the user's session. (we assume it's valid)
+    1. IdP redirects user to the SP's Assertion Consumer Service URL with a new SAML response (response #2) for that SP/app
+    1. SP/app consumes the SAML response and authentication assertion, renders appropriate page/resource(s) to the user, based on their identity and privileges.
+
+### Identity Federation
+
+* Establishes an agreed-upon identifier used between an SP and an IdP to refer to a subject
+* Lets the SP delegate authentication to the IdP and get back an authentication assertion with claims including an identifier for the authenticated subject that will be recognizable by the SP.
+* Admins for the SP and IdP exchange metadata about their environments, use it to set up federation information between the two.
+* In practice, admins of IdP configure it to send assertions to SPs that have appropriate identifiers and attributes for the application
+* Link between an identity at an SP and an IdP can be set up in different ways, but in practice the user's email address is often used as the identifier.
+* Can be problematic since a user may need to change their email, and using it as an identifier can conflict with privacy requirements.
+* Using a specific identifier attribute can be requested dynamically within a request, or an IdP can be configured to send a particular identifier to an SP.
+* Also possible for IdP and SP to exchange info using an opaque, internal identifier for a user, mapped on each side to a user's profile. Not common in practice.
+* Approach to use is set when the two parties exchange metadata and configure their infrastructure to establish the federation
+
+## Authentication Brokers
+
+* Can be used by apps to enable support for multiple authentication protocols and mechanisms.
+* If you want to use OIDC for authentication, you can get requests to support SAML from people who want their users authenticated at their corporate SAML identity provider.
+* SAML is complex to implement and support, so an alternative is to use an authentication broker to simplify the task of supporting SAML
+* If you don't use an authentication broker, at least use a library--don't roll your own
+
+## Configuration
+
+* Service Provider configuration elements:
+    * SSO URL - single sign-on URL of the IdP, where the SP sends auth requests
+    * Certificate - Certificate(s) from the IdP, to validate signatures on SAML responses and assertions from the IdP. Also used if the SP sends encrypted requests.
+    * Protocol Binding - binding to use when sending requests, HTTP-Redirect for simple requests, HTTP-POST for signed requests (recommended)
+    * Request Signing - Whether to sign SAML authentication requests, and if so by which signature algorithm. (recommended)
+    * Request Encryption - Whether to digitally encrypt a SAML authenticatin request
+* Identity Provider configuration elements:
+    * ACS URL - The Assertion Consumer Service URL of the SP
+    * Certificate - Certificate(s) from the SP, to validate signatures on SAML requests, and if responses are to be encrypted.
+    * Protocol Binding - HTTP-POST typically required to accommodate signed messages
+    * Response Signing - Whether to digitally sign the SAML authentication response, the assertion, or both, and the signature algorithm. Signing is mandatory.
+    * Response Encryption - Whether to digitally encrypt a SAML response
+* Once both providers are configured and you've attempted a trial authentication, initial failures are common. 
+* Debug by attempting to authenticate, capturing a trace of the SAML request/response, and looking into them.
