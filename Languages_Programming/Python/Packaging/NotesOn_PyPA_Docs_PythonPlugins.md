@@ -24,3 +24,15 @@ From https://packaging.python.org/guides/creating-and-discovering-plugins/
 ## Approach 2: Using Namespace Packages
 
 * Provide a convention for where to put plugins, how to do discovery
+* If you made the subpackage `myapp.plugins` a namespace package, other distributions can provide modules and packages to that namespace.
+* Once installed you can use `pkgutil.iter_modules()` to discover all modules and packages installed under the namespace:
+
+    ```Python
+    import importlib
+    import pkgutil
+
+    import myapp.plugins
+
+    def iter_namespace(ns_pkg):
+        
+    ```

@@ -178,7 +178,7 @@ From https://packaging.python.org/tutorials/installing-packages/
         python -m pip install "SomeProject~=1.4.2"
         ```
 
-    * Last syntax there means "any version that's 1.4.* and greater than or equal to 1.4.2"
+    * Last syntax there means "any version that's `1.4.*` and greater than or equal to 1.4.2"
 * Source Distributions vs Wheels
     * pip can install sdist or wheel, but always prefers wheels
     * if pip doesn't find a wheel to install, it builds one locally and caches it for future installs
@@ -275,5 +275,298 @@ python -m pip install --user pipenv
 # Packaging Python Projects
 
 From https://packaging.python.org/tutorials/packaging-projects/
+
+* Example file structure:
+
+    ```
+    packaging_tutorial
+    |___ example_pkg
+         |___ __init__.py
+    ```
+
+* Create the following files in `packaging_tutorial/`:
+    * `LICENSE`
+    * `README.md`
+    * `pyproject.toml`
+    * `setup.cfg`
+    * `setup.py`
+    * `tests/`
+* `pyproject.toml` tells build tools what system you're using and what your build requirements are
+* If that file is missing the default is to assume a classic `setuptools` build system, but better to be explicit.
+* Contents of `pyproject.toml`:
+
+    ```
+    [build-system]
+    requires = [
+        "setuptools>=42",
+        "wheel"
+    ]
+    build-backend = "setuptools.build_meta"
+    ```
+
+* `build-system.requires` gives a list of packages needed to build your package. Items listed here are *only* available during build, not after.
+* `build-system.backend` is technically optional, but you'll get `setuptools.build_meta.__legacy__` if you leave it out, so always include it. An alternative build system like flit or poetry would also go here.
+
+## Configuring Metadata
+
+* Two types of metadata, static and dynamic
+    * Static metadata as in `setup.cfg` is guaranteed to be the same every time
+    * Dynamic metadata as in `setup.py` is possibly non-deterministic. Anything determined at install time, and any extension modules or extensions to setuptools, need to go into `setup.py`
+* Static should be preferred, dynamic as an "escape hatch when absolutely necessary"
+
+### setup.cfg (static metadata)
+
+* Config file for `setuptools`, tells it about your package and which code files to include. Eventually a lot of this can move to `pyproject.toml`
+* Content of `setup.cfg`:
+
+    ```
+    [metadata]
+    name = example-pkg-nballenger
+    version = 0.0.1
+    author = Nick Ballenger
+    author_email = nballeng@gmail.com
+    description = Small example package
+    long_description = file: README.md
+    long_description_content_type = text/markdown
+    url = https://github.com/nballenger/example-pkg-nballenger
+    project_urls =
+        Bug Tracker = https://github.com/nballenger/example-pkg-nballenger/issues
+    classifiers =
+        Programming Language :: Python :: 3
+        Programming Language :: Python :: 3.9
+        License :: OSI Approved :: MIT License
+        Operating System :: OS Independent
+
+    [options]
+    packages = find:
+    python_requires = >=3.9
+    ```
+
+* It's in `configparser` format, don't quote values
+* Metadata values:
+    * `name` - distribution name of the package. Can be any name using `[a-zA-Z0-9_-]+` that doesn't already exist on pypi.org
+    * `version` - package version under PEP 440, you can use `file:` or `attr:` directives to rad from a file or package attribute
+    * `author` and `author_email` identify the author of the package
+    * `description` - short, one sentence package summary
+    * `long_description` shown on the package detail page, source it from readme
+    * `long_description_content_type` tells the index the markup type
+    * `url` - url of the homepage, usually the github or whatever
+    * `project_urls` lets you list any number of extra links on PyPI
+    * `classifiers` - gives index and pip some additonal metadata about the package. Always include at least your min python version, package license, and which OS's your package works under.
+* In `[options]` there are controls for `setuptools` itself:
+    * `packages` - list of all python import packages that should be included in the distribution package. `find:` directive lets you automatically discover all packages and subpackages
+    * `python_requires` - gives versions of Python supported by your project
+* `setup.py` isn't technically required anymore, but you can include a shim for it:
+
+    ```Python
+    import setuptools
+
+    setuptools.setup()
+    ```
+
+* `README.md` can be in github flavored markdown
+* `LICENSE` should be something from, e.g., https://choosealicense.com
+
+## Generating Distribution Archives
+
+* Make sure you've got the latest version of `build` installed
+
+    ```shell
+    python3 -m pip install --upgrade build
+    ```
+
+* Then run `python3 -m build` in the directory where `pyproject.toml` is
+* That'll generate two files in `dist/`, a `.whl` and a `.tar.gz` source archive
+* Always upload both a source archive and built archives for the platforms your project is compatible with.
+
+## Uploading the distribution archives
+
+* First you need to register an account on `Test PyPI`, which is a separate instance of the package index for testing and experimentation. Good for stuff where you don't want to upload to the real index.
+* Need to create a PyPI API token so you can upload, put that into a `.pypirc` file
+* Install `twine`
+* Upload your archives under `dist/` with
+
+    ```shell
+    python3 -m twine upload --repository testpypi dist/*
+    ```
+
+## Install your newly uploaded package
+
+* Create a new virtualenv and start it up
+* Install with
+
+    ```shell
+    python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps example-pkg-nballenger
+    ```
+
+* Specify `--no-deps` with packages on testpypi, because it won't include the same dependencies as the real pypi, so dependency resolution isn't going to work well
+
+# Creating Documentation
+
+From https://packaging.python.org/tutorials/creating-documentation/
+
+* Install Sphinx: `python -m pip install -U sphinx`
+* Create a `docs/` directory to hold your documentation
+* Run `sphinx-quickstart` in that directory
+* That sets up a source directory, does some configs, etc.
+* You can add some info about hte project in the `index.rst` file it creates, then use `make html` to generate documentation
+
+# Guide: Packaging and Distributing Projects
+
+From https://packaging.python.org/guides/distributing-packages-using-setuptools/
+
+* Make sure you've installed all the requirements for installing packages
+* Make sure your `build` is up to date
+* Install `twine`
+
+## Configuring your project
+
+### Initial Files
+
+* `setup.py`
+    * holds dynamic metadata logic
+    * calls `setup()` function
+    * is the CLI interface for running packaging commands
+* `setup.cfg`
+    * `ini` file with static metadata for `setup.py`
+* `README.rst`/`README.md`
+* `MANIFEST.in` - needed when you need to package additional files not automatically included in a source distribution
+* `LICENSE` / `LICENSE.txt`
+* `<your package>` - most common practice is to put all modules/packages under a single top level package with the same name as your project
+* `setup()` args - `name`, `version`, `description`, etc.
+* Specific args to look at more:
+    * `console_scripts`
+    * `entry_points`
+    * `data_files`
+    * `package_data`
+* Versioning schemes allowable under PEP 440:
+
+```
+1.2.0.dev1  # Development release
+1.2.0a1     # Alpha Release
+1.2.0b1     # Beta Release
+1.2.0rc1    # Release Candidate
+1.2.0       # Final Release
+1.2.0.post1 # Post Release
+15.10       # Date based release
+23          # Serial release
+```
+
+## Working in development mode
+
+* If you're in the root of your project directory, you can run
+
+    ```shell
+    python -m pip install -e .
+    ```
+
+* which will install in editable mode
+* You can install dependencies in editable mode. Requirements file syntax:
+
+    ```
+    -e .
+    -e git+https://somerepo/bar.git#egg=bar
+    ```
+
+## Packaging your project
+
+* Creating a source distro: `python setup.py sdist`
+* Creating a wheel: `python -m pip install wheel`
+* Creating a universal (pure python) wheel: `python setup.py bdist_wheel --universal`
+* Can set the `--universal` flag in `setup.cfg`:
+
+    ```
+    [bdist_wheel]
+    universal=1
+    ```
+
+* Only use `--universal` if your project runs on py 2 and 3 with no changes, and you have no C extensions in use.
+* Pure python wheels that aren't universal are pure python, but don't natively support both python 2 and 3
+* Build these with `python setup.py bdist_wheel`
+* Platform wheels are specific to an OS
+* Build them with `python setup.py bdist_wheel`
+
+# Guide: Packaging Namespace Packages
+
+* Namespace packages let you split sub-packages and moudles in a single package across multiple, separate distribution packages.
+* For example, with this package structure:
+
+    ```
+    mynamespace/
+        __init__.py
+        subpackage_a/
+            __init__.py
+            ...
+        subpackage_b/
+            __init__.py
+            ...
+        module_b
+    setup.py
+    ```
+
+* And these usages in code:
+
+    ```Python
+    from mynamespace import subpackage_a
+    from mynamespace import subpackage_b
+    ```
+
+* Then you can actually break the subpackages into two separate distributions:
+
+    ```
+    mynamespace-subpackage-a/
+        setup.py
+        mynamespace/
+            subpackage_a/
+                __init__.py
+
+    mynamespace-subpackage-b/
+        setup.py
+        mynamespace/
+            subpackage_b/
+                __init__.py
+            module_b.py
+    ```
+
+* And the subpackages can be separately installed, used, and versioned.
+* Useful for a large collection of loosely-related packages
+* Come with some caveats and are not always appropriate
+
+## Creating a namespace package
+
+* Three approaches currently
+    * Use native namespace packages, as defined in PEP 420, only available in Python 3.3+. Recommended if you only need to support python3 and pip installation
+    * Use pkgutil-style namespace packages. If you need python2 and 3 support, and install via pip and setuptools
+    * Use `pkg_resources`-style namespace packages. If you need compatibility with packages already using the method, or if your package needs to be zip safe.
+* Native and `pkgutil` style are largely compatible, `pkg_resources` style are not compatible with other methods.
+
+### Native namespace packages
+
+* Added in 3.3 via PEP 420
+* All you have to do is omit `__init__.py` from the namespace package directory:
+
+    ```
+    setup.py
+    mynamespace/
+        # no __init__.py here
+        subpackage_a/
+            __init__.py
+            module.py
+    ```
+
+* Every distribution using the namespace package must omit the namespace level init file. If any distro does not, it will cause the namespace logic to fail
+* Because there's no init file in the top level, `setuptools.find_packages()` won't find the sub package, and you must use `setuptools.find_namespace_packages()` instead, or explicitly list your packages.
+
+    ```Python
+    from setuptools import setup, find_namespace_packages
+
+    setup(
+        name='mynamespace-subpackage-a',
+        ...
+        packages=find_namespace_packages(include=['mynamespace.*'])
+    )
+    ```
+
+
 
 

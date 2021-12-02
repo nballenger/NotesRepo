@@ -20,3 +20,7 @@ By Maude Lemaire; O'Reilly Media, Inc, Dec. 2020; ISBN 9781492075530
 * At scale, it's about identifying a systemic problem in the codebase, coming up with a better solution, and executing on it in a strategic, disciplined way
 
 ## Why should you care about refactoring?
+
+## Benefits of Refactoring
+
+
